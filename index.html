@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarzaD'Cross | Tienda de Recargas</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-logo">
+            <div class="profile-avatar">C</div>
+            <span>CarzaD'Cross</span>
+        </div>
+        
+        <div class="nav-auth-section" id="nav-logged-out">
+            <button class="btn-text" onclick="abrirModal('modal-login')">Iniciar Sesión</button>
+            <button class="btn-outline" onclick="abrirModal('modal-register')">Crear Cuenta</button>
+        </div>
+
+        <div class="nav-user-section" id="nav-logged-in" style="display: none;">
+            <div class="balance-pill">
+                <span class="material-icons wallet-icon">account_balance_wallet</span>
+                <div class="balance-info">
+                    <span class="balance-label">SALDO</span>
+                    <span class="balance-amount">S/ 0.00</span>
+                </div>
+            </div>
+            <div class="user-profile" onclick="abrirModal('modal-profile')">
+                <span>Carlos</span>
+                <span class="material-icons">expand_more</span>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero-container">
+        <div class="hero-content">
+            <div class="hero-badge">★ TIENDA OFICIAL</div>
+            <h1 class="hero-title">Tu tienda de <span class="highlight">recarga de juegos</span><br>de confianza</h1>
+            <p class="hero-subtitle">Diamantes, pases y más. Recarga de forma rápida y segura con los mejores precios del mercado.</p>
+            <button class="btn-primary" onclick="document.getElementById('seccion-juegos').scrollIntoView({behavior: 'smooth'})">
+                Ver categorías <span class="material-icons">expand_more</span>
+            </button>
+        </div>
+        <div class="hero-stats">
+            <div class="stat-box"><h2>+1000</h2><p>Ventas realizadas</p></div>
+            <div class="stat-box"><h2>2</h2><p>Juegos</p></div>
+            <div class="stat-box"><h2>Inmediata</h2><p>Entrega</p></div>
+        </div>
+    </header>
+
+    <section class="games-section" id="seccion-juegos">
+        <div class="section-badge"><span class="dot"></span> ELIGE TU JUEGO</div>
+        <div class="games-grid">
+            <div class="game-card" id="btn-normal" onclick="showNormal()">
+                <div class="game-content"><div class="game-image free-fire-bg"></div><div class="game-info"><h3>Free Fire</h3><p>Catálogo Regular</p></div></div>
+            </div>
+            <div class="game-card active-game" id="btn-promo" onclick="showPromo()">
+                <div class="game-content"><div class="game-image free-fire-pr-bg"></div><div class="game-info"><h3>Free Fire (1ra Recarga)</h3><p>Promo Especial</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container" id="catalogo-promo">
+        <div class="category-header">
+            <h2>PROMOCIÓN POR CADA ID (PRIMERA RECARGA) 🫦</h2>
+            <div class="alert-banner">📌 PRECIOS ESPECIALES SOLO VÁLIDO PARA 1 VEZ POR CUENTA (YA SEA 100, 300, 500, 2K y 6K)</div>
+        </div>
+        <section class="products-grid">
+            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎</div><h3 class="card-title">110 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 2.40</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎</div><h3 class="card-title">331 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 8.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎💎</div><h3 class="card-title">572 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 13.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎💎</div><h3 class="card-title">1166 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 23.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎💎💎</div><h3 class="card-title">2398 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 45.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">👑💎</div><h3 class="card-title">6160 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 99.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+        </section>
+    </main>
+
+    <main class="container" id="catalogo-normal" style="display: none;">
+        <div class="category-header"><h2>RECARGA REGULAR 💎</h2></div>
+        <section class="products-grid">
+            <div class="card"><div class="card-badge">Oferta</div><div class="card-icon">💎</div><h3 class="card-title">110 Diamantes</h3><p class="card-stock">100 + 10 Extra</p><div class="card-prices"><span class="price-current">S/ 2.90</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">-11%</div><div class="card-icon">💎</div><h3 class="card-title">341 Diamantes</h3><p class="card-stock">310 + 31 Extra</p><div class="card-prices"><span class="price-old">S/ 13.50</span><span class="price-current">S/ 12.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">-10%</div><div class="card-icon">💎💎</div><h3 class="card-title">572 Diamantes</h3><p class="card-stock">520 + 52 Extra</p><div class="card-prices"><span class="price-old">S/ 15.90</span><span class="price-current">S/ 14.30</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">-15%</div><div class="card-icon">💎💎</div><h3 class="card-title">1170 Diamantes</h3><p class="card-stock">1060 + 110 Extra</p><div class="card-prices"><span class="price-old">S/ 30.00</span><span class="price-current">S/ 25.50</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">-13%</div><div class="card-icon">💎💎💎</div><h3 class="card-title">2398 Diamantes</h3><p class="card-stock">2180 + 218 Extra</p><div class="card-prices"><span class="price-old">S/ 58.00</span><span class="price-current">S/ 50.50</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">-12%</div><div class="card-icon">💎💎💎</div><h3 class="card-title">4796 Diamantes</h3><p class="card-stock">4360 + 436 Extra</p><div class="card-prices"><span class="price-old">S/ 114.00</span><span class="price-current">S/ 100.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">-7%</div><div class="card-icon">👑💎</div><h3 class="card-title">6160 Diamantes</h3><p class="card-stock">5600 + 560 Extra</p><div class="card-prices"><span class="price-old">S/ 140.00</span><span class="price-current">S/ 125.50</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">-7%</div><div class="card-icon">👑💎💎</div><h3 class="card-title">12320 Diamantes</h3><p class="card-stock">11200 + 1120 Extra</p><div class="card-prices"><span class="price-old">S/ 278.00</span><span class="price-current">S/ 250.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="modal-register">
+        <div class="modal-box">
+            <span class="close-btn" onclick="cerrarModals()">×</span>
+            <div class="modal-header">
+                <h2>Crear Cuenta</h2>
+                <p>Únete a CarzaD'Cross</p>
+            </div>
+            <input type="text" class="input-form" placeholder="Nickname (Ej. Carza)">
+            <input type="email" class="input-form" placeholder="Correo Electrónico">
+            <input type="tel" class="input-form" placeholder="Número de Celular">
+            <button class="btn-primary" style="width: 100%" onclick="irAVerificacion()">Registrarse</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-login">
+        <div class="modal-box">
+            <span class="close-btn" onclick="cerrarModals()">×</span>
+            <div class="modal-header">
+                <h2>Iniciar Sesión</h2>
+                <p>Bienvenido de vuelta</p>
+            </div>
+            <input type="email" class="input-form" placeholder="Correo Electrónico">
+            <input type="password" class="input-form" placeholder="Contraseña">
+            <button class="btn-primary" style="width: 100%" onclick="completarLogin()">Ingresar</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-verify">
+        <div class="modal-box" style="text-align: center;">
+            <div class="modal-header">
+                <h2>Revisa tu correo</h2>
+                <p>Hemos enviado un código de 6 dígitos a tu correo.</p>
+            </div>
+            <div class="code-inputs">
+                <input type="text" maxlength="1" class="code-box">
+                <input type="text" maxlength="1" class="code-box">
+                <input type="text" maxlength="1" class="code-box">
+                <input type="text" maxlength="1" class="code-box">
+                <input type="text" maxlength="1" class="code-box">
+                <input type="text" maxlength="1" class="code-box">
+            </div>
+            <button class="btn-primary" style="width: 100%; margin-top: 20px;" onclick="completarLogin()">Verificar Cuenta</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-profile">
+        <div class="modal-box modal-large">
+            <span class="close-btn" onclick="cerrarModals()">×</span>
+            <div class="profile-header">
+                <div class="profile-avatar large-avatar">C</div>
+                <div class="profile-info">
+                    <p class="greeting">HOLA,</p>
+                    <h2>Carlos Gabriel</h2>
+                </div>
+            </div>
+            <div class="balance-card">
+                <p>SALDO DISPONIBLE</p>
+                <h1>S/ 0.00</h1>
+                <button class="btn-recharge-action" onclick="irARecarga()">+ Recargar Saldo</button>
+            </div>
+            <div class="profile-stats">
+                <div class="p-stat"><h3>0</h3><p>COMPRAS</p></div>
+                <div class="p-stat"><h3>S/0</h3><p>GASTADO</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-recharge">
+        <div class="modal-box modal-large">
+            <span class="close-btn" onclick="cerrarModals()">×</span>
+            <div class="modal-header">
+                <h2>Recargar Saldo</h2>
+                <p>¿Cuánto vas a recargar?</p>
+            </div>
+            <div class="quick-amounts">
+                <button class="amount-btn" onclick="seleccionarMonto(10)">S/ 10</button>
+                <button class="amount-btn" onclick="seleccionarMonto(20)">S/ 20</button>
+                <button class="amount-btn" onclick="seleccionarMonto(30)">S/ 30</button>
+                <button class="amount-btn" onclick="seleccionarMonto(50)">S/ 50</button>
+                <button class="amount-btn" onclick="seleccionarMonto(100)">S/ 100</button>
+            </div>
+            <div class="custom-amount">
+                <span>S/</span>
+                <input type="number" id="input-monto" placeholder="0.00">
+            </div>
+            <div class="warning-box">
+                <h4>⚠ IMPORTANTE - LEE ANTES DE DEPOSITAR</h4>
+                <ul>
+                    <li>Si transfieres un monto <b>menor</b> al solicitado, no se acreditará el saldo.</li>
+                    <li>El comprobante debe ser <b>legible</b>.</li>
+                    <li>No se aceptan comprobantes <b>editados o duplicados</b>.</li>
+                </ul>
+            </div>
+            <button class="btn-primary" style="width: 100%; margin-top: 20px;" onclick="alert('Aquí se mostraría el QR de Yape de tu negocio.')">Continuar al Pago</button>
+        </div>
+    </div>
+
+    <script>
+        function showNormal() {
+            document.getElementById('catalogo-normal').style.display = 'block';
+            document.getElementById('catalogo-promo').style.display = 'none';
+            document.getElementById('btn-normal').classList.add('active-game');
+            document.getElementById('btn-promo').classList.remove('active-game');
+        }
+
+        function showPromo() {
+            document.getElementById('catalogo-promo').style.display = 'block';
+            document.getElementById('catalogo-normal').style.display = 'none';
+            document.getElementById('btn-promo').classList.add('active-game');
+            document.getElementById('btn-normal').classList.remove('active-game');
+        }
+
+        function abrirModal(id) {
+            cerrarModals();
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function cerrarModals() {
+            let modals = document.querySelectorAll('.modal-overlay');
+            modals.forEach(modal => modal.style.display = 'none');
+        }
+
+        function irAVerificacion() {
+            abrirModal('modal-verify');
+        }
+
+        function completarLogin() {
+            cerrarModals();
+            document.getElementById('nav-logged-out').style.display = 'none';
+            document.getElementById('nav-logged-in').style.display = 'flex';
+        }
+
+        function verificarCompra() {
+            if(document.getElementById('nav-logged-in').style.display === 'none') {
+                abrirModal('modal-register');
+            } else {
+                abrirModal('modal-profile');
+                alert("No tienes saldo suficiente. Por favor, recarga tu cuenta primero para poder realizar la compra.");
+            }
+        }
+
+        function irARecarga() {
+            abrirModal('modal-recharge');
+        }
+
+        function seleccionarMonto(monto) {
+            document.getElementById('input-monto').value = monto;
+            let botones = document.querySelectorAll('.amount-btn');
+            botones.forEach(btn => btn.classList.remove('active-amount'));
+            event.target.classList.add('active-amount');
+        }
+    </script>
+</body>
+</html>

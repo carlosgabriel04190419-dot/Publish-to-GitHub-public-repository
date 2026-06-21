@@ -1,0 +1,280 @@
+/* CONFIGURACIÓN GENERAL Y FUENTES */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+body { background-color: #121214; color: #ffffff; min-height: 100vh; }
+
+/* NUEVA BARRA DE NAVEGACIÓN */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5%;
+    background-color: rgba(26, 26, 30, 0.95);
+    border-bottom: 1px solid #29292e;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #a800ff; 
+}
+
+.profile-avatar {
+    width: 35px; height: 35px; background-color: #a800ff; color: white;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: bold; border: 2px solid #ffffff;
+}
+
+/* ÁREA DE USUARIO Y SALDO */
+.nav-user-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.balance-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #1e1e24;
+    border: 1px solid #41414d;
+    padding: 6px 15px;
+    border-radius: 30px;
+}
+
+.wallet-icon { color: #a800ff; font-size: 20px; }
+
+.balance-info { display: flex; flex-direction: column; line-height: 1.1; }
+.balance-label { font-size: 10px; color: #a8a8b3; font-weight: 600; }
+.balance-amount { font-size: 14px; color: #ffffff; font-weight: 700; }
+
+.user-profile {
+    display: flex; align-items: center; gap: 8px;
+    background-color: #a800ff; color: white;
+    padding: 8px 15px; border-radius: 30px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.user-profile:hover { background-color: #8200c4; }
+
+/* NUEVA PORTADA PRINCIPAL (HERO) */
+.hero-container {
+    /* El truco del fondo: Un gradiente semitransparente ENCIMA de tu imagen */
+    background: linear-gradient(rgba(18, 18, 20, 0.7), rgba(18, 18, 20, 1)), url('hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 100px 20px 50px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hero-badge {
+    border: 1px solid #a800ff;
+    color: #a800ff;
+    padding: 6px 16px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: 20px;
+    background-color: rgba(168, 0, 255, 0.1);
+}
+
+.hero-title {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 15px;
+}
+
+.hero-title .highlight { color: #a800ff; }
+
+.hero-subtitle {
+    color: #a8a8b3;
+    font-size: 16px;
+    max-width: 600px;
+    margin: 0 auto 30px auto;
+}
+
+.btn-primary {
+    background-color: #a800ff;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto 50px auto;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.btn-primary:hover { background-color: #8200c4; transform: scale(1.05); }
+
+/* ESTADÍSTICAS MOVIDAS A LA PORTADA */
+.hero-stats {
+    display: flex; justify-content: center; gap: 50px; text-align: center;
+}
+
+.stat-box h2 { color: #a800ff; font-size: 32px; margin-bottom: 5px; }
+.stat-box p { color: #a8a8b3; font-size: 14px; }
+
+/* SECCIÓN: ELIGE TU JUEGO */
+.games-section { display: flex; flex-direction: column; align-items: center; padding: 40px 20px; border-bottom: 1px solid #29292e; }
+.section-badge { border: 1px solid #41414d; padding: 8px 20px; border-radius: 30px; font-size: 14px; font-weight: 600; color: #e1e1e6; display: flex; align-items: center; gap: 10px; margin-bottom: 30px; }
+.section-badge .dot { width: 8px; height: 8px; background-color: #a800ff; border-radius: 50%; }
+.games-grid { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+
+/* LA MAGIA DEL GUSANILLO */
+.game-card { width: 200px; border-radius: 16px; cursor: pointer; position: relative; padding: 3px; transition: transform 0.3s; background-color: #1a1a1e; overflow: hidden; }
+.game-card:hover { transform: translateY(-5px); }
+.game-content { background-color: #1a1a1e; border-radius: 14px; height: 100%; position: relative; z-index: 2; overflow: hidden; }
+.active-game::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, transparent, transparent, #00e5ff, #a800ff); animation: rotateWorm 3s linear infinite; z-index: 1; }
+@keyframes rotateWorm { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* IMÁGENES DE JUEGOS */
+.game-image { height: 250px; background-color: #29292e; background-size: cover; background-position: center; }
+.free-fire-bg { background-image: url('freefire.jpg'); }
+.free-fire-pr-bg { background-image: url('freefirepr.jpg'); }
+
+.game-info { padding: 15px; }
+.game-info h3 { font-size: 16px; margin-bottom: 5px; }
+.game-info p { font-size: 12px; color: #a800ff; background-color: rgba(168, 0, 255, 0.1); padding: 4px 8px; border-radius: 6px; display: inline-block; }
+
+/* CONTENEDOR PRINCIPAL Y ALERTA */
+.container { max-width: 1200px; margin: 0 auto; padding: 50px 20px; }
+.category-header { text-align: center; margin-bottom: 40px; }
+.category-header h2 { font-size: 24px; color: #ffffff; margin-bottom: 15px; }
+.alert-banner { background-color: rgba(234, 29, 44, 0.15); border: 1px solid #ea1d2c; color: #ffb3b8; padding: 12px 20px; border-radius: 8px; font-size: 14px; display: inline-block; max-width: 800px; }
+
+/* GRILLA DE DIAMANTES */
+.products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+.card { background-color: #1a1a1e; border: 1px solid #29292e; border-radius: 12px; padding: 25px; text-align: center; position: relative; overflow: hidden; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+.card:hover { transform: translateY(-8px); border-color: #a800ff; box-shadow: 0 10px 20px rgba(168, 0, 255, 0.3); }
+.card-badge { position: absolute; top: 15px; left: 15px; background-color: #ea1d2c; color: white; font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 6px; }
+.card-icon { font-size: 45px; margin-bottom: 15px; }
+.card-title { font-size: 18px; margin-bottom: 5px; }
+.card-stock { font-size: 12px; color: #04d361; margin-bottom: 15px; }
+.card-prices { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; }
+.price-old { color: #737380; text-decoration: line-through; font-size: 14px; }
+.price-current { font-size: 20px; font-weight: 700; color: #ffffff; }
+.btn-buy { width: 100%; background-color: #a800ff; color: white; border: none; padding: 12px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; }
+.btn-buy:hover { background-color: #8200c4; }
+
+/* ========================================== */
+/* ESTILOS DE AUTENTICACIÓN Y VENTANAS EMERGENTES */
+/* ========================================== */
+
+.nav-auth-section { display: flex; gap: 15px; }
+.btn-text { background: none; border: none; color: #a8a8b3; font-weight: 600; font-size: 14px; cursor: pointer; transition: color 0.2s; }
+.btn-text:hover { color: #ffffff; }
+.btn-outline { background: transparent; border: 2px solid #a800ff; color: #a800ff; padding: 8px 20px; border-radius: 30px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-outline:hover { background: #a800ff; color: white; }
+
+/* MODALS (Fondo Oscuro y Caja Central) */
+.modal-overlay {
+    display: none; /* Oculto por defecto */
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    justify-content: center; align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.modal-box {
+    background-color: #1a1a1e;
+    border: 1px solid #29292e;
+    width: 90%; max-width: 400px;
+    padding: 30px; border-radius: 16px;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    animation: slideUp 0.3s ease-out;
+}
+
+.modal-large { max-width: 500px; }
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.close-btn {
+    position: absolute; top: 15px; right: 20px;
+    font-size: 24px; color: #a8a8b3; cursor: pointer;
+}
+.close-btn:hover { color: white; }
+
+.modal-header { margin-bottom: 25px; text-align: center; }
+.modal-header h2 { font-size: 22px; color: white; margin-bottom: 5px; }
+.modal-header p { font-size: 14px; color: #a8a8b3; }
+
+/* FORMULARIOS */
+.input-form {
+    width: 100%; background-color: #121214;
+    border: 1px solid #29292e; color: white;
+    padding: 14px 15px; border-radius: 8px;
+    margin-bottom: 15px; font-size: 14px; outline: none;
+    transition: border-color 0.2s;
+}
+.input-form:focus { border-color: #a800ff; }
+
+/* CAJAS DEL CÓDIGO DE VERIFICACIÓN */
+.code-inputs { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+.code-box {
+    width: 45px; height: 55px; text-align: center;
+    font-size: 24px; font-weight: bold; background-color: #121214;
+    border: 1px solid #29292e; color: #a800ff; border-radius: 8px;
+}
+
+/* PERFIL DE USUARIO Y SALDO */
+.profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+.large-avatar { width: 60px; height: 60px; font-size: 24px; }
+.greeting { font-size: 12px; color: #a8a8b3; font-weight: 600; letter-spacing: 1px; }
+
+.balance-card {
+    background: linear-gradient(135deg, rgba(168,0,255,0.2) 0%, rgba(26,26,30,1) 100%);
+    border: 1px solid #a800ff; padding: 25px; border-radius: 12px;
+    text-align: center; margin-bottom: 20px;
+}
+.balance-card p { font-size: 12px; color: #a8a8b3; font-weight: 600; margin-bottom: 5px; }
+.balance-card h1 { font-size: 40px; color: white; margin-bottom: 15px; }
+
+.btn-recharge-action {
+    background-color: #a800ff; color: white; border: none;
+    padding: 12px 30px; border-radius: 30px; font-weight: 600;
+    cursor: pointer; width: 100%; font-size: 16px;
+}
+
+.profile-stats { display: flex; justify-content: space-between; gap: 15px; }
+.p-stat { flex: 1; background-color: #121214; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #29292e; }
+.p-stat h3 { color: white; font-size: 20px; }
+.p-stat p { color: #a8a8b3; font-size: 10px; font-weight: 600; margin-top: 5px; }
+
+/* RECARGA DE SALDO */
+.quick-amounts { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.amount-btn { flex: 1 1 calc(33% - 10px); background-color: #121214; border: 1px solid #29292e; color: white; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+.amount-btn:hover { border-color: #a800ff; }
+.active-amount { background-color: rgba(168, 0, 255, 0.1); border-color: #a800ff; color: #a800ff; }
+
+.custom-amount { display: flex; align-items: center; background-color: #121214; border: 1px solid #29292e; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; }
+.custom-amount span { color: #a800ff; font-weight: 700; font-size: 20px; margin-right: 10px; }
+.custom-amount input { background: transparent; border: none; color: white; font-size: 24px; font-weight: 700; outline: none; width: 100%; }
+
+.warning-box { background-color: rgba(234, 29, 44, 0.1); border: 1px solid #ea1d2c; padding: 15px; border-radius: 8px; }
+.warning-box h4 { color: #ffb3b8; font-size: 12px; margin-bottom: 10px; }
+.warning-box ul { list-style: none; color: #a8a8b3; font-size: 12px; line-height: 1.5; }
+.warning-box li { margin-bottom: 8px; padding-left: 15px; position: relative; }
+.warning-box li::before { content: '×'; color: #ea1d2c; position: absolute; left: 0; font-weight: bold; }
