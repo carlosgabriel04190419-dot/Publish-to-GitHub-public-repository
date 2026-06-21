@@ -1,10 +1,10 @@
 /* CONFIGURACIÓN GENERAL Y FUENTES */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; scroll-behavior: smooth; }
 body { background-color: #121214; color: #ffffff; min-height: 100vh; }
 
-/* NUEVA BARRA DE NAVEGACIÓN */
+/* BARRA DE NAVEGACIÓN */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -26,6 +26,23 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
     color: #a800ff; 
 }
 
+.nav-links-desktop {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+.nav-links-desktop a {
+    color: #a8a8b3;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links-desktop a:hover, .nav-links-desktop a.active {
+    color: #a800ff; 
+}
+
 .profile-avatar {
     width: 35px; height: 35px; background-color: #a800ff; color: white;
     border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -33,102 +50,44 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
 }
 
 /* ÁREA DE USUARIO Y SALDO */
-.nav-user-section {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.balance-pill {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background-color: #1e1e24;
-    border: 1px solid #41414d;
-    padding: 6px 15px;
-    border-radius: 30px;
-}
-
+.nav-user-section { display: flex; align-items: center; gap: 15px; }
+.balance-pill { display: flex; align-items: center; gap: 10px; background-color: #1e1e24; border: 1px solid #41414d; padding: 6px 15px; border-radius: 30px; }
 .wallet-icon { color: #a800ff; font-size: 20px; }
-
 .balance-info { display: flex; flex-direction: column; line-height: 1.1; }
 .balance-label { font-size: 10px; color: #a8a8b3; font-weight: 600; }
 .balance-amount { font-size: 14px; color: #ffffff; font-weight: 700; }
 
 .user-profile {
-    display: flex; align-items: center; gap: 8px;
-    background-color: #a800ff; color: white;
-    padding: 8px 15px; border-radius: 30px;
-    font-size: 14px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 8px; background-color: #a800ff; color: white;
+    padding: 8px 15px; border-radius: 30px; font-size: 14px; font-weight: 600; cursor: pointer;
     transition: background-color 0.2s;
 }
-
 .user-profile:hover { background-color: #8200c4; }
 
-/* NUEVA PORTADA PRINCIPAL (HERO) */
+/* PORTADA PRINCIPAL (HERO) */
 .hero-container {
-    /* El truco del fondo: Un gradiente semitransparente ENCIMA de tu imagen */
     background: linear-gradient(rgba(18, 18, 20, 0.7), rgba(18, 18, 20, 1)), url('hero-bg.jpg');
-    background-size: cover;
-    background-position: center;
-    padding: 100px 20px 50px 20px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    background-size: cover; background-position: center; padding: 100px 20px 50px 20px;
+    text-align: center; display: flex; flex-direction: column; align-items: center;
 }
 
 .hero-badge {
-    border: 1px solid #a800ff;
-    color: #a800ff;
-    padding: 6px 16px;
-    border-radius: 30px;
-    font-size: 12px;
-    font-weight: 700;
-    display: inline-block;
-    margin-bottom: 20px;
-    background-color: rgba(168, 0, 255, 0.1);
+    border: 1px solid #a800ff; color: #a800ff; padding: 6px 16px; border-radius: 30px;
+    font-size: 12px; font-weight: 700; display: inline-block; margin-bottom: 20px; background-color: rgba(168, 0, 255, 0.1);
 }
 
-.hero-title {
-    font-size: 48px;
-    font-weight: 700;
-    line-height: 1.2;
-    margin-bottom: 15px;
-}
-
+.hero-title { font-size: 48px; font-weight: 700; line-height: 1.2; margin-bottom: 15px; }
 .hero-title .highlight { color: #a800ff; }
-
-.hero-subtitle {
-    color: #a8a8b3;
-    font-size: 16px;
-    max-width: 600px;
-    margin: 0 auto 30px auto;
-}
+.hero-subtitle { color: #a8a8b3; font-size: 16px; max-width: 600px; margin: 0 auto 30px auto; }
 
 .btn-primary {
-    background-color: #a800ff;
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 30px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0 auto 50px auto;
-    transition: background-color 0.2s, transform 0.2s;
+    background-color: #a800ff; color: white; border: none; padding: 12px 30px; border-radius: 30px;
+    font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+    margin: 0 auto 50px auto; transition: background-color 0.2s, transform 0.2s;
 }
-
 .btn-primary:hover { background-color: #8200c4; transform: scale(1.05); }
 
-/* ESTADÍSTICAS MOVIDAS A LA PORTADA */
-.hero-stats {
-    display: flex; justify-content: center; gap: 50px; text-align: center;
-}
-
+.hero-stats { display: flex; justify-content: center; gap: 50px; text-align: center; }
 .stat-box h2 { color: #a800ff; font-size: 32px; margin-bottom: 5px; }
 .stat-box p { color: #a8a8b3; font-size: 14px; }
 
@@ -145,22 +104,20 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
 .active-game::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, transparent, transparent, #00e5ff, #a800ff); animation: rotateWorm 3s linear infinite; z-index: 1; }
 @keyframes rotateWorm { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* IMÁGENES DE JUEGOS */
 .game-image { height: 250px; background-color: #29292e; background-size: cover; background-position: center; }
 .free-fire-bg { background-image: url('freefire.jpg'); }
 .free-fire-pr-bg { background-image: url('freefirepr.jpg'); }
-
 .game-info { padding: 15px; }
 .game-info h3 { font-size: 16px; margin-bottom: 5px; }
 .game-info p { font-size: 12px; color: #a800ff; background-color: rgba(168, 0, 255, 0.1); padding: 4px 8px; border-radius: 6px; display: inline-block; }
 
 /* CONTENEDOR PRINCIPAL Y ALERTA */
-.container { max-width: 1200px; margin: 0 auto; padding: 50px 20px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; border-bottom: 1px solid #29292e; }
 .category-header { text-align: center; margin-bottom: 40px; }
 .category-header h2 { font-size: 24px; color: #ffffff; margin-bottom: 15px; }
 .alert-banner { background-color: rgba(234, 29, 44, 0.15); border: 1px solid #ea1d2c; color: #ffb3b8; padding: 12px 20px; border-radius: 8px; font-size: 14px; display: inline-block; max-width: 800px; }
 
-/* GRILLA DE DIAMANTES */
+/* GRILLA DE TARJETAS DE DIAMANTES */
 .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
 .card { background-color: #1a1a1e; border: 1px solid #29292e; border-radius: 12px; padding: 25px; text-align: center; position: relative; overflow: hidden; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
 .card:hover { transform: translateY(-8px); border-color: #a800ff; box-shadow: 0 10px 20px rgba(168, 0, 255, 0.3); }
@@ -175,106 +132,92 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
 .btn-buy:hover { background-color: #8200c4; }
 
 /* ========================================== */
-/* ESTILOS DE AUTENTICACIÓN Y VENTANAS EMERGENTES */
+/* ESTILOS DE LA NUEVA TABLA DE RANKING       */
 /* ========================================== */
+.ranking-table-container { background-color: #1a1a1e; border: 1px solid #29292e; border-radius: 12px; overflow: hidden; max-width: 800px; margin: 0 auto; }
+.ranking-table { width: 100%; border-collapse: collapse; text-align: left; }
+.ranking-table th, .ranking-table td { padding: 15px 20px; font-size: 15px; }
+.ranking-table th { background-color: #29292e; color: #a8a8b3; font-weight: 600; }
+.ranking-table tbody tr { border-bottom: 1px solid #29292e; transition: background-color 0.2s; }
+.ranking-table tbody tr:hover { background-color: rgba(168, 0, 255, 0.05); }
+.top-rank { font-weight: 600; }
+.rank-badge { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+.rank-badge.gold { background-color: rgba(255, 215, 0, 0.15); color: #ffd700; }
+.rank-badge.silver { background-color: rgba(192, 192, 192, 0.15); color: #c0c0c0; }
+.rank-badge.bronze { background-color: rgba(205, 127, 50, 0.15); color: #cd7f32; }
+.rank-badge.common { background-color: rgba(168, 0, 255, 0.15); color: #d699ff; }
 
+/* ========================================== */
+/* ESTILOS DE LA NUEVA TARJETA DE SOPORTE     */
+/* ========================================== */
+.support-card { background-color: #1a1a1e; border: 1px solid #29292e; border-radius: 12px; padding: 40px; text-align: center; max-width: 600px; margin: 0 auto; }
+.support-icon-box { width: 80px; height: 80px; background-color: rgba(168, 0, 255, 0.1); border: 2px solid #a800ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; }
+.support-icon-box span { color: #a800ff; font-size: 40px; }
+.support-card h3 { font-size: 20px; margin-bottom: 10px; }
+.support-card p { color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 30px; }
+.btn-whatsapp { background-color: #04d361; color: white; text-decoration: none; padding: 14px 30px; border-radius: 30px; font-weight: 600; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(4, 211, 97, 0.3); transition: transform 0.2s, background-color 0.2s; }
+.btn-whatsapp:hover { background-color: #03b854; transform: translateY(-2px); }
+
+/* MODALS */
 .nav-auth-section { display: flex; gap: 15px; }
 .btn-text { background: none; border: none; color: #a8a8b3; font-weight: 600; font-size: 14px; cursor: pointer; transition: color 0.2s; }
 .btn-text:hover { color: #ffffff; }
 .btn-outline { background: transparent; border: 2px solid #a800ff; color: #a800ff; padding: 8px 20px; border-radius: 30px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
 .btn-outline:hover { background: #a800ff; color: white; }
-
-/* MODALS (Fondo Oscuro y Caja Central) */
-.modal-overlay {
-    display: none; /* Oculto por defecto */
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.85);
-    z-index: 1000;
-    justify-content: center; align-items: center;
-    backdrop-filter: blur(5px);
-}
-
-.modal-box {
-    background-color: #1a1a1e;
-    border: 1px solid #29292e;
-    width: 90%; max-width: 400px;
-    padding: 30px; border-radius: 16px;
-    position: relative;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    animation: slideUp 0.3s ease-out;
-}
-
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+.modal-box { background-color: #1a1a1e; border: 1px solid #29292e; width: 90%; max-width: 400px; padding: 30px; border-radius: 16px; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.5); animation: slideUp 0.3s ease-out; }
 .modal-large { max-width: 500px; }
-
-@keyframes slideUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.close-btn {
-    position: absolute; top: 15px; right: 20px;
-    font-size: 24px; color: #a8a8b3; cursor: pointer;
-}
+@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #a8a8b3; cursor: pointer; }
 .close-btn:hover { color: white; }
-
 .modal-header { margin-bottom: 25px; text-align: center; }
 .modal-header h2 { font-size: 22px; color: white; margin-bottom: 5px; }
 .modal-header p { font-size: 14px; color: #a8a8b3; }
-
-/* FORMULARIOS */
-.input-form {
-    width: 100%; background-color: #121214;
-    border: 1px solid #29292e; color: white;
-    padding: 14px 15px; border-radius: 8px;
-    margin-bottom: 15px; font-size: 14px; outline: none;
-    transition: border-color 0.2s;
-}
+.input-form { width: 100%; background-color: #121214; border: 1px solid #29292e; color: white; padding: 14px 15px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; outline: none; transition: border-color 0.2s; }
 .input-form:focus { border-color: #a800ff; }
-
-/* CAJAS DEL CÓDIGO DE VERIFICACIÓN */
 .code-inputs { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
-.code-box {
-    width: 45px; height: 55px; text-align: center;
-    font-size: 24px; font-weight: bold; background-color: #121214;
-    border: 1px solid #29292e; color: #a800ff; border-radius: 8px;
-}
-
-/* PERFIL DE USUARIO Y SALDO */
+.code-box { width: 45px; height: 55px; text-align: center; font-size: 24px; font-weight: bold; background-color: #121214; border: 1px solid #29292e; color: #a800ff; border-radius: 8px; }
 .profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
 .large-avatar { width: 60px; height: 60px; font-size: 24px; }
 .greeting { font-size: 12px; color: #a8a8b3; font-weight: 600; letter-spacing: 1px; }
-
-.balance-card {
-    background: linear-gradient(135deg, rgba(168,0,255,0.2) 0%, rgba(26,26,30,1) 100%);
-    border: 1px solid #a800ff; padding: 25px; border-radius: 12px;
-    text-align: center; margin-bottom: 20px;
-}
+.balance-card { background: linear-gradient(135deg, rgba(168,0,255,0.2) 0%, rgba(26,26,30,1) 100%); border: 1px solid #a800ff; padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
 .balance-card p { font-size: 12px; color: #a8a8b3; font-weight: 600; margin-bottom: 5px; }
 .balance-card h1 { font-size: 40px; color: white; margin-bottom: 15px; }
-
-.btn-recharge-action {
-    background-color: #a800ff; color: white; border: none;
-    padding: 12px 30px; border-radius: 30px; font-weight: 600;
-    cursor: pointer; width: 100%; font-size: 16px;
-}
-
+.btn-recharge-action { background-color: #a800ff; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-weight: 600; cursor: pointer; width: 100%; font-size: 16px; }
 .profile-stats { display: flex; justify-content: space-between; gap: 15px; }
 .p-stat { flex: 1; background-color: #121214; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #29292e; }
 .p-stat h3 { color: white; font-size: 20px; }
 .p-stat p { color: #a8a8b3; font-size: 10px; font-weight: 600; margin-top: 5px; }
-
-/* RECARGA DE SALDO */
 .quick-amounts { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
 .amount-btn { flex: 1 1 calc(33% - 10px); background-color: #121214; border: 1px solid #29292e; color: white; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
 .amount-btn:hover { border-color: #a800ff; }
 .active-amount { background-color: rgba(168, 0, 255, 0.1); border-color: #a800ff; color: #a800ff; }
-
 .custom-amount { display: flex; align-items: center; background-color: #121214; border: 1px solid #29292e; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; }
 .custom-amount span { color: #a800ff; font-weight: 700; font-size: 20px; margin-right: 10px; }
 .custom-amount input { background: transparent; border: none; color: white; font-size: 24px; font-weight: 700; outline: none; width: 100%; }
-
-.warning-box { background-color: rgba(234, 29, 44, 0.1); border: 1px solid #ea1d2c; padding: 15px; border-radius: 8px; }
+.warning-box { background-color: rgba(234, 29, 44, 0.1); border: 1px solid #ea1d2c; padding: 15px; border-radius: 8px; text-align: left; }
 .warning-box h4 { color: #ffb3b8; font-size: 12px; margin-bottom: 10px; }
 .warning-box ul { list-style: none; color: #a8a8b3; font-size: 12px; line-height: 1.5; }
 .warning-box li { margin-bottom: 8px; padding-left: 15px; position: relative; }
 .warning-box li::before { content: '×'; color: #ea1d2c; position: absolute; left: 0; font-weight: bold; }
+
+/* ========================================== */
+/* DISEÑO RESPONSIVO INTEGRADO (MEDIA QUERIES) */
+/* ========================================== */
+@media screen and (max-width: 768px) {
+    .navbar { flex-direction: column; gap: 15px; padding: 15px; }
+    .nav-links-desktop { gap: 20px; }
+    .nav-auth-section, .nav-user-section { width: 100%; justify-content: center; }
+    .hero-container { padding: 60px 15px 30px 15px; }
+    .hero-title { font-size: 32px; }
+    .hero-stats { flex-direction: column; gap: 20px; }
+    .games-grid { flex-direction: column; align-items: center; }
+    .game-card { width: 100%; max-width: 320px; }
+    .products-grid { grid-template-columns: 1fr; gap: 20px; }
+    .modal-box { width: 95%; padding: 20px; margin: 10px; }
+    .balance-card h1 { font-size: 32px; }
+    .quick-amounts { justify-content: center; }
+    .amount-btn { flex: 1 1 calc(50% - 10px); }
+    .ranking-table th, .ranking-table td { padding: 10px; font-size: 13px; }
+    .support-card { padding: 20px; }
+}
