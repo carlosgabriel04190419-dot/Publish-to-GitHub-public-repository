@@ -60,29 +60,16 @@
     <section class="games-section" id="seccion-juegos">
         <div class="section-badge"><span class="dot"></span> ELIGE TU JUEGO</div>
         <div class="games-grid">
-            <div class="game-card" id="btn-normal" onclick="showNormal()">
+            <!-- Botón hacia el catálogo Regular -->
+            <div class="game-card" onclick="window.location.href='catalogo-regular.html'">
                 <div class="game-content"><div class="game-image free-fire-bg"></div><div class="game-info"><h3>Free Fire</h3><p>Catálogo Regular</p></div></div>
             </div>
-            <div class="game-card active-game" id="btn-promo" onclick="showPromo()">
+            <!-- Botón hacia el catálogo Promo -->
+            <div class="game-card active-game" onclick="window.location.href='catalogo-promo.html'">
                 <div class="game-content"><div class="game-image free-fire-pr-bg"></div><div class="game-info"><h3>Free Fire (1ra Recarga)</h3><p>Promo Especial</p></div></div>
             </div>
         </div>
     </section>
-
-    <main class="container" id="catalogo-promo">
-        <div class="category-header">
-            <h2>PROMOCIÓN POR CADA ID (PRIMERA RECARGA) 🫦</h2>
-            <div class="alert-banner">📌 PRECIOS ESPECIALES SOLO VÁLIDO PARA 1 VEZ POR CUENTA (YA SEA 100, 300, 500, 2K y 6K)</div>
-        </div>
-        <section class="products-grid">
-            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎</div><h3 class="card-title">110 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 2.40</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
-            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎</div><h3 class="card-title">331 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 8.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
-            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎💎</div><h3 class="card-title">572 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 13.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
-            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎💎</div><h3 class="card-title">1166 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 23.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
-            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎💎💎</div><h3 class="card-title">2398 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 45.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
-            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">👑💎</div><h3 class="card-title">6160 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 99.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
-        </section>
-    </main>
 
     <main class="container" id="catalogo-normal" style="display: none;">
         <div class="category-header"><h2>RECARGA REGULAR 💎</h2></div>

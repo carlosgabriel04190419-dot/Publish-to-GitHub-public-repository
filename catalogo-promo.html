@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promo 1ra Recarga | CarzaD'Cross</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN COMPACTA -->
+    <nav class="navbar">
+        <div class="nav-logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
+            <div class="profile-avatar">C</div>
+            <span>CarzaD'Cross</span>
+        </div>
+        <div class="nav-auth-section" id="nav-logged-out">
+            <button class="btn-text" onclick="window.location.href='login.html'">Iniciar Sesión</button>
+        </div>
+    </nav>
+
+    <!-- CATÁLOGO PROMO -->
+    <main class="container" style="padding-top: 30px;">
+        <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600;">
+            <span class="material-icons">arrow_back</span> Volver al inicio
+        </a>
+
+        <div class="category-header">
+            <h2>PROMOCIÓN POR CADA ID (PRIMERA RECARGA) 🫦</h2>
+            <div class="alert-banner">📌 PRECIOS ESPECIALES SOLO VÁLIDO PARA 1 VEZ POR CUENTA (YA SEA 100, 300, 500, 2K y 6K)</div>
+        </div>
+        <section class="products-grid">
+            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎</div><h3 class="card-title">110 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 2.40</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎</div><h3 class="card-title">331 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 8.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎💎</div><h3 class="card-title">572 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 13.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎💎</div><h3 class="card-title">1166 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 23.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">💎💎💎</div><h3 class="card-title">2398 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 45.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-badge">Promo 1x</div><div class="card-icon">👑💎</div><h3 class="card-title">6160 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 99.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+        </section>
+    </main>
+
+    <script>
+        function verificarCompra() {
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

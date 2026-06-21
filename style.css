@@ -101,15 +101,19 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
 .game-card { width: 200px; border-radius: 16px; cursor: pointer; position: relative; padding: 3px; transition: transform 0.3s; background-color: #1a1a1e; overflow: hidden; }
 .game-card:hover { transform: translateY(-5px); }
 .game-content { background-color: #1a1a1e; border-radius: 14px; height: 100%; position: relative; z-index: 2; overflow: hidden; }
-.active-game::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, transparent, transparent, #00e5ff, #a800ff); animation: rotateWorm 3s linear infinite; z-index: 1; }
-@keyframes rotateWorm { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-.game-image { height: 250px; background-color: #29292e; background-size: cover; background-position: center; }
-.free-fire-bg { background-image: url('freefire.jpg'); }
-.free-fire-pr-bg { background-image: url('freefirepr.jpg'); }
-.game-info { padding: 15px; }
-.game-info h3 { font-size: 16px; margin-bottom: 5px; }
-.game-info p { font-size: 12px; color: #a800ff; background-color: rgba(168, 0, 255, 0.1); padding: 4px 8px; border-radius: 6px; display: inline-block; }
+/* El gusanillo oculto por defecto */
+.game-card::before { 
+    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; 
+    background: conic-gradient(transparent, transparent, transparent, #00e5ff, #a800ff); 
+    animation: rotateWorm 3s linear infinite; z-index: 1; 
+    opacity: 0; transition: opacity 0.3s ease; 
+}
+
+/* El gusanillo se ilumina al pasar el mouse */
+.game-card:hover::before { opacity: 1; }
+
+@keyframes rotateWorm { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* CONTENEDOR PRINCIPAL Y ALERTA */
 .container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; border-bottom: 1px solid #29292e; }
