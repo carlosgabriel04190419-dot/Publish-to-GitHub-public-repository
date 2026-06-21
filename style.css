@@ -115,6 +115,15 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
 
 @keyframes rotateWorm { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+/* Estilos y rutas de las imágenes de los juegos */
+.game-image { height: 250px; background-color: #29292e; background-size: cover; background-position: center; }
+.free-fire-bg { background-image: url('freefire.jpg'); }
+.free-fire-pr-bg { background-image: url('freefirepr.jpg'); }
+
+/* Textos debajo de las fotos */
+.game-info { padding: 15px; }
+.game-info h3 { font-size: 16px; margin-bottom: 5px; color: white; }
+.game-info p { font-size: 12px; color: #a800ff; background-color: rgba(168, 0, 255, 0.1); padding: 4px 8px; border-radius: 6px; display: inline-block; }
 /* CONTENEDOR PRINCIPAL Y ALERTA */
 .container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; border-bottom: 1px solid #29292e; }
 .category-header { text-align: center; margin-bottom: 40px; }
