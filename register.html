@@ -9,12 +9,15 @@
 </head>
 <body class="login-body">
 
+    <!-- Botón para volver -->
     <a href="index.html" class="back-link"><span class="material-icons">arrow_back</span> Volver a CarzaD'Cross</a>
 
     <div class="login-container">
         
+        <!-- LADO IZQUIERDO: Formularios Dinámicos -->
         <div class="login-left">
             
+            <!-- PASO 1: FORMULARIO DE DATOS -->
             <div id="step-1">
                 <div class="login-header">
                     <div class="profile-avatar">C</div>
@@ -64,6 +67,7 @@
                 </form>
             </div>
 
+            <!-- PASO 2: VERIFICACIÓN DE CÓDIGO (Oculto por defecto) -->
             <div id="step-2" style="display: none; text-align: center; animation: slideUp 0.4s ease-out;">
                 <div class="support-icon-box" style="margin: 0 auto 20px auto; width: 60px; height: 60px;">
                     <span class="material-icons" style="font-size: 30px;">mark_email_read</span>
@@ -88,6 +92,7 @@
 
         </div>
 
+        <!-- LADO DERECHO: Publicidad y Beneficios -->
         <div class="login-right">
             <div class="promo-image login-bg"></div>
             <h2>Tu seguridad es prioridad</h2>
@@ -101,62 +106,68 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Lógica de la pantalla interactiva -->
     <script>
-        // 1. Tus llaves de conexión
-        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
-        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-        // 2. FUNCIÓN MÁGICA
-        async function mostrarVerificacion() {
-            // A. Agarramos los valores reales
-            const nickname = document.getElementById('reg-nickname').value;
-            const correo = document.getElementById('reg-correo').value;
-            const celular = document.getElementById('reg-celular').value;
-
-            // B. GUARDAMOS EN LA MEMORIA (¡Ahora sí está dentro de la función!)
-            localStorage.setItem('nombreUsuario', nickname);
-
-            try {
-                // C. Enviamos los datos a Supabase
-                const { data, error } = await supabase
-                    .from('usuarios')
-                    .insert([
-                        { 
-                            nickname: nickname, 
-                            correo: correo, 
-                            celular: celular, 
-                            saldo: 0 
-                        }
-                    ]);
-
-                if (error) {
-                    console.error("Error al guardar:", error);
-                    alert("Hubo un problema al registrar tus datos.");
-                    return;
-                }
-
-                // D. Avanzamos visualmente
-                document.getElementById('step-1').style.display = 'none';
-                document.getElementById('step-2').style.display = 'block';
-                document.getElementById('c1').focus();
-
-            } catch (err) {
-                console.error("Error inesperado:", err);
-            }
+        function mostrarVerificacion() {
+            // Oculta el formulario de datos y muestra las cajitas del código
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+            document.getElementById('c1').focus(); // Pone el cursor en la primera cajita
         }
 
-        // 3. Funciones de interfaz
         function volverAlRegistro() {
+            // Permite regresar si se equivocó de correo
             document.getElementById('step-2').style.display = 'none';
             document.getElementById('step-1').style.display = 'block';
         }
 
         function moverFoco(elemento, numeroCajita) {
+            // Hace que al escribir un número, el cursor salte solito a la siguiente cajita
             let valor = elemento.value;
             if (valor.length === 1 && numeroCajita < 6) {
                 document.getElementById('c' + (numeroCajita + 1)).focus();
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        console.log("1. ✅ Motor cargado en la página");
+
+        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
+        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function mostrarVerificacion() {
+            console.log("2. 🟡 Botón presionado, iniciando captura de datos...");
+            
+            try {
+                const nickname = document.getElementById('reg-nickname').value;
+                const correo = document.getElementById('reg-correo').value;
+                const celular = document.getElementById('reg-celular').value;
+                console.log("3. 🟢 Datos leídos correctamente:", nickname, correo, celular);
+
+                localStorage.setItem('nombreUsuario', nickname);
+                console.log("4. 🟢 Memoria del navegador actualizada");
+
+                console.log("5. 🟡 Enviando información a Brasil (Supabase)...");
+                const { data, error } = await supabase
+                    .from('usuarios')
+                    .insert([{ nickname: nickname, correo: correo, celular: celular, saldo: 0 }]);
+
+                if (error) {
+                    console.error("6. ❌ Error del Servidor:", error);
+                    alert("Supabase bloqueó el registro: " + error.message);
+                    return;
+                }
+
+                console.log("7. ✅ ¡Inserción exitosa! Cambiando pantalla...");
+                document.getElementById('step-1').style.display = 'none';
+                document.getElementById('step-2').style.display = 'block';
+                document.getElementById('c1').focus();
+
+            } catch (err) {
+                console.error("❌ Choque en el código JavaScript:", err);
+                alert("Error técnico en el formulario. Revisa la consola.");
             }
         }
     </script>
