@@ -234,6 +234,13 @@
     </div>
 
     <script>
+        // Revisar si el usuario ya inició sesión al cargar la página
+        window.onload = function() {
+            if (localStorage.getItem('logeado') === 'true') {
+              document.getElementById('nav-logged-out').style.display = 'none';
+              document.getElementById('nav-logged-in').style.display = 'flex';
+            }
+        }
         function showNormal() {
             document.getElementById('catalogo-normal').style.display = 'block';
             document.getElementById('catalogo-promo').style.display = 'none';

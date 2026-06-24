@@ -16,7 +16,7 @@
             <span>CarzaD'Cross</span>
         </div>
         <!-- Botón para cerrar sesión y volver a la tienda -->
-        <button class="btn-outline" onclick="window.location.href='index.html'">Cerrar Sesión</button>
+        <button class="btn-outline" onclick="localStorage.removeItem('logeado'); window.location.href='index.html'">Cerrar Sesión</button>
     </nav>
 
     <!-- CONTENEDOR DEL PERFIL (Dividido en 2 columnas en PC) -->
@@ -30,7 +30,7 @@
                 <div class="profile-avatar large-avatar">C</div>
                 <div class="profile-info">
                     <p class="greeting">BIENVENIDO,</p>
-                    <h2>Carlos Gabriel</h2>
+                    <h2 id="nombre-pantalla">Cargando...</h2>
                 </div>
             </div>
             
@@ -129,6 +129,18 @@
             botones.forEach(btn => btn.classList.remove('active-amount'));
             event.target.classList.add('active-amount');
         }
+    </script>
+    <script>
+        // Al cargar la página, buscamos el nombre guardado y lo mostramos
+        window.onload = function() {
+            const nombreGuardado = localStorage.getItem('nombreUsuario');
+            if (nombreGuardado) {
+                document.getElementById('nombre-pantalla').innerText = nombreGuardado;
+            } else {
+                // Si por alguna razón entra directo sin registrarse, le ponemos "Invitado"
+                document.getElementById('nombre-pantalla').innerText = "Invitado";
+            }
+        };
     </script>
 </body>
 </html>

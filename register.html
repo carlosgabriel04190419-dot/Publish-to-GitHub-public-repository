@@ -84,7 +84,7 @@
                     <input type="text" maxlength="1" class="code-box" onkeyup="moverFoco(this, 6)" id="c6">
                 </div>
 
-                <button type="button" class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="window.location.href='perfil.html'">Verificar Código y Entrar</button>
+                <button type="button" class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="localStorage.setItem('logeado', 'true'); window.location.href='perfil.html'">Verificar Código y Entrar</button>
                 
                 <p class="terms-text">¿No recibiste el código? <a href="#" style="font-weight: bold;" id="timer-text">Reenviar en 00:59</a></p>
                 <a href="#" onclick="volverAlRegistro()" style="color: #a8a8b3; font-size: 12px; text-decoration: none; display: inline-block; margin-top: 15px;">Cambiar correo electrónico</a>
@@ -183,4 +183,11 @@
                 document.getElementById('c' + (numeroCajita + 1)).focus();
             }
         }
+        // 1. Agarramos los valores reales que el usuario escribió
+            const nickname = document.getElementById('reg-nickname').value;
+            const correo = document.getElementById('reg-correo').value;
+            const celular = document.getElementById('reg-celular').value;
+
+        // NUEVO: Guardamos el nombre en la memoria del navegador temporalmente
+            localStorage.setItem('nombreUsuario', nickname);
     </script>
