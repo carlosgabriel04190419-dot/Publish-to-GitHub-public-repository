@@ -308,11 +308,23 @@
     </script>
     <script>
         // 1. Poner el nombre real que guardamos en el registro
+        // 1. Poner el nombre real y cambiar los botones al cargar la página
         window.onload = function() {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
+            
             if (nombreGuardado) {
-                // Selecciona el botón y le pone el nombre real + el ícono de flechita
-                document.getElementById('btn-usuario-nav').innerHTML = nombreGuardado + ' <span class="material-icons" style="font-size: 16px;">expand_more</span>';
+                // A. Le pone el nombre real al botón morado
+                const btnUsuario = document.getElementById('btn-usuario-nav');
+                if (btnUsuario) {
+                    btnUsuario.innerHTML = nombreGuardado + ' <span class="material-icons" style="font-size: 16px;">expand_more</span>';
+                }
+                
+                // B. MAGIA: Apaga los botones de Iniciar Sesión y enciende el Perfil
+                const menuDesconectado = document.getElementById('nav-logged-out');
+                const menuConectado = document.getElementById('nav-logged-in');
+                
+                if(menuDesconectado) menuDesconectado.style.display = 'none';
+                if(menuConectado) menuConectado.style.display = 'flex';
             }
         };
 
