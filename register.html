@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarzaD'Cross | Registro</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body class="login-body">
+
+    <!-- Botón para volver -->
+    <a href="index.html" class="back-link"><span class="material-icons">arrow_back</span> Volver a CarzaD'Cross</a>
+
+    <div class="login-container">
+        
+        <!-- LADO IZQUIERDO: Formularios Dinámicos -->
+        <div class="login-left">
+            
+            <!-- PASO 1: FORMULARIO DE DATOS -->
+            <div id="step-1">
+                <div class="login-header">
+                    <div class="profile-avatar">C</div>
+                    <div>
+                        <h2>CarzaD'Cross</h2>
+                        <p>Únete a la comunidad</p>
+                    </div>
+                </div>
+
+                <h1 class="login-title">Crear Cuenta</h1>
+                <p class="login-subtitle">Regístrate para recargar de forma segura e instantánea.</p>
+
+                <form class="login-form" onsubmit="event.preventDefault(); mostrarVerificacion();">
+                    <label>Nickname (¿Cómo te llamamos?)</label>
+                    <div class="input-group">
+                        <span class="material-icons">person</span>
+                        <input type="text" placeholder="Ej. CarlosGamer" required>
+                    </div>
+
+                    <label>Correo Electrónico</label>
+                    <div class="input-group">
+                        <span class="material-icons">mail</span>
+                        <input type="email" placeholder="usuario@correo.com" required>
+                    </div>
+
+                    <label>Número de Celular</label>
+                    <div class="input-group">
+                        <span class="material-icons">phone_android</span>
+                        <input type="tel" placeholder="+51 986 434 208" required>
+                    </div>
+
+                    <label>Contraseña</label>
+                    <div class="input-group">
+                        <span class="material-icons">lock</span>
+                        <input type="password" placeholder="Crea una contraseña segura" required>
+                        <span class="material-icons eye-icon">visibility</span>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">Continuar</button>
+
+                    <div class="divider"><span>o</span></div>
+                    <button type="button" class="btn-social">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google"> Registrarme con Google
+                    </button>
+
+                    <p class="terms-text" style="font-size: 13px;">¿Ya tienes una cuenta? <a href="login.html" style="font-weight: bold;">Inicia sesión aquí</a></p>
+                </form>
+            </div>
+
+            <!-- PASO 2: VERIFICACIÓN DE CÓDIGO (Oculto por defecto) -->
+            <div id="step-2" style="display: none; text-align: center; animation: slideUp 0.4s ease-out;">
+                <div class="support-icon-box" style="margin: 0 auto 20px auto; width: 60px; height: 60px;">
+                    <span class="material-icons" style="font-size: 30px;">mark_email_read</span>
+                </div>
+                <h1 class="login-title">Verifica tu correo</h1>
+                <p class="login-subtitle">Hemos enviado un código de 6 dígitos a tu bandeja de entrada. Ingrésalo para activar tu cuenta.</p>
+
+                <div class="code-inputs" style="margin-bottom: 30px;">
+                    <input type="text" maxlength="1" class="code-box" onkeyup="moverFoco(this, 1)" id="c1" autofocus>
+                    <input type="text" maxlength="1" class="code-box" onkeyup="moverFoco(this, 2)" id="c2">
+                    <input type="text" maxlength="1" class="code-box" onkeyup="moverFoco(this, 3)" id="c3">
+                    <input type="text" maxlength="1" class="code-box" onkeyup="moverFoco(this, 4)" id="c4">
+                    <input type="text" maxlength="1" class="code-box" onkeyup="moverFoco(this, 5)" id="c5">
+                    <input type="text" maxlength="1" class="code-box" onkeyup="moverFoco(this, 6)" id="c6">
+                </div>
+
+                <button type="button" class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="window.location.href='perfil.html'">Verificar Código y Entrar</button>
+                
+                <p class="terms-text">¿No recibiste el código? <a href="#" style="font-weight: bold;" id="timer-text">Reenviar en 00:59</a></p>
+                <a href="#" onclick="volverAlRegistro()" style="color: #a8a8b3; font-size: 12px; text-decoration: none; display: inline-block; margin-top: 15px;">Cambiar correo electrónico</a>
+            </div>
+
+        </div>
+
+        <!-- LADO DERECHO: Publicidad y Beneficios -->
+        <div class="login-right">
+            <div class="promo-image login-bg"></div>
+            <h2>Tu seguridad es prioridad</h2>
+            <p>Implementamos sistemas de verificación avanzados para proteger tu saldo y tus compras en todo momento.</p>
+
+            <ul class="promo-list">
+                <li><span class="material-icons">gpp_good</span> Datos encriptados de extremo a extremo</li>
+                <li><span class="material-icons">history</span> Historial detallado de todas tus recargas</li>
+                <li><span class="material-icons">support_agent</span> Soporte directo por WhatsApp</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Lógica de la pantalla interactiva -->
+    <script>
+        function mostrarVerificacion() {
+            // Oculta el formulario de datos y muestra las cajitas del código
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+            document.getElementById('c1').focus(); // Pone el cursor en la primera cajita
+        }
+
+        function volverAlRegistro() {
+            // Permite regresar si se equivocó de correo
+            document.getElementById('step-2').style.display = 'none';
+            document.getElementById('step-1').style.display = 'block';
+        }
+
+        function moverFoco(elemento, numeroCajita) {
+            // Hace que al escribir un número, el cursor salte solito a la siguiente cajita
+            let valor = elemento.value;
+            if (valor.length === 1 && numeroCajita < 6) {
+                document.getElementById('c' + (numeroCajita + 1)).focus();
+            }
+        }
+    </script>
+</body>
+</html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 1. Pega tus llaves reales aquí adentro de las comillas
+        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co/rest/v1/';
+        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
+        
+        // 2. Encendemos el motor de Supabase
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    </script>

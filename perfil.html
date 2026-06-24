@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Panel | CarzaD'Cross</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN (Versión Logueado) -->
+    <nav class="navbar">
+        <div class="nav-logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
+            <div class="profile-avatar">C</div>
+            <span>CarzaD'Cross</span>
+        </div>
+        <!-- Botón para cerrar sesión y volver a la tienda -->
+        <button class="btn-outline" onclick="window.location.href='index.html'">Cerrar Sesión</button>
+    </nav>
+
+    <!-- CONTENEDOR DEL PERFIL (Dividido en 2 columnas en PC) -->
+    <main class="container" style="padding-top: 40px; display: flex; gap: 30px; flex-wrap: wrap;">
+        
+        <!-- ===================================== -->
+        <!-- COLUMNA IZQUIERDA: Datos y Saldo      -->
+        <!-- ===================================== -->
+        <div style="flex: 1; min-width: 300px;">
+            <div class="profile-header">
+                <div class="profile-avatar large-avatar">C</div>
+                <div class="profile-info">
+                    <p class="greeting">BIENVENIDO,</p>
+                    <h2>Carlos Gabriel</h2>
+                </div>
+            </div>
+            
+            <div class="balance-card" style="margin-bottom: 30px;">
+                <p>SALDO DISPONIBLE</p>
+                <h1>S/ 0.00</h1>
+                <button class="btn-recharge-action" onclick="document.getElementById('zona-recarga').scrollIntoView({behavior: 'smooth'})">
+                    + Recargar Saldo
+                </button>
+            </div>
+
+            <div class="profile-stats">
+                <div class="p-stat"><h3>0</h3><p>COMPRAS</p></div>
+                <div class="p-stat"><h3>S/ 0</h3><p>GASTADO</p></div>
+            </div>
+        </div>
+
+        <!-- ===================================== -->
+        <!-- COLUMNA DERECHA: Recargas e Historial -->
+        <!-- ===================================== -->
+        <div style="flex: 2; min-width: 300px;" id="zona-recarga">
+            
+            <!-- Tarjeta de Recarga Manual -->
+            <div class="support-card" style="text-align: left; max-width: 100%; margin-bottom: 30px; padding: 30px;">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <span class="material-icons" style="color: #a800ff; font-size: 30px;">account_balance_wallet</span>
+                    <h2 style="font-size: 20px; color: white;">Agregar Saldo</h2>
+                </div>
+                
+                <p style="color: #a8a8b3; font-size: 14px; margin-bottom: 20px;">
+                    Transfiere por Yape, Plin o Banco y adjunta tu comprobante. Validaremos tu recarga en minutos.
+                </p>
+                
+                <div class="quick-amounts">
+                    <button class="amount-btn" onclick="seleccionarMonto(10)">S/ 10</button>
+                    <button class="amount-btn" onclick="seleccionarMonto(20)">S/ 20</button>
+                    <button class="amount-btn" onclick="seleccionarMonto(30)">S/ 30</button>
+                    <button class="amount-btn" onclick="seleccionarMonto(50)">S/ 50</button>
+                </div>
+                
+                <div class="custom-amount">
+                    <span>S/</span>
+                    <input type="number" id="input-monto" placeholder="0.00">
+                </div>
+
+                <div class="warning-box" style="margin-bottom: 20px;">
+                    <h4>⚠ DATOS DE PAGO Y REGLAS</h4>
+                    <ul>
+                        <li>Yape/Plin: <b>+51 986 434 208</b></li>
+                        <li>Sube la captura de pantalla completa, que se vea la hora y la fecha.</li>
+                        <li>Los comprobantes falsos o editados resultarán en baneo permanente.</li>
+                    </ul>
+                </div>
+
+                <!-- Botón falso para simular subir archivo -->
+                <button class="btn-outline" style="width: 100%; margin-bottom: 15px; display: flex; justify-content: center; gap: 10px;">
+                    <span class="material-icons">upload_file</span> Adjuntar Comprobante
+                </button>
+
+                <button class="btn-primary" style="width: 100%;" onclick="alert('Tu comprobante ha sido enviado a revisión. Tu saldo se actualizará pronto.')">Enviar a Revisión</button>
+            </div>
+
+            <!-- Tabla de Historial -->
+            <div class="category-header" style="text-align: left; margin-bottom: 15px;">
+                <h3 style="font-size: 18px; color: white;">Últimos Movimientos</h3>
+            </div>
+            
+            <div class="ranking-table-container" style="max-width: 100%;">
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Detalle</th>
+                            <th>Monto</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #a8a8b3; padding: 30px;">
+                                Aún no tienes movimientos. ¡Haz tu primera recarga!
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Lógica de los botones de precio -->
+    <script>
+        function seleccionarMonto(monto) {
+            document.getElementById('input-monto').value = monto;
+            let botones = document.querySelectorAll('.amount-btn');
+            botones.forEach(btn => btn.classList.remove('active-amount'));
+            event.target.classList.add('active-amount');
+        }
+    </script>
+</body>
+</html>
