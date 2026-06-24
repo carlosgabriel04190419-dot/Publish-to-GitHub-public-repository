@@ -137,50 +137,41 @@
 }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        console.log("1. ✅ Motor cargado en la página");
 
-        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
-        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+<script>
+    // Configuración única
+    const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
+    const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
+    
+    // Crear cliente de forma segura
+    const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        async function mostrarVerificacion() {
-            
-            console.log("2. 🟡 Botón presionado, iniciando captura de datos...");
-            
-            try {
-                const nickname = document.getElementById('reg-nickname').value;
-                const correo = document.getElementById('reg-correo').value;
-                const celular = document.getElementById('reg-celular').value;
-                console.log("3. 🟢 Datos leídos correctamente:", nickname, correo, celular);
-        
-        // 🛑 ALERTA DE PRUEBA: Esto nos dirá qué está viendo el navegador
-        alert("El navegador atrapó el nombre: -> " + nickname);
+    async function mostrarVerificacion() {
+        const nickname = document.getElementById('reg-nickname').value;
+        const correo = document.getElementById('reg-correo').value;
+        const celular = document.getElementById('reg-celular').value;
 
-        localStorage.setItem('nombreUsuario', nickname);
-                console.log("4. 🟢 Memoria del navegador actualizada");
+        try {
+            // Usamos supabaseClient en lugar de supabase
+            const { data, error } = await supabaseClient
+                .from('usuarios')
+                .insert([{ nickname, correo, celular, saldo: 0 }]);
 
-                console.log("5. 🟡 Enviando información a Brasil (Supabase)...");
-                const { data, error } = await supabase
-                    .from('usuarios')
-                    .insert([{ nickname: nickname, correo: correo, celular: celular, saldo: 0 }]);
-
-                if (error) {
-                    console.error("6. ❌ Error del Servidor:", error);
-                    alert("Supabase bloqueó el registro: " + error.message);
-                    return;
-                }
-
-                console.log("7. ✅ ¡Inserción exitosa! Cambiando pantalla...");
-                document.getElementById('step-1').style.display = 'none';
-                document.getElementById('step-2').style.display = 'block';
-                document.getElementById('c1').focus();
-
-            } catch (err) {
-                console.error("❌ Choque en el código JavaScript:", err);
-                alert("Error técnico en el formulario. Revisa la consola.");
+            if (error) {
+                console.error("Error:", error);
+                alert("Error: " + error.message);
+                return;
             }
+
+            localStorage.setItem('nombreUsuario', nickname);
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+            document.getElementById('c1').focus();
+            
+        } catch (err) {
+            alert("Error de conexión: " + err.message);
         }
-    </script>
+    }
+</script>
 </body>
 </html>
