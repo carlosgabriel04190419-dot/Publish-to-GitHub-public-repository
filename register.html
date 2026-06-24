@@ -9,15 +9,12 @@
 </head>
 <body class="login-body">
 
-    <!-- Botón para volver -->
     <a href="index.html" class="back-link"><span class="material-icons">arrow_back</span> Volver a CarzaD'Cross</a>
 
     <div class="login-container">
         
-        <!-- LADO IZQUIERDO: Formularios Dinámicos -->
         <div class="login-left">
             
-            <!-- PASO 1: FORMULARIO DE DATOS -->
             <div id="step-1">
                 <div class="login-header">
                     <div class="profile-avatar">C</div>
@@ -67,7 +64,6 @@
                 </form>
             </div>
 
-            <!-- PASO 2: VERIFICACIÓN DE CÓDIGO (Oculto por defecto) -->
             <div id="step-2" style="display: none; text-align: center; animation: slideUp 0.4s ease-out;">
                 <div class="support-icon-box" style="margin: 0 auto 20px auto; width: 60px; height: 60px;">
                     <span class="material-icons" style="font-size: 30px;">mark_email_read</span>
@@ -92,7 +88,6 @@
 
         </div>
 
-        <!-- LADO DERECHO: Publicidad y Beneficios -->
         <div class="login-right">
             <div class="promo-image login-bg"></div>
             <h2>Tu seguridad es prioridad</h2>
@@ -106,67 +101,43 @@
         </div>
     </div>
 
-    <!-- Lógica de la pantalla interactiva -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        function mostrarVerificacion() {
-            // Oculta el formulario de datos y muestra las cajitas del código
-            document.getElementById('step-1').style.display = 'none';
-            document.getElementById('step-2').style.display = 'block';
-            document.getElementById('c1').focus(); // Pone el cursor en la primera cajita
-        }
-
-        function volverAlRegistro() {
-            // Permite regresar si se equivocó de correo
-            document.getElementById('step-2').style.display = 'none';
-            document.getElementById('step-1').style.display = 'block';
-        }
-
-        function moverFoco(elemento, numeroCajita) {
-            // Hace que al escribir un número, el cursor salte solito a la siguiente cajita
-            let valor = elemento.value;
-            if (valor.length === 1 && numeroCajita < 6) {
-                document.getElementById('c' + (numeroCajita + 1)).focus();
-            }
-        }
-    </script>
-</body>
-</html>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // Tus llaves de conexión
+        // 1. Tus llaves de conexión
         const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
-        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF'; // Asegúrate de mantener tu llave real aquí
-        
-        // Encendemos el cliente
+        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // FUNCIÓN MÁGICA: Captura los datos y los guarda en Supabase
+        // 2. FUNCIÓN MÁGICA
         async function mostrarVerificacion() {
-            // 1. Agarramos los valores reales que el usuario escribió en la pantalla
+            // A. Agarramos los valores reales
             const nickname = document.getElementById('reg-nickname').value;
             const correo = document.getElementById('reg-correo').value;
             const celular = document.getElementById('reg-celular').value;
 
+            // B. GUARDAMOS EN LA MEMORIA (¡Ahora sí está dentro de la función!)
+            localStorage.setItem('nombreUsuario', nickname);
+
             try {
-                // 2. Enviamos los datos volando a tu tabla en Brasil
+                // C. Enviamos los datos a Supabase
                 const { data, error } = await supabase
-                    .from('usuarios') // Nombre de tu tabla en Supabase
+                    .from('usuarios')
                     .insert([
                         { 
                             nickname: nickname, 
                             correo: correo, 
                             celular: celular, 
-                            saldo: 0 // Todos inician con 0 soles automáticamente
+                            saldo: 0 
                         }
                     ]);
 
                 if (error) {
-                    console.error("Error al guardar en la base de datos:", error);
-                    alert("Hubo un problema al registrar tus datos. Inténtalo de nuevo.");
+                    console.error("Error al guardar:", error);
+                    alert("Hubo un problema al registrar tus datos.");
                     return;
                 }
 
-                // 3. Si todo salió bien en la base de datos, avanzamos visualmente al paso del código
+                // D. Avanzamos visualmente
                 document.getElementById('step-1').style.display = 'none';
                 document.getElementById('step-2').style.display = 'block';
                 document.getElementById('c1').focus();
@@ -176,18 +147,18 @@
             }
         }
 
-        // Mantener la función de mover el foco entre las cajitas del código
+        // 3. Funciones de interfaz
+        function volverAlRegistro() {
+            document.getElementById('step-2').style.display = 'none';
+            document.getElementById('step-1').style.display = 'block';
+        }
+
         function moverFoco(elemento, numeroCajita) {
             let valor = elemento.value;
             if (valor.length === 1 && numeroCajita < 6) {
                 document.getElementById('c' + (numeroCajita + 1)).focus();
             }
         }
-        // 1. Agarramos los valores reales que el usuario escribió
-            const nickname = document.getElementById('reg-nickname').value;
-            const correo = document.getElementById('reg-correo').value;
-            const celular = document.getElementById('reg-celular').value;
-
-        // NUEVO: Guardamos el nombre en la memoria del navegador temporalmente
-            localStorage.setItem('nombreUsuario', nickname);
     </script>
+</body>
+</html>
