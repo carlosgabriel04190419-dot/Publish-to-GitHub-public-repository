@@ -34,10 +34,25 @@
                     <span class="balance-amount">S/ 0.00</span>
                 </div>
             </div>
-            <div class="user-profile" onclick="abrirModal('modal-profile')">
-                <span>Carlos</span>
-                <span class="material-icons">expand_more</span>
+            <div class="user-dropdown-container" style="position: relative;">
+    
+             <div class="user-profile" onclick="toggleMenu()" id="btn-usuario-nav" style="cursor: pointer;">
+               <span>Carlos</span>
+               <span class="material-icons">expand_more</span>
+             </div>
+    
+            <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 8px; min-width: 160px; z-index: 1000; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+        
+                <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
+                 <span class="material-icons">person</span> Mi Perfil
+                </a>
+        
+                 <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;">
+                   <span class="material-icons">logout</span> Cerrar Sesión
+                 </a>
+
             </div>
+         </div>
         </div>
     </nav>
 
@@ -289,6 +304,35 @@
             let botones = document.querySelectorAll('.amount-btn');
             botones.forEach(btn => btn.classList.remove('active-amount'));
             event.target.classList.add('active-amount');
+        }
+    </script>
+    <script>
+        // 1. Poner el nombre real que guardamos en el registro
+        window.onload = function() {
+            const nombreGuardado = localStorage.getItem('nombreUsuario');
+            if (nombreGuardado) {
+                // Selecciona el botón y le pone el nombre real + el ícono de flechita
+                document.getElementById('btn-usuario-nav').innerHTML = nombreGuardado + ' <span class="material-icons" style="font-size: 16px;">expand_more</span>';
+            }
+        };
+
+        // 2. Hacer que el menú aparezca y desaparezca al hacer clic
+        function toggleMenu() {
+            const menu = document.getElementById('menu-desplegable');
+            if (menu.style.display === 'none') {
+                menu.style.display = 'block';
+            } else {
+                menu.style.display = 'none';
+            }
+        }
+
+        // 3. Función temporal para cerrar sesión
+        function cerrarSesionLocal() {
+            // Borra el nombre temporal de la memoria
+            localStorage.removeItem('nombreUsuario');
+            
+            // Recarga la página (Aquí luego pondremos el cierre de sesión real de Supabase)
+            window.location.reload(); 
         }
     </script>
 </body>
