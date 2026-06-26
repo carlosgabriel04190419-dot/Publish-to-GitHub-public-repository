@@ -3,144 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Panel | CarzaD'Cross</title>
+    <title>Mis Datos | CarzaD'Cross</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        body {
+            background: linear-gradient(rgba(10, 10, 14, 0.85), rgba(10, 10, 14, 0.95)), url('hero-bg.jpg') center/cover fixed no-repeat;
+            background-color: #0f0f13;
+            margin: 0;
+            min-height: 100vh;
+            color: white;
+        }
+        .glass-card {
+            background: rgba(26, 26, 31, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+        }
+        .input-form-profile {
+            width: 100%; 
+            background: rgba(0, 0, 0, 0.4); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 8px; 
+            padding: 14px; 
+            color: white; 
+            font-size: 15px;
+            outline: none; 
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        .input-form-profile:focus {
+            border-color: #a155ff;
+            box-shadow: 0 0 10px rgba(161, 85, 255, 0.2);
+        }
+        /* Estilo para el contenedor del celular con selector */
+        .phone-container {
+            display: flex; 
+            align-items: center; 
+            background: rgba(0, 0, 0, 0.4); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 8px; 
+            padding: 0 14px;
+        }
+    </style>
 </head>
 <body>
-
-    <!-- BARRA DE NAVEGACIÓN (Versión Logueado) -->
+    
     <nav class="navbar">
         <div class="nav-logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
-            <div class="profile-avatar">C</div>
-            <span>CarzaD'Cross</span>
+            <div class="profile-avatar">C</div><span>CarzaD'Cross</span>
         </div>
-        <!-- Botón para cerrar sesión y volver a la tienda -->
-        <button class="btn-outline" onclick="localStorage.removeItem('logeado'); window.location.href='index.html'">Cerrar Sesión</button>
+        <button class="btn-outline" onclick="window.location.href='index.html'">Volver a la Tienda</button>
     </nav>
 
-    <!-- CONTENEDOR DEL PERFIL (Dividido en 2 columnas en PC) -->
-    <main class="container" style="padding-top: 40px; display: flex; gap: 30px; flex-wrap: wrap;">
+    <main class="container" style="padding-top: 50px; display: flex; gap: 30px; flex-wrap: wrap; justify-content: center;">
         
-        <!-- ===================================== -->
-        <!-- COLUMNA IZQUIERDA: Datos y Saldo      -->
-        <!-- ===================================== -->
-        <div style="flex: 1; min-width: 300px;">
-            <div class="profile-header">
-                <div class="profile-avatar large-avatar">C</div>
+        <!-- RESUMEN DE PERFIL -->
+        <div style="flex: 1; min-width: 300px; max-width: 350px;">
+            <div class="profile-header glass-card" style="padding: 20px;">
+                <div class="profile-avatar large-avatar" style="box-shadow: 0 0 20px rgba(161,85,255,0.4);">C</div>
                 <div class="profile-info">
-                    <p class="greeting">BIENVENIDO,</p>
-                    <h2 id="nombre-pantalla">Cargando...</h2>
+                    <p class="greeting" style="color: #a155ff; font-weight: bold;">USUARIO,</p>
+                    <h2 id="nombre-pantalla" style="font-size: 24px;">Cargando...</h2>
                 </div>
-            </div>
-            
-            <div class="balance-card" style="margin-bottom: 30px;">
-                <p>SALDO DISPONIBLE</p>
-                <h1>S/ 0.00</h1>
-                <button class="btn-recharge-action" onclick="document.getElementById('zona-recarga').scrollIntoView({behavior: 'smooth'})">
-                    + Recargar Saldo
-                </button>
-            </div>
-
-            <div class="profile-stats">
-                <div class="p-stat"><h3>0</h3><p>COMPRAS</p></div>
-                <div class="p-stat"><h3>S/ 0</h3><p>GASTADO</p></div>
             </div>
         </div>
 
-        <!-- ===================================== -->
-        <!-- COLUMNA DERECHA: Recargas e Historial -->
-        <!-- ===================================== -->
-        <div style="flex: 2; min-width: 300px;" id="zona-recarga">
-            
-            <!-- Tarjeta de Recarga Manual -->
-            <div class="support-card" style="text-align: left; max-width: 100%; margin-bottom: 30px; padding: 30px;">
-                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                    <span class="material-icons" style="color: #a800ff; font-size: 30px;">account_balance_wallet</span>
-                    <h2 style="font-size: 20px; color: white;">Agregar Saldo</h2>
-                </div>
-                
-                <p style="color: #a8a8b3; font-size: 14px; margin-bottom: 20px;">
-                    Transfiere por Yape, Plin o Banco y adjunta tu comprobante. Validaremos tu recarga en minutos.
-                </p>
-                
-                <div class="quick-amounts">
-                    <button class="amount-btn" onclick="seleccionarMonto(10)">S/ 10</button>
-                    <button class="amount-btn" onclick="seleccionarMonto(20)">S/ 20</button>
-                    <button class="amount-btn" onclick="seleccionarMonto(30)">S/ 30</button>
-                    <button class="amount-btn" onclick="seleccionarMonto(50)">S/ 50</button>
-                </div>
-                
-                <div class="custom-amount">
-                    <span>S/</span>
-                    <input type="number" id="input-monto" placeholder="0.00">
+        <!-- PANEL DE EDICIÓN -->
+        <div style="flex: 2; min-width: 300px; max-width: 600px;">
+            <div class="glass-card" style="text-align: left; max-width: 100%;">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+                    <span class="material-icons" style="color: #a155ff; font-size: 32px; background: rgba(161,85,255,0.1); padding: 10px; border-radius: 50%;">manage_accounts</span>
+                    <div>
+                        <h2 style="font-size: 22px; color: white; margin: 0;">Mis Datos Personales</h2>
+                        <p style="color: #a8a8b3; font-size: 14px; margin: 5px 0 0 0;">Modifica tu información. Los cambios se guardarán en la nube.</p>
+                    </div>
                 </div>
 
-                <div class="warning-box" style="margin-bottom: 20px;">
-                    <h4>⚠ DATOS DE PAGO Y REGLAS</h4>
-                    <ul>
-                        <li>Yape/Plin: <b>+51 986 434 208</b></li>
-                        <li>Sube la captura de pantalla completa, que se vea la hora y la fecha.</li>
-                        <li>Los comprobantes falsos o editados resultarán en baneo permanente.</li>
-                    </ul>
+                <div style="margin-bottom: 20px;">
+                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 8px; display: block; font-weight: 500;">Nickname (Nombre de usuario)</label>
+                    <input type="text" id="edit-nickname" class="input-form-profile">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 8px; display: block; font-weight: 500;">Correo Electrónico (No se puede cambiar)</label>
+                    <input type="email" id="edit-correo" class="input-form-profile" disabled style="opacity: 0.5; cursor: not-allowed;">
+                </div>
+                
+                <!-- CAMPO DE CELULAR SEPARADO Y CON CÓDIGO DE PAÍS -->
+                <div style="margin-bottom: 30px;">
+                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 8px; display: block; font-weight: 500;">Número de Celular</label>
+                    <div class="phone-container">
+                        <select id="edit-codigo-pais" style="background: transparent; border: none; color: white; outline: none; padding-right: 8px; border-right: 1px solid rgba(255,255,255,0.2); margin-right: 12px; cursor: pointer; font-size: 15px;">
+                            <option value="+51" style="color: black;">🇵🇪 +51</option>
+                            <option value="+56" style="color: black;">🇨🇱 +56</option>
+                        </select>
+                        <input type="tel" id="edit-celular" maxlength="11" placeholder="942 395 040" class="input-form-profile" style="border: none; background: transparent; padding-left: 0;">
+                    </div>
                 </div>
 
-                <!-- Botón falso para simular subir archivo -->
-                <button class="btn-outline" style="width: 100%; margin-bottom: 15px; display: flex; justify-content: center; gap: 10px;">
-                    <span class="material-icons">upload_file</span> Adjuntar Comprobante
+                <button class="btn-primary" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 15px; font-size: 16px;" onclick="guardarCambios()">
+                    <span class="material-icons">cloud_upload</span> Guardar Cambios
                 </button>
-
-                <button class="btn-primary" style="width: 100%;" onclick="alert('Tu comprobante ha sido enviado a revisión. Tu saldo se actualizará pronto.')">Enviar a Revisión</button>
             </div>
-
-            <!-- Tabla de Historial -->
-            <div class="category-header" style="text-align: left; margin-bottom: 15px;">
-                <h3 style="font-size: 18px; color: white;">Últimos Movimientos</h3>
-            </div>
-            
-            <div class="ranking-table-container" style="max-width: 100%;">
-                <table class="ranking-table">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Detalle</th>
-                            <th>Monto</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="4" style="text-align: center; color: #a8a8b3; padding: 30px;">
-                                Aún no tienes movimientos. ¡Haz tu primera recarga!
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
         </div>
     </main>
 
-    <!-- Lógica de los botones de precio -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        function seleccionarMonto(monto) {
-            document.getElementById('input-monto').value = monto;
-            let botones = document.querySelectorAll('.amount-btn');
-            botones.forEach(btn => btn.classList.remove('active-amount'));
-            event.target.classList.add('active-amount');
-        }
-    </script>
-    <script>
-        // Al cargar la página, buscamos el nombre guardado y lo mostramos
-        window.onload = function() {
-            const nombreGuardado = localStorage.getItem('nombreUsuario');
-            if (nombreGuardado) {
-                document.getElementById('nombre-pantalla').innerText = nombreGuardado;
-            } else {
-                // Si por alguna razón entra directo sin registrarse, le ponemos "Invitado"
-                document.getElementById('nombre-pantalla').innerText = "Invitado";
+        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
+        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        const nombreActual = localStorage.getItem('nombreUsuario');
+
+        window.onload = async function() {
+            if (!nombreActual) { window.location.href = 'login.html'; return; }
+            
+            document.getElementById('nombre-pantalla').innerText = nombreActual;
+
+            const { data } = await supabaseClient.from('usuarios').select('*').eq('nickname', nombreActual).single();
+            if (data) {
+                document.getElementById('edit-nickname').value = data.nickname;
+                document.getElementById('edit-correo').value = data.correo;
+                
+                // Separamos el código de país del número guardado en la base de datos
+                if (data.celular) {
+                    const partes = data.celular.split(' ');
+                    if (partes[0] === "+51" || partes[0] === "+56") {
+                        document.getElementById('edit-codigo-pais').value = partes[0];
+                        // Unimos el resto del número para mostrarlo formateado
+                        document.getElementById('edit-celular').value = partes.slice(1).join(' ');
+                    } else {
+                        document.getElementById('edit-celular').value = data.celular;
+                    }
+                }
             }
         };
+
+        // Bloqueador de letras y formateador de espacios en el celular
+        document.getElementById('edit-celular').addEventListener('input', function(e) {
+            let valor = e.target.value.replace(/\D/g, ''); // Borra cualquier letra ingresada
+            let formateado = '';
+            if (valor.length > 0) formateado += valor.substring(0, 3);
+            if (valor.length > 3) formateado += ' ' + valor.substring(3, 6);
+            if (valor.length > 6) formateado += ' ' + valor.substring(6, 9);
+            e.target.value = formateado;
+        });
+
+        async function guardarCambios() {
+              const nuevoNombre = document.getElementById('edit-nickname').value;
+              const nuevoCelular = document.getElementById('edit-celular').value;
+              const codigo = document.getElementById('edit-codigo-pais').value;
+              const celularFinal = `${codigo} ${nuevoCelular}`;
+
+                      // AQUÍ ESTÁ EL TRUCO: Solo enviamos nickname y celular. 
+                     // ¡NO incluimos nada relacionado con contraseñas!
+              const { error } = await supabaseClient
+           .from('usuarios')
+           .update({ 
+              nickname: nuevoNombre, 
+              celular: celularFinal 
+            })
+              .eq('nickname', nombreActual);
+
+         if (error) {
+            alert("Error al guardar: " + error.message);
+            } else {
+              alert("¡Datos actualizados con éxito!");
+              localStorage.setItem('nombreUsuario', nuevoNombre);
+               window.location.reload();
+            }
+       }
     </script>
 </body>
 </html>

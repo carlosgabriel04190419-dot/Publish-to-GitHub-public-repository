@@ -15,8 +15,40 @@
             <div class="profile-avatar">C</div>
             <span>CarzaD'Cross</span>
         </div>
+        
         <div class="nav-auth-section" id="nav-logged-out">
-            <button class="btn-text" onclick="window.location.href='login.html'">Iniciar Sesión</button>
+         <button class="btn-text" onclick="window.location.href='login.html'">Iniciar Sesión</button>
+         <button class="btn-outline" onclick="window.location.href='register.html'">Crear Cuenta</button>
+        </div>
+
+        <div class="nav-user-section" id="nav-logged-in" style="display: none;">
+            <div class="balance-pill">
+                <span class="material-icons wallet-icon">account_balance_wallet</span>
+                <div class="balance-info">
+                    <span class="balance-label">SALDO</span>
+                    <span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span>
+                </div>
+            </div>
+            <div class="user-dropdown-container" style="position: relative;">
+    
+             <div class="user-profile" onclick="toggleMenu()" id="btn-usuario-nav" style="cursor: pointer;">
+               <span>Carlos</span>
+               <span class="material-icons">expand_more</span>
+             </div>
+    
+            <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 8px; min-width: 160px; z-index: 1000; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                 <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
+                   <span class="material-icons">person</span> Mis Datos
+                 </a>
+                  <!-- NUEVO BOTÓN DE RECARGA -->
+                 <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
+                  <span class="material-icons">account_balance_wallet</span> Recargar Saldo
+                 </a>
+                <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;">
+                  <span class="material-icons">logout</span> Cerrar Sesión
+                </a>
+            </div>
+         </div>
         </div>
     </nav>
 
@@ -45,5 +77,62 @@
             window.location.href = 'login.html';
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 1. Configuración de Supabase
+        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
+        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // 2. Al cargar la página (Verificar sesión y Saldo)
+        window.onload = async function() {
+            const nombreGuardado = localStorage.getItem('nombreUsuario');
+            if (nombreGuardado) {
+                // Mostrar menú de usuario conectado
+                document.getElementById('nav-logged-out').style.display = 'none';
+                document.getElementById('nav-logged-in').style.display = 'flex';
+                document.getElementById('btn-usuario-nav').innerHTML = nombreGuardado + ' <span class="material-icons" style="font-size: 16px;">expand_more</span>';
+                
+                // Buscar saldo en la base de datos
+                try {
+                    const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
+                    if (data && document.getElementById('saldo-nav')) {
+                        document.getElementById('saldo-nav').innerText = data.saldo.toFixed(2);
+                    }
+                } catch (error) {
+                    console.error("Error cargando saldo:", error);
+                }
+            }
+        };
+
+        // 3. FUNCIÓN QUE TE FALTABA: Desplegar el menú
+        function toggleMenu() {
+            const menu = document.getElementById('menu-desplegable');
+            if (menu.style.display === 'none' || menu.style.display === '') {
+                menu.style.display = 'block';
+            } else {
+                menu.style.display = 'none';
+            }
+        }
+
+        // 4. FUNCIÓN QUE TE FALTABA: Cerrar Sesión
+        function cerrarSesionLocal() {
+            localStorage.removeItem('nombreUsuario');
+            window.location.reload(); 
+        }
+
+        // 5. Función de Compra corregida
+        function verificarCompra() {
+            if(document.getElementById('nav-logged-in').style.display === 'none') {
+                // Si NO está logueado, lo mandamos a login
+                window.location.href = 'login.html';
+            } else {
+                // Si SI está logueado, le damos un aviso (luego conectaremos esto al sistema de restarle saldo)
+                alert("Verificando fondos en tu cuenta...");
+            }
+        }
+    </script>
 </body>
+</html>
 </html>

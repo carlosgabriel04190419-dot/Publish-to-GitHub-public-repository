@@ -9,15 +9,12 @@
 </head>
 <body class="login-body">
 
-    <!-- Botón para volver -->
     <a href="index.html" class="back-link"><span class="material-icons">arrow_back</span> Volver a CarzaD'Cross</a>
 
     <div class="login-container">
         
-        <!-- LADO IZQUIERDO: Formularios Dinámicos -->
         <div class="login-left">
             
-            <!-- PASO 1: FORMULARIO DE DATOS -->
             <div id="step-1">
                 <div class="login-header">
                     <div class="profile-avatar">C</div>
@@ -44,16 +41,20 @@
                     </div>
 
                     <label>Número de Celular</label>
-                    <div class="input-group">
+                    <div class="input-group" style="display: flex; align-items: center;">
                         <span class="material-icons">phone_android</span>
-                        <input type="tel" id="reg-celular" placeholder="+51 942 395 040" required>
+                        <select id="reg-codigo-pais" style="background: transparent; border: none; color: white; outline: none; padding-right: 5px; border-right: 1px solid #333; margin-right: 10px; cursor: pointer;">
+                            <option value="+51" style="color: black;">🇵🇪 +51</option>
+                            <option value="+56" style="color: black;">🇨🇱 +56</option>
+                        </select>
+                        <input type="tel" id="reg-celular" placeholder="942 395 040" required maxlength="11" style="flex: 1;">
                     </div>
 
                     <label>Contraseña</label>
                     <div class="input-group">
                         <span class="material-icons">lock</span>
                         <input type="password" id="reg-password" placeholder="Crea una contraseña segura" required>
-                        <span class="material-icons eye-icon">visibility</span>
+                        <span class="material-icons eye-icon" onclick="togglePassword('reg-password', this)" style="cursor: pointer;">visibility</span>
                     </div>
 
                     <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">Continuar</button>
@@ -67,7 +68,6 @@
                 </form>
             </div>
 
-            <!-- PASO 2: VERIFICACIÓN DE CÓDIGO (Oculto por defecto) -->
             <div id="step-2" style="display: none; text-align: center; animation: slideUp 0.4s ease-out;">
                 <div class="support-icon-box" style="margin: 0 auto 20px auto; width: 60px; height: 60px;">
                     <span class="material-icons" style="font-size: 30px;">mark_email_read</span>
@@ -92,12 +92,10 @@
 
         </div>
 
-        <!-- LADO DERECHO: Publicidad y Beneficios -->
         <div class="login-right">
             <div class="promo-image login-bg"></div>
             <h2>Tu seguridad es prioridad</h2>
             <p>Implementamos sistemas de verificación avanzados para proteger tu saldo y tus compras en todo momento.</p>
-
             <ul class="promo-list">
                 <li><span class="material-icons">gpp_good</span> Datos encriptados de extremo a extremo</li>
                 <li><span class="material-icons">history</span> Historial detallado de todas tus recargas</li>
@@ -106,72 +104,77 @@
         </div>
     </div>
 
-    <!-- Lógica de la pantalla interactiva -->
-    <script>
-        async function mostrarVerificacion() {
-    const nickname = document.getElementById('reg-nickname').value;
-    const correo = document.getElementById('reg-correo').value;
-    const celular = document.getElementById('reg-celular').value;
-
-    console.log("Intentando enviar:", nickname); // Esto aparecerá en tu consola (F12)
-
-    try {
-        const { data, error } = await supabase
-            .from('usuarios')
-            .insert([{ nickname, correo, celular, saldo: 0 }])
-            .select(); // IMPORTANTE: Esto le pide a Supabase que confirme la inserción
-
-        if (error) {
-            alert("Error en Supabase: " + error.message);
-            console.error(error);
-        } else {
-            console.log("¡Registro exitoso en la nube!");
-            // Solo si Supabase responde OK, guardamos localmente y cambiamos de pantalla
-            localStorage.setItem('nombreUsuario', nickname);
-            document.getElementById('step-1').style.display = 'none';
-            document.getElementById('step-2').style.display = 'block';
-        }
-    } catch (err) {
-        alert("Error de conexión: " + err.message);
-    }
-}
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 1. Configuración de Supabase
+        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
+        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-<script>
-    // Configuración única
-    const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
-    const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
-    
-    // Crear cliente de forma segura
-    const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-    async function mostrarVerificacion() {
-        const nickname = document.getElementById('reg-nickname').value;
-        const correo = document.getElementById('reg-correo').value;
-        const celular = document.getElementById('reg-celular').value;
-
-        try {
-            // Usamos supabaseClient en lugar de supabase
-            const { data, error } = await supabaseClient
-                .from('usuarios')
-                .insert([{ nickname, correo, celular, saldo: 0 }]);
-
-            if (error) {
-                console.error("Error:", error);
-                alert("Error: " + error.message);
-                return;
+        // 2. Función del Ojito de Contraseña
+        function togglePassword(inputId, iconElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                iconElement.innerText = "visibility_off";
+            } else {
+                input.type = "password";
+                iconElement.innerText = "visibility";
             }
-
-            localStorage.setItem('nombreUsuario', nickname);
-            document.getElementById('step-1').style.display = 'none';
-            document.getElementById('step-2').style.display = 'block';
-            document.getElementById('c1').focus();
-            
-        } catch (err) {
-            alert("Error de conexión: " + err.message);
         }
-    }
-</script>
+
+        // 3. Formateador automático del celular (Fuerza números y espacios)
+        document.getElementById('reg-celular').addEventListener('input', function(e) {
+            let valor = e.target.value.replace(/\D/g, ''); // Borra letras
+            let formateado = '';
+            if (valor.length > 0) formateado += valor.substring(0, 3);
+            if (valor.length > 3) formateado += ' ' + valor.substring(3, 6);
+            if (valor.length > 6) formateado += ' ' + valor.substring(6, 9);
+            e.target.value = formateado;
+        });
+
+        // 4. Salto automático en las cajitas del código
+        function moverFoco(elemento, numeroCajita) {
+            let valor = elemento.value;
+            if (valor.length === 1 && numeroCajita < 6) {
+                document.getElementById('c' + (numeroCajita + 1)).focus();
+            }
+        }
+
+        function volverAlRegistro() {
+            document.getElementById('step-2').style.display = 'none';
+            document.getElementById('step-1').style.display = 'block';
+        }
+
+        // 5. Envío de datos
+        async function mostrarVerificacion() {
+            const nickname = document.getElementById('reg-nickname').value;
+            const correo = document.getElementById('reg-correo').value;
+            const codigoPais = document.getElementById('reg-codigo-pais').value;
+            const celularBase = document.getElementById('reg-celular').value;
+            
+            // Unimos el código de país con el número (ej: +51 987 654 321)
+            const celularCompleto = codigoPais + ' ' + celularBase;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('usuarios')
+                    .insert([{ nickname: nickname, correo: correo, celular: celularCompleto, saldo: 0 }]);
+
+                if (error) {
+                    alert("Error: " + error.message);
+                    return;
+                }
+
+                localStorage.setItem('nombreUsuario', nickname);
+                document.getElementById('step-1').style.display = 'none';
+                document.getElementById('step-2').style.display = 'block';
+                document.getElementById('c1').focus();
+                
+            } catch (err) {
+                alert("Error de conexión: " + err.message);
+            }
+        }
+    </script>
 </body>
 </html>

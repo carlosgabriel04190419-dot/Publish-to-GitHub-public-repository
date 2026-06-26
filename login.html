@@ -34,9 +34,9 @@
 
                 <label>Contraseña</label>
                 <div class="input-group">
-                    <span class="material-icons">lock</span>
-                    <input type="password" id="login-password" placeholder="••••••••">
-                    <span class="material-icons eye-icon">visibility</span>
+                   <span class="material-icons">lock</span>
+                   <input type="password" id="login-password" placeholder="••••••••">
+                     <span class="material-icons eye-icon" onclick="togglePassword('login-password', this)" style="cursor: pointer;">visibility</span>
                 </div>
 
                 <div class="login-options">
@@ -91,31 +91,40 @@
         const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+        function togglePassword(inputId, iconElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                iconElement.innerText = "visibility_off";
+            } else {
+                input.type = "password";
+                iconElement.innerText = "visibility";
+            }
+        }
+
         async function manejarLogin() {
-            const correo = document.getElementById('login-correo').value;
+            // Agarramos lo que el usuario escribió (puede ser su correo o su nickname)
+            const inputUsuario = document.getElementById('login-correo').value;
             
-            if (!correo) {
-                alert("Por favor, ingresa tu correo.");
+            if (!inputUsuario) {
+                alert("Por favor, ingresa tu correo o usuario.");
                 return;
             }
 
             try {
-                // Le pedimos a Supabase que busque una fila donde el 'correo' sea igual al que se escribió
+                // Le decimos a Supabase: "Busca a alguien cuyo correo sea igual a lo escrito, O cuyo nickname sea igual a lo escrito"
                 const { data, error } = await supabaseClient
                     .from('usuarios')
                     .select('*')
-                    .eq('correo', correo)
-                    .single(); // Solo queremos un resultado exacto
+                    .or(`correo.eq.${inputUsuario},nickname.eq.${inputUsuario}`)
+                    .single(); 
 
                 if (error || !data) {
-                    alert("No encontramos ninguna cuenta con este correo. ¿Seguro que te registraste?");
-                    console.error("Error de búsqueda:", error);
+                    alert("Usuario o contraseña incorrectos.");
+                    console.error("Error:", error);
                 } else {
-                    // ¡Éxito! Supabase encontró el correo y nos devolvió los datos.
-                    // Extraemos el nickname real de la base de datos y lo guardamos en la memoria.
+                    // Éxito
                     localStorage.setItem('nombreUsuario', data.nickname);
-                    
-                    // Ahora sí, abrimos la puerta al inicio
                     window.location.href = 'index.html';
                 }
             } catch (err) {

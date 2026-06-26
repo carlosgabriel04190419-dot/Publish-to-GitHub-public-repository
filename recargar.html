@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recargar Saldo | CarzaD'Cross</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
+            <div class="profile-avatar">C</div><span>CarzaD'Cross</span>
+        </div>
+        <button class="btn-outline" onclick="window.location.href='index.html'">Volver a la Tienda</button>
+    </nav>
+
+    <main class="container" style="padding-top: 40px; display: flex; gap: 30px; flex-wrap: wrap; justify-content: center;">
+        
+        <div style="flex: 1; min-width: 300px; max-width: 350px;">
+            <div class="profile-header">
+                <div class="profile-avatar large-avatar">C</div>
+                <div class="profile-info">
+                    <p class="greeting">USUARIO,</p>
+                    <h2 id="nombre-pantalla">Cargando...</h2>
+                </div>
+            </div>
+            <div class="balance-card" style="margin-bottom: 30px;">
+                <p>SALDO DISPONIBLE</p>
+                <h1>S/ <span id="saldo-pantalla">0.00</span></h1>
+            </div>
+        </div>
+
+        <div style="flex: 2; min-width: 300px; max-width: 600px;" id="zona-recarga">
+            <div class="support-card" style="text-align: left; max-width: 100%; margin-bottom: 30px; padding: 30px;">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <span class="material-icons" style="color: #a155ff; font-size: 30px;">account_balance_wallet</span>
+                    <h2 style="font-size: 20px; color: white;">Agregar Saldo (Yape / Plin)</h2>
+                </div>
+                
+                <p style="color: #a8a8b3; font-size: 14px; margin-bottom: 20px;">
+                    Transfiere al número de abajo. Luego elige el monto y envíanos el comprobante por WhatsApp. Validaremos tu recarga en minutos.
+                </p>
+
+                <div class="warning-box" style="margin-bottom: 20px; background: #2a2a35; padding: 15px; border-radius: 8px;">
+                    <h3 style="color: #00e676; margin-bottom: 5px;">📲 Yape / Plin: +51 943 737 572</h3>
+                    <p style="font-size: 13px; color: #a8a8b3;">A nombre de Carlos Aro. Guarda una captura de tu pago.</p>
+                </div>
+                
+                <label style="color: white; font-size: 14px; margin-bottom: 10px; display: block;">¿Cuánto depositaste?</label>
+                <div class="quick-amounts" style="margin-bottom: 15px;">
+                    <button class="amount-btn" onclick="seleccionarMonto(10)">S/ 10</button>
+                    <button class="amount-btn" onclick="seleccionarMonto(20)">S/ 20</button>
+                    <button class="amount-btn" onclick="seleccionarMonto(30)">S/ 30</button>
+                    <button class="amount-btn" onclick="seleccionarMonto(50)">S/ 50</button>
+                </div>
+                
+                <div class="custom-amount" style="margin-bottom: 20px;">
+                    <span>S/</span>
+                    <input type="number" id="input-monto" placeholder="0.00" style="background: transparent; border: none; color: white; font-size: 18px; outline: none; width: 100%;">
+                </div>
+
+                <button class="btn-primary" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; background: #25D366; color: black;" onclick="enviarPorWhatsApp()">
+                    <span class="material-icons">chat</span> Enviar Comprobante por WhatsApp
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
+        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Variable para guardar el correo temporalmente
+        let correoUsuarioGlobal = ""; 
+
+        // 1. Cargar datos del usuario
+        window.onload = async function() {
+            const nombreGuardado = localStorage.getItem('nombreUsuario');
+            if (nombreGuardado) {
+                document.getElementById('nombre-pantalla').innerText = nombreGuardado;
+                
+                // Le pedimos a Supabase el saldo Y el correo
+                const { data } = await supabaseClient.from('usuarios').select('saldo, correo').eq('nickname', nombreGuardado).single();
+                if (data) {
+                    document.getElementById('saldo-pantalla').innerText = data.saldo.toFixed(2);
+                    correoUsuarioGlobal = data.correo; // Guardamos el correo en secreto
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        };
+
+        // 2. Interfaz de botones
+        function seleccionarMonto(monto) {
+            document.getElementById('input-monto').value = monto;
+            let botones = document.querySelectorAll('.amount-btn');
+            botones.forEach(btn => btn.classList.remove('active-amount'));
+            event.target.classList.add('active-amount');
+        }
+
+        // 3. LA MAGIA DE WHATSAPP MEJORADA
+        function enviarPorWhatsApp() {
+            const monto = document.getElementById('input-monto').value;
+            const usuario = localStorage.getItem('nombreUsuario');
+            
+            if (!monto || monto <= 0) {
+                alert("Por favor, ingresa el monto que depositaste.");
+                return;
+            }
+
+            const numeroAdmin = "51943737572"; 
+            
+            // Mensaje estructurado con los datos listos para ti
+            const mensaje = `Hola CarzaD'Cross 👾\n\n📌 *DATOS DEL USUARIO:*\n👤 Usuario: *${usuario}*\n📧 Correo: *${correoUsuarioGlobal}*\n\nAcabo de realizar un pago de *S/ ${monto}* para recargar mi saldo.\n\nA continuación adjunto mi comprobante:`;
+            
+            const url = `https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank'); 
+        }
+    </script>
+</body>
+</html>
