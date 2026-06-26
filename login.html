@@ -29,13 +29,13 @@
                 <label>Usuario o correo</label>
                 <div class="input-group">
                     <span class="material-icons">mail</span>
-                    <input type="email" placeholder="usuario@correo.com">
+                    <input type="email" id="login-correo" placeholder="usuario@correo.com">
                 </div>
 
                 <label>Contraseña</label>
                 <div class="input-group">
                     <span class="material-icons">lock</span>
-                    <input type="password" placeholder="••••••••">
+                    <input type="password" id="login-password" placeholder="••••••••">
                     <span class="material-icons eye-icon">visibility</span>
                 </div>
 
@@ -44,7 +44,7 @@
                     <a href="#">¿Olvidaste tu contraseña?</a>
                 </div>
 
-                <button type="button" class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="window.location.href='index.html'">Iniciar Sesión</button>
+                <button type="button" class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="manejarLogin()">Iniciar Sesión</button>
 
                 <div class="divider"><span>o</span></div>
 
@@ -85,5 +85,43 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
+        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function manejarLogin() {
+            const correo = document.getElementById('login-correo').value;
+            
+            if (!correo) {
+                alert("Por favor, ingresa tu correo.");
+                return;
+            }
+
+            try {
+                // Le pedimos a Supabase que busque una fila donde el 'correo' sea igual al que se escribió
+                const { data, error } = await supabaseClient
+                    .from('usuarios')
+                    .select('*')
+                    .eq('correo', correo)
+                    .single(); // Solo queremos un resultado exacto
+
+                if (error || !data) {
+                    alert("No encontramos ninguna cuenta con este correo. ¿Seguro que te registraste?");
+                    console.error("Error de búsqueda:", error);
+                } else {
+                    // ¡Éxito! Supabase encontró el correo y nos devolvió los datos.
+                    // Extraemos el nickname real de la base de datos y lo guardamos en la memoria.
+                    localStorage.setItem('nombreUsuario', data.nickname);
+                    
+                    // Ahora sí, abrimos la puerta al inicio
+                    window.location.href = 'index.html';
+                }
+            } catch (err) {
+                alert("Error de conexión al servidor.");
+            }
+        }
+    </script>
 </body>
 </html>
