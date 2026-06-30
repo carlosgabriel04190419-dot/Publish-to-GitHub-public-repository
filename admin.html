@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control | CarzaD'Cross</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        body {
+            background-color: #0a0a0f;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a24;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+        .admin-table-container {
+            background: #1a1a24;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            border: 1px solid #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        th {
+            color: #a155ff;
+            font-weight: bold;
+        }
+        .btn-add {
+            background: #00e676;
+            color: black;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-add:hover { background: #00c853; }
+        
+        .search-bar {
+            background: #2a2a35;
+            border: 1px solid #444;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            width: 300px;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-header">
+        <div>
+            <h1 style="margin: 0; color: #a155ff; display: flex; align-items: center; gap: 10px;">
+                <span class="material-icons">admin_panel_settings</span> Backoffice CarzaD'Cross
+            </h1>
+            <p style="margin: 5px 0 0 0; color: #a8a8b3;">Gestión de usuarios y recargas de saldo.</p>
+        </div>
+        <button class="btn-outline" onclick="window.location.href='index.html'">Volver a la Tienda</button>
+    </div>
+
+    <div class="admin-table-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0;">Lista de Usuarios</h2>
+            <!-- Buscador en tiempo real -->
+            <input type="text" id="buscador" class="search-bar" placeholder="🔍 Buscar por Nickname..." onkeyup="filtrarUsuarios()">
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nickname</th>
+                    <th>Correo</th>
+                    <th>Celular</th>
+                    <th>Saldo Actual</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-usuarios">
+                <tr><td colspan="5" style="text-align: center;">Cargando usuarios...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // --- SISTEMA DE SEGURIDAD BÁSICO ---
+        // Cambia 'CarzaAdmin' por la contraseña que tú quieras usar.
+        const passwordAdmin = "CarzaAdmin"; 
+        
+        // Al entrar a la página, te pedirá la clave.
+        let intento = prompt("🔒 Área Restringida. Ingresa la contraseña de Administrador:");
+        if (intento !== passwordAdmin) {
+            alert("Acceso denegado.");
+            window.location.href = "index.html"; // Lo bota a la tienda
+        }
+
+        // --- CONFIGURACIÓN SUPABASE ---
+        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
+        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        let todosLosUsuarios = []; // Guardamos aquí los usuarios para el buscador
+
+        // 1. Cargar Usuarios al iniciar
+        window.onload = async function() {
+            await cargarTabla();
+        };
+
+        async function cargarTabla() {
+            const { data, error } = await supabaseClient
+                .from('usuarios')
+                .select('*')
+                .order('created_at', { ascending: false }); // Los más nuevos primero
+
+            if (error) {
+                console.error(error);
+                alert("Error al cargar usuarios.");
+                return;
+            }
+
+            todosLosUsuarios = data;
+            mostrarUsuarios(data);
+        }
+
+        // 2. Mostrar los usuarios en el HTML
+        function mostrarUsuarios(lista) {
+            const tbody = document.getElementById('tabla-usuarios');
+            tbody.innerHTML = "";
+
+            if (lista.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='5' style='text-align: center;'>No se encontraron usuarios.</td></tr>";
+                return;
+            }
+
+            lista.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: bold;">${user.nickname}</td>
+                    <td style="color: #a8a8b3;">${user.correo}</td>
+                    <td>${user.celular}</td>
+                    <td style="font-size: 18px; color: #a155ff; font-weight: bold;">S/ ${user.saldo.toFixed(2)}</td>
+                    <td>
+                        <button class="btn-add" onclick="añadirSaldo('${user.nickname}', ${user.saldo})">
+                            <span class="material-icons" style="font-size: 18px;">add_circle</span> Añadir Saldo
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 3. El Buscador Mágico
+        function filtrarUsuarios() {
+            const texto = document.getElementById('buscador').value.toLowerCase();
+            const usuariosFiltrados = todosLosUsuarios.filter(user => 
+                user.nickname.toLowerCase().includes(texto)
+            );
+            mostrarUsuarios(usuariosFiltrados);
+        }
+
+        // 4. LA MAGIA: Añadir Saldo
+        // 4. LA MAGIA: Añadir Saldo y Guardar Historial
+        async function añadirSaldo(nickname, saldoActual) {
+            const montoTexto = prompt(`¿Cuánto saldo quieres AÑADIR a la cuenta de ${nickname}?\n\nSaldo actual: S/ ${saldoActual.toFixed(2)}`);
+            if (montoTexto === null || montoTexto === "") return;
+
+            const montoAñadir = parseFloat(montoTexto);
+            if (isNaN(montoAñadir) || montoAñadir <= 0) {
+                alert("Por favor, ingresa un número válido mayor a 0.");
+                return;
+            }
+
+            const nuevoSaldoTotal = saldoActual + montoAñadir;
+
+            // 1. Actualizamos el dinero en la cuenta
+            const { error: errorUsuario } = await supabaseClient
+                .from('usuarios')
+                .update({ saldo: nuevoSaldoTotal })
+                .eq('nickname', nickname);
+
+            if (errorUsuario) {
+                alert("Error al añadir saldo: " + errorUsuario.message);
+                return;
+            }
+
+            // 2. NUEVO: Guardamos el comprobante en el historial
+            const { error: errorHistorial } = await supabaseClient
+                .from('historial')
+                .insert([{
+                    nickname: nickname,
+                    monto: montoAñadir,
+                    tipo: 'Recarga Yape/Plin',
+                    estado: 'Completado'
+                }]);
+
+            if (errorHistorial) {
+                console.error("Error guardando historial:", errorHistorial);
+                alert("Saldo añadido, pero falló el registro en el historial.");
+            } else {
+                alert(`¡Éxito! Se añadieron S/ ${montoAñadir} a ${nickname}.`);
+                cargarTabla();
+            }
+        }
+    </script>
+</body>
+</html>

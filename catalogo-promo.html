@@ -72,6 +72,179 @@
         </section>
     </main>
 
+    <!-- ========================================== -->
+    <!-- PREGUNTAS FRECUENTES (DISEÑO ORIGINAL)     -->
+    <!-- ========================================== -->
+    <style>
+        .cz-faq-wrapper { max-width: 850px; margin: 90px auto 60px; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .cz-faq-header { text-align: center; margin-bottom: 50px; }
+        .cz-faq-subtitle { color: #a155ff; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 12px; }
+        .cz-faq-title { font-size: 32px; color: white; margin: 0; font-weight: 800; letter-spacing: 0.5px; }
+        
+        .cz-faq-grid { display: flex; flex-direction: column; gap: 16px; }
+        
+        .cz-faq-item { 
+            background: rgba(20, 20, 26, 0.6); 
+            border: 1px solid rgba(255,255,255,0.03); 
+            border-left: 3px solid transparent; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            transition: all 0.3s ease; 
+        }
+        .cz-faq-item:hover { background: rgba(30, 30, 38, 0.8); border-left: 3px solid #a155ff; }
+        .cz-faq-item.active { border-left: 3px solid #a155ff; background: rgba(30, 30, 38, 0.9); border-color: rgba(161,85,255,0.2); }
+        
+        .cz-faq-q { padding: 22px 25px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: #e0e0e0; font-weight: 600; font-size: 16px; transition: color 0.3s; }
+        .cz-faq-item.active .cz-faq-q { color: white; }
+        
+        .cz-faq-icon { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: #a155ff; font-size: 24px; }
+        .cz-faq-item.active .cz-faq-icon { transform: rotate(180deg); }
+        
+        .cz-faq-a { padding: 0 25px; max-height: 0; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: #888899; font-size: 14.5px; line-height: 1.7; }
+        .cz-faq-item.active .cz-faq-a { padding: 0 25px 25px 25px; max-height: 250px; }
+
+        /* ========================================== */
+        /* FOOTER (ESTILO PINXTORE MODIFICADO)        */
+        /* ========================================== */
+        .cz-footer { background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 80px 20px 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 50px; }
+        .cz-footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; }
+        
+        @media (max-width: 950px) { .cz-footer-content { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px) { .cz-footer-content { grid-template-columns: 1fr; gap: 40px; } }
+
+        .cz-f-brand { display: flex; flex-direction: column; gap: 18px; }
+        .cz-f-logo { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 900; color: white; letter-spacing: -0.5px; }
+        .cz-f-logo .avatar { background: #a155ff; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; font-weight: bold; }
+        .cz-f-desc { color: #888899; font-size: 14px; line-height: 1.6; max-width: 320px; }
+        
+        .cz-f-trust { display: flex; gap: 15px; margin-top: 5px; flex-wrap: wrap; }
+        .cz-f-trust span { display: flex; align-items: center; gap: 6px; color: #b3b3cc; font-size: 12.5px; font-weight: 600; }
+        .cz-f-trust span .material-icons { color: #a155ff; font-size: 16px; }
+
+        .cz-f-col h4 { color: white; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 25px 0; display: flex; align-items: center; gap: 10px; }
+        .cz-f-col h4::before { content: ''; display: block; width: 3px; height: 14px; background: #a155ff; border-radius: 2px; }
+        
+        .cz-f-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+        .cz-f-col a { color: #888899; text-decoration: none; font-size: 14px; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .cz-f-col a:hover { color: white; transform: translateX(5px); }
+        .cz-f-col a .material-icons { font-size: 14px; color: #a155ff; opacity: 0; transition: opacity 0.2s; }
+        .cz-f-col a:hover .material-icons { opacity: 1; }
+
+        .cz-footer-bottom { max-width: 1200px; margin: 60px auto 0; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .cz-copy { color: #555566; font-size: 13px; }
+        .cz-made-with { color: #777788; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+    </style>
+
+    <section class="cz-faq-wrapper">
+        <div class="cz-faq-header">
+            <span class="cz-faq-subtitle">Centro de Ayuda</span>
+            <h2 class="cz-faq-title">Preguntas Frecuentes</h2>
+        </div>
+
+        <div class="cz-faq-grid">
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)">
+                <div class="cz-faq-q">
+                    <span>¿Cuánto demora en procesarse mi recarga?</span>
+                    <span class="material-icons cz-faq-icon">expand_more</span>
+                </div>
+                <div class="cz-faq-a">
+                    Nuestro sistema está optimizado para la velocidad. Una vez que validamos la captura de tu comprobante de Yape o Plin en nuestro WhatsApp, el saldo o los diamantes se abonan a tu cuenta en menos de 5 minutos.
+                </div>
+            </div>
+
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)">
+                <div class="cz-faq-q">
+                    <span>¿Qué datos necesitan de mi cuenta?</span>
+                    <span class="material-icons cz-faq-icon">expand_more</span>
+                </div>
+                <div class="cz-faq-a">
+                    Únicamente necesitamos tu ID de jugador. Jamás te pediremos correos, contraseñas ni accesos a tus redes sociales. Tu cuenta está 100% segura.
+                </div>
+            </div>
+
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)">
+                <div class="cz-faq-q">
+                    <span>¿Cómo valido mi pago?</span>
+                    <span class="material-icons cz-faq-icon">expand_more</span>
+                </div>
+                <div class="cz-faq-a">
+                    Es muy sencillo: al seleccionar el monto a recargar, la página te generará un mensaje automático. Solo envíanos ese mensaje por WhatsApp junto con la captura de pantalla de tu transferencia.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="cz-footer">
+        <div class="cz-footer-content">
+            <!-- COLUMNA 1: MARCA -->
+            <div class="cz-f-brand">
+                <div class="cz-f-logo">
+                    <div class="avatar">C</div>
+                    CarzaD'Cross
+                </div>
+                <p class="cz-f-desc">
+                    La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.
+                </p>
+                <div class="cz-f-trust">
+                    <span><span class="material-icons">bolt</span> Entrega < 5 min</span>
+                    <span><span class="material-icons">verified_user</span> 100% Seguro</span>
+                    <span><span class="material-icons">account_balance_wallet</span> Yape / Plin</span>
+                </div>
+            </div>
+
+            <!-- COLUMNA 2: NAVEGACIÓN -->
+            <div class="cz-f-col">
+                <h4>Navegación</h4>
+                <ul>
+                    <li><a href="index.html"><span class="material-icons">chevron_right</span> Inicio</a></li>
+                    <li><a href="catalogo-regular.html"><span class="material-icons">chevron_right</span> Catálogo Free Fire</a></li>
+                    <li><a href="catalogo-cajas.html"><span class="material-icons">chevron_right</span> Cajas y Fragmentos</a></li>
+                    <li><a href="perfil.html"><span class="material-icons">chevron_right</span> Mi Panel</a></li>
+                </ul>
+            </div>
+
+            <!-- COLUMNA 3: SOPORTE -->
+            <div class="cz-f-col">
+                <h4>Soporte</h4>
+                <ul>
+                    <li><a href="recargar.html"><span class="material-icons">chevron_right</span> Reportar Pago</a></li>
+                    <li><a href="https://wa.me/51943737572" target="_blank"><span class="material-icons">chevron_right</span> Contactar por WhatsApp</a></li>
+                    <li><a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><span class="material-icons">chevron_right</span> Centro de Ayuda</a></li>
+                </ul>
+            </div>
+
+            <!-- COLUMNA 4: LEGAL (Otorga muchísima autoridad) -->
+            <div class="cz-f-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#"><span class="material-icons">chevron_right</span> Términos de Servicio</a></li>
+                    <li><a href="#"><span class="material-icons">chevron_right</span> Política de Privacidad</a></li>
+                    <li><a href="#"><span class="material-icons">chevron_right</span> Garantía de Entrega</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="cz-footer-bottom">
+            <div class="cz-copy">
+                &copy; 2026 CarzaD'Cross. Todos los derechos reservados.
+            </div>
+            <div class="cz-made-with">
+                Hecho con <span style="color: #a155ff; font-size: 16px;">♥</span> en Ica, Perú para la comunidad gaming.
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT DEL NUEVO ACORDEÓN -->
+    <script>
+        function toggleCzFaq(elemento) {
+            const todos = document.querySelectorAll('.cz-faq-item');
+            todos.forEach(item => {
+                if(item !== elemento) item.classList.remove('active');
+            });
+            elemento.classList.toggle('active');
+        }
+    </script>
+
     <script>
         function verificarCompra() {
             window.location.href = 'login.html';

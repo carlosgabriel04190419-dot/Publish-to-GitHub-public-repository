@@ -39,7 +39,6 @@
             border-color: #a155ff;
             box-shadow: 0 0 10px rgba(161, 85, 255, 0.2);
         }
-        /* Estilo para el contenedor del celular con selector */
         .phone-container {
             display: flex; 
             align-items: center; 
@@ -61,7 +60,6 @@
 
     <main class="container" style="padding-top: 50px; display: flex; gap: 30px; flex-wrap: wrap; justify-content: center;">
         
-        <!-- RESUMEN DE PERFIL -->
         <div style="flex: 1; min-width: 300px; max-width: 350px;">
             <div class="profile-header glass-card" style="padding: 20px;">
                 <div class="profile-avatar large-avatar" style="box-shadow: 0 0 20px rgba(161,85,255,0.4);">C</div>
@@ -72,7 +70,6 @@
             </div>
         </div>
 
-        <!-- PANEL DE EDICIÓN -->
         <div style="flex: 2; min-width: 300px; max-width: 600px;">
             <div class="glass-card" style="text-align: left; max-width: 100%;">
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
@@ -93,7 +90,6 @@
                     <input type="email" id="edit-correo" class="input-form-profile" disabled style="opacity: 0.5; cursor: not-allowed;">
                 </div>
                 
-                <!-- CAMPO DE CELULAR SEPARADO Y CON CÓDIGO DE PAÍS -->
                 <div style="margin-bottom: 30px;">
                     <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 8px; display: block; font-weight: 500;">Número de Celular</label>
                     <div class="phone-container">
@@ -110,6 +106,34 @@
                 </button>
             </div>
         </div>
+
+        <div style="flex-basis: 100%; width: 100%; margin-top: 20px;">
+            <div class="glass-card">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <span class="material-icons" style="color: #00e676; font-size: 28px;">history</span>
+                    <h2 style="font-size: 20px; color: white; margin: 0;">Últimos Movimientos</h2>
+                </div>
+                
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; min-width: 500px;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #a8a8b3;">
+                                <th style="padding: 15px; text-align: left; font-weight: normal;">Fecha</th>
+                                <th style="padding: 15px; text-align: left; font-weight: normal;">Detalle</th>
+                                <th style="padding: 15px; text-align: right; font-weight: normal;">Monto</th>
+                                <th style="padding: 15px; text-align: center; font-weight: normal;">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-historial">
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 30px; color: #a8a8b3;">Cargando historial...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -125,28 +149,58 @@
             
             document.getElementById('nombre-pantalla').innerText = nombreActual;
 
+            // 1. Traemos los datos de perfil
             const { data } = await supabaseClient.from('usuarios').select('*').eq('nickname', nombreActual).single();
             if (data) {
                 document.getElementById('edit-nickname').value = data.nickname;
                 document.getElementById('edit-correo').value = data.correo;
                 
-                // Separamos el código de país del número guardado en la base de datos
-                if (data.celular) {
-                    const partes = data.celular.split(' ');
-                    if (partes[0] === "+51" || partes[0] === "+56") {
-                        document.getElementById('edit-codigo-pais').value = partes[0];
-                        // Unimos el resto del número para mostrarlo formateado
-                        document.getElementById('edit-celular').value = partes.slice(1).join(' ');
+                // Separamos inteligentemente el código de país y el número
+                if(data.celular) {
+                    if (data.celular.includes('+56')) {
+                        document.getElementById('edit-codigo-pais').value = '+56';
+                        document.getElementById('edit-celular').value = data.celular.replace('+56', '').trim();
                     } else {
-                        document.getElementById('edit-celular').value = data.celular;
+                        document.getElementById('edit-codigo-pais').value = '+51';
+                        document.getElementById('edit-celular').value = data.celular.replace('+51', '').trim();
                     }
                 }
             }
+
+            // 2. Cargamos el historial
+            const { data: historialData } = await supabaseClient
+                .from('historial')
+                .select('*')
+                .eq('nickname', nombreActual)
+                .order('created_at', { ascending: false });
+
+            const tbody = document.getElementById('tabla-historial');
+            if (historialData && historialData.length > 0) {
+                tbody.innerHTML = '';
+                historialData.forEach(mov => {
+                    const fecha = new Date(mov.created_at).toLocaleDateString('es-PE', {
+                        day: '2-digit', month: 'short', year: 'numeric'
+                    });
+                    
+                    tbody.innerHTML += `
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 15px; color: white;">${fecha}</td>
+                            <td style="padding: 15px; color: #e0e0e0;">${mov.tipo}</td>
+                            <td style="padding: 15px; text-align: right; color: #00e676; font-weight: bold;">+ S/ ${mov.monto.toFixed(2)}</td>
+                            <td style="padding: 15px; text-align: center;">
+                                <span style="background: rgba(0,230,118,0.15); color: #00e676; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">${mov.estado}</span>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px; color: #a8a8b3;">Aún no tienes movimientos. ¡Haz tu primera recarga!</td></tr>';
+            }
         };
 
-        // Bloqueador de letras y formateador de espacios en el celular
+        // 3. Bloqueador de letras y formateador de espacios en el celular
         document.getElementById('edit-celular').addEventListener('input', function(e) {
-            let valor = e.target.value.replace(/\D/g, ''); // Borra cualquier letra ingresada
+            let valor = e.target.value.replace(/\D/g, ''); 
             let formateado = '';
             if (valor.length > 0) formateado += valor.substring(0, 3);
             if (valor.length > 3) formateado += ' ' + valor.substring(3, 6);
@@ -154,30 +208,29 @@
             e.target.value = formateado;
         });
 
+        // 4. Guardar cambios en la base de datos
         async function guardarCambios() {
-              const nuevoNombre = document.getElementById('edit-nickname').value;
-              const nuevoCelular = document.getElementById('edit-celular').value;
-              const codigo = document.getElementById('edit-codigo-pais').value;
-              const celularFinal = `${codigo} ${nuevoCelular}`;
+            const nuevoNombre = document.getElementById('edit-nickname').value;
+            const nuevoCelular = document.getElementById('edit-celular').value;
+            const codigo = document.getElementById('edit-codigo-pais').value;
+            const celularFinal = `${codigo} ${nuevoCelular}`;
 
-                      // AQUÍ ESTÁ EL TRUCO: Solo enviamos nickname y celular. 
-                     // ¡NO incluimos nada relacionado con contraseñas!
-              const { error } = await supabaseClient
-           .from('usuarios')
-           .update({ 
-              nickname: nuevoNombre, 
-              celular: celularFinal 
-            })
-              .eq('nickname', nombreActual);
+            const { error } = await supabaseClient
+                .from('usuarios')
+                .update({ 
+                    nickname: nuevoNombre, 
+                    celular: celularFinal 
+                })
+                .eq('nickname', nombreActual);
 
-         if (error) {
-            alert("Error al guardar: " + error.message);
+            if (error) {
+                alert("Error al guardar: " + error.message);
             } else {
-              alert("¡Datos actualizados con éxito!");
-              localStorage.setItem('nombreUsuario', nuevoNombre);
-               window.location.reload();
+                alert("¡Datos actualizados con éxito!");
+                localStorage.setItem('nombreUsuario', nuevoNombre);
+                window.location.reload();
             }
-       }
+        }
     </script>
 </body>
 </html>

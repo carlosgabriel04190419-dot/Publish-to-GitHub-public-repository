@@ -6,8 +6,30 @@
     <title>Recargar Saldo | CarzaD'Cross</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        /* FONDO ÉPICO QUE COMBINA CON EL RESTO DE LA TIENDA */
+        body {
+            background: linear-gradient(rgba(10, 10, 14, 0.85), rgba(10, 10, 14, 0.95)), url('hero-bg.jpg') center/cover fixed no-repeat;
+            background-color: #0f0f13;
+            margin: 0;
+            min-height: 100vh;
+            color: white;
+        }
+
+        /* EFECTO CRISTAL PARA LAS TARJETAS */
+        .glass-card {
+            background: rgba(26, 26, 31, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+        }
+    </style>
 </head>
-<body>
+<body> <!-- AQUÍ ESTABA EL ERROR: Le quitamos la clase login-body -->
+    
     <nav class="navbar">
         <div class="nav-logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
             <div class="profile-avatar">C</div><span>CarzaD'Cross</span>
@@ -15,39 +37,58 @@
         <button class="btn-outline" onclick="window.location.href='index.html'">Volver a la Tienda</button>
     </nav>
 
-    <main class="container" style="padding-top: 40px; display: flex; gap: 30px; flex-wrap: wrap; justify-content: center;">
+    <main class="container" style="padding-top: 50px; display: flex; gap: 30px; flex-wrap: wrap; justify-content: center;">
         
+        <!-- RESUMEN DE SALDO -->
         <div style="flex: 1; min-width: 300px; max-width: 350px;">
-            <div class="profile-header">
-                <div class="profile-avatar large-avatar">C</div>
+            <div class="profile-header glass-card" style="padding: 20px;">
+                <div class="profile-avatar large-avatar" style="box-shadow: 0 0 20px rgba(161,85,255,0.4);">C</div>
                 <div class="profile-info">
-                    <p class="greeting">USUARIO,</p>
-                    <h2 id="nombre-pantalla">Cargando...</h2>
+                    <p class="greeting" style="color: #a155ff; font-weight: bold;">USUARIO,</p>
+                    <h2 id="nombre-pantalla" style="font-size: 24px;">Cargando...</h2>
                 </div>
             </div>
-            <div class="balance-card" style="margin-bottom: 30px;">
-                <p>SALDO DISPONIBLE</p>
-                <h1>S/ <span id="saldo-pantalla">0.00</span></h1>
+            <div class="glass-card" style="margin-top: 20px; text-align: center;">
+                <p style="color: #a8a8b3; font-size: 14px;">SALDO DISPONIBLE</p>
+                <h1 style="font-size: 36px; margin: 10px 0; color: white;">S/ <span id="saldo-pantalla">0.00</span></h1>
             </div>
         </div>
 
+        <!-- PANEL DE RECARGA Y PAGO -->
         <div style="flex: 2; min-width: 300px; max-width: 600px;" id="zona-recarga">
-            <div class="support-card" style="text-align: left; max-width: 100%; margin-bottom: 30px; padding: 30px;">
+            <div class="glass-card" style="text-align: left; max-width: 100%;">
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                    <span class="material-icons" style="color: #a155ff; font-size: 30px;">account_balance_wallet</span>
-                    <h2 style="font-size: 20px; color: white;">Agregar Saldo (Yape / Plin)</h2>
+                    <span class="material-icons" style="color: #00e676; font-size: 32px; background: rgba(0,230,118,0.1); padding: 10px; border-radius: 50%;">account_balance_wallet</span>
+                    <h2 style="font-size: 22px; color: white; margin: 0;">Agregar Saldo</h2>
                 </div>
                 
                 <p style="color: #a8a8b3; font-size: 14px; margin-bottom: 20px;">
-                    Transfiere al número de abajo. Luego elige el monto y envíanos el comprobante por WhatsApp. Validaremos tu recarga en minutos.
+                    Escanea el QR o copia el número. Luego elige el monto y envíanos tu comprobante.
                 </p>
 
-                <div class="warning-box" style="margin-bottom: 20px; background: #2a2a35; padding: 15px; border-radius: 8px;">
-                    <h3 style="color: #00e676; margin-bottom: 5px;">📲 Yape / Plin: +51 943 737 572</h3>
-                    <p style="font-size: 13px; color: #a8a8b3;">A nombre de Carlos Aro. Guarda una captura de tu pago.</p>
+                <!-- NUEVA CAJA DE PAGO INTERACTIVA -->
+                <div style="background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.3); border-radius: 12px; padding: 25px; margin-bottom: 25px; text-align: center;">
+                    
+                    <!-- IMAGEN DEL QR -->
+                    <div style="background: white; padding: 10px; border-radius: 12px; display: inline-block; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                        <!-- Asegúrate de que la imagen se llame exactamente igual en tu carpeta -->
+                        <img src="qr-yape.png" alt="QR Yape" style="width: 160px; height: 160px; object-fit: contain; border-radius: 8px;">
+                    </div>
+
+                    <p style="color: #e0e0e0; font-size: 15px; margin-bottom: 12px;">Titular: <strong style="color: white; letter-spacing: 0.5px;">Carlos Aro</strong></p>
+
+                    <!-- BOTÓN DE COPIAR NÚMERO -->
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 15px; background: rgba(0,0,0,0.4); padding: 12px 20px; border-radius: 8px; width: fit-content; margin: 0 auto; border: 1px solid rgba(255,255,255,0.05);">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Yape_text_app_icon.png/250px-Yape_text_app_icon.png" style="height: 20px;" alt="Yape">
+                        <span style="color: white; font-size: 20px; font-weight: bold; letter-spacing: 2px;">986 434 208</span>
+                        <button onclick="copiarNumero()" style="background: rgba(0, 230, 118, 0.2); border: 1px solid #00e676; border-radius: 6px; color: #00e676; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; transition: all 0.2s;" title="Copiar número">
+                            <span class="material-icons" id="icono-copiar" style="font-size: 20px;">content_copy</span>
+                        </button>
+                    </div>
+                    <p id="mensaje-copiado" style="color: #00e676; font-size: 13px; margin-top: 8px; font-weight: bold; opacity: 0; transition: opacity 0.3s;">¡Número copiado al portapapeles!</p>
                 </div>
                 
-                <label style="color: white; font-size: 14px; margin-bottom: 10px; display: block;">¿Cuánto depositaste?</label>
+                <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">¿Cuánto depositaste?</label>
                 <div class="quick-amounts" style="margin-bottom: 15px;">
                     <button class="amount-btn" onclick="seleccionarMonto(10)">S/ 10</button>
                     <button class="amount-btn" onclick="seleccionarMonto(20)">S/ 20</button>
@@ -55,26 +96,24 @@
                     <button class="amount-btn" onclick="seleccionarMonto(50)">S/ 50</button>
                 </div>
                 
-                <div class="custom-amount" style="margin-bottom: 20px;">
-                    <span>S/</span>
+                <div class="custom-amount" style="margin-bottom: 25px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);">
+                    <span style="color: #a155ff;">S/</span>
                     <input type="number" id="input-monto" placeholder="0.00" style="background: transparent; border: none; color: white; font-size: 18px; outline: none; width: 100%;">
                 </div>
 
-                <button class="btn-primary" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; background: #25D366; color: black;" onclick="enviarPorWhatsApp()">
-                    <span class="material-icons">chat</span> Enviar Comprobante por WhatsApp
+                <button class="btn-primary" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; background: #25D366; color: black; font-weight: bold; font-size: 16px; padding: 15px;" onclick="enviarPorWhatsApp()">
+                    <span class="material-icons">chat</span> Notificar Pago por WhatsApp
                 </button>
             </div>
         </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
         const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Variable para guardar el correo temporalmente
         let correoUsuarioGlobal = ""; 
 
         // 1. Cargar datos del usuario
@@ -83,18 +122,36 @@
             if (nombreGuardado) {
                 document.getElementById('nombre-pantalla').innerText = nombreGuardado;
                 
-                // Le pedimos a Supabase el saldo Y el correo
                 const { data } = await supabaseClient.from('usuarios').select('saldo, correo').eq('nickname', nombreGuardado).single();
                 if (data) {
                     document.getElementById('saldo-pantalla').innerText = data.saldo.toFixed(2);
-                    correoUsuarioGlobal = data.correo; // Guardamos el correo en secreto
+                    correoUsuarioGlobal = data.correo;
                 }
             } else {
                 window.location.href = 'login.html';
             }
         };
 
-        // 2. Interfaz de botones
+        // 2. Función para copiar el número al portapapeles
+        function copiarNumero() {
+            const numero = "943737572";
+            navigator.clipboard.writeText(numero).then(() => {
+                const icono = document.getElementById('icono-copiar');
+                const mensaje = document.getElementById('mensaje-copiado');
+                
+                icono.innerText = "check";
+                mensaje.style.opacity = "1";
+
+                setTimeout(() => {
+                    icono.innerText = "content_copy";
+                    mensaje.style.opacity = "0";
+                }, 2000);
+            }).catch(err => {
+                console.error('Error al copiar: ', err);
+            });
+        }
+
+        // 3. Interfaz de botones de monto
         function seleccionarMonto(monto) {
             document.getElementById('input-monto').value = monto;
             let botones = document.querySelectorAll('.amount-btn');
@@ -102,7 +159,7 @@
             event.target.classList.add('active-amount');
         }
 
-        // 3. LA MAGIA DE WHATSAPP MEJORADA
+        // 4. WhatsApp
         function enviarPorWhatsApp() {
             const monto = document.getElementById('input-monto').value;
             const usuario = localStorage.getItem('nombreUsuario');
@@ -113,8 +170,6 @@
             }
 
             const numeroAdmin = "51943737572"; 
-            
-            // Mensaje estructurado con los datos listos para ti
             const mensaje = `Hola CarzaD'Cross 👾\n\n📌 *DATOS DEL USUARIO:*\n👤 Usuario: *${usuario}*\n📧 Correo: *${correoUsuarioGlobal}*\n\nAcabo de realizar un pago de *S/ ${monto}* para recargar mi saldo.\n\nA continuación adjunto mi comprobante:`;
             
             const url = `https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`;
