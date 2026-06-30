@@ -7,66 +7,26 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <style>
-        body {
-            background-color: #0a0a0f;
-            color: white;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #1a1a24;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #333;
-        }
-        .admin-table-container {
-            background: #1a1a24;
-            border-radius: 12px;
-            padding: 20px;
-            overflow-x: auto;
-            border: 1px solid #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #333;
-        }
-        th {
-            color: #a155ff;
-            font-weight: bold;
-        }
-        .btn-add {
-            background: #00e676;
-            color: black;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
+        body { background-color: #0a0a0f; color: white; font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        
+        .admin-header { display: flex; justify-content: space-between; align-items: center; background: #1a1a24; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
+        
+        .admin-table-container { background: #1a1a24; border-radius: 12px; padding: 20px; overflow-x: auto; border: 1px solid #333; margin-bottom: 30px; }
+        .highlight-container { border: 1px solid #a155ff; box-shadow: 0 0 15px rgba(161, 85, 255, 0.1); }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #333; }
+        th { color: #a155ff; font-weight: bold; }
+        
+        .btn-add { background: #00e676; color: black; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .btn-add:hover { background: #00c853; }
         
-        .search-bar {
-            background: #2a2a35;
-            border: 1px solid #444;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            width: 300px;
-            outline: none;
-        }
+        .btn-complete { background: #a155ff; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
+        .btn-complete:hover { background: #8b3dff; box-shadow: 0 0 10px rgba(161,85,255,0.4); }
+        
+        .search-bar { background: #2a2a35; border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 8px; width: 300px; outline: none; }
+        
+        .status-pending { background: rgba(255, 193, 7, 0.15); color: #ffc107; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; display: inline-block; }
     </style>
 </head>
 <body>
@@ -81,10 +41,39 @@
         <button class="btn-outline" onclick="window.location.href='index.html'">Volver a la Tienda</button>
     </div>
 
+    <!-- ============================================== -->
+    <!-- NUEVA SECCIÓN: PEDIDOS PENDIENTES              -->
+    <!-- ============================================== -->
+    <div class="admin-table-container highlight-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                <span class="material-icons" style="color: #a155ff;">shopping_cart</span> Pedidos Pendientes
+            </h2>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Paquete Solicitado</th>
+                    <th>ID del Juego</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-pedidos">
+                <tr><td colspan="6" style="text-align: center; color: #a8a8b3;">Cargando pedidos...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN EXISTENTE: LISTA DE USUARIOS           -->
+    <!-- ============================================== -->
     <div class="admin-table-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 style="margin: 0;">Lista de Usuarios</h2>
-            <!-- Buscador en tiempo real -->
             <input type="text" id="buscador" class="search-bar" placeholder="🔍 Buscar por Nickname..." onkeyup="filtrarUsuarios()">
         </div>
 
@@ -107,14 +96,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // --- SISTEMA DE SEGURIDAD BÁSICO ---
-        // Cambia 'CarzaAdmin' por la contraseña que tú quieras usar.
         const passwordAdmin = "CarzaAdmin"; 
-        
-        // Al entrar a la página, te pedirá la clave.
         let intento = prompt("🔒 Área Restringida. Ingresa la contraseña de Administrador:");
         if (intento !== passwordAdmin) {
             alert("Acceso denegado.");
-            window.location.href = "index.html"; // Lo bota a la tienda
+            window.location.href = "index.html"; 
         }
 
         // --- CONFIGURACIÓN SUPABASE ---
@@ -122,45 +108,99 @@
         const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        let todosLosUsuarios = []; // Guardamos aquí los usuarios para el buscador
+        let todosLosUsuarios = []; 
 
-        // 1. Cargar Usuarios al iniciar
         window.onload = async function() {
-            await cargarTabla();
+            await cargarUsuarios();
+            await cargarPedidos();
         };
 
-        async function cargarTabla() {
+        // ==========================================
+        // LÓGICA DE PEDIDOS
+        // ==========================================
+        async function cargarPedidos() {
+            // Solo traemos los pedidos que digan "Pendiente"
             const { data, error } = await supabaseClient
-                .from('usuarios')
+                .from('pedidos')
                 .select('*')
-                .order('created_at', { ascending: false }); // Los más nuevos primero
+                .eq('estado', 'Pendiente')
+                .order('created_at', { ascending: true }); // Los más antiguos primero
 
-            if (error) {
-                console.error(error);
-                alert("Error al cargar usuarios.");
+            const tbody = document.getElementById('tabla-pedidos');
+            tbody.innerHTML = "";
+
+            if (error || !data || data.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='6' style='text-align: center; color: #a8a8b3;'>✅ No hay pedidos pendientes. ¡Todo al día!</td></tr>";
                 return;
             }
 
-            todosLosUsuarios = data;
-            mostrarUsuarios(data);
+            data.forEach(pedido => {
+                const fecha = new Date(pedido.created_at).toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color: #a8a8b3; font-size: 14px;">${fecha}</td>
+                    <td style="font-weight: bold;">${pedido.nickname}</td>
+                    <td style="color: #00e676; font-weight: bold;">${pedido.paquete}</td>
+                    <td style="font-family: monospace; font-size: 16px; letter-spacing: 1px;">${pedido.id_juego}</td>
+                    <td><span class="status-pending">Pendiente</span></td>
+                    <td>
+                        <button class="btn-complete" onclick="completarPedido(${pedido.id}, '${pedido.paquete}', '${pedido.nickname}')">
+                            <span class="material-icons" style="font-size: 18px;">check_circle</span> Completar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
-        // 2. Mostrar los usuarios en el HTML
+        async function completarPedido(idPedido, paquete, nickname) {
+            const confirmar = confirm(`¿Ya enviaste la recarga de ${paquete} a ${nickname} en el juego?`);
+            if (!confirmar) return;
+
+            // 1. Cambiamos el estado en la tabla 'pedidos' a 'Completado'
+            const { error: errorPedido } = await supabaseClient
+                .from('pedidos')
+                .update({ estado: 'Completado' })
+                .eq('id', idPedido);
+
+            if (errorPedido) {
+                alert("Error al completar el pedido.");
+                return;
+            }
+
+            // 2. Opcional: Podemos guardar esto en el historial del cliente para que sepa que ya se entregó.
+            await supabaseClient.from('historial').insert([{
+                nickname: nickname,
+                monto: 0, // No es ingreso de dinero, es gasto, el descuento ya se hizo al comprar
+                tipo: `Entrega completada: ${paquete}`,
+                estado: 'Entregado'
+            }]);
+
+            alert("¡Pedido marcado como completado!");
+            cargarPedidos(); // Recargamos la tabla para que desaparezca
+        }
+
+        // ==========================================
+        // LÓGICA DE USUARIOS (Igual que antes)
+        // ==========================================
+        async function cargarUsuarios() {
+            const { data } = await supabaseClient.from('usuarios').select('*').order('created_at', { ascending: false });
+            todosLosUsuarios = data || [];
+            mostrarUsuarios(todosLosUsuarios);
+        }
+
         function mostrarUsuarios(lista) {
             const tbody = document.getElementById('tabla-usuarios');
             tbody.innerHTML = "";
-
-            if (lista.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='5' style='text-align: center;'>No se encontraron usuarios.</td></tr>";
-                return;
-            }
+            if (lista.length === 0) return;
 
             lista.forEach(user => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="font-weight: bold;">${user.nickname}</td>
                     <td style="color: #a8a8b3;">${user.correo}</td>
-                    <td>${user.celular}</td>
+                    <td>${user.celular || 'No registrado'}</td>
                     <td style="font-size: 18px; color: #a155ff; font-weight: bold;">S/ ${user.saldo.toFixed(2)}</td>
                     <td>
                         <button class="btn-add" onclick="añadirSaldo('${user.nickname}', ${user.saldo})">
@@ -172,56 +212,24 @@
             });
         }
 
-        // 3. El Buscador Mágico
         function filtrarUsuarios() {
             const texto = document.getElementById('buscador').value.toLowerCase();
-            const usuariosFiltrados = todosLosUsuarios.filter(user => 
-                user.nickname.toLowerCase().includes(texto)
-            );
-            mostrarUsuarios(usuariosFiltrados);
+            const filtrados = todosLosUsuarios.filter(u => u.nickname.toLowerCase().includes(texto));
+            mostrarUsuarios(filtrados);
         }
 
-        // 4. LA MAGIA: Añadir Saldo
-        // 4. LA MAGIA: Añadir Saldo y Guardar Historial
         async function añadirSaldo(nickname, saldoActual) {
             const montoTexto = prompt(`¿Cuánto saldo quieres AÑADIR a la cuenta de ${nickname}?\n\nSaldo actual: S/ ${saldoActual.toFixed(2)}`);
-            if (montoTexto === null || montoTexto === "") return;
+            if (!montoTexto) return;
 
-            const montoAñadir = parseFloat(montoTexto);
-            if (isNaN(montoAñadir) || montoAñadir <= 0) {
-                alert("Por favor, ingresa un número válido mayor a 0.");
-                return;
-            }
+            const monto = parseFloat(montoTexto);
+            if (isNaN(monto) || monto <= 0) return alert("Monto inválido.");
 
-            const nuevoSaldoTotal = saldoActual + montoAñadir;
-
-            // 1. Actualizamos el dinero en la cuenta
-            const { error: errorUsuario } = await supabaseClient
-                .from('usuarios')
-                .update({ saldo: nuevoSaldoTotal })
-                .eq('nickname', nickname);
-
-            if (errorUsuario) {
-                alert("Error al añadir saldo: " + errorUsuario.message);
-                return;
-            }
-
-            // 2. NUEVO: Guardamos el comprobante en el historial
-            const { error: errorHistorial } = await supabaseClient
-                .from('historial')
-                .insert([{
-                    nickname: nickname,
-                    monto: montoAñadir,
-                    tipo: 'Recarga Yape/Plin',
-                    estado: 'Completado'
-                }]);
-
-            if (errorHistorial) {
-                console.error("Error guardando historial:", errorHistorial);
-                alert("Saldo añadido, pero falló el registro en el historial.");
-            } else {
-                alert(`¡Éxito! Se añadieron S/ ${montoAñadir} a ${nickname}.`);
-                cargarTabla();
+            const { error } = await supabaseClient.from('usuarios').update({ saldo: saldoActual + monto }).eq('nickname', nickname);
+            if (!error) {
+                await supabaseClient.from('historial').insert([{ nickname, monto, tipo: 'Recarga Yape/Plin', estado: 'Completado' }]);
+                alert(`¡Se añadieron S/ ${monto} a ${nickname}!`);
+                cargarUsuarios();
             }
         }
     </script>
