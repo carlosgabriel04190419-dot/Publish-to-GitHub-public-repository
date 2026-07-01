@@ -40,7 +40,6 @@
                  <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
                    <span class="material-icons">person</span> Mis Datos
                  </a>
-                  <!-- NUEVO BOTÓN DE RECARGA -->
                  <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
                   <span class="material-icons">account_balance_wallet</span> Recargar Saldo
                  </a>
@@ -53,78 +52,59 @@
     </nav>
 
     <!-- CATÁLOGO DE FRAGMENTOS UNIVERSALES -->
-    <main class="container">
+    <main class="container" style="padding-top: 30px;">
+        <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600;">
+            <span class="material-icons">arrow_back</span> Volver al inicio
+        </a>
+
         <div class="category-header"><h2>FRAGMENTOS UNIVERSALES ⚛️</h2></div>
         <section class="products-grid">
-            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">200 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 33.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
-            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">300 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 42.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
-            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">400 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 51.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
-            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">500 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 60.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
-            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">600 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 69.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
-            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">700 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 77.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
-            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">800 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 90.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
-            <div class="card"><div class="card-badge">Mejor Precio</div><div class="card-icon">⚛️</div><h3 class="card-title">900 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 100.00</span></div><button class="btn-buy" onclick="verificarCompra()">Comprar</button></div>
+            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">200 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 33.00</span></div><button class="btn-buy" onclick="abrirModalCompra('200 Fragmentos', 33.00)">Comprar</button></div>
+            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">300 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 42.00</span></div><button class="btn-buy" onclick="abrirModalCompra('300 Fragmentos', 42.00)">Comprar</button></div>
+            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">400 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 51.00</span></div><button class="btn-buy" onclick="abrirModalCompra('400 Fragmentos', 51.00)">Comprar</button></div>
+            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">500 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 60.00</span></div><button class="btn-buy" onclick="abrirModalCompra('500 Fragmentos', 60.00)">Comprar</button></div>
+            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">600 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 69.00</span></div><button class="btn-buy" onclick="abrirModalCompra('600 Fragmentos', 69.00)">Comprar</button></div>
+            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">700 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 77.00</span></div><button class="btn-buy" onclick="abrirModalCompra('700 Fragmentos', 77.00)">Comprar</button></div>
+            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">800 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 90.00</span></div><button class="btn-buy" onclick="abrirModalCompra('800 Fragmentos', 90.00)">Comprar</button></div>
+            <div class="card"><div class="card-badge">Mejor Precio</div><div class="card-icon">⚛️</div><h3 class="card-title">900 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 100.00</span></div><button class="btn-buy" onclick="abrirModalCompra('900 Fragmentos', 100.00)">Comprar</button></div>
         </section>
     </main>
 
-    <!-- ========================================== -->
-    <!-- PREGUNTAS FRECUENTES (DISEÑO ORIGINAL)     -->
-    <!-- ========================================== -->
+    <!-- ESTILOS FOOTER & FAQ -->
     <style>
         .cz-faq-wrapper { max-width: 850px; margin: 90px auto 60px; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .cz-faq-header { text-align: center; margin-bottom: 50px; }
         .cz-faq-subtitle { color: #a155ff; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 12px; }
         .cz-faq-title { font-size: 32px; color: white; margin: 0; font-weight: 800; letter-spacing: 0.5px; }
-        
         .cz-faq-grid { display: flex; flex-direction: column; gap: 16px; }
-        
-        .cz-faq-item { 
-            background: rgba(20, 20, 26, 0.6); 
-            border: 1px solid rgba(255,255,255,0.03); 
-            border-left: 3px solid transparent; 
-            border-radius: 8px; 
-            overflow: hidden; 
-            transition: all 0.3s ease; 
-        }
+        .cz-faq-item { background: rgba(20, 20, 26, 0.6); border: 1px solid rgba(255,255,255,0.03); border-left: 3px solid transparent; border-radius: 8px; overflow: hidden; transition: all 0.3s ease; }
         .cz-faq-item:hover { background: rgba(30, 30, 38, 0.8); border-left: 3px solid #a155ff; }
         .cz-faq-item.active { border-left: 3px solid #a155ff; background: rgba(30, 30, 38, 0.9); border-color: rgba(161,85,255,0.2); }
-        
         .cz-faq-q { padding: 22px 25px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: #e0e0e0; font-weight: 600; font-size: 16px; transition: color 0.3s; }
         .cz-faq-item.active .cz-faq-q { color: white; }
-        
         .cz-faq-icon { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: #a155ff; font-size: 24px; }
         .cz-faq-item.active .cz-faq-icon { transform: rotate(180deg); }
-        
         .cz-faq-a { padding: 0 25px; max-height: 0; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: #888899; font-size: 14.5px; line-height: 1.7; }
         .cz-faq-item.active .cz-faq-a { padding: 0 25px 25px 25px; max-height: 250px; }
 
-        /* ========================================== */
-        /* FOOTER (ESTILO PINXTORE MODIFICADO)        */
-        /* ========================================== */
         .cz-footer { background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 80px 20px 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 50px; }
         .cz-footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; }
-        
         @media (max-width: 950px) { .cz-footer-content { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 600px) { .cz-footer-content { grid-template-columns: 1fr; gap: 40px; } }
-
         .cz-f-brand { display: flex; flex-direction: column; gap: 18px; }
         .cz-f-logo { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 900; color: white; letter-spacing: -0.5px; }
         .cz-f-logo .avatar { background: #a155ff; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; font-weight: bold; }
         .cz-f-desc { color: #888899; font-size: 14px; line-height: 1.6; max-width: 320px; }
-        
         .cz-f-trust { display: flex; gap: 15px; margin-top: 5px; flex-wrap: wrap; }
         .cz-f-trust span { display: flex; align-items: center; gap: 6px; color: #b3b3cc; font-size: 12.5px; font-weight: 600; }
         .cz-f-trust span .material-icons { color: #a155ff; font-size: 16px; }
-
         .cz-f-col h4 { color: white; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 25px 0; display: flex; align-items: center; gap: 10px; }
         .cz-f-col h4::before { content: ''; display: block; width: 3px; height: 14px; background: #a155ff; border-radius: 2px; }
-        
         .cz-f-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
         .cz-f-col a { color: #888899; text-decoration: none; font-size: 14px; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
         .cz-f-col a:hover { color: white; transform: translateX(5px); }
         .cz-f-col a .material-icons { font-size: 14px; color: #a155ff; opacity: 0; transition: opacity 0.2s; }
         .cz-f-col a:hover .material-icons { opacity: 1; }
-
         .cz-footer-bottom { max-width: 1200px; margin: 60px auto 0; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .cz-copy { color: #555566; font-size: 13px; }
         .cz-made-with { color: #777788; font-size: 13px; display: flex; align-items: center; gap: 6px; }
@@ -171,23 +151,18 @@
 
     <footer class="cz-footer">
         <div class="cz-footer-content">
-            <!-- COLUMNA 1: MARCA -->
             <div class="cz-f-brand">
                 <div class="cz-f-logo">
                     <div class="avatar">C</div>
                     CarzaD'Cross
                 </div>
-                <p class="cz-f-desc">
-                    La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.
-                </p>
+                <p class="cz-f-desc">La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
                 <div class="cz-f-trust">
                     <span><span class="material-icons">bolt</span> Entrega < 5 min</span>
                     <span><span class="material-icons">verified_user</span> 100% Seguro</span>
                     <span><span class="material-icons">account_balance_wallet</span> Yape / Plin</span>
                 </div>
             </div>
-
-            <!-- COLUMNA 2: NAVEGACIÓN -->
             <div class="cz-f-col">
                 <h4>Navegación</h4>
                 <ul>
@@ -197,8 +172,6 @@
                     <li><a href="perfil.html"><span class="material-icons">chevron_right</span> Mi Panel</a></li>
                 </ul>
             </div>
-
-            <!-- COLUMNA 3: SOPORTE -->
             <div class="cz-f-col">
                 <h4>Soporte</h4>
                 <ul>
@@ -207,8 +180,6 @@
                     <li><a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><span class="material-icons">chevron_right</span> Centro de Ayuda</a></li>
                 </ul>
             </div>
-
-            <!-- COLUMNA 4: LEGAL (Otorga muchísima autoridad) -->
             <div class="cz-f-col">
                 <h4>Legal</h4>
                 <ul>
@@ -218,89 +189,175 @@
                 </ul>
             </div>
         </div>
-
         <div class="cz-footer-bottom">
-            <div class="cz-copy">
-                &copy; 2026 CarzaD'Cross. Todos los derechos reservados.
-            </div>
-            <div class="cz-made-with">
-                Hecho con <span style="color: #a155ff; font-size: 16px;">♥</span> en Ica, Perú para la comunidad gaming.
-            </div>
+            <div class="cz-copy">&copy; 2026 CarzaD'Cross. Todos los derechos reservados.</div>
+            <div class="cz-made-with">Hecho con <span style="color: #a155ff; font-size: 16px;">♥</span> en Ica, Perú para la comunidad gaming.</div>
         </div>
     </footer>
 
-    <!-- SCRIPT DEL NUEVO ACORDEÓN -->
-    <script>
-        function toggleCzFaq(elemento) {
-            const todos = document.querySelectorAll('.cz-faq-item');
-            todos.forEach(item => {
-                if(item !== elemento) item.classList.remove('active');
-            });
-            elemento.classList.toggle('active');
-        }
-    </script>
-    
-    <script>
-        function verificarCompra() {
-            window.location.href = 'login.html';
-        }
-    </script>
+    <!-- ============================================== -->
+    <!-- MODAL DE COMPRA MAGISTRAL (CON BLOQUEO DE ID)  -->
+    <!-- ============================================== -->
+    <div id="modal-compra-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <div class="glass-card" style="width: 100%; max-width: 460px; margin: 20px; position: relative; border: 1px solid rgba(161, 85, 255, 0.2); box-shadow: 0 0 30px rgba(161, 85, 255, 0.15);">
+            
+            <span onclick="cerrarModalCompra()" style="position: absolute; top: 20px; right: 20px; color: #888899; cursor: pointer; font-size: 24px; font-weight: bold; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#888899'">×</span>
+
+            <div id="compra-pantalla-formulario">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <span class="material-icons" style="color: #a155ff; font-size: 32px; background: rgba(161,85,255,0.1); padding: 10px; border-radius: 50%;">shopping_bag</span>
+                    <div>
+                        <h2 style="font-size: 20px; color: white; margin: 0;">Confirmar Pedido</h2>
+                        <p style="color: #a8a8b3; font-size: 13px; margin: 3px 0 0 0;">Estás a un paso de adquirir tu producto.</p>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.03);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="color: #a8a8b3; font-size: 14px;">Producto:</span>
+                        <strong id="modal-paquete-nombre" style="color: white; font-size: 15px;">---</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #a8a8b3; font-size: 14px;">Total a descontar:</span>
+                        <strong id="modal-paquete-precio" style="color: #00e676; font-size: 16px;">S/ 0.00</strong>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador</label>
+                    <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Ej. 24958302" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
+                </div>
+
+                <button id="btn-confirmar-pago" class="btn-primary" style="width: 100%; padding: 15px; font-size: 15px; font-weight: bold;" onclick="procesarTransaccion()">Confirmar y Descontar Saldo</button>
+            </div>
+
+            <div id="compra-pantalla-error" style="display: none; text-align: center; padding: 10px 0;">
+                <span class="material-icons" style="font-size: 56px; color: #ff4757; background: rgba(255,71,87,0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px;">gpp_bad</span>
+                <h2 style="font-size: 22px; color: white; margin: 0 0 10px 0;">Saldo Insuficiente</h2>
+                <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">No cuentas con fondos suficientes en tu billetera para completar esta compra.</p>
+                <button class="btn-primary" style="width: 100%; padding: 14px; background: #a155ff; color: white;" onclick="window.location.href='recargar.html'">+ Recargar Saldo Ahora</button>
+            </div>
+
+            <div id="compra-pantalla-exito" style="display: none; text-align: center; padding: 10px 0;">
+                <span class="material-icons" style="font-size: 56px; color: #00e676; background: rgba(0,230,118,0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px;">check_circle</span>
+                <h2 style="font-size: 22px; color: white; margin: 0 0 10px 0;">¡Pedido Recibido!</h2>
+                <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">Tu saldo ha sido debitado correctamente. Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.</p>
+                <button class="btn-outline" style="width: 100%; padding: 14px; border-color: rgba(255,255,255,0.15);" onclick="cerrarModalCompra()">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS UNIFICADOS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // 1. Configuración de Supabase
         const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
         const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // 2. Al cargar la página (Verificar sesión y Saldo)
+        let paqueteSeleccionado = "";
+        let precioSeleccionado = 0;
+        let saldoActualUsuario = 0;
+
         window.onload = async function() {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             if (nombreGuardado) {
-                // Mostrar menú de usuario conectado
                 document.getElementById('nav-logged-out').style.display = 'none';
                 document.getElementById('nav-logged-in').style.display = 'flex';
                 document.getElementById('btn-usuario-nav').innerHTML = nombreGuardado + ' <span class="material-icons" style="font-size: 16px;">expand_more</span>';
                 
-                // Buscar saldo en la base de datos
                 try {
                     const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
                     if (data && document.getElementById('saldo-nav')) {
                         document.getElementById('saldo-nav').innerText = data.saldo.toFixed(2);
                     }
-                } catch (error) {
-                    console.error("Error cargando saldo:", error);
-                }
+                } catch (error) { console.error("Error cargando saldo:", error); }
             }
         };
 
-        // 3. FUNCIÓN QUE TE FALTABA: Desplegar el menú
         function toggleMenu() {
             const menu = document.getElementById('menu-desplegable');
-            if (menu.style.display === 'none' || menu.style.display === '') {
-                menu.style.display = 'block';
-            } else {
-                menu.style.display = 'none';
-            }
+            menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
         }
 
-        // 4. FUNCIÓN QUE TE FALTABA: Cerrar Sesión
         function cerrarSesionLocal() {
             localStorage.removeItem('nombreUsuario');
             window.location.reload(); 
         }
 
-        // 5. Función de Compra corregida
-        function verificarCompra() {
-            if(document.getElementById('nav-logged-in').style.display === 'none') {
-                // Si NO está logueado, lo mandamos a login
-                window.location.href = 'login.html';
-            } else {
-                // Si SI está logueado, le damos un aviso (luego conectaremos esto al sistema de restarle saldo)
-                alert("Verificando fondos en tu cuenta...");
+        function toggleCzFaq(elemento) {
+            const todos = document.querySelectorAll('.cz-faq-item');
+            todos.forEach(item => { if(item !== elemento) item.classList.remove('active'); });
+            elemento.classList.toggle('active');
+        }
+
+        // --- SISTEMA DE COMPRA ---
+        async function abrirModalCompra(nombrePaquete, precioPaquete) {
+            const nombreGuardado = localStorage.getItem('nombreUsuario');
+            if (!nombreGuardado) { window.location.href = 'login.html'; return; }
+
+            paqueteSeleccionado = nombrePaquete;
+            precioSeleccionado = parseFloat(precioPaquete);
+
+            document.getElementById('compra-pantalla-formulario').style.display = 'block';
+            document.getElementById('compra-pantalla-error').style.display = 'none';
+            document.getElementById('compra-pantalla-exito').style.display = 'none';
+            document.getElementById('modal-id-juego').value = "";
+            document.getElementById('modal-paquete-nombre').innerText = nombrePaquete;
+            document.getElementById('modal-paquete-precio').innerText = `S/ ${precioSeleccionado.toFixed(2)}`;
+
+            const modal = document.getElementById('modal-compra-container');
+            modal.style.display = 'flex';
+            setTimeout(() => { modal.style.opacity = '1'; }, 10);
+
+            try {
+                const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
+                if (data) {
+                    saldoActualUsuario = data.saldo;
+                    if (saldoActualUsuario < precioSeleccionado) {
+                        document.getElementById('compra-pantalla-formulario').style.display = 'none';
+                        document.getElementById('compra-pantalla-error').style.display = 'block';
+                    }
+                }
+            } catch (err) { console.error("Error al verificar fondos:", err); }
+        }
+
+        function cerrarModalCompra() {
+            const modal = document.getElementById('modal-compra-container');
+            modal.style.opacity = '0';
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+
+        async function procesarTransaccion() {
+            const idJuego = document.getElementById('modal-id-juego').value.trim();
+            const nombreGuardado = localStorage.getItem('nombreUsuario');
+            const btn = document.getElementById('btn-confirmar-pago');
+
+            if (!idJuego) { 
+                alert("Por favor, ingresa tu ID de jugador."); 
+                return; 
             }
+            if (idJuego.length < 7) {
+                alert("El ID ingresado es muy corto. Por favor verifica que esté correcto.");
+                return;
+            }
+
+            btn.disabled = true; btn.innerText = "Procesando pedido...";
+
+            const nuevoSaldo = saldoActualUsuario - precioSeleccionado;
+            const { error: errorSaldo } = await supabaseClient.from('usuarios').update({ saldo: nuevoSaldo }).eq('nickname', nombreGuardado);
+
+            if (errorSaldo) { alert("Error: " + errorSaldo.message); btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo"; return; }
+
+            await supabaseClient.from('pedidos').insert([{ nickname: nombreGuardado, paquete: paqueteSeleccionado, id_juego: idJuego, precio: precioSeleccionado, estado: 'Pendiente' }]);
+            await supabaseClient.from('historial').insert([{ nickname: nombreGuardado, monto: precioSeleccionado, tipo: `Compra: ${paqueteSeleccionado} (ID: ${idJuego})`, estado: 'Descontado' }]);
+
+            if(document.getElementById('saldo-nav')) document.getElementById('saldo-nav').innerText = nuevoSaldo.toFixed(2);
+
+            document.getElementById('compra-pantalla-formulario').style.display = 'none';
+            document.getElementById('compra-pantalla-exito').style.display = 'block';
+            
+            btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo";
         }
     </script>
 </body>
-</html>
 </html>
