@@ -8,25 +8,26 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <style>
         body { background-color: #0a0a0f; color: white; font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-        
         .admin-header { display: flex; justify-content: space-between; align-items: center; background: #1a1a24; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
-        
         .admin-table-container { background: #1a1a24; border-radius: 12px; padding: 20px; overflow-x: auto; border: 1px solid #333; margin-bottom: 30px; }
         .highlight-container { border: 1px solid #a155ff; box-shadow: 0 0 15px rgba(161, 85, 255, 0.1); }
+        .success-container { border: 1px solid #00e676; box-shadow: 0 0 15px rgba(0, 230, 118, 0.1); }
+        .history-container { border: 1px solid #ff9800; box-shadow: 0 0 15px rgba(255, 152, 0, 0.1); }
         
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #333; }
         th { color: #a155ff; font-weight: bold; }
         
-        .btn-add { background: #00e676; color: black; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .btn-add { background: #00e676; color: black; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 13px; }
         .btn-add:hover { background: #00c853; }
-        
+        .btn-remove { background: #ff4757; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 13px; }
+        .btn-remove:hover { background: #ff6b81; }
         .btn-complete { background: #a155ff; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
         .btn-complete:hover { background: #8b3dff; box-shadow: 0 0 10px rgba(161,85,255,0.4); }
-        
+        .btn-copy { background: #2a2a35; color: #a8a8b3; border: 1px solid #444; padding: 4px 8px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; margin-left: 5px; transition: 0.2s;}
+        .btn-copy:hover { background: #a155ff; color: white; border-color: #a155ff; }
         .search-bar { background: #2a2a35; border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 8px; width: 300px; outline: none; }
-        
-        .status-pending { background: rgba(255, 193, 7, 0.15); color: #ffc107; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; display: inline-block; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -41,69 +42,75 @@
         <button class="btn-outline" onclick="window.location.href='index.html'">Volver a la Tienda</button>
     </div>
 
-    <!-- ============================================== -->
-    <!-- NUEVA SECCIÓN: PEDIDOS PENDIENTES              -->
-    <!-- ============================================== -->
-    <div class="admin-table-container highlight-container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="margin: 0; display: flex; align-items: center; gap: 10px;">
-                <span class="material-icons" style="color: #a155ff;">shopping_cart</span> Pedidos Pendientes
-            </h2>
-        </div>
+    <!-- RECARGAS DE SALDO PENDIENTES -->
+    <div class="admin-table-container success-container">
+        <h2 style="margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;">
+            <span class="material-icons" style="color: #00e676;">account_balance_wallet</span> Solicitudes de Saldo (Yape/Plin)
+        </h2>
+        <table>
+            <thead><tr><th>Fecha</th><th>Usuario</th><th>Monto</th><th>Método</th><th>Acción</th></tr></thead>
+            <tbody id="tabla-recargas"><tr><td colspan="5" style="text-align: center;">Cargando...</td></tr></tbody>
+        </table>
+    </div>
 
+    <!-- PEDIDOS DE JUEGOS PENDIENTES -->
+    <div class="admin-table-container highlight-container">
+        <h2 style="margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;">
+            <span class="material-icons" style="color: #a155ff;">shopping_cart</span> Pedidos de Juegos Pendientes
+        </h2>
         <table>
             <thead>
                 <tr>
                     <th>Fecha</th>
-                    <th>Usuario</th>
-                    <th>Paquete Solicitado</th>
-                    <th>ID del Juego</th>
-                    <th>Estado</th>
+                    <th>Comprador</th>
+                    <th>Paquete</th>
+                    <th>Nick en Juego</th>
+                    <th>ID de Juego</th>
+                    <th>Código a usar</th>
                     <th>Acción</th>
                 </tr>
             </thead>
-            <tbody id="tabla-pedidos">
-                <tr><td colspan="6" style="text-align: center; color: #a8a8b3;">Cargando pedidos...</td></tr>
-            </tbody>
+            <tbody id="tabla-pedidos"><tr><td colspan="7" style="text-align: center;">Cargando...</td></tr></tbody>
         </table>
     </div>
 
-    <!-- ============================================== -->
-    <!-- SECCIÓN EXISTENTE: LISTA DE USUARIOS           -->
-    <!-- ============================================== -->
+    <!-- LISTA DE USUARIOS -->
     <div class="admin-table-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 style="margin: 0;">Lista de Usuarios</h2>
             <input type="text" id="buscador" class="search-bar" placeholder="🔍 Buscar por Nickname..." onkeyup="filtrarUsuarios()">
         </div>
+        <table>
+            <thead><tr><th>Nickname</th><th>Correo</th><th>Saldo Actual</th><th>Acciones</th></tr></thead>
+            <tbody id="tabla-usuarios"><tr><td colspan="4" style="text-align: center;">Cargando...</td></tr></tbody>
+        </table>
+    </div>
 
+    <!-- HISTORIAL DE MOVIMIENTOS -->
+    <div class="admin-table-container history-container">
+        <h2 style="margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;">
+            <span class="material-icons" style="color: #ff9800;">history</span> Historial Global de Movimientos
+        </h2>
         <table>
             <thead>
                 <tr>
-                    <th>Nickname</th>
-                    <th>Correo</th>
-                    <th>Celular</th>
-                    <th>Saldo Actual</th>
-                    <th>Acción</th>
+                    <th style="color: #ff9800;">Fecha y Hora</th>
+                    <th style="color: #ff9800;">Usuario</th>
+                    <th style="color: #ff9800;">Descripción del Movimiento</th>
+                    <th style="color: #ff9800;">Monto S/</th>
+                    <th style="color: #ff9800;">Estado</th>
                 </tr>
             </thead>
-            <tbody id="tabla-usuarios">
-                <tr><td colspan="5" style="text-align: center;">Cargando usuarios...</td></tr>
-            </tbody>
+            <tbody id="tabla-historial"><tr><td colspan="5" style="text-align: center;">Cargando historial...</td></tr></tbody>
         </table>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // --- SISTEMA DE SEGURIDAD BÁSICO ---
         const passwordAdmin = "CarzaAdmin"; 
         let intento = prompt("🔒 Área Restringida. Ingresa la contraseña de Administrador:");
-        if (intento !== passwordAdmin) {
-            alert("Acceso denegado.");
-            window.location.href = "index.html"; 
-        }
+        if (intento !== passwordAdmin) { alert("Acceso denegado."); window.location.href = "index.html"; }
 
-        // --- CONFIGURACIÓN SUPABASE ---
         const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
         const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -113,124 +120,143 @@
         window.onload = async function() {
             await cargarUsuarios();
             await cargarPedidos();
+            await cargarRecargas();
+            await cargarHistorial();
         };
 
-        // ==========================================
-        // LÓGICA DE PEDIDOS
-        // ==========================================
-        async function cargarPedidos() {
-            // Solo traemos los pedidos que digan "Pendiente"
-            const { data, error } = await supabaseClient
-                .from('pedidos')
-                .select('*')
-                .eq('estado', 'Pendiente')
-                .order('created_at', { ascending: true }); // Los más antiguos primero
+        function copiarTexto(texto, elementoBtn) {
+            navigator.clipboard.writeText(texto).then(() => {
+                const textoOriginal = elementoBtn.innerHTML;
+                elementoBtn.innerHTML = '<span class="material-icons" style="font-size: 11px;">check</span>';
+                elementoBtn.style.background = '#00e676'; elementoBtn.style.color = 'black';
+                setTimeout(() => { elementoBtn.innerHTML = textoOriginal; elementoBtn.style.background = ''; elementoBtn.style.color = ''; }, 2000);
+            });
+        }
 
-            const tbody = document.getElementById('tabla-pedidos');
-            tbody.innerHTML = "";
+        // RECARGAS DE SALDO
+        async function cargarRecargas() {
+            const { data, error } = await supabaseClient.from('recargas').select('*').eq('estado', 'Pendiente').order('created_at', { ascending: true });
+            const tbody = document.getElementById('tabla-recargas'); tbody.innerHTML = "";
+            if (error || !data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='5' style='text-align: center; color: #a8a8b3;'>✅ No hay recargas de saldo pendientes.</td></tr>"; return; }
+            data.forEach(r => {
+                const fecha = new Date(r.created_at).toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color: #a8a8b3; font-size: 13px;">${fecha}</td>
+                    <td style="font-weight: bold;">${r.nickname}</td>
+                    <td style="font-size: 16px; color: #00e676; font-weight: bold;">S/ ${r.monto.toFixed(2)}</td>
+                    <td>${r.metodo}</td>
+                    <td style="display: flex; gap: 10px;">
+                        <button class="btn-add" onclick="aprobarRecarga(${r.id}, '${r.nickname}', ${r.monto})"><span class="material-icons" style="font-size: 16px;">check</span> Aprobar</button>
+                        <button class="btn-remove" onclick="rechazarRecarga(${r.id})"><span class="material-icons" style="font-size: 16px;">close</span></button>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+        }
 
-            if (error || !data || data.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='6' style='text-align: center; color: #a8a8b3;'>✅ No hay pedidos pendientes. ¡Todo al día!</td></tr>";
-                return;
+        async function aprobarRecarga(id, nickname, monto) {
+            if(!confirm(`¿Aprobar el saldo de S/ ${monto} a ${nickname}?`)) return;
+            await supabaseClient.from('recargas').update({ estado: 'Completado' }).eq('id', id);
+            const { data: usuario } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nickname).single();
+            if(usuario) {
+                await supabaseClient.from('usuarios').update({ saldo: usuario.saldo + monto }).eq('nickname', nickname);
+                await supabaseClient.from('historial').insert([{ nickname, monto, tipo: 'Recarga Aprobada (Yape/Plin)', estado: 'Completado' }]);
             }
+            alert("¡Saldo aprobado!"); cargarRecargas(); cargarUsuarios(); cargarHistorial();
+        }
 
-            data.forEach(pedido => {
-                const fecha = new Date(pedido.created_at).toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+        async function rechazarRecarga(id) {
+            if(!confirm("¿Rechazar recarga?")) return;
+            await supabaseClient.from('recargas').update({ estado: 'Rechazado' }).eq('id', id);
+            cargarRecargas();
+        }
+
+        // PEDIDOS DE JUEGOS
+        async function cargarPedidos() {
+            const { data, error } = await supabaseClient.from('pedidos').select('*').eq('estado', 'Pendiente').order('created_at', { ascending: true });
+            const tbody = document.getElementById('tabla-pedidos'); tbody.innerHTML = "";
+            if (error || !data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='7' style='text-align: center; color: #a8a8b3;'>✅ No hay pedidos de juegos pendientes.</td></tr>"; return; }
+            data.forEach(p => {
+                const fecha = new Date(p.created_at).toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                const cod = p.codigo ? `${p.codigo} <button class="btn-copy" onclick="copiarTexto('${p.codigo}', this)"><span class="material-icons">content_copy</span></button>` : '<span style="color: #666; font-size: 12px;">Activación directa</span>';
+                const nickJuego = p.nickname_juego ? p.nickname_juego : 'No registrado';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color: #a8a8b3; font-size: 13px;">${fecha}</td>
+                    <td style="font-weight: bold;">${p.nickname}</td>
+                    <td style="color: #a155ff; font-weight: bold;">${p.paquete}</td>
+                    <td style="font-family: monospace;">${nickJuego} <button class="btn-copy" onclick="copiarTexto('${nickJuego}', this)"><span class="material-icons">content_copy</span></button></td>
+                    <td style="font-family: monospace; font-size: 15px;">${p.id_juego} <button class="btn-copy" onclick="copiarTexto('${p.id_juego}', this)"><span class="material-icons">content_copy</span></button></td>
+                    <td style="font-family: monospace; color: #00e676;">${cod}</td>
+                    <td><button class="btn-complete" onclick="completarPedido(${p.id}, '${p.paquete}', '${p.nickname}')"><span class="material-icons" style="font-size: 18px;">check_circle</span> Listo</button></td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function completarPedido(id, paquete, nickname) {
+            if (!confirm(`¿Ya enviaste ${paquete} a ${nickname}?`)) return;
+            await supabaseClient.from('pedidos').update({ estado: 'Completado' }).eq('id', id);
+            alert("¡Pedido completado!"); cargarPedidos(); cargarHistorial();
+        }
+
+        // USUARIOS Y SALDO MANUAL
+        async function cargarUsuarios() {
+            const { data } = await supabaseClient.from('usuarios').select('*').order('created_at', { ascending: false });
+            todosLosUsuarios = data || []; mostrarUsuarios(todosLosUsuarios);
+        }
+        function mostrarUsuarios(lista) {
+            const tbody = document.getElementById('tabla-usuarios'); tbody.innerHTML = "";
+            lista.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td style="font-weight: bold;">${user.nickname}</td><td style="color: #a8a8b3;">${user.correo}</td>
+                <td style="font-size: 18px; color: #a155ff; font-weight: bold;">S/ ${user.saldo.toFixed(2)}</td>
+                <td style="display: flex; gap: 10px;">
+                    <button class="btn-add" onclick="añadirSaldo('${user.nickname}', ${user.saldo})"><span class="material-icons" style="font-size: 16px;">add</span> Añadir</button>
+                    <button class="btn-remove" onclick="quitarSaldo('${user.nickname}', ${user.saldo})"><span class="material-icons" style="font-size: 16px;">remove</span> Quitar</button>
+                </td>`;
+                tbody.appendChild(tr);
+            });
+        }
+        function filtrarUsuarios() {
+            const texto = document.getElementById('buscador').value.toLowerCase();
+            mostrarUsuarios(todosLosUsuarios.filter(u => u.nickname.toLowerCase().includes(texto)));
+        }
+        async function añadirSaldo(nick, saldo) {
+            const monto = parseFloat(prompt(`¿Cuánto AÑADIR a ${nick}?`)); if (!monto || monto <= 0) return;
+            if (!(await supabaseClient.from('usuarios').update({ saldo: saldo + monto }).eq('nickname', nick)).error) {
+                await supabaseClient.from('historial').insert([{ nickname: nick, monto, tipo: 'Abono Manual Admin', estado: 'Completado' }]);
+                cargarUsuarios(); cargarHistorial(); alert("Saldo añadido.");
+            }
+        }
+        async function quitarSaldo(nick, saldo) {
+            const monto = parseFloat(prompt(`¿Cuánto QUITAR a ${nick}?`)); if (!monto || monto <= 0 || monto > saldo) return;
+            if (!(await supabaseClient.from('usuarios').update({ saldo: saldo - monto }).eq('nickname', nick)).error) {
+                await supabaseClient.from('historial').insert([{ nickname: nick, monto, tipo: 'Retiro/Corrección Admin', estado: 'Descontado' }]);
+                cargarUsuarios(); cargarHistorial(); alert("Saldo descontado.");
+            }
+        }
+
+        // HISTORIAL GLOBAL (NUEVO)
+        async function cargarHistorial() {
+            const { data, error } = await supabaseClient.from('historial').select('*').order('created_at', { ascending: false }).limit(50);
+            const tbody = document.getElementById('tabla-historial'); tbody.innerHTML = "";
+            if (error || !data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='5' style='text-align: center;'>Aún no hay movimientos.</td></tr>"; return; }
+            data.forEach(h => {
+                const fecha = new Date(h.created_at).toLocaleString('es-PE', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                const colorMonto = h.estado === 'Descontado' ? '#ff4757' : '#00e676';
+                const signoMonto = h.estado === 'Descontado' ? '- ' : '+ ';
+                const colorBadge = h.estado === 'Descontado' ? 'background: rgba(255,71,87,0.1); color: #ff4757;' : 'background: rgba(0,230,118,0.1); color: #00e676;';
                 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="color: #a8a8b3; font-size: 14px;">${fecha}</td>
-                    <td style="font-weight: bold;">${pedido.nickname}</td>
-                    <td style="color: #00e676; font-weight: bold;">${pedido.paquete}</td>
-                    <td style="font-family: monospace; font-size: 16px; letter-spacing: 1px;">${pedido.id_juego}</td>
-                    <td><span class="status-pending">Pendiente</span></td>
-                    <td>
-                        <button class="btn-complete" onclick="completarPedido(${pedido.id}, '${pedido.paquete}', '${pedido.nickname}')">
-                            <span class="material-icons" style="font-size: 18px;">check_circle</span> Completar
-                        </button>
-                    </td>
+                    <td style="color: #a8a8b3; font-size: 13px;">${fecha}</td>
+                    <td style="font-weight: bold;">${h.nickname}</td>
+                    <td style="color: #e0e0e0; font-size: 14px;">${h.tipo}</td>
+                    <td style="font-weight: bold; color: ${colorMonto};">S/ ${h.monto.toFixed(2)}</td>
+                    <td><span class="status-badge" style="${colorBadge}">${h.estado}</span></td>
                 `;
                 tbody.appendChild(tr);
             });
-        }
-
-        async function completarPedido(idPedido, paquete, nickname) {
-            const confirmar = confirm(`¿Ya enviaste la recarga de ${paquete} a ${nickname} en el juego?`);
-            if (!confirmar) return;
-
-            // 1. Cambiamos el estado en la tabla 'pedidos' a 'Completado'
-            const { error: errorPedido } = await supabaseClient
-                .from('pedidos')
-                .update({ estado: 'Completado' })
-                .eq('id', idPedido);
-
-            if (errorPedido) {
-                alert("Error al completar el pedido.");
-                return;
-            }
-
-            // 2. Opcional: Podemos guardar esto en el historial del cliente para que sepa que ya se entregó.
-            await supabaseClient.from('historial').insert([{
-                nickname: nickname,
-                monto: 0, // No es ingreso de dinero, es gasto, el descuento ya se hizo al comprar
-                tipo: `Entrega completada: ${paquete}`,
-                estado: 'Entregado'
-            }]);
-
-            alert("¡Pedido marcado como completado!");
-            cargarPedidos(); // Recargamos la tabla para que desaparezca
-        }
-
-        // ==========================================
-        // LÓGICA DE USUARIOS (Igual que antes)
-        // ==========================================
-        async function cargarUsuarios() {
-            const { data } = await supabaseClient.from('usuarios').select('*').order('created_at', { ascending: false });
-            todosLosUsuarios = data || [];
-            mostrarUsuarios(todosLosUsuarios);
-        }
-
-        function mostrarUsuarios(lista) {
-            const tbody = document.getElementById('tabla-usuarios');
-            tbody.innerHTML = "";
-            if (lista.length === 0) return;
-
-            lista.forEach(user => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="font-weight: bold;">${user.nickname}</td>
-                    <td style="color: #a8a8b3;">${user.correo}</td>
-                    <td>${user.celular || 'No registrado'}</td>
-                    <td style="font-size: 18px; color: #a155ff; font-weight: bold;">S/ ${user.saldo.toFixed(2)}</td>
-                    <td>
-                        <button class="btn-add" onclick="añadirSaldo('${user.nickname}', ${user.saldo})">
-                            <span class="material-icons" style="font-size: 18px;">add_circle</span> Añadir Saldo
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function filtrarUsuarios() {
-            const texto = document.getElementById('buscador').value.toLowerCase();
-            const filtrados = todosLosUsuarios.filter(u => u.nickname.toLowerCase().includes(texto));
-            mostrarUsuarios(filtrados);
-        }
-
-        async function añadirSaldo(nickname, saldoActual) {
-            const montoTexto = prompt(`¿Cuánto saldo quieres AÑADIR a la cuenta de ${nickname}?\n\nSaldo actual: S/ ${saldoActual.toFixed(2)}`);
-            if (!montoTexto) return;
-
-            const monto = parseFloat(montoTexto);
-            if (isNaN(monto) || monto <= 0) return alert("Monto inválido.");
-
-            const { error } = await supabaseClient.from('usuarios').update({ saldo: saldoActual + monto }).eq('nickname', nickname);
-            if (!error) {
-                await supabaseClient.from('historial').insert([{ nickname, monto, tipo: 'Recarga Yape/Plin', estado: 'Completado' }]);
-                alert(`¡Se añadieron S/ ${monto} a ${nickname}!`);
-                cargarUsuarios();
-            }
         }
     </script>
 </body>

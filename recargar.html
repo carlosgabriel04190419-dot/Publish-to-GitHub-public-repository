@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <style>
-        /* FONDO ÉPICO QUE COMBINA CON EL RESTO DE LA TIENDA */
         body {
             background: linear-gradient(rgba(10, 10, 14, 0.85), rgba(10, 10, 14, 0.95)), url('hero-bg.jpg') center/cover fixed no-repeat;
             background-color: #0f0f13;
@@ -15,8 +14,6 @@
             min-height: 100vh;
             color: white;
         }
-
-        /* EFECTO CRISTAL PARA LAS TARJETAS */
         .glass-card {
             background: rgba(26, 26, 31, 0.6);
             backdrop-filter: blur(12px);
@@ -26,9 +23,17 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             padding: 30px;
         }
+        /* Insignias de pago */
+        .pay-badge {
+            padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 0.5px;
+        }
+        .bg-yape { background: rgba(116, 35, 132, 0.2); color: #d480e6; border: 1px solid #742384; }
+        .bg-plin { background: rgba(0, 230, 118, 0.2); color: #00e676; border: 1px solid #00e676; }
+        .bg-dale { background: rgba(0, 210, 255, 0.2); color: #00d2ff; border: 1px solid #00d2ff; }
+        .bg-agora { background: rgba(255, 204, 0, 0.2); color: #ffcc00; border: 1px solid #ffcc00; }
     </style>
 </head>
-<body> <!-- AQUÍ ESTABA EL ERROR: Le quitamos la clase login-body -->
+<body> 
     
     <nav class="navbar">
         <div class="nav-logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
@@ -39,7 +44,6 @@
 
     <main class="container" style="padding-top: 50px; display: flex; gap: 30px; flex-wrap: wrap; justify-content: center;">
         
-        <!-- RESUMEN DE SALDO -->
         <div style="flex: 1; min-width: 300px; max-width: 350px;">
             <div class="profile-header glass-card" style="padding: 20px;">
                 <div class="profile-avatar large-avatar" style="box-shadow: 0 0 20px rgba(161,85,255,0.4);">C</div>
@@ -54,7 +58,6 @@
             </div>
         </div>
 
-        <!-- PANEL DE RECARGA Y PAGO -->
         <div style="flex: 2; min-width: 300px; max-width: 600px;" id="zona-recarga">
             <div class="glass-card" style="text-align: left; max-width: 100%;">
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
@@ -66,20 +69,22 @@
                     Escanea el QR o copia el número. Luego elige el monto y envíanos tu comprobante.
                 </p>
 
-                <!-- NUEVA CAJA DE PAGO INTERACTIVA -->
                 <div style="background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.3); border-radius: 12px; padding: 25px; margin-bottom: 25px; text-align: center;">
                     
-                    <!-- IMAGEN DEL QR -->
+                    <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;">
+                        <span class="pay-badge bg-yape">YAPE</span>
+                        <span class="pay-badge bg-plin">PLIN</span>
+                        <span class="pay-badge bg-dale">DALE</span>
+                        <span class="pay-badge bg-agora">AGORA</span>
+                    </div>
+
                     <div style="background: white; padding: 10px; border-radius: 12px; display: inline-block; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-                        <!-- Asegúrate de que la imagen se llame exactamente igual en tu carpeta -->
                         <img src="qr-yape.png" alt="QR Yape" style="width: 160px; height: 160px; object-fit: contain; border-radius: 8px;">
                     </div>
 
                     <p style="color: #e0e0e0; font-size: 15px; margin-bottom: 12px;">Titular: <strong style="color: white; letter-spacing: 0.5px;">Carlos Aro</strong></p>
 
-                    <!-- BOTÓN DE COPIAR NÚMERO -->
                     <div style="display: flex; align-items: center; justify-content: center; gap: 15px; background: rgba(0,0,0,0.4); padding: 12px 20px; border-radius: 8px; width: fit-content; margin: 0 auto; border: 1px solid rgba(255,255,255,0.05);">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Yape_text_app_icon.png/250px-Yape_text_app_icon.png" style="height: 20px;" alt="Yape">
                         <span style="color: white; font-size: 20px; font-weight: bold; letter-spacing: 2px;">986 434 208</span>
                         <button onclick="copiarNumero()" style="background: rgba(0, 230, 118, 0.2); border: 1px solid #00e676; border-radius: 6px; color: #00e676; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; transition: all 0.2s;" title="Copiar número">
                             <span class="material-icons" id="icono-copiar" style="font-size: 20px;">content_copy</span>
@@ -101,12 +106,27 @@
                     <input type="number" id="input-monto" placeholder="0.00" style="background: transparent; border: none; color: white; font-size: 18px; outline: none; width: 100%;">
                 </div>
 
-                <button class="btn-primary" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; background: #25D366; color: black; font-weight: bold; font-size: 16px; padding: 15px;" onclick="enviarPorWhatsApp()">
-                    <span class="material-icons">chat</span> Notificar Pago por WhatsApp
+                <button id="btn-whatsapp" class="btn-primary" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; background: #25D366; color: black; font-weight: bold; font-size: 16px; padding: 15px;" onclick="enviarPorWhatsAppYRegistrar()">
+                    <span class="material-icons">chat</span> Notificar Pago y Enviar Comprobante
                 </button>
             </div>
         </div>
     </main>
+
+    <div id="modal-exito-recarga" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <div class="glass-card" style="width: 100%; max-width: 400px; margin: 20px; text-align: center; border: 1px solid rgba(0, 230, 118, 0.2); box-shadow: 0 0 30px rgba(0, 230, 118, 0.15); position: relative;">
+            
+            <span onclick="cerrarModalExito()" style="position: absolute; top: 15px; right: 15px; color: #888899; cursor: pointer; font-size: 24px; font-weight: bold; transition: color 0.2s;">×</span>
+
+            <span class="material-icons" style="font-size: 56px; color: #00e676; background: rgba(0,230,118,0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px;">check_circle</span>
+            <h2 style="font-size: 22px; color: white; margin: 0 0 10px 0;">¡Solicitud Registrada!</h2>
+            <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">El sistema ya tiene tu orden. Ahora dale clic abajo para enviarnos la captura de tu pago y aprobar tu saldo.</p>
+            
+            <button id="btn-ir-whatsapp" class="btn-primary" style="width: 100%; padding: 14px; background: #25D366; color: black; font-weight: bold; font-size: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                Ir a WhatsApp <span class="material-icons" style="font-size: 18px;">arrow_forward</span>
+            </button>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -116,7 +136,6 @@
 
         let correoUsuarioGlobal = ""; 
 
-        // 1. Cargar datos del usuario
         window.onload = async function() {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             if (nombreGuardado) {
@@ -132,26 +151,20 @@
             }
         };
 
-        // 2. Función para copiar el número al portapapeles
         function copiarNumero() {
-            const numero = "943737572";
+            const numero = "986434208";
             navigator.clipboard.writeText(numero).then(() => {
                 const icono = document.getElementById('icono-copiar');
                 const mensaje = document.getElementById('mensaje-copiado');
-                
                 icono.innerText = "check";
                 mensaje.style.opacity = "1";
-
                 setTimeout(() => {
                     icono.innerText = "content_copy";
                     mensaje.style.opacity = "0";
                 }, 2000);
-            }).catch(err => {
-                console.error('Error al copiar: ', err);
             });
         }
 
-        // 3. Interfaz de botones de monto
         function seleccionarMonto(monto) {
             document.getElementById('input-monto').value = monto;
             let botones = document.querySelectorAll('.amount-btn');
@@ -159,21 +172,65 @@
             event.target.classList.add('active-amount');
         }
 
-        // 4. WhatsApp
-        function enviarPorWhatsApp() {
-            const monto = document.getElementById('input-monto').value;
+        function cerrarModalExito() {
+            const modal = document.getElementById('modal-exito-recarga');
+            modal.style.opacity = '0';
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+
+        async function enviarPorWhatsAppYRegistrar() {
+            const monto = parseFloat(document.getElementById('input-monto').value);
             const usuario = localStorage.getItem('nombreUsuario');
+            const btn = document.getElementById('btn-whatsapp');
             
-            if (!monto || monto <= 0) {
-                alert("Por favor, ingresa el monto que depositaste.");
+            if (!monto || monto <= 0 || isNaN(monto)) {
+                alert("Por favor, ingresa un monto válido mayor a 0.");
                 return;
             }
 
-            const numeroAdmin = "51943737572"; 
-            const mensaje = `Hola CarzaD'Cross 👾\n\n📌 *DATOS DEL USUARIO:*\n👤 Usuario: *${usuario}*\n📧 Correo: *${correoUsuarioGlobal}*\n\nAcabo de realizar un pago de *S/ ${monto}* para recargar mi saldo.\n\nA continuación adjunto mi comprobante:`;
-            
-            const url = `https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`;
-            window.open(url, '_blank'); 
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-icons">hourglass_empty</span> Registrando solicitud...';
+
+            try {
+                const { error } = await supabaseClient.from('recargas').insert([{
+                    nickname: usuario,
+                    monto: monto,
+                    metodo: 'Yape/Plin',
+                    estado: 'Pendiente'
+                }]);
+
+                if (error) {
+                    console.error(error);
+                    alert("Hubo un error al registrar tu solicitud.");
+                    btn.disabled = false;
+                    btn.innerHTML = '<span class="material-icons">chat</span> Notificar Pago y Enviar Comprobante';
+                    return;
+                }
+
+                const numeroAdmin = "51943737572"; 
+                const mensaje = `Hola CarzaD'Cross 👾\n\n📌 *SOLICITUD DE RECARGA DE SALDO:*\n👤 Usuario: *${usuario}*\n📧 Correo: *${correoUsuarioGlobal}*\n💰 Monto Depositado: *S/ ${monto.toFixed(2)}*\n\nAcabo de realizar la transferencia y mi solicitud ya se registró en el sistema.\n\nA continuación adjunto la captura de mi comprobante para que apruebes el saldo:`;
+                const url = `https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`;
+                
+                // Configuramos el botón del Modal para redirigir (Soluciona el bloqueo de Safari)
+                document.getElementById('btn-ir-whatsapp').onclick = function() {
+                    window.location.href = url; 
+                };
+
+                // Mostramos el modal
+                const modal = document.getElementById('modal-exito-recarga');
+                modal.style.display = 'flex';
+                setTimeout(() => { modal.style.opacity = '1'; }, 10);
+
+                // Restauramos inputs
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-icons">chat</span> Notificar Pago y Enviar Comprobante';
+                document.getElementById('input-monto').value = '';
+
+            } catch (err) {
+                console.error(err);
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-icons">chat</span> Notificar Pago y Enviar Comprobante';
+            }
         }
     </script>
 </body>

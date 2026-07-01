@@ -9,54 +9,32 @@
 </head>
 <body>
 
-    <!-- BARRA DE NAVEGACIÓN COMPACTA -->
     <nav class="navbar">
         <div class="nav-logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
-            <div class="profile-avatar">C</div>
-            <span>CarzaD'Cross</span>
+            <div class="profile-avatar">C</div><span>CarzaD'Cross</span>
         </div>
-        
         <div class="nav-auth-section" id="nav-logged-out">
          <button class="btn-text" onclick="window.location.href='login.html'">Iniciar Sesión</button>
          <button class="btn-outline" onclick="window.location.href='register.html'">Crear Cuenta</button>
         </div>
-
         <div class="nav-user-section" id="nav-logged-in" style="display: none;">
             <div class="balance-pill">
                 <span class="material-icons wallet-icon">account_balance_wallet</span>
-                <div class="balance-info">
-                    <span class="balance-label">SALDO</span>
-                    <span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span>
-                </div>
+                <div class="balance-info"><span class="balance-label">SALDO</span><span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span></div>
             </div>
             <div class="user-dropdown-container" style="position: relative;">
-    
-             <div class="user-profile" onclick="toggleMenu()" id="btn-usuario-nav" style="cursor: pointer;">
-               <span>Carlos</span>
-               <span class="material-icons">expand_more</span>
-             </div>
-    
+             <div class="user-profile" onclick="toggleMenu()" id="btn-usuario-nav" style="cursor: pointer;"><span>Carlos</span><span class="material-icons">expand_more</span></div>
             <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 8px; min-width: 160px; z-index: 1000; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
-                 <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
-                   <span class="material-icons">person</span> Mis Datos
-                 </a>
-                 <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
-                  <span class="material-icons">account_balance_wallet</span> Recargar Saldo
-                 </a>
-                <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;">
-                  <span class="material-icons">logout</span> Cerrar Sesión
-                </a>
+                 <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">person</span> Mis Datos</a>
+                 <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
+                <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;"><span class="material-icons">logout</span> Cerrar Sesión</a>
             </div>
          </div>
         </div>
     </nav>
 
-    <!-- CATÁLOGO DE FRAGMENTOS UNIVERSALES -->
     <main class="container" style="padding-top: 30px;">
-        <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600;">
-            <span class="material-icons">arrow_back</span> Volver al inicio
-        </a>
-
+        <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600;"><span class="material-icons">arrow_back</span> Volver al inicio</a>
         <div class="category-header"><h2>FRAGMENTOS UNIVERSALES ⚛️</h2></div>
         <section class="products-grid">
             <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">200 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 33.00</span></div><button class="btn-buy" onclick="abrirModalCompra('200 Fragmentos', 33.00)">Comprar</button></div>
@@ -70,7 +48,7 @@
         </section>
     </main>
 
-    <!-- ESTILOS FOOTER & FAQ -->
+    <!-- ESTILOS Y FOOTER -->
     <style>
         .cz-faq-wrapper { max-width: 850px; margin: 90px auto 60px; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .cz-faq-header { text-align: center; margin-bottom: 50px; }
@@ -111,40 +89,19 @@
     </style>
 
     <section class="cz-faq-wrapper">
-        <div class="cz-faq-header">
-            <span class="cz-faq-subtitle">Centro de Ayuda</span>
-            <h2 class="cz-faq-title">Preguntas Frecuentes</h2>
-        </div>
-
+        <div class="cz-faq-header"><span class="cz-faq-subtitle">Centro de Ayuda</span><h2 class="cz-faq-title">Preguntas Frecuentes</h2></div>
         <div class="cz-faq-grid">
             <div class="cz-faq-item" onclick="toggleCzFaq(this)">
-                <div class="cz-faq-q">
-                    <span>¿Cuánto demora en procesarse mi recarga?</span>
-                    <span class="material-icons cz-faq-icon">expand_more</span>
-                </div>
-                <div class="cz-faq-a">
-                    Nuestro sistema está optimizado para la velocidad. Una vez que validamos la captura de tu comprobante de Yape o Plin en nuestro WhatsApp, el saldo o los diamantes se abonan a tu cuenta en menos de 5 minutos.
-                </div>
+                <div class="cz-faq-q"><span>¿Cuánto demora en procesarse mi recarga?</span><span class="material-icons cz-faq-icon">expand_more</span></div>
+                <div class="cz-faq-a">Nuestro sistema está optimizado para la velocidad. Una vez que validamos la captura de tu comprobante de Yape o Plin en nuestro WhatsApp, el saldo o los diamantes se abonan a tu cuenta en menos de 5 minutos.</div>
             </div>
-
             <div class="cz-faq-item" onclick="toggleCzFaq(this)">
-                <div class="cz-faq-q">
-                    <span>¿Qué datos necesitan de mi cuenta?</span>
-                    <span class="material-icons cz-faq-icon">expand_more</span>
-                </div>
-                <div class="cz-faq-a">
-                    Únicamente necesitamos tu ID de jugador. Jamás te pediremos correos, contraseñas ni accesos a tus redes sociales. Tu cuenta está 100% segura.
-                </div>
+                <div class="cz-faq-q"><span>¿Qué datos necesitan de mi cuenta?</span><span class="material-icons cz-faq-icon">expand_more</span></div>
+                <div class="cz-faq-a">Únicamente necesitamos tu ID de jugador y Nickname. Jamás te pediremos correos, contraseñas ni accesos a tus redes sociales. Tu cuenta está 100% segura.</div>
             </div>
-
             <div class="cz-faq-item" onclick="toggleCzFaq(this)">
-                <div class="cz-faq-q">
-                    <span>¿Cómo valido mi pago?</span>
-                    <span class="material-icons cz-faq-icon">expand_more</span>
-                </div>
-                <div class="cz-faq-a">
-                    Es muy sencillo: al seleccionar el monto a recargar, la página te generará un mensaje automático. Solo envíanos ese mensaje por WhatsApp junto con la captura de pantalla de tu transferencia.
-                </div>
+                <div class="cz-faq-q"><span>¿Cómo valido mi pago?</span><span class="material-icons cz-faq-icon">expand_more</span></div>
+                <div class="cz-faq-a">Es muy sencillo: al seleccionar el monto a recargar, la página te generará un mensaje automático. Solo envíanos ese mensaje por WhatsApp junto con la captura de pantalla de tu transferencia.</div>
             </div>
         </div>
     </section>
@@ -152,80 +109,48 @@
     <footer class="cz-footer">
         <div class="cz-footer-content">
             <div class="cz-f-brand">
-                <div class="cz-f-logo">
-                    <div class="avatar">C</div>
-                    CarzaD'Cross
-                </div>
+                <div class="cz-f-logo"><div class="avatar">C</div>CarzaD'Cross</div>
                 <p class="cz-f-desc">La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
-                <div class="cz-f-trust">
-                    <span><span class="material-icons">bolt</span> Entrega < 5 min</span>
-                    <span><span class="material-icons">verified_user</span> 100% Seguro</span>
-                    <span><span class="material-icons">account_balance_wallet</span> Yape / Plin</span>
-                </div>
+                <div class="cz-f-trust"><span><span class="material-icons">bolt</span> Entrega < 5 min</span><span><span class="material-icons">verified_user</span> 100% Seguro</span><span><span class="material-icons">account_balance_wallet</span> Yape / Plin</span></div>
             </div>
-            <div class="cz-f-col">
-                <h4>Navegación</h4>
-                <ul>
-                    <li><a href="index.html"><span class="material-icons">chevron_right</span> Inicio</a></li>
-                    <li><a href="catalogo-regular.html"><span class="material-icons">chevron_right</span> Catálogo Free Fire</a></li>
-                    <li><a href="catalogo-cajas.html"><span class="material-icons">chevron_right</span> Cajas y Fragmentos</a></li>
-                    <li><a href="perfil.html"><span class="material-icons">chevron_right</span> Mi Panel</a></li>
-                </ul>
-            </div>
-            <div class="cz-f-col">
-                <h4>Soporte</h4>
-                <ul>
-                    <li><a href="recargar.html"><span class="material-icons">chevron_right</span> Reportar Pago</a></li>
-                    <li><a href="https://wa.me/51943737572" target="_blank"><span class="material-icons">chevron_right</span> Contactar por WhatsApp</a></li>
-                    <li><a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><span class="material-icons">chevron_right</span> Centro de Ayuda</a></li>
-                </ul>
-            </div>
-            <div class="cz-f-col">
-                <h4>Legal</h4>
-                <ul>
-                    <li><a href="#"><span class="material-icons">chevron_right</span> Términos de Servicio</a></li>
-                    <li><a href="#"><span class="material-icons">chevron_right</span> Política de Privacidad</a></li>
-                    <li><a href="#"><span class="material-icons">chevron_right</span> Garantía de Entrega</a></li>
-                </ul>
-            </div>
+            <div class="cz-f-col"><h4>Navegación</h4><ul><li><a href="index.html"><span class="material-icons">chevron_right</span> Inicio</a></li><li><a href="catalogo-regular.html"><span class="material-icons">chevron_right</span> Catálogo Free Fire</a></li><li><a href="catalogo-cajas.html"><span class="material-icons">chevron_right</span> Cajas y Fragmentos</a></li><li><a href="perfil.html"><span class="material-icons">chevron_right</span> Mi Panel</a></li></ul></div>
+            <div class="cz-f-col"><h4>Soporte</h4><ul><li><a href="recargar.html"><span class="material-icons">chevron_right</span> Reportar Pago</a></li><li><a href="https://wa.me/51943737572" target="_blank"><span class="material-icons">chevron_right</span> Contactar por WhatsApp</a></li><li><a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><span class="material-icons">chevron_right</span> Centro de Ayuda</a></li></ul></div>
+            <div class="cz-f-col"><h4>Legal</h4><ul><li><a href="#"><span class="material-icons">chevron_right</span> Términos de Servicio</a></li><li><a href="#"><span class="material-icons">chevron_right</span> Política de Privacidad</a></li><li><a href="#"><span class="material-icons">chevron_right</span> Garantía de Entrega</a></li></ul></div>
         </div>
-        <div class="cz-footer-bottom">
-            <div class="cz-copy">&copy; 2026 CarzaD'Cross. Todos los derechos reservados.</div>
-            <div class="cz-made-with">Hecho con <span style="color: #a155ff; font-size: 16px;">♥</span> en Ica, Perú para la comunidad gaming.</div>
-        </div>
+        <div class="cz-footer-bottom"><div class="cz-copy">&copy; 2026 CarzaD'Cross. Todos los derechos reservados.</div><div class="cz-made-with">Hecho con <span style="color: #a155ff; font-size: 16px;">♥</span> en Ica, Perú para la comunidad gaming.</div></div>
     </footer>
 
     <!-- ============================================== -->
-    <!-- MODAL DE COMPRA MAGISTRAL (CON BLOQUEO DE ID)  -->
+    <!-- MODAL DE COMPRA CORREGIDO (CON PADDING Y FONDO)-->
     <!-- ============================================== -->
     <div id="modal-compra-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
-        <div class="glass-card" style="width: 100%; max-width: 460px; margin: 20px; position: relative; border: 1px solid rgba(161, 85, 255, 0.2); box-shadow: 0 0 30px rgba(161, 85, 255, 0.15);">
-            
+        <div style="width: 100%; max-width: 460px; margin: 20px; padding: 35px; border-radius: 16px; background: #121218; position: relative; border: 1px solid rgba(161, 85, 255, 0.2); box-shadow: 0 0 30px rgba(161, 85, 255, 0.15); box-sizing: border-box;">
             <span onclick="cerrarModalCompra()" style="position: absolute; top: 20px; right: 20px; color: #888899; cursor: pointer; font-size: 24px; font-weight: bold; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#888899'">×</span>
 
             <div id="compra-pantalla-formulario">
-                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
                     <span class="material-icons" style="color: #a155ff; font-size: 32px; background: rgba(161,85,255,0.1); padding: 10px; border-radius: 50%;">shopping_bag</span>
-                    <div>
-                        <h2 style="font-size: 20px; color: white; margin: 0;">Confirmar Pedido</h2>
-                        <p style="color: #a8a8b3; font-size: 13px; margin: 3px 0 0 0;">Estás a un paso de adquirir tu producto.</p>
-                    </div>
+                    <div><h2 style="font-size: 20px; color: white; margin: 0;">Confirmar Pedido</h2><p style="color: #a8a8b3; font-size: 13px; margin: 3px 0 0 0;">Estás a un paso de adquirir tu producto.</p></div>
                 </div>
 
                 <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.03);">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <span style="color: #a8a8b3; font-size: 14px;">Producto:</span>
-                        <strong id="modal-paquete-nombre" style="color: white; font-size: 15px;">---</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #a8a8b3; font-size: 14px;">Total a descontar:</span>
-                        <strong id="modal-paquete-precio" style="color: #00e676; font-size: 16px;">S/ 0.00</strong>
-                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;"><span style="color: #a8a8b3; font-size: 14px;">Producto:</span><strong id="modal-paquete-nombre" style="color: white; font-size: 15px;">---</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color: #a8a8b3; font-size: 14px;">Total a descontar:</span><strong id="modal-paquete-precio" style="color: #00e676; font-size: 16px;">S/ 0.00</strong></div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador</label>
+                    <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Ej. 24958302" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
                 </div>
 
                 <div style="margin-bottom: 25px;">
-                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador</label>
-                    <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Ej. 24958302" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
+                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Nickname en el juego (Exacto)</label>
+                    <input type="text" id="modal-nickname-juego" placeholder="Ej. Carlos_Pro" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; text-align: center; transition: all 0.3s;">
+                </div>
+
+                <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px; margin-bottom: 25px; display: flex; gap: 10px; align-items: flex-start;">
+                    <span class="material-icons" style="color: #ffc107; font-size: 20px;">warning</span>
+                    <p style="margin: 0; color: #ffc107; font-size: 12px; line-height: 1.5;">Verifica bien tu ID y Nickname. No nos hacemos responsables por recargas enviadas a datos incorrectos.</p>
                 </div>
 
                 <button id="btn-confirmar-pago" class="btn-primary" style="width: 100%; padding: 15px; font-size: 15px; font-weight: bold;" onclick="procesarTransaccion()">Confirmar y Descontar Saldo</button>
@@ -234,20 +159,20 @@
             <div id="compra-pantalla-error" style="display: none; text-align: center; padding: 10px 0;">
                 <span class="material-icons" style="font-size: 56px; color: #ff4757; background: rgba(255,71,87,0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px;">gpp_bad</span>
                 <h2 style="font-size: 22px; color: white; margin: 0 0 10px 0;">Saldo Insuficiente</h2>
-                <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">No cuentas con fondos suficientes en tu billetera para completar esta compra.</p>
+                <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">No cuentas con fondos suficientes en tu billetera.</p>
                 <button class="btn-primary" style="width: 100%; padding: 14px; background: #a155ff; color: white;" onclick="window.location.href='recargar.html'">+ Recargar Saldo Ahora</button>
             </div>
 
             <div id="compra-pantalla-exito" style="display: none; text-align: center; padding: 10px 0;">
                 <span class="material-icons" style="font-size: 56px; color: #00e676; background: rgba(0,230,118,0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px;">check_circle</span>
                 <h2 style="font-size: 22px; color: white; margin: 0 0 10px 0;">¡Pedido Recibido!</h2>
-                <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">Tu saldo ha sido debitado correctamente. Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.</p>
+                <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.</p>
                 <button class="btn-outline" style="width: 100%; padding: 14px; border-color: rgba(255,255,255,0.15);" onclick="cerrarModalCompra()">Entendido</button>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPTS UNIFICADOS -->
+    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
@@ -290,7 +215,6 @@
             elemento.classList.toggle('active');
         }
 
-        // --- SISTEMA DE COMPRA ---
         async function abrirModalCompra(nombrePaquete, precioPaquete) {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             if (!nombreGuardado) { window.location.href = 'login.html'; return; }
@@ -301,7 +225,10 @@
             document.getElementById('compra-pantalla-formulario').style.display = 'block';
             document.getElementById('compra-pantalla-error').style.display = 'none';
             document.getElementById('compra-pantalla-exito').style.display = 'none';
+            
             document.getElementById('modal-id-juego').value = "";
+            document.getElementById('modal-nickname-juego').value = "";
+            
             document.getElementById('modal-paquete-nombre').innerText = nombrePaquete;
             document.getElementById('modal-paquete-precio').innerText = `S/ ${precioSeleccionado.toFixed(2)}`;
 
@@ -329,17 +256,13 @@
 
         async function procesarTransaccion() {
             const idJuego = document.getElementById('modal-id-juego').value.trim();
+            const nicknameJuego = document.getElementById('modal-nickname-juego').value.trim();
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             const btn = document.getElementById('btn-confirmar-pago');
 
-            if (!idJuego) { 
-                alert("Por favor, ingresa tu ID de jugador."); 
-                return; 
-            }
-            if (idJuego.length < 7) {
-                alert("El ID ingresado es muy corto. Por favor verifica que esté correcto.");
-                return;
-            }
+            if (!idJuego) { alert("Por favor, ingresa tu ID de jugador."); return; }
+            if (idJuego.length < 7) { alert("El ID ingresado es muy corto. Por favor verifica que esté correcto."); return; }
+            if (!nicknameJuego) { alert("Por favor, ingresa tu Nickname del juego."); return; }
 
             btn.disabled = true; btn.innerText = "Procesando pedido...";
 
@@ -348,8 +271,21 @@
 
             if (errorSaldo) { alert("Error: " + errorSaldo.message); btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo"; return; }
 
-            await supabaseClient.from('pedidos').insert([{ nickname: nombreGuardado, paquete: paqueteSeleccionado, id_juego: idJuego, precio: precioSeleccionado, estado: 'Pendiente' }]);
-            await supabaseClient.from('historial').insert([{ nickname: nombreGuardado, monto: precioSeleccionado, tipo: `Compra: ${paqueteSeleccionado} (ID: ${idJuego})`, estado: 'Descontado' }]);
+            await supabaseClient.from('pedidos').insert([{ 
+                nickname: nombreGuardado, 
+                paquete: paqueteSeleccionado, 
+                id_juego: idJuego, 
+                nickname_juego: nicknameJuego,
+                precio: precioSeleccionado, 
+                estado: 'Pendiente' 
+            }]);
+
+            await supabaseClient.from('historial').insert([{ 
+                nickname: nombreGuardado, 
+                monto: precioSeleccionado, 
+                tipo: `Compra: ${paqueteSeleccionado} (ID: ${idJuego} | Nick: ${nicknameJuego})`, 
+                estado: 'Descontado' 
+            }]);
 
             if(document.getElementById('saldo-nav')) document.getElementById('saldo-nav').innerText = nuevoSaldo.toFixed(2);
 
