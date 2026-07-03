@@ -324,3 +324,23 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
 .promo-stat-box { flex: 1; background-color: #1a1a1e; border: 1px solid #29292e; padding: 15px; border-radius: 8px; text-align: center; }
 .promo-stat-box h3 { color: #00e5ff; font-size: 20px; margin-bottom: 5px; }
 .promo-stat-box p { color: #a8a8b3; font-size: 11px; font-weight: 600; }
+/* DISEÑO RESPONSIVO PARA MÓVILES */
+@media (max-width: 768px) {
+    body { padding: 10px; }
+    .admin-header { flex-direction: column; text-align: center; gap: 15px; }
+    .admin-table-container { padding: 10px; }
+    
+    /* Hacemos que las tablas sean desplazables horizontalmente sin romper el diseño */
+    .admin-table-container { overflow-x: auto; }
+    table { font-size: 12px; }
+    th, td { padding: 10px 5px; }
+    
+    /* El buscador se adapta al ancho de la pantalla */
+    .search-bar { width: 100%; box-sizing: border-box; }
+    
+    /* Ajuste para el formulario de códigos */
+    .admin-table-container > div { grid-template-columns: 1fr !important; }
+    
+    /* Botones más grandes para dedos en móvil */
+    .btn-add, .btn-remove, .btn-complete { padding: 10px; font-size: 12px; }
+}
