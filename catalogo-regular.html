@@ -33,12 +33,21 @@
         </div>
     </nav>
 
+    <!-- PORTADA PERSONALIZADA PARA RECARGA REGULAR -->
+    <header class="hero-container" style="background: linear-gradient(rgba(18, 18, 20, 0.8), rgba(18, 18, 20, 1)), url('freefire.jpg') center/cover; padding: 60px 20px;">
+        <div class="hero-content" style="text-align: center;">
+            <div class="hero-badge" style="border-color: #a155ff; color: #a155ff; background: rgba(161,85,255,0.1); border-radius: 30px; padding: 6px 16px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 20px;">💎 CATÁLOGO OFICIAL</div>
+            <h1 class="hero-title" style="font-size: 38px; font-weight: bold; margin-bottom: 15px;">Recarga <br><span style="color: #a155ff;">REGULAR</span></h1>
+            <p class="hero-subtitle" style="color: #a8a8b3; font-size: 15px; max-width: 600px; margin: 0 auto;">Adquiere tus diamantes y pases de forma automática y 100% segura con tu saldo.</p>
+        </div>
+    </header>
+
     <main class="container" style="padding-top: 30px;">
         <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600;"><span class="material-icons">arrow_back</span> Volver al inicio</a>
-        <div class="category-header"><h2>RECARGA REGULAR 💎</h2></div>
+        <div class="category-header"><h2>PAQUETES DISPONIBLES 💎</h2></div>
         
         <section class="products-grid">
-            <div class="card"><div class="card-badge">Premium</div><div class="card-icon" style="height: 60px; background: url('pasebooyah.png') center/contain no-repeat; margin-bottom: 10px;"></div><h3 class="card-title">Pase Booyah</h3><p class="card-stock">Activación por ID</p><div class="card-prices"><span class="price-current">S/ 6.00</span></div><button class="btn-buy" onclick="abrirModalCompra('Pase Booyah', 5.00)">Comprar</button></div>
+            <div class="card"><div class="card-badge">Premium</div><div class="card-icon" style="height: 60px; background: url('pasebooyah.png') center/contain no-repeat; margin-bottom: 10px;"></div><h3 class="card-title">Pase Booyah</h3><p class="card-stock">Activación por ID</p><div class="card-prices"><span class="price-current">S/ 6.00</span></div><button class="btn-buy" onclick="abrirModalCompra('Pase Booyah', 6.00)">Comprar</button></div>
             <div class="card"><div class="card-badge">Oferta</div><div class="card-icon">💎</div><h3 class="card-title">110 Diamantes</h3><p class="card-stock">100 + 10 Extra</p><div class="card-prices"><span class="price-current">S/ 2.90</span></div><button class="btn-buy" onclick="abrirModalCompra('110 Diamantes', 2.90)">Comprar</button></div>
             <div class="card"><div class="card-badge">-25.83%</div><div class="card-icon">💎</div><h3 class="card-title">341 Diamantes</h3><p class="card-stock">310 + 31 Extra</p><div class="card-prices"><span class="price-old">S/ 12.00</span><span class="price-current">S/ 8.90</span></div><button class="btn-buy" onclick="abrirModalCompra('341 Diamantes', 8.90)">Comprar</button></div>
             <div class="card"><div class="card-badge">-13.21%</div><div class="card-icon">💎💎</div><h3 class="card-title">572 Diamantes</h3><p class="card-stock">520 + 52 Extra</p><div class="card-prices"><span class="price-old">S/ 15.90</span><span class="price-current">S/ 13.80</span></div><button class="btn-buy" onclick="abrirModalCompra('572 Diamantes', 13.80)">Comprar</button></div>
@@ -115,13 +124,13 @@
                 </div>
 
                 <div style="margin-bottom: 20px;">
-                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador</label>
-                    <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Ej. 24958302" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
+                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador (Máx. 11 números)</label>
+                    <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);" autocomplete="off" placeholder="Ej. 24958302" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
                 </div>
 
                 <div style="margin-bottom: 25px;">
                     <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Nickname en el juego (Exacto)</label>
-                    <input type="text" id="modal-nickname-juego" placeholder="Ej. Carlos_Pro" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; text-align: center; transition: all 0.3s;">
+                    <input type="text" id="modal-nickname-juego" autocomplete="off" placeholder="Ej. Carlos_Pro" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; text-align: center; transition: all 0.3s;">
                 </div>
 
                 <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px; margin-bottom: 25px; display: flex; gap: 10px; align-items: flex-start;">
@@ -274,64 +283,61 @@
             document.getElementById('compra-pantalla-exito').style.display = 'block';
             
             btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo";
+
+            // REDIRECCIÓN A WHATSAPP
+            const numeroAdmin = "51943737572";
+            const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de realizar una *RECARGA REGULAR* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n💎 *Paquete:* ${paqueteSeleccionado}\n💰 *Precio:* S/ ${precioSeleccionado.toFixed(2)}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para proceder. ¡Gracias!`;
+            window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
         }
     </script>
+    
     <!-- ========================================== -->
-<!-- FOOTER PROFESIONAL                         -->
-<!-- ========================================== -->
-<footer class="main-footer">
-    <div class="footer-container">
-        <!-- Columna 1: Marca -->
-        <div class="footer-brand">
-            <div class="brand-logo">
-                <div class="logo-icon">C</div>
-                <h2>CarzaD'Cross</h2>
+    <!-- FOOTER PROFESIONAL                         -->
+    <!-- ========================================== -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="brand-logo">
+                    <div class="logo-icon">C</div>
+                    <h2>CarzaD'Cross</h2>
+                </div>
+                <p>La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
+                <div class="trust-badges">
+                    <span><i class="material-icons">bolt</i> Entrega < 5 min</span>
+                    <span><i class="material-icons">verified_user</i> 100% Seguro</span>
+                    <span><i class="material-icons">account_balance_wallet</i> Yape / Plin</span>
+                </div>
             </div>
-            <p>La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
-            <div class="trust-badges">
-                <span><i class="material-icons">bolt</i> Entrega < 5 min</span>
-                <span><i class="material-icons">verified_user</i> 100% Seguro</span>
-                <span><i class="material-icons">account_balance_wallet</i> Yape / Plin</span>
+            <div class="footer-links">
+                <h3 class="footer-title">NAVEGACIÓN</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="catalogo-regular.html">Catálogo Free Fire</a></li>
+                    <li><a href="catalogo-cajas.html">Cajas y Fragmentos</a></li>
+                    <li><a href="perfil.html">Mi Panel</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3 class="footer-title">SOPORTE</h3>
+                <ul>
+                    <li><a href="recargar.html">Reportar Pago</a></li>
+                    <li><a href="https://wa.me/51943737572" target="_blank">Contactar por WhatsApp</a></li>
+                    <li><a href="index.html">Centro de Ayuda</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3 class="footer-title">LEGAL</h3>
+                <ul>
+                    <li><a href="terminos.html">Términos de Servicio</a></li>
+                    <li><a href="privacidad.html">Política de Privacidad</a></li>
+                    <li><a href="garantia.html">Garantía de Entrega</a></li>
+                </ul>
             </div>
         </div>
-
-        <!-- Columna 2: Navegación -->
-        <div class="footer-links">
-            <h3 class="footer-title">NAVEGACIÓN</h3>
-            <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="catalogo-regular.html">Catálogo Free Fire</a></li>
-                <li><a href="catalogo-cajas.html">Cajas y Fragmentos</a></li>
-                <li><a href="perfil.html">Mi Panel</a></li>
-            </ul>
+        <div class="footer-bottom">
+            <p>© 2026 CarzaD'Cross. Todos los derechos reservados.</p>
+            <p class="made-with">Hecho con <span class="material-icons heart">favorite</span> en Perú para la comunidad gaming.</p>
         </div>
-
-        <!-- Columna 3: Soporte -->
-        <div class="footer-links">
-            <h3 class="footer-title">SOPORTE</h3>
-            <ul>
-                <li><a href="recargar.html">Reportar Pago</a></li>
-                <!-- El target="_blank" hace que WhatsApp se abra en una pestaña nueva -->
-                <li><a href="https://wa.me/51943737572" target="_blank">Contactar por WhatsApp</a></li>
-                <li><a href="index.html">Centro de Ayuda</a></li>
-            </ul>
-        </div>
-
-        <!-- Columna 4: Legal -->
-        <div class="footer-links">
-            <h3 class="footer-title">LEGAL</h3>
-            <ul>
-                <li><a href="terminos.html">Términos de Servicio</a></li>
-                <li><a href="privacidad.html">Política de Privacidad</a></li>
-                <li><a href="garantia.html">Garantía de Entrega</a></li>
-            </ul>
-        </div>
-
-    <!-- Copyright -->
-    <div class="footer-bottom">
-        <p>© 2026 CarzaD'Cross. Todos los derechos reservados.</p>
-        <p class="made-with">Hecho con <span class="material-icons heart">favorite</span> en Perú para la comunidad gaming.</p>
-    </div>
-</footer>
+    </footer>
 </body>
 </html>
