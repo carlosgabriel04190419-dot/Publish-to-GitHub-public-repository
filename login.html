@@ -25,18 +25,22 @@
             <h1 class="login-title">Acceso de Usuario</h1>
             <p class="login-subtitle">Ingresa para recargar saldo, ganar beneficios y ver tu historial.</p>
 
+            <div id="msg-box" style="display: none; background: rgba(255, 71, 87, 0.1); border: 1px solid #ff4757; color: #ff4757; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; text-align: center; font-weight: bold;"></div>
+
             <form class="login-form">
                 <label>Usuario o correo</label>
                 <div class="input-group">
                     <span class="material-icons">mail</span>
-                    <input type="email" id="login-correo" placeholder="usuario@correo.com">
+                    <!-- Agregada la función de la tecla Enter -->
+                    <input type="text" id="login-correo" placeholder="usuario@correo.com" onkeydown="if(event.key === 'Enter') manejarLogin()">
                 </div>
 
                 <label>Contraseña</label>
                 <div class="input-group">
                    <span class="material-icons">lock</span>
-                   <input type="password" id="login-password" placeholder="••••••••">
-                     <span class="material-icons eye-icon" onclick="togglePassword('login-password', this)" style="cursor: pointer;">visibility</span>
+                   <!-- Agregada la función de la tecla Enter -->
+                   <input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key === 'Enter') manejarLogin()">
+                   <span class="material-icons eye-icon" onclick="togglePassword('login-password', this)" style="cursor: pointer;">visibility_off</span>
                 </div>
 
                 <div class="login-options">
@@ -44,11 +48,11 @@
                     <a href="#">¿Olvidaste tu contraseña?</a>
                 </div>
 
-                <button type="button" class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="manejarLogin()">Iniciar Sesión</button>
+                <button type="button" id="btn-login" class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="manejarLogin()">Iniciar Sesión</button>
 
                 <div class="divider"><span>o</span></div>
 
-                <button type="button" class="btn-social">
+                <button type="button" class="btn-social" onclick="iniciarConGoogle()">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google"> Iniciar sesión con Google
                 </button>
                 <button type="button" class="btn-social">
@@ -93,42 +97,83 @@
 
         function togglePassword(inputId, iconElement) {
             const input = document.getElementById(inputId);
-            if (input.type === "password") {
-                input.type = "text";
-                iconElement.innerText = "visibility_off";
-            } else {
-                input.type = "password";
-                iconElement.innerText = "visibility";
+            if (input.type === "password") { input.type = "text"; iconElement.innerText = "visibility"; } 
+            else { input.type = "password"; iconElement.innerText = "visibility_off"; }
+        }
+
+        function mostrarError(mensaje) {
+            const box = document.getElementById('msg-box');
+            box.style.display = 'block';
+            box.innerText = mensaje;
+        }
+
+        window.onload = async function() {
+            if (window.location.hash && window.location.hash.includes('access_token')) {
+                const btn = document.getElementById('btn-login');
+                btn.innerText = "Sincronizando perfil..."; btn.disabled = true;
+
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                if (session) {
+                    const email = session.user.email;
+                    let fullName = session.user.user_metadata.full_name || email.split('@')[0];
+                    let nicknameLimpio = fullName.replace(/[^a-zA-Z0-9_]/g, '');
+
+                    let { data: usuarioData } = await supabaseClient.from('usuarios').select('nickname').eq('correo', email).single();
+                    
+                    if (!usuarioData) {
+                        await supabaseClient.from('usuarios').insert([{ nickname: nicknameLimpio, correo: email, saldo: 0 }]);
+                        usuarioData = { nickname: nicknameLimpio };
+                    }
+
+                    localStorage.setItem('nombreUsuario', usuarioData.nickname);
+                    window.location.href = 'index.html';
+                }
             }
+        };
+
+        async function iniciarConGoogle() {
+            await supabaseClient.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: window.location.origin + window.location.pathname }
+            });
         }
 
         async function manejarLogin() {
-            // Agarramos lo que el usuario escribió (puede ser su correo o su nickname)
-            const inputUsuario = document.getElementById('login-correo').value;
+            const inputUsuario = document.getElementById('login-correo').value.trim();
+            const password = document.getElementById('login-password').value;
+            const btn = document.getElementById('btn-login');
             
-            if (!inputUsuario) {
-                alert("Por favor, ingresa tu correo o usuario.");
-                return;
+            if (!inputUsuario || !password) return mostrarError("Por favor, ingresa tu correo/usuario y contraseña.");
+
+            btn.disabled = true; btn.innerText = "Ingresando...";
+            document.getElementById('msg-box').style.display = 'none';
+
+            let emailToLogin = inputUsuario;
+
+            if (!inputUsuario.includes('@')) {
+                const { data: userData } = await supabaseClient.from('usuarios').select('correo').eq('nickname', inputUsuario).single();
+                if (userData && userData.correo) { emailToLogin = userData.correo; } 
+                else { btn.disabled = false; btn.innerText = "Iniciar Sesión"; return mostrarError("Usuario no encontrado."); }
             }
 
-            try {
-                // Le decimos a Supabase: "Busca a alguien cuyo correo sea igual a lo escrito, O cuyo nickname sea igual a lo escrito"
-                const { data, error } = await supabaseClient
-                    .from('usuarios')
-                    .select('*')
-                    .or(`correo.eq.${inputUsuario},nickname.eq.${inputUsuario}`)
-                    .single(); 
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email: emailToLogin, password: password });
 
-                if (error || !data) {
-                    alert("Usuario o contraseña incorrectos.");
-                    console.error("Error:", error);
-                } else {
-                    // Éxito
-                    localStorage.setItem('nombreUsuario', data.nickname);
-                    window.location.href = 'index.html';
-                }
-            } catch (err) {
-                alert("Error de conexión al servidor.");
+            if (error) {
+                btn.disabled = false; btn.innerText = "Iniciar Sesión";
+                if (error.message.includes("Email not confirmed")) return mostrarError("Ve a Supabase > Authentication > Providers y desactiva 'Confirm email'.");
+                if (error.message.includes("Invalid login credentials")) return mostrarError("Usuario, correo o contraseña incorrectos.");
+                return mostrarError("Error: " + error.message);
+            }
+
+            const { data: currentUser } = await supabaseClient.from('usuarios').select('nickname').eq('correo', emailToLogin).single();
+            
+            if (currentUser) {
+                localStorage.setItem('nombreUsuario', currentUser.nickname);
+                window.location.href = 'index.html';
+            } else {
+                mostrarError("Error interno: Perfil no encontrado.");
+                btn.disabled = false; btn.innerText = "Iniciar Sesión";
             }
         }
     </script>

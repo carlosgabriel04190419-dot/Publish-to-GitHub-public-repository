@@ -47,7 +47,7 @@
 </head>
 <body>
 
-    <!-- CAJA DE MODAL GENÉRICO -->
+    <!-- CAJA DE MODAL GENÉRICO PARA REEMPLAZAR PROMPT Y CONFIRM -->
     <div id="custom-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
         <div style="background:#121218; width:90%; max-width:400px; text-align:center; padding:35px; border:1px solid #a155ff; border-radius: 16px; box-shadow: 0 0 30px rgba(161,85,255,0.15);">
             <span id="c-modal-icon" class="material-icons" style="font-size:56px; color:#a155ff; margin-bottom:15px;">info</span>
@@ -67,12 +67,16 @@
     <div id="admin-login-screen">
         <div class="login-box">
             <span class="material-icons" style="font-size: 64px; color: #a155ff; margin-bottom: 10px;">admin_panel_settings</span>
-            <h2 style="margin: 0 0 5px 0;">Acceso Administrativo</h2>
-            <p style="color: #a8a8b3; font-size: 14px; margin-bottom: 25px;">Ingresa tu clave maestra para continuar.</p>
-            <input type="password" id="admin-pass-input" class="login-input" placeholder="Contraseña">
-            <button class="btn-primary" style="width: 100%; padding: 15px; font-size: 16px; font-weight: bold;" onclick="iniciarSesionAdmin()">Entrar al Sistema</button>
-            <p id="admin-error-msg" style="color: #ff4757; font-size: 13px; margin-top: 15px; display: none;">Contraseña incorrecta.</p>
-            <button class="btn-text" style="margin-top: 20px; color: #a8a8b3;" onclick="window.location.href='index.html'">Volver a la Tienda</button>
+            <h2 style="margin: 0 0 5px 0;">Bóveda Administrativa</h2>
+            <p style="color: #a8a8b3; font-size: 14px; margin-bottom: 25px;">Sistema blindado. Verifica tu identidad.</p>
+            
+            <button style="width: 100%; background: white; color: black; border: none; padding: 14px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px;" onclick="iniciarAdminConGoogle()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" style="width: 20px;">
+                Verificar con Google
+            </button>
+
+            <p id="admin-error-msg" style="color: #ff4757; font-size: 13px; margin-top: 15px; display: none;">Acceso denegado. Correo no autorizado.</p>
+            <button class="btn-text" style="margin-top: 20px; color: #a8a8b3; background: transparent; border: none; cursor: pointer;" onclick="window.location.href='index.html'">Volver a la Tienda</button>
         </div>
     </div>
 
@@ -153,7 +157,7 @@ B9C1-TR55-Y7H6"></textarea>
         const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        const passwordMaestra = "CarzaAdmin"; 
+        const correoAdministrador = "carlosgabriel04190419@gmail.com"; 
         let todosLosUsuarios = []; 
 
         // =====================================
@@ -208,16 +212,35 @@ B9C1-TR55-Y7H6"></textarea>
             if(modalResolve) modalResolve(isPrompt ? document.getElementById('c-modal-input').value : true);
         };
 
-        // LOGIN
-        window.onload = function() {
-            if (sessionStorage.getItem('adminAcceso') === "aprobado") { mostrarPanel(); } 
-            else { document.getElementById('admin-login-screen').style.display = 'flex'; document.getElementById('admin-dashboard').style.display = 'none'; }
+        // LOGIN ADMINISTRATIVO SEGURO
+        window.onload = async function() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            if (session) {
+                if (session.user.email === correoAdministrador) {
+                    mostrarPanel();
+                } else {
+                    document.getElementById('admin-error-msg').style.display = 'block';
+                    await supabaseClient.auth.signOut();
+                }
+            } else {
+                document.getElementById('admin-login-screen').style.display = 'flex';
+                document.getElementById('admin-dashboard').style.display = 'none';
+            }
         };
-        function iniciarSesionAdmin() {
-            if (document.getElementById('admin-pass-input').value === passwordMaestra) { sessionStorage.setItem('adminAcceso', 'aprobado'); mostrarPanel(); } 
-            else { document.getElementById('admin-error-msg').style.display = 'block'; }
+
+        async function iniciarAdminConGoogle() {
+            await supabaseClient.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: window.location.origin + window.location.pathname }
+            });
         }
-        function cerrarSesionAdmin() { sessionStorage.removeItem('adminAcceso'); window.location.reload(); }
+
+        async function cerrarSesionAdmin() { 
+            await supabaseClient.auth.signOut();
+            window.location.reload(); 
+        }
+
         async function mostrarPanel() {
             document.getElementById('admin-login-screen').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'block';
             await cargarUsuarios(); await cargarPedidos(); await cargarRecargas(); await cargarHistorial();
@@ -250,7 +273,7 @@ B9C1-TR55-Y7H6"></textarea>
             } else { 
                 showToast(`¡${listaCodigos.length} códigos añadidos al inventario!`); 
                 document.getElementById('bulk-codigos').value = ''; 
-                cargarPedidos(); // Recargamos por si hay pedidos pendientes esperando stock
+                cargarPedidos();
             }
             btn.disabled = false; btn.innerHTML = '<span class="material-icons">cloud_upload</span> Guardar Códigos';
         }
@@ -296,15 +319,12 @@ B9C1-TR55-Y7H6"></textarea>
             if(conf) { await supabaseClient.from('recargas').update({ estado: 'Rechazado' }).eq('id', id); showToast("Recarga rechazada", "warning"); cargarRecargas(); } 
         }
 
-        // =====================================
-        // PEDIDOS Y AUTO-COMPLETADO INTELIGENTE
-        // =====================================
+        // PEDIDOS DE JUEGOS
         async function cargarPedidos() {
             const { data, error } = await supabaseClient.from('pedidos').select('*').eq('estado', 'Pendiente').order('created_at', { ascending: true });
             const tbody = document.getElementById('tabla-pedidos'); tbody.innerHTML = "";
             if (error || !data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='7' style='text-align: center; color: #a8a8b3;'>✅ No hay pedidos de juegos pendientes.</td></tr>"; return; }
             
-            // ESCANEO INTELIGENTE: Verificamos si hay algún pedido con códigos faltantes para auto-rellenarlo
             for (let p of data) {
                 if (p.codigo && p.codigo.includes("⚠️ Falta")) {
                     let paqueteABuscar = p.paquete;
@@ -334,7 +354,6 @@ B9C1-TR55-Y7H6"></textarea>
                 }
             }
 
-            // RENDERIZAR LA TABLA DE PEDIDOS
             data.forEach(p => {
                 let codFormateado = '<span style="color: #666; font-size: 12px;">Activación directa</span>';
                 if (p.codigo) {

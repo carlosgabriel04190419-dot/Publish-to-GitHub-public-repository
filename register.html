@@ -3,177 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CarzaD'Cross | Registro</title>
+    <title>CarzaD'Cross | Crear Cuenta</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body class="login-body">
 
-    <a href="index.html" class="back-link"><span class="material-icons">arrow_back</span> Volver a CarzaD'Cross</a>
+    <a href="login.html" class="back-link"><span class="material-icons">arrow_back</span> Volver al Acceso</a>
 
     <div class="login-container">
         
         <div class="login-left">
-            
-            <div id="step-1">
-                <div class="login-header">
-                    <div class="profile-avatar">C</div>
-                    <div>
-                        <h2>CarzaD'Cross</h2>
-                        <p>Únete a la comunidad</p>
-                    </div>
+            <div class="login-header">
+                <div class="profile-avatar">C</div>
+                <div>
+                    <h2>CarzaD'Cross</h2>
+                    <p>Únete a la comunidad</p>
+                </div>
+            </div>
+
+            <h1 class="login-title">Crear Cuenta</h1>
+            <p class="login-subtitle">Regístrate para recargar de forma segura e instantánea.</p>
+
+            <div id="msg-box" style="display: none; background: rgba(255, 71, 87, 0.1); border: 1px solid #ff4757; color: #ff4757; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; text-align: center; font-weight: bold;"></div>
+
+            <form class="login-form">
+                <label>Nickname (¿Cómo te llamamos?)</label>
+                <div class="input-group">
+                    <span class="material-icons">person</span>
+                    <input type="text" id="reg-nickname" placeholder="Ej. CarlosGamer" onkeydown="if(event.key === 'Enter') registrarUsuario()">
                 </div>
 
-                <h1 class="login-title">Crear Cuenta</h1>
-                <p class="login-subtitle">Regístrate para recargar de forma segura e instantánea.</p>
+                <label>Correo Electrónico</label>
+                <div class="input-group">
+                    <span class="material-icons">mail</span>
+                    <input type="email" id="reg-correo" placeholder="usuario@correo.com" onkeydown="if(event.key === 'Enter') registrarUsuario()">
+                </div>
 
-                <form class="login-form" onsubmit="event.preventDefault(); mostrarVerificacion();">
-                    <label>Nickname (¿Cómo te llamamos?)</label>
-                    <div class="input-group">
-                        <span class="material-icons">person</span>
-                        <input type="text" id="reg-nickname" placeholder="Ej. CarlosGamer" required>
-                    </div>
-
-                    <label>Correo Electrónico</label>
-                    <div class="input-group">
-                        <span class="material-icons">mail</span>
-                        <input type="email" id="reg-correo" placeholder="usuario@correo.com" required>
-                    </div>
-
-                    <label>Número de Celular</label>
-                    <div class="input-group" style="display: flex; align-items: center;">
-                        <span class="material-icons">phone_android</span>
-                        <select id="reg-codigo-pais" style="background: transparent; border: none; color: white; outline: none; padding-right: 5px; border-right: 1px solid #333; margin-right: 10px; cursor: pointer;">
-                            <option value="+51" style="color: black;">🇵🇪 +51</option>
+                <label>Número de Celular</label>
+                <div class="input-group" style="display: flex; gap: 10px; padding: 0;">
+                    <div style="background: rgba(0, 0, 0, 0.2); border-right: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; padding: 0 10px; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">
+                        <span class="material-icons" style="color: #666; font-size: 18px; margin-right: 5px;">smartphone</span>
+                        <select id="reg-codigo-pais" style="background: transparent; color: white; border: none; outline: none; font-size: 15px; cursor: pointer;">
+                            <option value="+51" selected style="color: black;">🇵🇪 +51</option>
+                            <option value="+52" style="color: black;">🇲🇽 +52</option>
+                            <option value="+57" style="color: black;">🇨🇴 +57</option>
+                            <option value="+54" style="color: black;">🇦🇷 +54</option>
                             <option value="+56" style="color: black;">🇨🇱 +56</option>
+                            <option value="+58" style="color: black;">🇻🇪 +58</option>
+                            <option value="+593" style="color: black;">🇪🇨 +593</option>
+                            <option value="+591" style="color: black;">🇧🇴 +591</option>
                         </select>
-                        <input type="tel" id="reg-celular" placeholder="942 395 040" required maxlength="11" style="flex: 1;">
                     </div>
-
-                    <label>Contraseña</label>
-                    <div class="input-group">
-                        <span class="material-icons">lock</span>
-                        <input type="password" id="reg-password" placeholder="Crea una contraseña segura" required>
-                        <span class="material-icons eye-icon" onclick="togglePassword('reg-password', this)" style="cursor: pointer;">visibility</span>
-                    </div>
-
-                    <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">Continuar</button>
-
-                    <div class="divider"><span>o</span></div>
-                    <button type="button" class="btn-social">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google"> Registrarme con Google
-                    </button>
-
-                    <p class="terms-text" style="font-size: 13px;">¿Ya tienes una cuenta? <a href="login.html" style="font-weight: bold;">Inicia sesión aquí</a></p>
-                </form>
-            </div>
-
-            <div id="step-2" style="display: none; text-align: center; animation: slideUp 0.4s ease-out;">
-                <div class="support-icon-box" style="margin: 0 auto 20px auto; width: 60px; height: 60px;">
-                    <span class="material-icons" style="font-size: 30px;">mark_email_read</span>
-                </div>
-                <h1 class="login-title">Verifica tu correo</h1>
-                <p class="login-subtitle">Hemos enviado un código de 6 dígitos a tu bandeja de entrada. Ingrésalo para activar tu cuenta.</p>
-
-                <div class="code-inputs" style="margin-bottom: 30px;">
-                    <input type="text" maxlength="1" class="code-box" onkeyup="moverFoco(this, 1)" id="c1" autofocus>
-                    <input type="text" maxlength="1" class="code-box" onkeyup="moverFoco(this, 2)" id="c2">
-                    <input type="text" maxlength="1" class="code-box" onkeyup="moverFoco(this, 3)" id="c3">
-                    <input type="text" maxlength="1" class="code-box" onkeyup="moverFoco(this, 4)" id="c4">
-                    <input type="text" maxlength="1" class="code-box" onkeyup="moverFoco(this, 5)" id="c5">
-                    <input type="text" maxlength="1" class="code-box" onkeyup="moverFoco(this, 6)" id="c6">
+                    <input type="number" id="reg-celular" placeholder="942 395 040" style="flex: 1; border: none; outline: none; background: transparent; color: white; padding: 14px; font-size: 15px;" onkeydown="if(event.key === 'Enter') registrarUsuario()">
                 </div>
 
-                <button type="button" class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="localStorage.setItem('logeado', 'true'); window.location.href='perfil.html'">Verificar Código y Entrar</button>
-                
-                <p class="terms-text">¿No recibiste el código? <a href="#" style="font-weight: bold;" id="timer-text">Reenviar en 00:59</a></p>
-                <a href="#" onclick="volverAlRegistro()" style="color: #a8a8b3; font-size: 12px; text-decoration: none; display: inline-block; margin-top: 15px;">Cambiar correo electrónico</a>
-            </div>
+                <label>Contraseña</label>
+                <div class="input-group">
+                   <span class="material-icons">lock</span>
+                   <input type="password" id="reg-password" placeholder="Crea una contraseña segura" onkeydown="if(event.key === 'Enter') registrarUsuario()">
+                   <span class="material-icons eye-icon" onclick="togglePassword('reg-password', this)" style="cursor: pointer;">visibility_off</span>
+                </div>
 
+                <button type="button" id="btn-registrar" class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="registrarUsuario()">Continuar</button>
+
+                <div class="divider" style="margin: 25px 0;"><span>o</span></div>
+
+                <button type="button" class="btn-social" onclick="iniciarConGoogle()">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google"> Registrarse con Google
+                </button>
+            </form>
         </div>
 
         <div class="login-right">
-            <div class="promo-image login-bg"></div>
-            <h2>Tu seguridad es prioridad</h2>
+            <div class="promo-image login-bg" style="height: 250px; margin-bottom: 30px;"></div>
+            <h2 style="color: #00d2ff;">Tu seguridad es prioridad</h2>
             <p>Implementamos sistemas de verificación avanzados para proteger tu saldo y tus compras en todo momento.</p>
+
             <ul class="promo-list">
-                <li><span class="material-icons">gpp_good</span> Datos encriptados de extremo a extremo</li>
-                <li><span class="material-icons">history</span> Historial detallado de todas tus recargas</li>
-                <li><span class="material-icons">support_agent</span> Soporte directo por WhatsApp</li>
+                <li><span class="material-icons" style="color: #00d2ff;">verified_user</span> Datos encriptados de extremo a extremo</li>
+                <li><span class="material-icons" style="color: #00d2ff;">history</span> Historial detallado de todas tus recargas</li>
+                <li><span class="material-icons" style="color: #00d2ff;">support_agent</span> Soporte directo por WhatsApp</li>
             </ul>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // 1. Configuración de Supabase
         const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
         const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // 2. Función del Ojito de Contraseña
         function togglePassword(inputId, iconElement) {
             const input = document.getElementById(inputId);
-            if (input.type === "password") {
-                input.type = "text";
-                iconElement.innerText = "visibility_off";
+            if (input.type === "password") { input.type = "text"; iconElement.innerText = "visibility"; } 
+            else { input.type = "password"; iconElement.innerText = "visibility_off"; }
+        }
+
+        function mostrarMensaje(texto, tipo = 'error') {
+            const box = document.getElementById('msg-box');
+            box.style.display = 'block';
+            box.innerHTML = texto;
+            if (tipo === 'exito') {
+                box.style.background = 'rgba(0, 230, 118, 0.1)'; box.style.border = '1px solid #00e676'; box.style.color = '#00e676';
             } else {
-                input.type = "password";
-                iconElement.innerText = "visibility";
+                box.style.background = 'rgba(255, 71, 87, 0.1)'; box.style.border = '1px solid #ff4757'; box.style.color = '#ff4757';
             }
         }
 
-        // 3. Formateador automático del celular (Fuerza números y espacios)
-        document.getElementById('reg-celular').addEventListener('input', function(e) {
-            let valor = e.target.value.replace(/\D/g, ''); // Borra letras
-            let formateado = '';
-            if (valor.length > 0) formateado += valor.substring(0, 3);
-            if (valor.length > 3) formateado += ' ' + valor.substring(3, 6);
-            if (valor.length > 6) formateado += ' ' + valor.substring(6, 9);
-            e.target.value = formateado;
-        });
-
-        // 4. Salto automático en las cajitas del código
-        function moverFoco(elemento, numeroCajita) {
-            let valor = elemento.value;
-            if (valor.length === 1 && numeroCajita < 6) {
-                document.getElementById('c' + (numeroCajita + 1)).focus();
-            }
+        async function iniciarConGoogle() {
+            await supabaseClient.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: window.location.origin + '/login.html' }
+            });
         }
 
-        function volverAlRegistro() {
-            document.getElementById('step-2').style.display = 'none';
-            document.getElementById('step-1').style.display = 'block';
-        }
-
-        // 5. Envío de datos
-        async function mostrarVerificacion() {
-            const nickname = document.getElementById('reg-nickname').value;
-            const correo = document.getElementById('reg-correo').value;
+        async function registrarUsuario() {
+            const nickname = document.getElementById('reg-nickname').value.trim();
+            const correo = document.getElementById('reg-correo').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const celular = document.getElementById('reg-celular').value;
             const codigoPais = document.getElementById('reg-codigo-pais').value;
-            const celularBase = document.getElementById('reg-celular').value;
-            
-            // Unimos el código de país con el número (ej: +51 987 654 321)
-            const celularCompleto = codigoPais + ' ' + celularBase;
+            const btn = document.getElementById('btn-registrar');
 
-            try {
-                const { data, error } = await supabaseClient
-                    .from('usuarios')
-                    .insert([{ nickname: nickname, correo: correo, celular: celularCompleto, saldo: 0 }]);
+            if (!nickname || !correo || !password) return mostrarMensaje("Completa todos los campos obligatorios.");
+            if (password.length < 6) return mostrarMensaje("La contraseña debe tener al menos 6 caracteres.");
 
-                if (error) {
-                    alert("Error: " + error.message);
-                    return;
-                }
+            btn.disabled = true; btn.innerText = "Procesando...";
 
-                localStorage.setItem('nombreUsuario', nickname);
-                document.getElementById('step-1').style.display = 'none';
-                document.getElementById('step-2').style.display = 'block';
-                document.getElementById('c1').focus();
-                
-            } catch (err) {
-                alert("Error de conexión: " + err.message);
+            const { data: nickExistente } = await supabaseClient.from('usuarios').select('nickname').eq('nickname', nickname).single();
+            if (nickExistente) {
+                mostrarMensaje("Ese nickname ya está en uso. Elige otro.");
+                btn.disabled = false; btn.innerText = "Continuar"; return;
             }
+
+            const { data, error } = await supabaseClient.auth.signUp({ email: correo, password: password });
+
+            if (error) {
+                mostrarMensaje("Error: " + error.message);
+                btn.disabled = false; btn.innerText = "Continuar"; return;
+            }
+
+            const numeroCompleto = celular ? (codigoPais + " " + celular) : null;
+            await supabaseClient.from('usuarios').insert([{ nickname: nickname, correo: correo, saldo: 0, celular: numeroCompleto }]);
+
+            mostrarMensaje("¡Cuenta creada con éxito!<br>Redirigiendo al acceso...", "exito");
+            btn.innerText = "Ingresando...";
+            
+            // Redirige al login en 2 segundos
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 2000);
         }
     </script>
 </body>
