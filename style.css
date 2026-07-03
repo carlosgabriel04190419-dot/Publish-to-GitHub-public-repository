@@ -344,3 +344,89 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
     /* Botones más grandes para dedos en móvil */
     .btn-add, .btn-remove, .btn-complete { padding: 10px; font-size: 12px; }
 }
+/* ========================================== */
+/* ESTILOS DEL FOOTER                         */
+/* ========================================== */
+.main-footer {
+    background-color: #050508;
+    border-top: 1px solid #1a1a24;
+    padding: 60px 20px 20px 20px;
+    margin-top: 50px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.footer-brand .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.footer-brand .logo-icon {
+    background-color: #a155ff;
+    color: white;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.footer-brand h2 { color: white; font-size: 24px; margin: 0; }
+.footer-brand p { color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px; max-width: 350px; }
+
+.trust-badges { display: flex; flex-wrap: wrap; gap: 15px; }
+.trust-badges span { display: flex; align-items: center; gap: 5px; color: white; font-size: 13px; font-weight: 600; }
+.trust-badges .material-icons { color: #a155ff; font-size: 18px; }
+
+.footer-title {
+    color: white;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    margin-bottom: 20px;
+    border-left: 3px solid #a155ff;
+    padding-left: 10px;
+}
+
+.footer-links ul { list-style: none; padding: 0; margin: 0; }
+.footer-links li { margin-bottom: 12px; }
+.footer-links a { color: #a8a8b3; text-decoration: none; font-size: 14px; transition: color 0.2s; }
+.footer-links a:hover { color: #a155ff; }
+
+.footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    border-top: 1px solid #1a1a24;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.footer-bottom p { color: #a8a8b3; font-size: 13px; margin: 0; }
+.made-with { display: flex; align-items: center; gap: 5px; }
+.made-with .heart { color: #a155ff; font-size: 16px; }
+
+/* RESPONSIVO PARA MÓVILES */
+@media (max-width: 900px) {
+    .footer-container { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+    .footer-container { grid-template-columns: 1fr; text-align: left; }
+    .footer-bottom { flex-direction: column; text-align: center; justify-content: center; }
+}
