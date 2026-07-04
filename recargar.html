@@ -31,6 +31,27 @@
         .bg-plin { background: rgba(0, 230, 118, 0.2); color: #00e676; border: 1px solid #00e676; }
         .bg-dale { background: rgba(0, 210, 255, 0.2); color: #00d2ff; border: 1px solid #00d2ff; }
         .bg-agora { background: rgba(255, 204, 0, 0.2); color: #ffcc00; border: 1px solid #ffcc00; }
+
+        /* ALERTA DE BLOQUEO INTELIGENTE */
+        .bloqueo-alerta {
+            background: rgba(255, 71, 87, 0.15);
+            border: 1px solid #ff4757;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: none; /* Oculto por defecto */
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 0 15px rgba(255, 71, 87, 0.2);
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+        }
     </style>
 </head>
 <body> 
@@ -60,6 +81,17 @@
 
         <div style="flex: 2; min-width: 300px; max-width: 600px;" id="zona-recarga">
             <div class="glass-card" style="text-align: left; max-width: 100%;">
+                
+                <!-- CAJA DE ALERTA (BLOQUEO) -->
+                <div id="alerta-sin-celular" class="bloqueo-alerta">
+                    <span class="material-icons" style="font-size: 30px; color: #ff4757;">error_outline</span>
+                    <div>
+                        <h3 style="margin: 0 0 5px 0; color: #ff4757; font-size: 16px;">¡Atención requerida!</h3>
+                        <p style="margin: 0; font-size: 14px; color: #e0e0e0;">Aún no has vinculado tu WhatsApp. Por seguridad, debes agregarlo en tu perfil para poder enviar comprobantes.</p>
+                        <button onclick="window.location.href='perfil.html'" style="margin-top: 8px; background: #ff4757; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">Ir a mi perfil</button>
+                    </div>
+                </div>
+
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
                     <span class="material-icons" style="color: #00e676; font-size: 32px; background: rgba(0,230,118,0.1); padding: 10px; border-radius: 50%;">account_balance_wallet</span>
                     <h2 style="font-size: 22px; color: white; margin: 0;">Agregar Saldo</h2>
@@ -106,7 +138,7 @@
                     <input type="number" id="input-monto" placeholder="0.00" style="background: transparent; border: none; color: white; font-size: 18px; outline: none; width: 100%;">
                 </div>
 
-                <button id="btn-whatsapp" class="btn-primary" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; background: #25D366; color: black; font-weight: bold; font-size: 16px; padding: 15px;" onclick="enviarPorWhatsAppYRegistrar()">
+                <button id="btn-whatsapp" class="btn-primary" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; background: #25D366; color: black; font-weight: bold; font-size: 16px; padding: 15px; transition: all 0.3s;" onclick="enviarPorWhatsAppYRegistrar()">
                     <span class="material-icons">chat</span> Notificar Pago y Enviar Comprobante
                 </button>
             </div>
@@ -135,16 +167,28 @@
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         let correoUsuarioGlobal = ""; 
+        let celularUsuarioGlobal = null; // Variable para almacenar el celular
 
         window.onload = async function() {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             if (nombreGuardado) {
                 document.getElementById('nombre-pantalla').innerText = nombreGuardado;
                 
-                const { data } = await supabaseClient.from('usuarios').select('saldo, correo').eq('nickname', nombreGuardado).single();
+                const { data } = await supabaseClient.from('usuarios').select('saldo, correo, celular').eq('nickname', nombreGuardado).single();
                 if (data) {
                     document.getElementById('saldo-pantalla').innerText = data.saldo.toFixed(2);
                     correoUsuarioGlobal = data.correo;
+                    celularUsuarioGlobal = data.celular;
+
+                    // LÓGICA DEL BLOQUEO: Si no hay celular, muestra alerta y desactiva botón
+                    if (!celularUsuarioGlobal || celularUsuarioGlobal.trim() === "") {
+                        document.getElementById('alerta-sin-celular').style.display = 'flex';
+                        
+                        const btnSumbit = document.getElementById('btn-whatsapp');
+                        btnSumbit.style.background = '#333'; // Gris
+                        btnSumbit.style.color = '#888';
+                        btnSumbit.innerHTML = '<span class="material-icons">error</span> ⚠️ Requiere vincular WhatsApp';
+                    }
                 }
             } else {
                 window.location.href = 'login.html';
@@ -179,6 +223,13 @@
         }
 
         async function enviarPorWhatsAppYRegistrar() {
+            // VERIFICACIÓN DEL BLOQUEO
+            if (!celularUsuarioGlobal || celularUsuarioGlobal.trim() === "") {
+                alert("⚠️ ¡Atención! Por seguridad, debes vincular tu número de WhatsApp en tu perfil antes de enviar recargas.");
+                window.location.href = 'perfil.html';
+                return;
+            }
+
             const monto = parseFloat(document.getElementById('input-monto').value);
             const usuario = localStorage.getItem('nombreUsuario');
             const btn = document.getElementById('btn-whatsapp');

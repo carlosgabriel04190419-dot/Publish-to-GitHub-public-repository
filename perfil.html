@@ -47,6 +47,27 @@
             border-radius: 8px; 
             padding: 0 14px;
         }
+        
+        /* ALERTA DE BLOQUEO INTELIGENTE */
+        .bloqueo-alerta {
+            background: rgba(255, 71, 87, 0.15);
+            border: 1px solid #ff4757;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: none; /* Oculto por defecto */
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 0 15px rgba(255, 71, 87, 0.2);
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+        }
     </style>
 </head>
 <body>
@@ -55,7 +76,7 @@
         <div class="nav-logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
             <div class="profile-avatar">C</div><span>CarzaD'Cross</span>
         </div>
-        <button class="btn-outline" onclick="window.location.href='index.html'">Volver a la Tienda</button>
+        <button id="btn-volver-tienda" class="btn-outline" onclick="window.location.href='index.html'">Volver a la Tienda</button>
     </nav>
 
     <main class="container" style="padding-top: 50px; display: flex; gap: 30px; flex-wrap: wrap; justify-content: center;">
@@ -72,6 +93,15 @@
 
         <div style="flex: 2; min-width: 300px; max-width: 600px;">
             <div class="glass-card" style="text-align: left; max-width: 100%;">
+                
+                <div id="alerta-sin-celular" class="bloqueo-alerta">
+                    <span class="material-icons" style="font-size: 30px; color: #ff4757;">error_outline</span>
+                    <div>
+                        <h3 style="margin: 0 0 5px 0; color: #ff4757; font-size: 16px;">¡Atención requerida!</h3>
+                        <p style="margin: 0; font-size: 14px; color: #e0e0e0;">Para realizar recargas y compras, debes vincular tu número de WhatsApp. Completa el campo abajo.</p>
+                    </div>
+                </div>
+
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
                     <span class="material-icons" style="color: #a155ff; font-size: 32px; background: rgba(161,85,255,0.1); padding: 10px; border-radius: 50%;">manage_accounts</span>
                     <div>
@@ -91,17 +121,20 @@
                 </div>
                 
                 <div style="margin-bottom: 30px;">
-                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 8px; display: block; font-weight: 500;">Número de Celular</label>
-                    <div class="phone-container">
+                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 8px; display: block; font-weight: 500;">Número de WhatsApp (Obligatorio) <span style="color: #ff4757;">*</span></label>
+                    <div class="phone-container" id="contenedor-input-celular">
                         <select id="edit-codigo-pais" style="background: transparent; border: none; color: white; outline: none; padding-right: 8px; border-right: 1px solid rgba(255,255,255,0.2); margin-right: 12px; cursor: pointer; font-size: 15px;">
                             <option value="+51" style="color: black;">🇵🇪 +51</option>
+                            <option value="+52" style="color: black;">🇲🇽 +52</option>
+                            <option value="+57" style="color: black;">🇨🇴 +57</option>
+                            <option value="+54" style="color: black;">🇦🇷 +54</option>
                             <option value="+56" style="color: black;">🇨🇱 +56</option>
                         </select>
-                        <input type="tel" id="edit-celular" maxlength="11" placeholder="942 395 040" class="input-form-profile" style="border: none; background: transparent; padding-left: 0;">
+                        <input type="tel" id="edit-celular" maxlength="11" placeholder="Ej: 942395040" class="input-form-profile" style="border: none; background: transparent; padding-left: 0; outline: none;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
                 </div>
 
-                <button class="btn-primary" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 15px; font-size: 16px;" onclick="guardarCambios()">
+                <button id="btn-guardar-perfil" class="btn-primary" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 15px; font-size: 16px;" onclick="guardarCambios()">
                     <span class="material-icons">cloud_upload</span> Guardar Cambios
                 </button>
             </div>
@@ -110,8 +143,8 @@
         <div style="flex-basis: 100%; width: 100%; margin-top: 20px;">
             <div class="glass-card">
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                    <span class="material-icons" style="color: #00e676; font-size: 28px;">history</span>
-                    <h2 style="font-size: 20px; color: white; margin: 0;">Últimos Movimientos</h2>
+                    <span class="material-icons" style="color: #00bcd4; font-size: 28px;">history</span>
+                    <h2 style="font-size: 20px; color: white; margin: 0;">Historial de Movimientos</h2>
                 </div>
                 
                 <div style="overflow-x: auto;">
@@ -143,6 +176,7 @@
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
         
         const nombreActual = localStorage.getItem('nombreUsuario');
+        let celularOriginal = null;
 
         window.onload = async function() {
             if (!nombreActual) { window.location.href = 'login.html'; return; }
@@ -154,16 +188,33 @@
             if (data) {
                 document.getElementById('edit-nickname').value = data.nickname;
                 document.getElementById('edit-correo').value = data.correo;
+                celularOriginal = data.celular;
                 
-                // Separamos inteligentemente el código de país y el número
-                if(data.celular) {
-                    if (data.celular.includes('+56')) {
-                        document.getElementById('edit-codigo-pais').value = '+56';
-                        document.getElementById('edit-celular').value = data.celular.replace('+56', '').trim();
-                    } else {
-                        document.getElementById('edit-codigo-pais').value = '+51';
-                        document.getElementById('edit-celular').value = data.celular.replace('+51', '').trim();
-                    }
+                // LÓGICA DEL BLOQUEO INTELIGENTE
+                if(!celularOriginal || celularOriginal.trim() === "") {
+                    // Muestra alerta
+                    document.getElementById('alerta-sin-celular').style.display = 'flex';
+                    // Pinta la caja del teléfono de rojo para llamar la atención
+                    document.getElementById('contenedor-input-celular').style.border = '1px solid #ff4757';
+                    // Cambia el enlace de Volver para forzar a que guarden
+                    document.getElementById('btn-volver-tienda').onclick = function() {
+                        alert("⚠️ Debes vincular y guardar tu número de WhatsApp antes de continuar.");
+                    };
+                } else {
+                    // Separa el código de país del celular para mostrarlo bonito
+                    const prefijos = ["+51", "+52", "+57", "+54", "+56"];
+                    let prefijoEncontrado = "+51"; // Default
+                    let soloNumero = celularOriginal;
+
+                    prefijos.forEach(pref => {
+                        if (celularOriginal.startsWith(pref)) {
+                            prefijoEncontrado = pref;
+                            soloNumero = celularOriginal.replace(pref, '').trim();
+                        }
+                    });
+
+                    document.getElementById('edit-codigo-pais').value = prefijoEncontrado;
+                    document.getElementById('edit-celular').value = soloNumero;
                 }
             }
 
@@ -179,16 +230,24 @@
                 tbody.innerHTML = '';
                 historialData.forEach(mov => {
                     const fecha = new Date(mov.created_at).toLocaleDateString('es-PE', {
-                        day: '2-digit', month: 'short', year: 'numeric'
+                        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                     });
                     
+                    // Lógica para color de monto (Verde si es recarga, Rojo si es compra/gasto)
+                    let colorMonto = "#00e676";
+                    let signoMonto = "+";
+                    if(mov.tipo.toLowerCase().includes("compra")) {
+                        colorMonto = "#ff4757";
+                        signoMonto = "-";
+                    }
+
                     tbody.innerHTML += `
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <td style="padding: 15px; color: white;">${fecha}</td>
-                            <td style="padding: 15px; color: #e0e0e0;">${mov.tipo}</td>
-                            <td style="padding: 15px; text-align: right; color: #00e676; font-weight: bold;">+ S/ ${mov.monto.toFixed(2)}</td>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                            <td style="padding: 15px; color: white; font-size: 13px;">${fecha}</td>
+                            <td style="padding: 15px; color: #e0e0e0; font-size: 14px;">${mov.tipo}</td>
+                            <td style="padding: 15px; text-align: right; color: ${colorMonto}; font-weight: bold;">${signoMonto} S/ ${mov.monto.toFixed(2)}</td>
                             <td style="padding: 15px; text-align: center;">
-                                <span style="background: rgba(0,230,118,0.15); color: #00e676; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">${mov.estado}</span>
+                                <span style="background: rgba(255,255,255,0.1); color: #a8a8b3; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold;">${mov.estado.toUpperCase()}</span>
                             </td>
                         </tr>
                     `;
@@ -198,22 +257,23 @@
             }
         };
 
-        // 3. Bloqueador de letras y formateador de espacios en el celular
-        document.getElementById('edit-celular').addEventListener('input', function(e) {
-            let valor = e.target.value.replace(/\D/g, ''); 
-            let formateado = '';
-            if (valor.length > 0) formateado += valor.substring(0, 3);
-            if (valor.length > 3) formateado += ' ' + valor.substring(3, 6);
-            if (valor.length > 6) formateado += ' ' + valor.substring(6, 9);
-            e.target.value = formateado;
-        });
-
-        // 4. Guardar cambios en la base de datos
+        // 4. Guardar cambios
         async function guardarCambios() {
-            const nuevoNombre = document.getElementById('edit-nickname').value;
-            const nuevoCelular = document.getElementById('edit-celular').value;
+            const nuevoNombre = document.getElementById('edit-nickname').value.trim();
+            const inputCelular = document.getElementById('edit-celular').value.trim();
             const codigo = document.getElementById('edit-codigo-pais').value;
-            const celularFinal = `${codigo} ${nuevoCelular}`;
+            const btn = document.getElementById('btn-guardar-perfil');
+
+            if (!nuevoNombre) {
+                alert("El nombre de usuario no puede estar vacío."); return;
+            }
+
+            if (!inputCelular || inputCelular.length < 8) {
+                alert("Por favor, ingresa un número de WhatsApp válido (Mínimo 8 números)."); return;
+            }
+
+            const celularFinal = `${codigo} ${inputCelular}`;
+            btn.disabled = true; btn.innerHTML = "Guardando...";
 
             const { error } = await supabaseClient
                 .from('usuarios')
@@ -225,10 +285,18 @@
 
             if (error) {
                 alert("Error al guardar: " + error.message);
+                btn.disabled = false; btn.innerHTML = '<span class="material-icons">cloud_upload</span> Guardar Cambios';
             } else {
-                alert("¡Datos actualizados con éxito!");
                 localStorage.setItem('nombreUsuario', nuevoNombre);
-                window.location.reload();
+                
+                // Si el usuario acaba de llenar su celular por primera vez, le damos la bienvenida oficial
+                if(!celularOriginal || celularOriginal.trim() === "") {
+                    alert("¡Gracias! Tu WhatsApp ha sido vinculado. Ya puedes recargar y comprar con normalidad.");
+                    window.location.href = 'index.html'; // Lo mandamos a la tienda
+                } else {
+                    alert("¡Datos actualizados con éxito!");
+                    window.location.reload();
+                }
             }
         }
     </script>

@@ -40,19 +40,20 @@
                     <input type="email" id="reg-correo" placeholder="usuario@correo.com" onkeydown="if(event.key === 'Enter') registrarUsuario()">
                 </div>
 
-                <label>Número de Celular</label>
+                <!-- CAMPO CELULAR AHORA MARCADO COMO OBLIGATORIO -->
+                <label>Número de WhatsApp (Obligatorio) <span style="color: #ff4757;">*</span></label>
                 <div class="input-group" style="display: flex; gap: 10px; padding: 0;">
                     <div style="background: rgba(0, 0, 0, 0.2); border-right: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; padding: 0 10px; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">
                         <span class="material-icons" style="color: #666; font-size: 18px; margin-right: 5px;">smartphone</span>
                         <select id="reg-codigo-pais" style="background: transparent; color: white; border: none; outline: none; font-size: 15px; cursor: pointer;">
-                            <option value="+51" selected style="color: black;">🇵🇪 +51</option>
-                            <option value="+52" style="color: black;">🇲🇽 +52</option>
-                            <option value="+57" style="color: black;">🇨🇴 +57</option>
-                            <option value="+54" style="color: black;">🇦🇷 +54</option>
-                            <option value="+56" style="color: black;">🇨🇱 +56</option>
-                            <option value="+58" style="color: black;">🇻🇪 +58</option>
-                            <option value="+593" style="color: black;">🇪🇨 +593</option>
-                            <option value="+591" style="color: black;">🇧🇴 +591</option>
+                            <option value="51" selected style="color: black;">🇵🇪 +51</option>
+                            <option value="52" style="color: black;">🇲🇽 +52</option>
+                            <option value="57" style="color: black;">🇨🇴 +57</option>
+                            <option value="54" style="color: black;">🇦🇷 +54</option>
+                            <option value="56" style="color: black;">🇨🇱 +56</option>
+                            <option value="58" style="color: black;">🇻🇪 +58</option>
+                            <option value="593" style="color: black;">🇪🇨 +593</option>
+                            <option value="591" style="color: black;">🇧🇴 +591</option>
                         </select>
                     </div>
                     <input type="number" id="reg-celular" placeholder="942 395 040" style="flex: 1; border: none; outline: none; background: transparent; color: white; padding: 14px; font-size: 15px;" onkeydown="if(event.key === 'Enter') registrarUsuario()">
@@ -122,11 +123,13 @@
             const nickname = document.getElementById('reg-nickname').value.trim();
             const correo = document.getElementById('reg-correo').value.trim();
             const password = document.getElementById('reg-password').value;
-            const celular = document.getElementById('reg-celular').value;
+            const celular = document.getElementById('reg-celular').value.trim();
             const codigoPais = document.getElementById('reg-codigo-pais').value;
             const btn = document.getElementById('btn-registrar');
 
-            if (!nickname || !correo || !password) return mostrarMensaje("Completa todos los campos obligatorios.");
+            // NUEVA LÓGICA: CELULAR OBLIGATORIO Y MÍNIMO DE DÍGITOS
+            if (!nickname || !correo || !password) return mostrarMensaje("Completa todos los campos.");
+            if (!celular || celular.length < 8) return mostrarMensaje("Ingresa un número de WhatsApp válido.");
             if (password.length < 6) return mostrarMensaje("La contraseña debe tener al menos 6 caracteres.");
 
             btn.disabled = true; btn.innerText = "Procesando...";
@@ -144,16 +147,14 @@
                 btn.disabled = false; btn.innerText = "Continuar"; return;
             }
 
-            const numeroCompleto = celular ? (codigoPais + " " + celular) : null;
+            // GUARDA EL CELULAR UNIDO AL CÓDIGO DE PAÍS
+            const numeroCompleto = codigoPais + celular;
             await supabaseClient.from('usuarios').insert([{ nickname: nickname, correo: correo, saldo: 0, celular: numeroCompleto }]);
 
             mostrarMensaje("¡Cuenta creada con éxito!<br>Redirigiendo al acceso...", "exito");
             btn.innerText = "Ingresando...";
             
-            // Redirige al login en 2 segundos
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 2000);
+            setTimeout(() => { window.location.href = 'login.html'; }, 2000);
         }
     </script>
 </body>
