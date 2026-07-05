@@ -15,7 +15,7 @@
         .login-input:focus { border-color: #a155ff; }
 
         .admin-header { display: flex; justify-content: space-between; align-items: center; background: #1a1a24; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
-        .admin-table-container { background: #1a1a24; border-radius: 12px; padding: 20px; overflow-x: auto; border: 1px solid #333; margin-bottom: 30px; }
+        .admin-table-container { background: #1a1a24; border-radius: 12px; padding: 20px; border: 1px solid #333; margin-bottom: 30px; }
         
         .upload-container { border: 1px solid #00d2ff; box-shadow: 0 0 15px rgba(0, 210, 255, 0.1); }
         .highlight-container { border: 1px solid #a155ff; box-shadow: 0 0 15px rgba(161, 85, 255, 0.1); }
@@ -26,16 +26,17 @@
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #333; }
         th { color: #a155ff; font-weight: bold; }
         
-        /* BOTONES GRANDES RESTAURADOS */
-        .btn-add { background: #00e676; color: black; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 13px; }
+        /* BOTONES */
+        .btn-add { background: #00e676; color: black; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 13px; }
         .btn-add:hover { background: #00c853; }
-        .btn-remove { background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 13px; }
+        .btn-remove { background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 13px; }
         .btn-remove:hover { background: #ff6b81; }
+        .btn-view { background: #00d2ff; color: black; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 13px; }
         
-        .btn-complete { background: #a155ff; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
+        .btn-complete { background: #a155ff; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.3s; }
         .btn-copy { background: #2a2a35; color: #a8a8b3; border: 1px solid #444; padding: 4px 8px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; margin-left: 5px; transition: 0.2s;}
         
-        .search-bar { background: #2a2a35; border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 8px; width: 300px; outline: none; }
+        .search-bar { background: #2a2a35; border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 8px; width: 100%; max-width: 300px; outline: none; box-sizing: border-box; }
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
 
         .bulk-textarea { width: 100%; height: 120px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: #00e676; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 14px; outline: none; resize: vertical; box-sizing: border-box; margin-bottom: 15px;}
@@ -43,25 +44,65 @@
 
         /* ANIMACIONES TOAST */
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* DISEÑO RESPONSIVO MÓVIL (TARJETAS EN VEZ DE TABLAS) */
+        @media (max-width: 768px) {
+            .admin-header { flex-direction: column; text-align: center; gap: 15px; }
+            .search-bar { max-width: 100%; margin-top: 10px; }
+            .grid-container { grid-template-columns: 1fr !important; }
+            
+            table, thead, tbody, th, td, tr { display: block; width: 100%; box-sizing: border-box; }
+            thead tr { display: none; } /* Ocultar cabeceras reales */
+            tr { background: rgba(0,0,0,0.3); border: 1px solid #333; border-radius: 12px; margin-bottom: 15px; padding: 15px; }
+            td { text-align: right; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; }
+            td:last-child { border-bottom: none; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+            
+            /* Insertar etiquetas falsas antes del contenido en móviles */
+            td::before {
+                content: attr(data-label);
+                float: left;
+                font-weight: bold;
+                color: #a155ff;
+                text-transform: uppercase;
+                font-size: 11px;
+                letter-spacing: 1px;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- CAJA DE MODAL GENÉRICO PARA REEMPLAZAR PROMPT Y CONFIRM -->
+    <!-- MODAL GENÉRICO -->
     <div id="custom-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
         <div style="background:#121218; width:90%; max-width:400px; text-align:center; padding:35px; border:1px solid #a155ff; border-radius: 16px; box-shadow: 0 0 30px rgba(161,85,255,0.15);">
-            <span id="c-modal-icon" class="material-icons" style="font-size:56px; color:#a155ff; margin-bottom:15px;">info</span>
+            <span id="c-modal-icon" class="material-icons" style="font-size:56px; margin-bottom:15px;">info</span>
             <h2 id="c-modal-title" style="margin:0 0 10px 0; font-size:22px;">Title</h2>
-            <p id="c-modal-desc" style="color:#a8a8b3; font-size:14px; margin-bottom:25px;">Desc</p>
+            <p id="c-modal-desc" style="color:#a8a8b3; font-size:14px; margin-bottom:25px; line-height: 1.5;">Desc</p>
             <input type="number" id="c-modal-input" style="display:none; width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:white; padding:15px; border-radius:8px; margin-bottom:25px; text-align:center; font-size:20px; outline:none; font-weight:bold;" placeholder="0.00">
-            <div style="display:flex; gap:10px;">
-                <button id="c-modal-btn-cancel" class="btn-outline" style="flex:1; padding:12px; font-weight:bold;">Cancelar</button>
-                <button id="c-modal-btn-confirm" class="btn-complete" style="flex:1; justify-content:center; padding:12px; font-weight:bold; color:black;">Confirmar</button>
+            <div style="display:flex; gap:10px; flex-wrap: wrap;">
+                <button id="c-modal-btn-cancel" class="btn-outline" style="flex:1; padding:12px; font-weight:bold; min-width: 120px;">Cancelar</button>
+                <button id="c-modal-btn-confirm" class="btn-complete" style="flex:1; justify-content:center; padding:12px; font-weight:bold; color:black; min-width: 120px;">Confirmar</button>
             </div>
         </div>
     </div>
 
-    <!-- CONTENEDOR DE NOTIFICACIONES TOAST -->
+    <!-- MODAL HISTORIAL DE USUARIO ÚNICO -->
+    <div id="user-history-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.9); z-index:9999; align-items:center; justify-content:center; padding: 20px; box-sizing: border-box;">
+        <div style="background:#1a1a24; width:100%; max-width:800px; max-height: 80vh; border-radius: 16px; border: 1px solid #00d2ff; display: flex; flex-direction: column;">
+            <div style="padding: 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0; color: #00d2ff;">Historial de: <span id="uh-name" style="color: white;">---</span></h2>
+                <span class="material-icons" style="cursor: pointer; color: #ff4757;" onclick="document.getElementById('user-history-modal').style.display='none'">close</span>
+            </div>
+            <div style="padding: 20px; overflow-y: auto;">
+                <table>
+                    <thead><tr><th style="color: #00d2ff;">Fecha</th><th style="color: #00d2ff;">Detalle</th><th style="color: #00d2ff;">Monto</th><th style="color: #00d2ff;">Estado</th></tr></thead>
+                    <tbody id="uh-body"><tr><td colspan="4" style="text-align:center;">Cargando...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOASTS -->
     <div id="toast-container" style="position:fixed; top:20px; right:20px; z-index:10001; display:flex; flex-direction:column; gap:10px;"></div>
 
     <div id="admin-login-screen">
@@ -69,12 +110,10 @@
             <span class="material-icons" style="font-size: 64px; color: #a155ff; margin-bottom: 10px;">admin_panel_settings</span>
             <h2 style="margin: 0 0 5px 0;">Bóveda Administrativa</h2>
             <p style="color: #a8a8b3; font-size: 14px; margin-bottom: 25px;">Sistema blindado. Verifica tu identidad.</p>
-            
             <button style="width: 100%; background: white; color: black; border: none; padding: 14px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px;" onclick="iniciarAdminConGoogle()">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" style="width: 20px;">
                 Verificar con Google
             </button>
-
             <p id="admin-error-msg" style="color: #ff4757; font-size: 13px; margin-top: 15px; display: none;">Acceso denegado. Correo no autorizado.</p>
             <button class="btn-text" style="margin-top: 20px; color: #a8a8b3; background: transparent; border: none; cursor: pointer;" onclick="window.location.href='index.html'">Volver a la Tienda</button>
         </div>
@@ -84,12 +123,11 @@
         
         <div class="admin-header">
             <div>
-                <h1 style="margin: 0; color: #a155ff; display: flex; align-items: center; gap: 10px;">
+                <h1 style="margin: 0; color: #a155ff; display: flex; align-items: center; gap: 10px; justify-content: center;">
                     <span class="material-icons">admin_panel_settings</span> Backoffice CarzaD'Cross
                 </h1>
-                <p style="margin: 5px 0 0 0; color: #a8a8b3;">Gestión total del ecosistema.</p>
             </div>
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 10px; justify-content: center;">
                 <button class="btn-outline" onclick="window.location.href='index.html'">Ir a Tienda</button>
                 <button class="btn-remove" style="background: transparent; border: 1px solid #ff4757; color: #ff4757;" onclick="cerrarSesionAdmin()">
                     <span class="material-icons" style="font-size: 16px;">logout</span> Salir
@@ -101,9 +139,7 @@
             <h2 style="margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px;">
                 <span class="material-icons" style="color: #00d2ff;">inventory_2</span> Ingreso Rápido de Códigos (Stock)
             </h2>
-            <p style="color: #a8a8b3; font-size: 14px; margin-bottom: 20px;">Selecciona el paquete y pega todos los códigos que compraste al por mayor. Asegúrate de poner <strong>un código por línea</strong>.</p>
-            
-            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+            <div class="grid-container" style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
                 <div>
                     <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">1. Selecciona el Paquete</label>
                     <select id="bulk-paquete" class="bulk-select">
@@ -115,39 +151,38 @@
                         <option value="2398 Diamantes">2398 Diamantes (Regular)</option>
                         <option value="6160 Diamantes">6160 Diamantes (Regular)</option>
                     </select>
-                    <p style="color: #888; font-size: 11px; margin-bottom: 10px; line-height: 1.4;">* Los paquetes de 4796 y 12320 se forman combinando 2 códigos de 2398 y 6160 automáticamente.</p>
                     <button class="btn-primary" id="btn-subir-codigos" style="width: 100%; padding: 15px; font-weight: bold; background: #00d2ff; color: black;" onclick="subirCodigosMasivos()">
                         <span class="material-icons">cloud_upload</span> Guardar Códigos
                     </button>
                 </div>
                 <div>
                     <label style="color: #00e676; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">2. Pega tus códigos aquí</label>
-                    <textarea id="bulk-codigos" class="bulk-textarea" placeholder="Ejemplo:
-G7D9-XF42-P1L8
-K3M5-WQ88-Z2N4
-B9C1-TR55-Y7H6"></textarea>
+                    <textarea id="bulk-codigos" class="bulk-textarea" placeholder="Un código por línea..."></textarea>
                 </div>
             </div>
         </div>
 
         <div class="admin-table-container success-container">
-            <h2 style="margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #00e676;">account_balance_wallet</span> Solicitudes de Saldo (Yape/Plin)</h2>
-            <table><thead><tr><th>Fecha</th><th>Usuario</th><th>Monto</th><th>Método</th><th>Acción</th></tr></thead><tbody id="tabla-recargas"><tr><td colspan="5" style="text-align: center;">Cargando...</td></tr></tbody></table>
+            <h2 style="margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #00e676;">account_balance_wallet</span> Solicitudes de Saldo</h2>
+            <table><thead><tr><th>Fecha</th><th>Usuario</th><th>Monto</th><th>Método</th><th>Acción</th></tr></thead><tbody id="tabla-recargas"></tbody></table>
         </div>
 
         <div class="admin-table-container highlight-container">
-            <h2 style="margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #a155ff;">shopping_cart</span> Pedidos de Juegos Pendientes</h2>
-            <table><thead><tr><th>Fecha</th><th>Comprador</th><th>Paquete</th><th>Nick en Juego</th><th>ID de Juego</th><th>Código a usar</th><th>Acción</th></tr></thead><tbody id="tabla-pedidos"><tr><td colspan="7" style="text-align: center;">Cargando...</td></tr></tbody></table>
+            <h2 style="margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #a155ff;">shopping_cart</span> Pedidos de Juegos</h2>
+            <table><thead><tr><th>Fecha</th><th>Comprador</th><th>Paquete</th><th>Juego (Nick / ID)</th><th>Código Asignado</th><th>Acción</th></tr></thead><tbody id="tabla-pedidos"></tbody></table>
         </div>
 
         <div class="admin-table-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"><h2 style="margin: 0;">Lista de Usuarios</h2><input type="text" id="buscador" class="search-bar" placeholder="🔍 Buscar por Nickname..." onkeyup="filtrarUsuarios()"></div>
-            <table><thead><tr><th>Nickname</th><th>Correo</th><th>Saldo Actual</th><th>Acciones</th></tr></thead><tbody id="tabla-usuarios"><tr><td colspan="4" style="text-align: center;">Cargando...</td></tr></tbody></table>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+                <h2 style="margin: 0;">Lista de Usuarios</h2>
+                <input type="text" id="buscador" class="search-bar" placeholder="🔍 Buscar por Nickname..." onkeyup="filtrarUsuarios()">
+            </div>
+            <table><thead><tr><th>Nickname</th><th>Correo</th><th>Saldo Actual</th><th>Acciones</th></tr></thead><tbody id="tabla-usuarios"></tbody></table>
         </div>
 
         <div class="admin-table-container history-container">
-            <h2 style="margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #ff9800;">history</span> Historial Global de Movimientos</h2>
-            <table><thead><tr><th style="color: #ff9800;">Fecha y Hora</th><th style="color: #ff9800;">Usuario</th><th style="color: #ff9800;">Descripción</th><th style="color: #ff9800;">Monto S/</th><th style="color: #ff9800;">Estado</th></tr></thead><tbody id="tabla-historial"><tr><td colspan="5" style="text-align: center;">Cargando historial...</td></tr></tbody></table>
+            <h2 style="margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #ff9800;">history</span> Historial Global</h2>
+            <table><thead><tr><th style="color: #ff9800;">Fecha</th><th style="color: #ff9800;">Usuario</th><th style="color: #ff9800;">Descripción</th><th style="color: #ff9800;">Monto S/</th><th style="color: #ff9800;">Estado</th></tr></thead><tbody id="tabla-historial"></tbody></table>
         </div>
     </div>
 
@@ -160,9 +195,6 @@ B9C1-TR55-Y7H6"></textarea>
         const correoAdministrador = "carlosgabriel04190419@gmail.com"; 
         let todosLosUsuarios = []; 
 
-        // =====================================
-        // SISTEMA DE ALERTAS Y MODALES VISUALES
-        // =====================================
         function showToast(msg, type='success') {
             const toast = document.createElement('div');
             const color = type === 'success' ? '#00e676' : (type === 'warning' ? '#ffc107' : '#ff4757');
@@ -183,13 +215,8 @@ B9C1-TR55-Y7H6"></textarea>
                 document.getElementById('c-modal-icon').style.color = options.color || '#a155ff';
                 
                 const input = document.getElementById('c-modal-input');
-                if(options.type === 'prompt') {
-                    input.style.display = 'block';
-                    input.value = '';
-                    setTimeout(()=>input.focus(), 100);
-                } else {
-                    input.style.display = 'none';
-                }
+                if(options.type === 'prompt') { input.style.display = 'block'; input.value = ''; setTimeout(()=>input.focus(), 100); } 
+                else { input.style.display = 'none'; }
 
                 const btnConfirm = document.getElementById('c-modal-btn-confirm');
                 btnConfirm.style.background = options.color || '#a155ff';
@@ -201,153 +228,109 @@ B9C1-TR55-Y7H6"></textarea>
             });
         }
 
-        document.getElementById('c-modal-btn-cancel').onclick = () => {
-            document.getElementById('custom-modal-overlay').style.display = 'none';
-            if(modalResolve) modalResolve(null);
-        };
-        
-        document.getElementById('c-modal-btn-confirm').onclick = () => {
-            document.getElementById('custom-modal-overlay').style.display = 'none';
-            const isPrompt = document.getElementById('c-modal-input').style.display === 'block';
-            if(modalResolve) modalResolve(isPrompt ? document.getElementById('c-modal-input').value : true);
-        };
+        document.getElementById('c-modal-btn-cancel').onclick = () => { document.getElementById('custom-modal-overlay').style.display = 'none'; if(modalResolve) modalResolve(null); };
+        document.getElementById('c-modal-btn-confirm').onclick = () => { document.getElementById('custom-modal-overlay').style.display = 'none'; const isPrompt = document.getElementById('c-modal-input').style.display === 'block'; if(modalResolve) modalResolve(isPrompt ? document.getElementById('c-modal-input').value : true); };
 
-        // LOGIN ADMINISTRATIVO SEGURO
         window.onload = async function() {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            
             if (session) {
-                if (session.user.email === correoAdministrador) {
-                    mostrarPanel();
-                } else {
-                    document.getElementById('admin-error-msg').style.display = 'block';
-                    await supabaseClient.auth.signOut();
-                }
+                if (session.user.email === correoAdministrador) { mostrarPanel(); } 
+                else { document.getElementById('admin-error-msg').style.display = 'block'; await supabaseClient.auth.signOut(); }
             } else {
                 document.getElementById('admin-login-screen').style.display = 'flex';
                 document.getElementById('admin-dashboard').style.display = 'none';
             }
         };
 
-        async function iniciarAdminConGoogle() {
-            await supabaseClient.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: window.location.origin + window.location.pathname }
-            });
-        }
+        async function iniciarAdminConGoogle() { await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname }}); }
+        async function cerrarSesionAdmin() { await supabaseClient.auth.signOut(); window.location.reload(); }
+        async function mostrarPanel() { document.getElementById('admin-login-screen').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'block'; await cargarUsuarios(); await cargarPedidos(); await cargarRecargas(); await cargarHistorial(); }
 
-        async function cerrarSesionAdmin() { 
-            await supabaseClient.auth.signOut();
-            window.location.reload(); 
-        }
-
-        async function mostrarPanel() {
-            document.getElementById('admin-login-screen').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'block';
-            await cargarUsuarios(); await cargarPedidos(); await cargarRecargas(); await cargarHistorial();
-        }
-
-        // SUBIDA DE CÓDIGOS
         async function subirCodigosMasivos() {
-            const paqueteSelect = document.getElementById('bulk-paquete').value;
-            const codigosRaw = document.getElementById('bulk-codigos').value;
-            const btn = document.getElementById('btn-subir-codigos');
-            if (!paqueteSelect) return showToast("Selecciona el paquete de los códigos.", "warning");
-            if (!codigosRaw.trim()) return showToast("No ingresaste ningún código.", "warning");
-            
-            const listaCodigos = codigosRaw.split('\n').map(c => c.trim()).filter(c => c.length > 0);
-            if (listaCodigos.length === 0) return showToast("No se detectaron códigos válidos.", "warning");
-
-            const confirmacion = await openCustomModal({
-                title: "Confirmar Inventario",
-                desc: `¿Guardar <b>${listaCodigos.length}</b> códigos para el paquete <b>"${paqueteSelect}"</b>?`,
-                icon: 'inventory_2', color: '#00d2ff', type: 'confirm', confirmText: 'Guardar Códigos'
-            });
-
-            if (!confirmacion) return;
-
-            btn.disabled = true; btn.innerHTML = "Guardando...";
-            const datosParaInsertar = listaCodigos.map(cod => ({ paquete: paqueteSelect, codigo: cod, estado: 'Disponible' }));
-            const { error } = await supabaseClient.from('inventario_codigos').insert(datosParaInsertar);
-            if (error) { 
-                showToast("Error al guardar en BD.", "error"); 
-            } else { 
-                showToast(`¡${listaCodigos.length} códigos añadidos al inventario!`); 
-                document.getElementById('bulk-codigos').value = ''; 
-                cargarPedidos();
-            }
-            btn.disabled = false; btn.innerHTML = '<span class="material-icons">cloud_upload</span> Guardar Códigos';
+            const pkt = document.getElementById('bulk-paquete').value;
+            const cods = document.getElementById('bulk-codigos').value;
+            if (!pkt || !cods.trim()) return showToast("Selecciona paquete e ingresa códigos.", "warning");
+            const lista = cods.split('\n').map(c => c.trim()).filter(c => c.length > 0);
+            if (lista.length === 0) return;
+            const conf = await openCustomModal({ title: "Guardar Inventario", desc: `¿Guardar <b>${lista.length}</b> códigos para <b>"${pkt}"</b>?`, icon: 'inventory_2', color: '#00d2ff', type: 'confirm', confirmText: 'Guardar' });
+            if (!conf) return;
+            const datos = lista.map(cod => ({ paquete: pkt, codigo: cod, estado: 'Disponible' }));
+            await supabaseClient.from('inventario_codigos').insert(datos);
+            showToast(`¡${lista.length} códigos añadidos!`); document.getElementById('bulk-codigos').value = ''; cargarPedidos();
         }
 
-        function copiarTexto(texto, elementoBtn) {
-            navigator.clipboard.writeText(texto).then(() => {
-                const txOriginal = elementoBtn.innerHTML; elementoBtn.innerHTML = '<span class="material-icons" style="font-size: 11px;">check</span>';
-                elementoBtn.style.background = '#00e676'; elementoBtn.style.color = 'black';
-                setTimeout(() => { elementoBtn.innerHTML = txOriginal; elementoBtn.style.background = ''; elementoBtn.style.color = ''; }, 2000);
-            });
-        }
+        function copiarTexto(texto, el) { navigator.clipboard.writeText(texto).then(() => { const t = el.innerHTML; el.innerHTML = '<span class="material-icons" style="font-size:11px;">check</span>'; el.style.background = '#00e676'; el.style.color = 'black'; setTimeout(() => { el.innerHTML = t; el.style.background = ''; el.style.color = ''; }, 2000); }); }
 
-        // RECARGAS DE SALDO YAPE
+        // ================= RECARGAS =================
         async function cargarRecargas() {
-            const { data, error } = await supabaseClient.from('recargas').select('*').eq('estado', 'Pendiente').order('created_at', { ascending: true });
+            const { data } = await supabaseClient.from('recargas').select('*').eq('estado', 'Pendiente').order('created_at', { ascending: true });
             const tbody = document.getElementById('tabla-recargas'); tbody.innerHTML = "";
-            if (error || !data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='5' style='text-align: center; color: #a8a8b3;'>✅ No hay recargas de saldo pendientes.</td></tr>"; return; }
+            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='5' style='text-align: center; color: #a8a8b3;'>✅ Sin solicitudes pendientes.</td></tr>"; return; }
             data.forEach(r => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td style="color: #a8a8b3; font-size: 13px;">${new Date(r.created_at).toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</td><td style="font-weight: bold;">${r.nickname}</td><td style="font-size: 16px; color: #00e676; font-weight: bold;">S/ ${r.monto.toFixed(2)}</td><td>${r.metodo}</td><td style="display: flex; gap: 10px;"><button class="btn-add" onclick="aprobarRecarga(${r.id}, '${r.nickname}', ${r.monto})"><span class="material-icons" style="font-size: 16px;">check</span></button><button class="btn-remove" onclick="rechazarRecarga(${r.id})"><span class="material-icons" style="font-size: 16px;">close</span></button></td>`;
+                tr.innerHTML = `
+                    <td data-label="Fecha" style="color: #a8a8b3; font-size: 13px;">${new Date(r.created_at).toLocaleString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}</td>
+                    <td data-label="Usuario" style="font-weight: bold;">${r.nickname}</td>
+                    <td data-label="Monto" style="font-size: 16px; color: #00e676; font-weight: bold;">S/ ${r.monto.toFixed(2)}</td>
+                    <td data-label="Método">${r.metodo}</td>
+                    <td data-label="Acción">
+                        <button class="btn-add" onclick="aprobarRecarga(${r.id}, '${r.nickname}', ${r.monto})"><span class="material-icons">check</span> Aprobar</button>
+                        <button class="btn-remove" onclick="rechazarRecarga(${r.id})"><span class="material-icons">close</span> Rechazar</button>
+                    </td>`;
                 tbody.appendChild(tr);
             });
         }
 
         async function aprobarRecarga(id, nickname, monto) {
-            const confirmacion = await openCustomModal({
-                title: "Aprobar Yape", desc: `¿Confirmas el ingreso de <b>S/ ${monto}</b> para <b>${nickname}</b>?`,
-                icon: 'account_balance_wallet', color: '#00e676', type: 'confirm', confirmText: 'Aprobar Saldo'
-            });
-            if(!confirmacion) return;
+            const conf = await openCustomModal({ title: "Aprobar Saldo", desc: `¿Confirmas ingreso de <b>S/ ${monto}</b> a <b>${nickname}</b>?`, icon: 'account_balance_wallet', color: '#00e676', type: 'confirm', confirmText: 'Aprobar Saldo' });
+            if(!conf) return;
 
             await supabaseClient.from('recargas').update({ estado: 'Completado' }).eq('id', id);
-            const { data: user } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nickname).single();
+            const { data: user } = await supabaseClient.from('usuarios').select('saldo, celular').eq('nickname', nickname).single();
             if(user) { 
                 await supabaseClient.from('usuarios').update({ saldo: user.saldo + monto }).eq('nickname', nickname); 
                 await supabaseClient.from('historial').insert([{ nickname, monto, tipo: 'Recarga Aprobada', estado: 'Completado' }]); 
+                
+                // MENSAJE AUTOMATICO WHATSAPP
+                if(user.celular) {
+                    let numStr = user.celular.replace(/[^0-9]/g, '');
+                    let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga por *S/ ${monto.toFixed(2)}* 💵💵 ha sido aprobada exitosamente.\nTu saldo ya está actualizado en tu billetera web.\n\n🌐 carzadcross.com`;
+                    window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
+                }
             }
             showToast(`Saldo aprobado para ${nickname}`); cargarRecargas(); cargarUsuarios(); cargarHistorial();
         }
 
         async function rechazarRecarga(id) { 
-            const conf = await openCustomModal({ title: "Rechazar Recarga", desc: "¿Seguro que deseas rechazar y eliminar esta solicitud de saldo?", icon: 'delete', color: '#ff4757', textColor: 'white', type: 'confirm', confirmText: 'Sí, Rechazar' });
+            const conf = await openCustomModal({ title: "Rechazar Recarga", desc: "¿Seguro que deseas rechazar y eliminar esta solicitud?", icon: 'delete', color: '#ff4757', textColor: 'white', type: 'confirm', confirmText: 'Sí, Rechazar' });
             if(conf) { await supabaseClient.from('recargas').update({ estado: 'Rechazado' }).eq('id', id); showToast("Recarga rechazada", "warning"); cargarRecargas(); } 
         }
 
-        // PEDIDOS DE JUEGOS
+        // ================= PEDIDOS =================
         async function cargarPedidos() {
-            const { data, error } = await supabaseClient.from('pedidos').select('*').eq('estado', 'Pendiente').order('created_at', { ascending: true });
+            const { data } = await supabaseClient.from('pedidos').select('*').eq('estado', 'Pendiente').order('created_at', { ascending: true });
             const tbody = document.getElementById('tabla-pedidos'); tbody.innerHTML = "";
-            if (error || !data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='7' style='text-align: center; color: #a8a8b3;'>✅ No hay pedidos de juegos pendientes.</td></tr>"; return; }
+            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='6' style='text-align: center; color: #a8a8b3;'>✅ Sin pedidos pendientes.</td></tr>"; return; }
             
             for (let p of data) {
                 if (p.codigo && p.codigo.includes("⚠️ Falta")) {
-                    let paqueteABuscar = p.paquete;
-                    let req = 1;
-                    if (p.paquete === "4796 Diamantes") { paqueteABuscar = "2398 Diamantes"; req = 2; }
-                    else if (p.paquete === "12320 Diamantes") { paqueteABuscar = "6160 Diamantes"; req = 2; }
+                    let pBuscar = p.paquete, req = 1;
+                    if (pBuscar === "4796 Diamantes") { pBuscar = "2398 Diamantes"; req = 2; }
+                    else if (pBuscar === "12320 Diamantes") { pBuscar = "6160 Diamantes"; req = 2; }
 
-                    let validCodes = p.codigo.split(' | ').filter(c => !c.includes('⚠️'));
-                    let faltantes = req - validCodes.length;
+                    let vCodes = p.codigo.split(' | ').filter(c => !c.includes('⚠️'));
+                    let faltantes = req - vCodes.length;
 
                     if (faltantes > 0) {
-                        const { data: stock } = await supabaseClient.from('inventario_codigos').select('*').eq('paquete', paqueteABuscar).eq('estado', 'Disponible').limit(faltantes);
+                        const { data: stock } = await supabaseClient.from('inventario_codigos').select('*').eq('paquete', pBuscar).eq('estado', 'Disponible').limit(faltantes);
                         if (stock && stock.length > 0) {
                             for (let item of stock) {
-                                validCodes.push(item.codigo);
+                                vCodes.push(item.codigo);
                                 await supabaseClient.from('inventario_codigos').update({ estado: 'Usado', nickname_comprador: p.nickname }).eq('id', item.id);
                             }
-                            let remaining = req - validCodes.length;
-                            if (remaining > 0) {
-                                validCodes.push(`⚠️ Falta ${remaining} código(s) de ${paqueteABuscar} (Agrega Stock)`);
-                            }
-                            
-                            p.codigo = validCodes.join(" | ");
+                            let remaining = req - vCodes.length;
+                            if (remaining > 0) vCodes.push(`⚠️ Falta ${remaining} código(s) de ${pBuscar} (Agrega Stock)`);
+                            p.codigo = vCodes.join(" | ");
                             await supabaseClient.from('pedidos').update({ codigo: p.codigo }).eq('id', p.id);
                         }
                     }
@@ -355,60 +338,154 @@ B9C1-TR55-Y7H6"></textarea>
             }
 
             data.forEach(p => {
-                let codFormateado = '<span style="color: #666; font-size: 12px;">Activación directa</span>';
+                let codHTML = '<span style="color:#666;">Activación directa</span>';
                 if (p.codigo) {
-                    const lineas = p.codigo.split(' | ');
-                    codFormateado = lineas.map(l => {
-                        if(l.includes("⚠️")) return `<span style="color:#ff4757; font-size:12px; font-weight:bold;">${l}</span>`;
-                        return `${l} <button class="btn-copy" onclick="copiarTexto('${l}', this)"><span class="material-icons">content_copy</span></button>`;
-                    }).join('<br>');
+                    codHTML = p.codigo.split(' | ').map(l => l.includes("⚠️") ? `<span style="color:#ff4757; font-size:12px; font-weight:bold;">${l}</span>` : `${l} <button class="btn-copy" onclick="copiarTexto('${l}', this)"><span class="material-icons">content_copy</span></button>`).join('<br>');
                 }
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td style="color: #a8a8b3; font-size: 13px;">${new Date(p.created_at).toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</td><td style="font-weight: bold;">${p.nickname}</td><td style="color: #a155ff; font-weight: bold;">${p.paquete}</td><td style="font-family: monospace;">${p.nickname_juego || 'N/A'} <button class="btn-copy" onclick="copiarTexto('${p.nickname_juego}', this)"><span class="material-icons">content_copy</span></button></td><td style="font-family: monospace; font-size: 15px;">${p.id_juego} <button class="btn-copy" onclick="copiarTexto('${p.id_juego}', this)"><span class="material-icons">content_copy</span></button></td><td style="font-family: monospace; color: #00e676; line-height: 1.8;">${codFormateado}</td><td><button class="btn-complete" onclick="completarPedido(${p.id}, '${p.paquete}', '${p.nickname}')"><span class="material-icons" style="font-size: 18px;">check_circle</span> Listo</button></td>`;
+                tr.innerHTML = `
+                    <td data-label="Fecha" style="color: #a8a8b3; font-size: 13px;">${new Date(p.created_at).toLocaleString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}</td>
+                    <td data-label="Comprador" style="font-weight: bold;">${p.nickname}</td>
+                    <td data-label="Paquete" style="color: #a155ff; font-weight: bold;">${p.paquete}</td>
+                    <td data-label="Juego" style="font-family: monospace; font-size:13px;">Nick: ${p.nickname_juego||'N/A'}<br>ID: ${p.id_juego} <button class="btn-copy" onclick="copiarTexto('${p.id_juego}', this)"><span class="material-icons">content_copy</span></button></td>
+                    <td data-label="Códigos" style="font-family: monospace; color: #00e676; line-height: 1.8;">${codHTML}</td>
+                    <td data-label="Acción">
+                        <button class="btn-complete" onclick="completarPedido(${p.id}, '${p.paquete}', '${p.nickname}')"><span class="material-icons">check_circle</span> Listo</button>
+                        <button class="btn-remove" onclick="rechazarPedido(${p.id}, '${p.paquete}', '${p.nickname}', ${p.precio}, \`${p.codigo}\`)"><span class="material-icons">cancel</span> Rechazar</button>
+                    </td>`;
                 tbody.appendChild(tr);
             });
         }
 
         async function completarPedido(id, paquete, nick) { 
-            const conf = await openCustomModal({ title: "Completar Pedido", desc: `¿Confirmas que ya enviaste <b>${paquete}</b> a <b>${nick}</b> en el juego?`, icon: 'task_alt', color: '#a155ff', textColor: 'white', type: 'confirm', confirmText: 'Marcar Listo' });
-            if(conf){ await supabaseClient.from('pedidos').update({ estado: 'Completado' }).eq('id', id); showToast(`Pedido de ${nick} completado.`); cargarPedidos(); cargarHistorial(); } 
+            const conf = await openCustomModal({ title: "Completar Pedido", desc: `¿Confirmas envío de <b>${paquete}</b> a <b>${nick}</b>?`, icon: 'task_alt', color: '#a155ff', textColor: 'white', type: 'confirm', confirmText: 'Marcar Listo' });
+            if(!conf) return; 
+
+            await supabaseClient.from('pedidos').update({ estado: 'Completado' }).eq('id', id); 
+            const { data: user } = await supabaseClient.from('usuarios').select('celular').eq('nickname', nick).single();
+            
+            // MENSAJE AUTOMATICO WHATSAPP
+            if(user && user.celular) {
+                let numStr = user.celular.replace(/[^0-9]/g, '');
+                let msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 💎 *${paquete}* 💎 acaba de ser procesado y completado exitosamente.\n\nRevisa tu cuenta del juego y disfruta. ¡Gracias por preferirnos!`;
+                window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+            
+            showToast(`Pedido completado.`); cargarPedidos(); cargarHistorial(); 
         }
 
-        // USUARIOS
+        // LÓGICA DE REEMBOLSO Y RESTOCK DE CÓDIGOS
+        async function rechazarPedido(id, paquete, nick, precio, codigoStr) {
+            const conf = await openCustomModal({ title: "Rechazar y Reembolsar", desc: `¿Rechazar pedido de <b>${paquete}</b> de <b>${nick}</b>?<br><br>Se le reembolsarán S/ ${precio.toFixed(2)} y los códigos volverán al stock.`, icon: 'settings_backup_restore', color: '#ff4757', textColor: 'white', type: 'confirm', confirmText: 'Rechazar Pedido' });
+            if(!conf) return;
+
+            await supabaseClient.from('pedidos').update({ estado: 'Rechazado' }).eq('id', id);
+            
+            // Reembolso de dinero
+            const { data: user } = await supabaseClient.from('usuarios').select('saldo, celular').eq('nickname', nick).single();
+            if(user) {
+                await supabaseClient.from('usuarios').update({ saldo: user.saldo + precio }).eq('nickname', nick);
+                await supabaseClient.from('historial').insert([{ nickname: nick, monto: precio, tipo: `Reembolso por pedido rechazado: ${paquete}`, estado: 'Completado' }]);
+            }
+
+            // Devolver códigos al inventario (si los hay y no son mensajes de advertencia)
+            if(codigoStr && !codigoStr.includes("Sin stock") && !codigoStr.includes("Pendiente a mandar") && !codigoStr.includes("Activación Promo") && !codigoStr.includes("Envío de")) {
+                let codigos = codigoStr.split(' | ').filter(c => !c.includes('⚠️')).map(c => c.trim());
+                for(let cod of codigos) {
+                    await supabaseClient.from('inventario_codigos').update({ estado: 'Disponible', nickname_comprador: null }).eq('codigo', cod);
+                }
+            }
+
+            // WhatsApp aviso
+            if(user && user.celular) {
+                let numStr = user.celular.replace(/[^0-9]/g, '');
+                let msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n⚠️ Te informamos que tu pedido de 💎 *${paquete}* 💎 tuvo que ser rechazado.\n\nEl monto de *S/ ${precio.toFixed(2)}* ha sido devuelto de manera íntegra a tu saldo web para que puedas volver a utilizarlo.\n\nPor favor, respóndenos a este mensaje para indicarte el motivo exacto.`;
+                window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+
+            showToast("Pedido rechazado. Saldo y códigos devueltos.", "warning");
+            cargarPedidos(); cargarHistorial(); cargarUsuarios();
+        }
+
+        // ================= USUARIOS =================
         async function cargarUsuarios() { const { data } = await supabaseClient.from('usuarios').select('*').order('created_at', { ascending: false }); todosLosUsuarios = data || []; mostrarUsuarios(todosLosUsuarios); }
-        
         function mostrarUsuarios(lista) { 
             const tbody = document.getElementById('tabla-usuarios'); tbody.innerHTML = ""; 
             lista.forEach(u => { 
                 const tr = document.createElement('tr'); 
-                tr.innerHTML = `<td style="font-weight: bold;">${u.nickname}</td><td style="color: #a8a8b3;">${u.correo}</td><td style="font-size: 18px; color: #a155ff; font-weight: bold;">S/ ${u.saldo.toFixed(2)}</td><td style="display: flex; gap: 10px;"><button class="btn-add" onclick="añadirSaldo('${u.nickname}', ${u.saldo})"><span class="material-icons">add_circle</span> Añadir</button><button class="btn-remove" onclick="quitarSaldo('${u.nickname}', ${u.saldo})"><span class="material-icons">remove_circle</span> Quitar</button></td>`; 
+                tr.innerHTML = `
+                    <td data-label="Nickname" style="font-weight: bold;">${u.nickname}</td>
+                    <td data-label="Correo" style="color: #a8a8b3; font-size:13px;">${u.correo}</td>
+                    <td data-label="Saldo" style="font-size: 16px; color: #a155ff; font-weight: bold;">S/ ${u.saldo.toFixed(2)}</td>
+                    <td data-label="Acciones">
+                        <button class="btn-add" onclick="añadirSaldo('${u.nickname}', ${u.saldo})"><span class="material-icons">add</span></button>
+                        <button class="btn-remove" onclick="quitarSaldo('${u.nickname}', ${u.saldo})"><span class="material-icons">remove</span></button>
+                        <button class="btn-view" onclick="verHistorialUsuario('${u.nickname}')"><span class="material-icons">visibility</span> Historial</button>
+                    </td>`; 
                 tbody.appendChild(tr); 
             }); 
         }
-
         function filtrarUsuarios() { mostrarUsuarios(todosLosUsuarios.filter(u => u.nickname.toLowerCase().includes(document.getElementById('buscador').value.toLowerCase()))); }
         
         async function añadirSaldo(nick, saldo) { 
-            const result = await openCustomModal({ title: "Añadir Saldo Manual", desc: `Saldo actual: <b>S/ ${saldo.toFixed(2)}</b><br>Ingresa la cantidad a recargar a <b>${nick}</b>:`, icon: 'add_circle', color: '#00e676', type: 'prompt', confirmText: 'Añadir' });
+            const result = await openCustomModal({ title: "Añadir Saldo Manual", desc: `Saldo actual: <b>S/ ${saldo.toFixed(2)}</b><br>Monto a recargar a <b>${nick}</b>:`, icon: 'add_circle', color: '#00e676', type: 'prompt', confirmText: 'Añadir' });
             if(!result) return; const m = parseFloat(result); 
             if(m>0){ 
                 await supabaseClient.from('usuarios').update({saldo: saldo+m}).eq('nickname', nick); 
-                await supabaseClient.from('historial').insert([{nickname: nick, monto: m, tipo: 'Abono Manual', estado: 'Completado'}]); 
+                await supabaseClient.from('historial').insert([{nickname: nick, monto: m, tipo: 'Ajuste manual de administrador', estado: 'Completado'}]); 
                 showToast(`Se agregaron S/ ${m.toFixed(2)} a ${nick}`); cargarUsuarios(); cargarHistorial(); 
             } else { showToast("Monto inválido", "error"); }
         }
 
         async function quitarSaldo(nick, saldo) { 
-            const result = await openCustomModal({ title: "Descontar Saldo Manual", desc: `Saldo actual: <b>S/ ${saldo.toFixed(2)}</b><br>Ingresa la cantidad a restar a <b>${nick}</b>:`, icon: 'remove_circle', color: '#ff4757', textColor: 'white', type: 'prompt', confirmText: 'Quitar Saldo' });
+            const result = await openCustomModal({ title: "Descontar Saldo Manual", desc: `Saldo actual: <b>S/ ${saldo.toFixed(2)}</b><br>Monto a descontar a <b>${nick}</b>:`, icon: 'remove_circle', color: '#ff4757', textColor: 'white', type: 'prompt', confirmText: 'Quitar' });
             if(!result) return; const m = parseFloat(result); 
             if(m>0 && m<=saldo){ 
                 await supabaseClient.from('usuarios').update({saldo: saldo-m}).eq('nickname', nick); 
-                await supabaseClient.from('historial').insert([{nickname: nick, monto: m, tipo: 'Retiro Admin', estado: 'Descontado'}]); 
+                await supabaseClient.from('historial').insert([{nickname: nick, monto: m, tipo: 'Ajuste manual de administrador', estado: 'Descontado'}]); 
                 showToast(`Se quitaron S/ ${m.toFixed(2)} a ${nick}`); cargarUsuarios(); cargarHistorial(); 
-            } else { showToast("Monto inválido o superior al saldo", "error"); }
+            } else { showToast("Monto inválido o sin saldo suficiente", "error"); }
         }
 
-        async function cargarHistorial() { const { data } = await supabaseClient.from('historial').select('*').order('created_at', { ascending: false }).limit(50); const tbody = document.getElementById('tabla-historial'); tbody.innerHTML = ""; if(!data || data.length===0){ tbody.innerHTML = "<tr><td colspan='5' style='text-align: center;'>Vacio</td></tr>"; return;} data.forEach(h => { const tr = document.createElement('tr'); tr.innerHTML = `<td style="color: #a8a8b3; font-size: 13px;">${new Date(h.created_at).toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</td><td style="font-weight: bold;">${h.nickname}</td><td style="color: #e0e0e0; font-size: 14px;">${h.tipo}</td><td style="font-weight: bold; color: ${h.estado==='Descontado'?'#ff4757':'#00e676'};">S/ ${h.monto.toFixed(2)}</td><td><span class="status-badge" style="${h.estado==='Descontado'?'background: rgba(255,71,87,0.1); color: #ff4757;':'background: rgba(0,230,118,0.1); color: #00e676;'}">${h.estado}</span></td>`; tbody.appendChild(tr); }); }
+        // HISTORIAL DE USUARIO ÚNICO (MODAL)
+        async function verHistorialUsuario(nick) {
+            document.getElementById('uh-name').innerText = nick;
+            document.getElementById('user-history-modal').style.display = 'flex';
+            const tbody = document.getElementById('uh-body'); tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Cargando...</td></tr>";
+            
+            const { data } = await supabaseClient.from('historial').select('*').eq('nickname', nick).order('created_at', { ascending: false });
+            if(!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#888;'>Sin movimientos registrados.</td></tr>"; return; }
+            
+            tbody.innerHTML = "";
+            data.forEach(h => {
+                const colorMonto = h.estado === 'Descontado' ? '#ff4757' : '#00e676';
+                const signo = h.estado === 'Descontado' ? '-' : '+';
+                tbody.innerHTML += `
+                    <tr style="border-bottom: 1px solid #333;">
+                        <td style="color:#a8a8b3; font-size:13px; padding:10px;">${new Date(h.created_at).toLocaleDateString()}</td>
+                        <td style="color:white; font-size:13px; padding:10px;">${h.tipo}</td>
+                        <td style="color:${colorMonto}; font-weight:bold; padding:10px;">${signo}S/ ${h.monto.toFixed(2)}</td>
+                        <td style="padding:10px;"><span class="status-badge" style="background:${h.estado==='Descontado'?'rgba(255,71,87,0.1)':'rgba(0,230,118,0.1)'}; color:${colorMonto};">${h.estado}</span></td>
+                    </tr>`;
+            });
+        }
+
+        // HISTORIAL GLOBAL
+        async function cargarHistorial() { 
+            const { data } = await supabaseClient.from('historial').select('*').order('created_at', { ascending: false }).limit(40); 
+            const tbody = document.getElementById('tabla-historial'); tbody.innerHTML = ""; 
+            if(!data || data.length===0){ tbody.innerHTML = "<tr><td colspan='5' style='text-align: center;'>Vacio</td></tr>"; return;} 
+            data.forEach(h => { 
+                const tr = document.createElement('tr'); 
+                tr.innerHTML = `
+                    <td data-label="Fecha" style="color: #a8a8b3; font-size: 13px;">${new Date(h.created_at).toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</td>
+                    <td data-label="Usuario" style="font-weight: bold;">${h.nickname}</td>
+                    <td data-label="Detalle" style="color: #e0e0e0; font-size: 13px;">${h.tipo}</td>
+                    <td data-label="Monto" style="font-weight: bold; color: ${h.estado==='Descontado'?'#ff4757':'#00e676'};">S/ ${h.monto.toFixed(2)}</td>
+                    <td data-label="Estado"><span class="status-badge" style="${h.estado==='Descontado'?'background: rgba(255,71,87,0.1); color: #ff4757;':'background: rgba(0,230,118,0.1); color: #00e676;'}">${h.estado}</span></td>`; 
+                tbody.appendChild(tr); 
+            }); 
+        }
     </script>
 </body>
 </html>
