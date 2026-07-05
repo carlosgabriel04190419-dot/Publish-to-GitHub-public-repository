@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zona VIP - Ruleta Booyah | CarzaD'Cross</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        body {
+            background: linear-gradient(rgba(10, 10, 14, 0.9), rgba(10, 10, 14, 0.95)), url('hero-bg.jpg') center/cover fixed no-repeat;
+            background-color: #0f0f13;
+            margin: 0;
+            min-height: 100vh;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .glass-card {
+            background: rgba(26, 26, 31, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.1);
+            padding: 30px;
+        }
+
+        /* --- ESTILOS DE LA RULETA VIP --- */
+        .roulette-wrapper {
+            position: relative;
+            width: 340px;
+            height: 340px;
+            margin: 0 auto;
+            border-radius: 50%;
+            padding: 10px;
+            background: linear-gradient(135deg, #a155ff, #ff4757, #ffc107);
+            box-shadow: 0 0 40px rgba(255, 193, 7, 0.3), inset 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .roulette-wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 5s cubic-bezier(0.2, 0.8, 0.2, 1); /* Curva de desaceleración de casino */
+            transform: rotate(0deg);
+            background: #1a1a24;
+            border: 4px solid #0a0a0f;
+            box-sizing: border-box;
+        }
+
+        /* Tramos de la Ruleta creados con Conic Gradient */
+        .wheel-segments {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                #1a1a24 0deg 60deg, 
+                #a155ff 60deg 120deg, 
+                #1a1a24 120deg 180deg, 
+                #ff4757 180deg 240deg, 
+                #1a1a24 240deg 300deg, 
+                #ffc107 300deg 360deg
+            );
+            position: absolute;
+            top: 0; left: 0;
+        }
+
+        .wheel-lines {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .wheel-line {
+            position: absolute; top: 0; left: 50%; width: 2px; height: 100%;
+            background: rgba(255,255,255,0.2);
+            transform-origin: center;
+        }
+        .wheel-line:nth-child(1) { transform: rotate(30deg); }
+        .wheel-line:nth-child(2) { transform: rotate(90deg); }
+        .wheel-line:nth-child(3) { transform: rotate(150deg); }
+
+        .wheel-text {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+        }
+        .prize-text {
+            position: absolute;
+            top: 15px; left: 50%;
+            transform-origin: 50% 150px; /* Centro de rotación = radio */
+            transform: translateX(-50%);
+            font-weight: 900; font-size: 13px; text-transform: uppercase;
+            color: white; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+            text-align: center; width: 80px;
+        }
+        .pt-1 { transform: translateX(-50%) rotate(30deg); }
+        .pt-2 { transform: translateX(-50%) rotate(90deg); }
+        .pt-3 { transform: translateX(-50%) rotate(150deg); }
+        .pt-4 { transform: translateX(-50%) rotate(210deg); }
+        .pt-5 { transform: translateX(-50%) rotate(270deg); }
+        .pt-6 { transform: translateX(-50%) rotate(330deg); }
+
+        /* Puntero de la Ruleta */
+        .roulette-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 50px;
+            background: #ffc107;
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            z-index: 10;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+        }
+
+        .center-dot {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 50px; height: 50px; background: #0a0a0f; border: 4px solid #ffc107;
+            border-radius: 50%; z-index: 5; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .center-dot::after { content: '★'; color: #ffc107; font-size: 20px; }
+
+        .points-badge {
+            background: rgba(255, 193, 7, 0.15); border: 1px solid #ffc107; color: #ffc107;
+            padding: 8px 16px; border-radius: 20px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.2); margin-bottom: 20px; font-size: 18px;
+        }
+
+        /* Modal de Premio */
+        .prize-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 8, 0.9); z-index: 9999; align-items: center; justify-content: center;
+            backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s;
+        }
+        .prize-modal-content {
+            background: #1a1a24; padding: 40px; border-radius: 20px; text-align: center;
+            border: 2px solid #ffc107; box-shadow: 0 0 50px rgba(255, 193, 7, 0.3);
+            max-width: 400px; width: 90%; transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
+            <div class="profile-avatar">C</div><span>CarzaD'Cross</span>
+        </div>
+        
+        <div class="nav-auth-section" id="nav-logged-out">
+         <button class="btn-text" onclick="window.location.href='login.html'">Iniciar Sesión</button>
+         <button class="btn-outline" onclick="window.location.href='register.html'">Crear Cuenta</button>
+        </div>
+
+        <div class="nav-user-section" id="nav-logged-in" style="display: none;">
+            <!-- SALDO -->
+            <div class="balance-pill">
+                <span class="material-icons wallet-icon">account_balance_wallet</span>
+                <div class="balance-info">
+                    <span class="balance-label">SALDO</span>
+                    <span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span>
+                </div>
+            </div>
+            <!-- PUNTOS VIP NUEVOS -->
+            <div class="balance-pill" style="border-color: #ffc107; background: rgba(255,193,7,0.1); margin-left: 10px;">
+                <span class="material-icons wallet-icon" style="color: #ffc107;">stars</span>
+                <div class="balance-info">
+                    <span class="balance-label" style="color: #ffc107;">PUNTOS</span>
+                    <span class="balance-amount" style="color: #ffc107;" id="puntos-nav">0</span>
+                </div>
+            </div>
+
+            <div class="user-dropdown-container" style="position: relative; margin-left: 15px;">
+             <div class="user-profile" onclick="toggleMenu()" id="btn-usuario-nav" style="cursor: pointer;">
+               <span>Cargando...</span><span class="material-icons">expand_more</span>
+             </div>
+            <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 8px; min-width: 160px; z-index: 1000; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                 <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">person</span> Mis Datos</a>
+                 <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #00e676; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
+                <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;"><span class="material-icons">logout</span> Cerrar Sesión</a>
+            </div>
+         </div>
+        </div>
+    </nav>
+
+    <header class="hero-container" style="padding: 40px 20px; text-align: center; border-bottom: none;">
+        <div class="hero-badge" style="border-color: #ffc107; color: #ffc107; background: rgba(255,193,7,0.1);">👑 CLUB VIP CARZAD'CROSS</div>
+        <h1 class="hero-title" style="font-size: 42px; margin-top: 15px;">La Ruleta <span style="color: #ffc107;">Booyah</span></h1>
+        <p class="hero-subtitle" style="max-width: 600px; margin: 0 auto;">Gana 10 Puntos por cada S/ 1.00 de recarga que realices. Junta tus puntos y gira la ruleta para ganar Saldo, Diamantes o Pases totalmente gratis.</p>
+    </header>
+
+    <main class="container" style="display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; padding-bottom: 80px;">
+        
+        <!-- PANEL IZQUIERDO: INFO Y REGLAS -->
+        <div style="flex: 1; min-width: 300px; max-width: 400px;">
+            <div class="glass-card">
+                <h2 style="color: #ffc107; margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;">
+                    <span class="material-icons">account_balance</span> Tus CarzaPuntos
+                </h2>
+                <div class="points-badge">
+                    <span class="material-icons">stars</span> <span id="puntos-pantalla">0</span> Pts
+                </div>
+                <p style="color: #a8a8b3; font-size: 14px; margin-bottom: 30px;">Costo por giro: <strong style="color: white;">500 Pts</strong></p>
+
+                <h3 style="font-size: 16px; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">🎁 Premios de la Ruleta</h3>
+                <ul style="list-style: none; padding: 0; margin: 0; color: #e0e0e0; font-size: 14px; display: flex; flex-direction: column; gap: 12px;">
+                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #ffc107; font-size: 18px;">diamond</span> 1170 Diamantes (Jackpot)</li>
+                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #a155ff; font-size: 18px;">local_activity</span> Pase Booyah</li>
+                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #00d2ff; font-size: 18px;">diamond</span> 100 Diamantes directos</li>
+                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #00e676; font-size: 18px;">payments</span> S/ 1.00 de Saldo Billetera</li>
+                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #00e676; font-size: 18px;">payments</span> S/ 0.50 de Saldo Billetera</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- PANEL DERECHO: LA RULETA -->
+        <div style="flex: 1; min-width: 320px; max-width: 450px; display: flex; flex-direction: column; align-items: center;">
+            
+            <div class="roulette-wrapper">
+                <div class="roulette-pointer"></div>
+                <div class="roulette-wheel" id="ruleta-giratoria">
+                    <div class="wheel-segments"></div>
+                    <div class="wheel-lines">
+                        <div class="wheel-line"></div><div class="wheel-line"></div><div class="wheel-line"></div>
+                    </div>
+                    <div class="wheel-text">
+                        <!-- Tramos de la Ruleta visuales -->
+                        <div class="prize-text pt-1">S/ 0.50<br><span style="font-size: 10px;">Saldo</span></div>
+                        <div class="prize-text pt-2">S/ 1.00<br><span style="font-size: 10px;">Saldo</span></div>
+                        <div class="prize-text pt-3">S/ 0.50<br><span style="font-size: 10px;">Saldo</span></div>
+                        <div class="prize-text pt-4">Pase<br><span style="font-size: 10px;">Booyah</span></div>
+                        <div class="prize-text pt-5">100<br><span style="font-size: 10px;">Diams</span></div>
+                        <div class="prize-text pt-6" style="color: #1a1a24; text-shadow: none;">1170<br><span style="font-size: 10px;">JACKPOT</span></div>
+                    </div>
+                    <div class="center-dot"></div>
+                </div>
+            </div>
+
+            <button id="btn-girar" class="btn-primary" style="margin-top: 40px; width: 80%; padding: 18px; font-size: 18px; font-weight: 900; letter-spacing: 2px; background: linear-gradient(45deg, #ffc107, #ff9800); color: #0a0a0f; box-shadow: 0 0 20px rgba(255, 193, 7, 0.4); text-transform: uppercase;" onclick="iniciarRuleta()">
+                GIRAR X 500 PTS
+            </button>
+            <p id="ruleta-msg" style="color: #ff4757; font-size: 14px; margin-top: 15px; display: none; font-weight: bold;">No tienes puntos suficientes.</p>
+        </div>
+
+    </main>
+
+    <!-- MODAL PREMIO -->
+    <div class="prize-modal" id="modal-premio">
+        <div class="prize-modal-content" id="modal-premio-caja">
+            <span class="material-icons" id="premio-icono" style="font-size: 70px; color: #ffc107; margin-bottom: 10px; text-shadow: 0 0 20px rgba(255, 193, 7, 0.5);">emoji_events</span>
+            <h2 style="font-size: 28px; margin: 0 0 10px 0; color: white;" id="premio-titulo">¡Felicidades!</h2>
+            <p style="color: #a8a8b3; font-size: 16px; margin-bottom: 25px; line-height: 1.5;" id="premio-desc">Has ganado 100 Diamantes.</p>
+            <button class="btn-primary" style="width: 100%; padding: 15px; font-weight: bold;" onclick="cerrarModalPremio()">Aceptar</button>
+        </div>
+    </div>
+
+    <!-- FOOTER BASICO -->
+    <footer class="main-footer" style="background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 40px 20px; text-align: center; color: #555566; font-size: 13px;">
+        © 2026 CarzaD'Cross. Club VIP y Recompensas. Todos los derechos reservados.
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
+        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        let puntosActuales = 0;
+        let saldoActual = 0;
+        let idJuegoGuardado = "Sin ID"; 
+        let girando = false;
+        let rotacionAcumulada = 0;
+
+        window.onload = async function() {
+            const nombreGuardado = localStorage.getItem('nombreUsuario');
+            if (!nombreGuardado) { window.location.href = 'login.html'; return; }
+            
+            document.getElementById('btn-usuario-nav').innerHTML = nombreGuardado + ' <span class="material-icons">expand_more</span>';
+            document.getElementById('nav-logged-out').style.display = 'none';
+            document.getElementById('nav-logged-in').style.display = 'flex';
+
+            await actualizarDatosUsuario(nombreGuardado);
+        };
+
+        async function actualizarDatosUsuario(nick) {
+            try {
+                const { data } = await supabaseClient.from('usuarios').select('saldo, puntos').eq('nickname', nick).single();
+                if (data) {
+                    saldoActual = data.saldo || 0;
+                    puntosActuales = data.puntos || 0;
+                    
+                    document.getElementById('saldo-nav').innerText = saldoActual.toFixed(2);
+                    document.getElementById('puntos-nav').innerText = puntosActuales;
+                    
+                    const pPantalla = document.getElementById('puntos-pantalla');
+                    pPantalla.innerText = puntosActuales;
+                    
+                    pPantalla.style.transform = 'scale(1.2)';
+                    pPantalla.style.color = 'white';
+                    setTimeout(() => { pPantalla.style.transform = 'scale(1)'; pPantalla.style.color = '#ffc107'; }, 300);
+                }
+            } catch (err) { console.error("Error al cargar datos:", err); }
+        }
+
+        function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
+        function cerrarSesionLocal() { localStorage.removeItem('nombreUsuario'); window.location.reload(); }
+
+        // ==========================================
+        // MOTOR MATEMÁTICO DE LA RULETA VIP
+        // ==========================================
+        async function iniciarRuleta() {
+            if (girando) return;
+            const btn = document.getElementById('btn-girar');
+            const msg = document.getElementById('ruleta-msg');
+            const nick = localStorage.getItem('nombreUsuario');
+
+            if (puntosActuales < 500) {
+                msg.style.display = 'block';
+                setTimeout(() => { msg.style.display = 'none'; }, 3000);
+                return;
+            }
+
+            girando = true;
+            btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; btn.innerText = 'GIRANDO...';
+            
+            puntosActuales -= 500;
+            document.getElementById('puntos-nav').innerText = puntosActuales;
+            document.getElementById('puntos-pantalla').innerText = puntosActuales;
+            
+            await supabaseClient.from('usuarios').update({ puntos: puntosActuales }).eq('nickname', nick);
+
+            const roll = Math.random() * 100;
+            let premioIndex = 0; 
+            let premioInfo = {};
+
+            if (roll <= 50) {
+                // 50%: S/ 0.50 Saldo (Índices visuales 0 o 2)
+                premioIndex = Math.random() > 0.5 ? 0 : 2; 
+                premioInfo = { tipo: 'saldo', monto: 0.50, titulo: '¡Saldo Ganado!', desc: 'Has ganado S/ 0.50. Se ha sumado automáticamente a tu billetera web.', icono: 'payments', color: '#00e676' };
+            } 
+            else if (roll <= 80) {
+                // 30%: S/ 1.00 Saldo (Índice visual 1)
+                premioIndex = 1; 
+                premioInfo = { tipo: 'saldo', monto: 1.00, titulo: '¡Saldo Ganado!', desc: 'Acabas de ganar S/ 1.00. Se ha sumado automáticamente a tu billetera web.', icono: 'payments', color: '#00e676' };
+            } 
+            else if (roll <= 95) {
+                // 15%: 100 Diamantes (Índice visual 4)
+                premioIndex = 4;
+                premioInfo = { tipo: 'diamantes', paquete: '110 Diamantes', titulo: '¡100 Diamantes!', desc: '¡Felicidades! Se ha creado una solicitud a soporte. Revisa el WhatsApp para reclamar tu premio.', icono: 'diamond', color: '#00d2ff' };
+            } 
+            else if (roll <= 99) {
+                // 4%: Pase Booyah (Índice visual 3)
+                premioIndex = 3;
+                premioInfo = { tipo: 'pase', paquete: 'Pase Booyah (Premio VIP)', titulo: '¡PASE BOOYAH!', desc: '¡Increíble suerte! Has ganado un Pase. Comunícate al WhatsApp oficial para reclamarlo.', icono: 'local_activity', color: '#a155ff' };
+            } 
+            else {
+                // 1%: JACKPOT (Índice visual 5)
+                premioIndex = 5;
+                premioInfo = { tipo: 'jackpot', paquete: '1170 Diamantes (Premio VIP)', titulo: '¡💎 JACKPOT 💎!', desc: '¡ERES UNA LEYENDA! Has sacado el premio mayor. Escríbenos ahora mismo para enviarte tus 1170 Diamantes.', icono: 'workspace_premium', color: '#ffc107' };
+            }
+
+            const gradosPorTramo = 60;
+            const anguloDestino = 360 - (premioIndex * gradosPorTramo); 
+            const variacionAleatoria = Math.floor(Math.random() * 40) - 20; 
+            
+            rotacionAcumulada += (360 * 6) + anguloDestino + variacionAleatoria;
+
+            const ruletaDiv = document.getElementById('ruleta-giratoria');
+            ruletaDiv.style.transform = `rotate(${rotacionAcumulada}deg)`;
+
+            setTimeout(async () => {
+                await entregarPremioBD(nick, premioInfo);
+                mostrarModalPremio(premioInfo);
+                girando = false;
+                btn.style.opacity = '1'; btn.style.cursor = 'pointer'; btn.innerText = 'GIRAR X 500 PTS';
+            }, 5200);
+        }
+
+        async function entregarPremioBD(nick, info) {
+            try {
+                if (info.tipo === 'saldo') {
+                    const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nick).single();
+                    await supabaseClient.from('usuarios').update({ saldo: data.saldo + info.monto }).eq('nickname', nick);
+                    await supabaseClient.from('historial').insert([{ nickname: nick, monto: info.monto, tipo: 'Premio Ruleta VIP', estado: 'Completado' }]);
+                    await actualizarDatosUsuario(nick);
+                } 
+                else if (info.tipo === 'diamantes' || info.tipo === 'pase' || info.tipo === 'jackpot') {
+                    await supabaseClient.from('pedidos').insert([{ 
+                        nickname: nick, 
+                        paquete: info.paquete, 
+                        id_juego: 'Premio VIP', 
+                        nickname_juego: 'Ganador Ruleta',
+                        precio: 0.00, 
+                        estado: 'Pendiente',
+                        codigo: 'Envío de premio manual'
+                    }]);
+                    await supabaseClient.from('historial').insert([{ nickname: nick, monto: 0.00, tipo: `Ganador Ruleta: ${info.paquete}`, estado: 'Completado' }]);
+                }
+            } catch (e) { console.error("Error al procesar premio", e); }
+        }
+
+        function mostrarModalPremio(info) {
+            document.getElementById('premio-icono').innerText = info.icono;
+            document.getElementById('premio-icono').style.color = info.color;
+            document.getElementById('premio-icono').style.textShadow = `0 0 30px ${info.color}`;
+            
+            document.getElementById('premio-titulo').innerText = info.titulo;
+            document.getElementById('premio-desc').innerText = info.desc;
+            
+            document.getElementById('modal-premio-caja').style.borderColor = info.color;
+            document.getElementById('modal-premio-caja').style.boxShadow = `0 0 50px ${info.color}40`;
+
+            const modal = document.getElementById('modal-premio');
+            modal.style.display = 'flex';
+            setTimeout(() => { modal.style.opacity = '1'; document.getElementById('modal-premio-caja').style.transform = 'scale(1)'; }, 10);
+        }
+
+        function cerrarModalPremio() {
+            const modal = document.getElementById('modal-premio');
+            modal.style.opacity = '0';
+            document.getElementById('modal-premio-caja').style.transform = 'scale(0.8)';
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+    </script>
+</body>
+</html>

@@ -6,6 +6,68 @@
     <title>Recarga Regular | CarzaD'Cross</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    <!-- NUEVOS EFECTOS VISUALES Y GAMIFICACIÓN -->
+    <style>
+        /* Efectos de levitación y resplandor para las tarjetas */
+        .products-grid .card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .products-grid .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(161, 85, 255, 0.25);
+            border-color: #a155ff;
+            z-index: 2;
+        }
+        /* Luz de fondo en hover */
+        .products-grid .card::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(161,85,255,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .products-grid .card:hover::before {
+            opacity: 1;
+        }
+        /* Brillo mágico en los diamantes */
+        .card-icon {
+            text-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+            transition: transform 0.3s ease, text-shadow 0.3s ease;
+        }
+        .products-grid .card:hover .card-icon {
+            transform: scale(1.15) rotate(5deg);
+            text-shadow: 0 0 25px rgba(0, 210, 255, 0.8);
+        }
+        /* Etiqueta animada de Más Vendido (Fuego) */
+        .badge-bestseller {
+            position: absolute; top: 12px; right: 12px;
+            background: linear-gradient(45deg, #ff4757, #ff9800);
+            color: white; padding: 4px 10px; border-radius: 20px;
+            font-size: 10px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+            animation: pulse-fire 2s infinite;
+            z-index: 10;
+        }
+        @keyframes pulse-fire {
+            0% { box-shadow: 0 0 5px rgba(255, 71, 87, 0.4); transform: scale(1); }
+            50% { box-shadow: 0 0 15px rgba(255, 71, 87, 0.8); transform: scale(1.05); }
+            100% { box-shadow: 0 0 5px rgba(255, 71, 87, 0.4); transform: scale(1); }
+        }
+        /* Botones de compra más vibrantes en hover */
+        .products-grid .card .btn-buy {
+            transition: all 0.3s ease;
+        }
+        .products-grid .card:hover .btn-buy {
+            background: linear-gradient(45deg, #a155ff, #c385ff);
+            box-shadow: 0 0 15px rgba(161, 85, 255, 0.4);
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
 
@@ -18,15 +80,27 @@
          <button class="btn-outline" onclick="window.location.href='register.html'">Crear Cuenta</button>
         </div>
         <div class="nav-user-section" id="nav-logged-in" style="display: none;">
+            <!-- SALDO -->
             <div class="balance-pill">
                 <span class="material-icons wallet-icon">account_balance_wallet</span>
                 <div class="balance-info"><span class="balance-label">SALDO</span><span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span></div>
             </div>
-            <div class="user-dropdown-container" style="position: relative;">
+            <!-- PUNTOS VIP AÑADIDOS -->
+            <div class="balance-pill" style="border-color: #ffc107; background: rgba(255,193,7,0.1); margin-left: 10px;">
+                <span class="material-icons wallet-icon" style="color: #ffc107;">stars</span>
+                <div class="balance-info">
+                    <span class="balance-label" style="color: #ffc107;">PUNTOS</span>
+                    <span class="balance-amount" style="color: #ffc107;" id="puntos-nav">0</span>
+                </div>
+            </div>
+            
+            <div class="user-dropdown-container" style="position: relative; margin-left: 15px;">
              <div class="user-profile" onclick="toggleMenu()" id="btn-usuario-nav" style="cursor: pointer;"><span>Carlos</span><span class="material-icons">expand_more</span></div>
             <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 8px; min-width: 160px; z-index: 1000; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
                  <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">person</span> Mis Datos</a>
-                 <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
+                 <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #00e676; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
+                 <!-- ENLACE RULETA VIP -->
+                 <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">casino</span> Ruleta VIP</a>
                 <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;"><span class="material-icons">logout</span> Cerrar Sesión</a>
             </div>
          </div>
@@ -39,11 +113,14 @@
             <div class="hero-badge" style="border-color: #a155ff; color: #a155ff; background: rgba(161,85,255,0.1); border-radius: 30px; padding: 6px 16px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 20px;">💎 CATÁLOGO OFICIAL</div>
             <h1 class="hero-title" style="font-size: 38px; font-weight: bold; margin-bottom: 15px;">Recarga <br><span style="color: #a155ff;">REGULAR</span></h1>
             <p class="hero-subtitle" style="color: #a8a8b3; font-size: 15px; max-width: 600px; margin: 0 auto;">Adquiere tus diamantes y pases de forma automática y 100% segura con tu saldo.</p>
+            <!-- TEXTO VIP MOTIVACIONAL -->
+            <p style="color: #ffc107; font-size: 13px; font-weight: bold; margin-top: 15px; text-shadow: 0 0 10px rgba(255,193,7,0.5);"><span class="material-icons" style="font-size: 14px; vertical-align: middle;">stars</span> Recuerda que cada S/ 1.00 de saldo que recargas te da 10 Puntos para la Ruleta VIP.</p>
         </div>
     </header>
 
     <main class="container" style="padding-top: 30px;">
-        <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600;"><span class="material-icons">arrow_back</span> Volver al inicio</a>
+        <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a8a8b3'"><span class="material-icons">arrow_back</span> Volver al inicio</a>
+        
         <div class="category-header"><h2>PAQUETES DISPONIBLES 💎 (Ilimitado)</h2></div>
         
         <section class="products-grid">
@@ -51,7 +128,10 @@
             <div class="card"><div class="card-badge">Oferta</div><div class="card-icon">💎</div><h3 class="card-title">110 Diamantes</h3><p class="card-stock">100 + 10 Extra</p><div class="card-prices"><span class="price-current">S/ 2.90</span></div><button class="btn-buy" onclick="abrirModalCompra('110 Diamantes', 2.90)">Comprar</button></div>
             <div class="card"><div class="card-badge">-25.83%</div><div class="card-icon">💎</div><h3 class="card-title">341 Diamantes</h3><p class="card-stock">310 + 31 Extra</p><div class="card-prices"><span class="price-old">S/ 12.00</span><span class="price-current">S/ 10.00</span></div><button class="btn-buy" onclick="abrirModalCompra('341 Diamantes', 10.00)">Comprar</button></div>
             <div class="card"><div class="card-badge">-13.21%</div><div class="card-icon">💎💎</div><h3 class="card-title">572 Diamantes</h3><p class="card-stock">520 + 52 Extra</p><div class="card-prices"><span class="price-old">S/ 15.90</span><span class="price-current">S/ 14.50</span></div><button class="btn-buy" onclick="abrirModalCompra('572 Diamantes', 14.50)">Comprar</button></div>
-            <div class="card"><div class="card-badge">-17.48%</div><div class="card-icon">💎💎</div><h3 class="card-title">1170 Diamantes</h3><p class="card-stock">1060 + 110 Extra</p><div class="card-prices"><span class="price-old">S/ 30.90</span><span class="price-current">S/ 27.50</span></div><button class="btn-buy" onclick="abrirModalCompra('1170 Diamantes', 27.50)">Comprar</button></div>
+            
+            <!-- ETIQUETA ANIMADA DE FUEGO EN EL PAQUETE MÁS ATRACTIVO -->
+            <div class="card"><div class="badge-bestseller">🔥 Más Vendido</div><div class="card-badge" style="top: 12px; left: 12px; right: auto;">-17.48%</div><div class="card-icon">💎💎</div><h3 class="card-title">1170 Diamantes</h3><p class="card-stock">1060 + 110 Extra</p><div class="card-prices"><span class="price-old">S/ 30.90</span><span class="price-current">S/ 27.50</span></div><button class="btn-buy" onclick="abrirModalCompra('1170 Diamantes', 27.50)">Comprar</button></div>
+            
             <div class="card"><div class="card-badge">-14.43%</div><div class="card-icon">💎💎💎</div><h3 class="card-title">2398 Diamantes</h3><p class="card-stock">2180 + 218 Extra</p><div class="card-prices"><span class="price-old">S/ 58.90</span><span class="price-current">S/ 53.00</span></div><button class="btn-buy" onclick="abrirModalCompra('2398 Diamantes', 53.00)">Comprar</button></div>
             <div class="card"><div class="card-badge">-10.28%</div><div class="card-icon">💎💎💎</div><h3 class="card-title">4796 Diamantes</h3><p class="card-stock">4360 + 436 Extra</p><div class="card-prices"><span class="price-old">S/ 114.00</span><span class="price-current">S/ 104.00</span></div><button class="btn-buy" onclick="abrirModalCompra('4796 Diamantes', 104.00)">Comprar</button></div>
             <div class="card"><div class="card-badge">-7.19%</div><div class="card-icon">👑💎</div><h3 class="card-title">6160 Diamantes</h3><p class="card-stock">5600 + 560 Extra</p><div class="card-prices"><span class="price-old">S/ 135.00</span><span class="price-current">S/ 129.00</span></div><button class="btn-buy" onclick="abrirModalCompra('6160 Diamantes', 129.00)">Comprar</button></div>
@@ -99,13 +179,53 @@
     </style>
 
     <section class="cz-faq-wrapper">
-        <div class="cz-faq-header"><span class="cz-faq-subtitle">Centro de Ayuda</span><h2 class="cz-faq-title">Preguntas Frecuentes</h2></div>
+        <div class="cz-faq-header">
+            <span class="cz-faq-subtitle">Centro de Ayuda</span>
+            <h2 class="cz-faq-title">Preguntas Frecuentes</h2>
+        </div>
         <div class="cz-faq-grid">
-            <div class="cz-faq-item" onclick="toggleCzFaq(this)"><div class="cz-faq-q"><span>¿Cuánto demora en procesarse mi recarga?</span><span class="material-icons cz-faq-icon">expand_more</span></div><div class="cz-faq-a">Nuestro sistema está optimizado para la velocidad. Una vez que validamos la captura de tu comprobante de Yape o Plin en nuestro WhatsApp, el saldo o los diamantes se abonan a tu cuenta en menos de 5 minutos.</div></div>
-            <div class="cz-faq-item" onclick="toggleCzFaq(this)"><div class="cz-faq-q"><span>¿Qué datos necesitan de mi cuenta?</span><span class="material-icons cz-faq-icon">expand_more</span></div><div class="cz-faq-a">Únicamente necesitamos tu ID de jugador y Nickname. Jamás te pediremos correos, contraseñas ni accesos a tus redes sociales. Tu cuenta está 100% segura.</div></div>
-            <div class="cz-faq-item" onclick="toggleCzFaq(this)"><div class="cz-faq-q"><span>¿Cómo valido mi pago?</span><span class="material-icons cz-faq-icon">expand_more</span></div><div class="cz-faq-a">Es muy sencillo: al seleccionar el monto a recargar, la página te generará un mensaje automático. Solo envíanos ese mensaje por WhatsApp junto con la captura de pantalla de tu transferencia.</div></div>
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)">
+                <div class="cz-faq-q">
+                    <span>¿Cuánto demora en procesarse mi recarga?</span>
+                    <span class="material-icons cz-faq-icon">expand_more</span>
+                </div>
+                <div class="cz-faq-a">
+                    Nuestro sistema está optimizado para la velocidad. Una vez que validamos la captura de tu comprobante de Yape o Plin en nuestro WhatsApp, el saldo o los diamantes se abonan a tu cuenta en menos de 5 minutos.
+                </div>
+            </div>
+
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)">
+                <div class="cz-faq-q">
+                    <span>¿Qué datos necesitan de mi cuenta?</span>
+                    <span class="material-icons cz-faq-icon">expand_more</span>
+                </div>
+                <div class="cz-faq-a">
+                    Únicamente necesitamos tu ID de jugador y Nickname. Jamás te pediremos correos, contraseñas ni accesos a tus redes sociales. Tu cuenta está 100% segura.
+                </div>
+            </div>
+
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)">
+                <div class="cz-faq-q">
+                    <span>¿Cómo valido mi pago?</span>
+                    <span class="material-icons cz-faq-icon">expand_more</span>
+                </div>
+                <div class="cz-faq-a">
+                    Es muy sencillo: al seleccionar el monto a recargar, la página te generará un mensaje automático. Solo envíanos ese mensaje por WhatsApp junto con la captura de pantalla de tu transferencia.
+                </div>
+            </div>
         </div>
     </section>
+
+    <!-- SCRIPT DEL NUEVO ACORDEÓN -->
+    <script>
+        function toggleCzFaq(elemento) {
+            const todos = document.querySelectorAll('.cz-faq-item');
+            todos.forEach(item => {
+                if(item !== elemento) item.classList.remove('active');
+            });
+            elemento.classList.toggle('active');
+        }
+    </script>
 
     <!-- MODAL DE COMPRA -->
     <div id="modal-compra-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
@@ -176,17 +296,21 @@
                 document.getElementById('btn-usuario-nav').innerHTML = nombreGuardado + ' <span class="material-icons" style="font-size: 16px;">expand_more</span>';
                 
                 try {
-                    const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
-                    if (data && document.getElementById('saldo-nav')) {
-                        document.getElementById('saldo-nav').innerText = data.saldo.toFixed(2);
+                    // SE ACTUALIZÓ PARA TRAER SALDO Y PUNTOS EN EL MENÚ
+                    const { data, error } = await supabaseClient.from('usuarios').select('saldo, puntos').eq('nickname', nombreGuardado).single();
+                    if (!error && data) {
+                        const elementoSaldo = document.getElementById('saldo-nav');
+                        if (elementoSaldo) { elementoSaldo.innerText = data.saldo.toFixed(2); }
+
+                        const elementoPuntos = document.getElementById('puntos-nav');
+                        if (elementoPuntos) { elementoPuntos.innerText = data.puntos || 0; }
                     }
-                } catch (error) { console.error("Error cargando saldo:", error); }
+                } catch (error) { console.error("Error cargando datos:", error); }
             }
         };
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
         function cerrarSesionLocal() { localStorage.removeItem('nombreUsuario'); window.location.reload(); }
-        function toggleCzFaq(elemento) { const todos = document.querySelectorAll('.cz-faq-item'); todos.forEach(item => { if(item !== elemento) item.classList.remove('active'); }); elemento.classList.toggle('active'); }
 
         async function abrirModalCompra(nombrePaquete, precioPaquete) {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
@@ -299,49 +423,46 @@
     <!-- ========================================== -->
     <!-- FOOTER PROFESIONAL                         -->
     <!-- ========================================== -->
-    <footer class="main-footer">
-        <div class="footer-container">
-            <div class="footer-brand">
-                <div class="brand-logo">
-                    <div class="logo-icon">C</div>
-                    <h2>CarzaD'Cross</h2>
-                </div>
-                <p>La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
-                <div class="trust-badges">
-                    <span><i class="material-icons">bolt</i> Entrega < 5 min</span>
+    <footer class="cz-footer">
+        <div class="cz-footer-content">
+            <div class="cz-f-brand">
+                <div class="cz-f-logo"><div class="avatar">C</div> CarzaD'Cross</div>
+                <p class="cz-f-desc">La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
+                <div class="cz-f-trust">
+                    <span><i class="material-icons">bolt</i> Entrega &lt; 5 min</span>
                     <span><i class="material-icons">verified_user</i> 100% Seguro</span>
                     <span><i class="material-icons">account_balance_wallet</i> Yape / Plin</span>
                 </div>
             </div>
-            <div class="footer-links">
-                <h3 class="footer-title">NAVEGACIÓN</h3>
+            <div class="cz-f-col">
+                <h4>Navegación</h4>
                 <ul>
-                    <li><a href="index.html">Inicio</a></li>
-                    <li><a href="catalogo-regular.html">Catálogo Free Fire</a></li>
-                    <li><a href="catalogo-cajas.html">Cajas y Fragmentos</a></li>
-                    <li><a href="perfil.html">Mi Panel</a></li>
+                    <li><a href="index.html"><span class="material-icons">chevron_right</span> Inicio</a></li>
+                    <li><a href="catalogo-regular.html"><span class="material-icons">chevron_right</span> Catálogo Free Fire</a></li>
+                    <li><a href="catalogo-cajas.html"><span class="material-icons">chevron_right</span> Cajas y Fragmentos</a></li>
+                    <li><a href="perfil.html"><span class="material-icons">chevron_right</span> Mi Panel</a></li>
                 </ul>
             </div>
-            <div class="footer-links">
-                <h3 class="footer-title">SOPORTE</h3>
+            <div class="cz-f-col">
+                <h4>Soporte</h4>
                 <ul>
-                    <li><a href="recargar.html">Reportar Pago</a></li>
-                    <li><a href="https://wa.me/51943737572" target="_blank">Contactar por WhatsApp</a></li>
-                    <li><a href="index.html">Centro de Ayuda</a></li>
+                    <li><a href="recargar.html"><span class="material-icons">chevron_right</span> Reportar Pago</a></li>
+                    <li><a href="https://wa.me/51943737572" target="_blank"><span class="material-icons">chevron_right</span> WhatsApp</a></li>
+                    <li><a href="index.html"><span class="material-icons">chevron_right</span> Centro de Ayuda</a></li>
                 </ul>
             </div>
-            <div class="footer-links">
-                <h3 class="footer-title">LEGAL</h3>
+            <div class="cz-f-col">
+                <h4>Legal</h4>
                 <ul>
-                    <li><a href="terminos.html">Términos de Servicio</a></li>
-                    <li><a href="privacidad.html">Política de Privacidad</a></li>
-                    <li><a href="garantia.html">Garantía de Entrega</a></li>
+                    <li><a href="terminos.html"><span class="material-icons">chevron_right</span> Términos de Servicio</a></li>
+                    <li><a href="privacidad.html"><span class="material-icons">chevron_right</span> Política de Privacidad</a></li>
+                    <li><a href="garantia.html"><span class="material-icons">chevron_right</span> Garantía de Entrega</a></li>
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>© 2026 CarzaD'Cross. Todos los derechos reservados.</p>
-            <p class="made-with">Hecho con <span class="material-icons heart">favorite</span> en Perú para la comunidad gaming.</p>
+        <div class="cz-footer-bottom">
+            <div class="cz-copy">© 2026 CarzaD'Cross. Todos los derechos reservados.</div>
+            <div class="cz-made-with">Hecho con <span class="material-icons" style="color:#ff4757; font-size:14px;">favorite</span> en Perú</div>
         </div>
     </footer>
 </body>

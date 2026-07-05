@@ -177,7 +177,19 @@
                 <h2 style="margin: 0;">Lista de Usuarios</h2>
                 <input type="text" id="buscador" class="search-bar" placeholder="🔍 Buscar por Nickname..." onkeyup="filtrarUsuarios()">
             </div>
-            <table><thead><tr><th>Nickname</th><th>Correo</th><th>Saldo Actual</th><th>Acciones</th></tr></thead><tbody id="tabla-usuarios"></tbody></table>
+            <!-- SE AÑADIÓ LA COLUMNA "PUNTOS VIP" A LA TABLA -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nickname</th>
+                        <th>Correo</th>
+                        <th>Saldo Actual</th>
+                        <th style="color: #ff9800;">Puntos VIP</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-usuarios"></tbody>
+            </table>
         </div>
 
         <div class="admin-table-container history-container">
@@ -261,7 +273,7 @@
 
         function copiarTexto(texto, el) { navigator.clipboard.writeText(texto).then(() => { const t = el.innerHTML; el.innerHTML = '<span class="material-icons" style="font-size:11px;">check</span>'; el.style.background = '#00e676'; el.style.color = 'black'; setTimeout(() => { el.innerHTML = t; el.style.background = ''; el.style.color = ''; }, 2000); }); }
 
-        // ================= RECARGAS =================
+        // ================= RECARGAS (AHORA OTORGA PUNTOS AUTOMÁTICAMENTE) =================
         async function cargarRecargas() {
             const { data } = await supabaseClient.from('recargas').select('*').eq('estado', 'Pendiente').order('created_at', { ascending: true });
             const tbody = document.getElementById('tabla-recargas'); tbody.innerHTML = "";
@@ -286,19 +298,31 @@
             if(!conf) return;
 
             await supabaseClient.from('recargas').update({ estado: 'Completado' }).eq('id', id);
-            const { data: user } = await supabaseClient.from('usuarios').select('saldo, celular').eq('nickname', nickname).single();
+            
+            // TRAEMOS LOS DATOS Y LOS PUNTOS ACTUALES
+            const { data: user } = await supabaseClient.from('usuarios').select('saldo, celular, puntos').eq('nickname', nickname).single();
+            
             if(user) { 
-                await supabaseClient.from('usuarios').update({ saldo: user.saldo + monto }).eq('nickname', nickname); 
+                // CÁLCULO DE PUNTOS: S/ 1 = 10 Puntos
+                const puntosGanados = Math.floor(monto * 10);
+                const nuevosPuntos = (user.puntos || 0) + puntosGanados;
+
+                // ACTUALIZAMOS SALDO Y PUNTOS AL MISMO TIEMPO
+                await supabaseClient.from('usuarios')
+                    .update({ saldo: user.saldo + monto, puntos: nuevosPuntos })
+                    .eq('nickname', nickname); 
+                
                 await supabaseClient.from('historial').insert([{ nickname, monto, tipo: 'Recarga Aprobada', estado: 'Completado' }]); 
                 
-                // MENSAJE AUTOMATICO WHATSAPP
+                // MENSAJE AUTOMATICO WHATSAPP ACTUALIZADO
                 if(user.celular) {
                     let numStr = user.celular.replace(/[^0-9]/g, '');
-                    let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga por *S/ ${monto.toFixed(2)}* 💵💵 ha sido aprobada exitosamente.\nTu saldo ya está actualizado en tu billetera web.\n\n🌐 carzadcross.com`;
+                    let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga por *S/ ${monto.toFixed(2)}* 💵💵 ha sido aprobada exitosamente.\n🎁 Además, acabas de ganar *${puntosGanados} CarzaPuntos* para la Ruleta VIP.\n\nTu saldo ya está actualizado en tu billetera web.\n\n🌐 carzadcross.com`;
                     window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
                 }
             }
-            showToast(`Saldo aprobado para ${nickname}`); cargarRecargas(); cargarUsuarios(); cargarHistorial();
+            showToast(`Saldo aprobado. Se sumaron ${Math.floor(monto * 10)} pts a ${nickname}`); 
+            cargarRecargas(); cargarUsuarios(); cargarHistorial();
         }
 
         async function rechazarRecarga(id) { 
@@ -374,21 +398,18 @@
             showToast(`Pedido completado.`); cargarPedidos(); cargarHistorial(); 
         }
 
-        // LÓGICA DE REEMBOLSO Y RESTOCK DE CÓDIGOS
         async function rechazarPedido(id, paquete, nick, precio, codigoStr) {
             const conf = await openCustomModal({ title: "Rechazar y Reembolsar", desc: `¿Rechazar pedido de <b>${paquete}</b> de <b>${nick}</b>?<br><br>Se le reembolsarán S/ ${precio.toFixed(2)} y los códigos volverán al stock.`, icon: 'settings_backup_restore', color: '#ff4757', textColor: 'white', type: 'confirm', confirmText: 'Rechazar Pedido' });
             if(!conf) return;
 
             await supabaseClient.from('pedidos').update({ estado: 'Rechazado' }).eq('id', id);
             
-            // Reembolso de dinero
             const { data: user } = await supabaseClient.from('usuarios').select('saldo, celular').eq('nickname', nick).single();
             if(user) {
                 await supabaseClient.from('usuarios').update({ saldo: user.saldo + precio }).eq('nickname', nick);
                 await supabaseClient.from('historial').insert([{ nickname: nick, monto: precio, tipo: `Reembolso por pedido rechazado: ${paquete}`, estado: 'Completado' }]);
             }
 
-            // Devolver códigos al inventario (si los hay y no son mensajes de advertencia)
             if(codigoStr && !codigoStr.includes("Sin stock") && !codigoStr.includes("Pendiente a mandar") && !codigoStr.includes("Activación Promo") && !codigoStr.includes("Envío de")) {
                 let codigos = codigoStr.split(' | ').filter(c => !c.includes('⚠️')).map(c => c.trim());
                 for(let cod of codigos) {
@@ -396,7 +417,6 @@
                 }
             }
 
-            // WhatsApp aviso
             if(user && user.celular) {
                 let numStr = user.celular.replace(/[^0-9]/g, '');
                 let msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n⚠️ Te informamos que tu pedido de 💎 *${paquete}* 💎 tuvo que ser rechazado.\n\nEl monto de *S/ ${precio.toFixed(2)}* ha sido devuelto de manera íntegra a tu saldo web para que puedas volver a utilizarlo.\n\nPor favor, respóndenos a este mensaje para indicarte el motivo exacto.`;
@@ -407,8 +427,9 @@
             cargarPedidos(); cargarHistorial(); cargarUsuarios();
         }
 
-        // ================= USUARIOS =================
+        // ================= USUARIOS (CON PUNTOS VIP) =================
         async function cargarUsuarios() { const { data } = await supabaseClient.from('usuarios').select('*').order('created_at', { ascending: false }); todosLosUsuarios = data || []; mostrarUsuarios(todosLosUsuarios); }
+        
         function mostrarUsuarios(lista) { 
             const tbody = document.getElementById('tabla-usuarios'); tbody.innerHTML = ""; 
             lista.forEach(u => { 
@@ -417,9 +438,10 @@
                     <td data-label="Nickname" style="font-weight: bold;">${u.nickname}</td>
                     <td data-label="Correo" style="color: #a8a8b3; font-size:13px;">${u.correo}</td>
                     <td data-label="Saldo" style="font-size: 16px; color: #a155ff; font-weight: bold;">S/ ${u.saldo.toFixed(2)}</td>
+                    <td data-label="Puntos VIP" style="color: #ff9800; font-weight: bold; font-size: 15px;">⭐ ${u.puntos || 0}</td>
                     <td data-label="Acciones">
-                        <button class="btn-add" onclick="añadirSaldo('${u.nickname}', ${u.saldo})"><span class="material-icons">add</span></button>
-                        <button class="btn-remove" onclick="quitarSaldo('${u.nickname}', ${u.saldo})"><span class="material-icons">remove</span></button>
+                        <button class="btn-add" onclick="añadirSaldo('${u.nickname}', ${u.saldo}, ${u.puntos || 0})"><span class="material-icons">add</span></button>
+                        <button class="btn-remove" onclick="quitarSaldo('${u.nickname}', ${u.saldo}, ${u.puntos || 0})"><span class="material-icons">remove</span></button>
                         <button class="btn-view" onclick="verHistorialUsuario('${u.nickname}')"><span class="material-icons">visibility</span> Historial</button>
                     </td>`; 
                 tbody.appendChild(tr); 
@@ -427,23 +449,29 @@
         }
         function filtrarUsuarios() { mostrarUsuarios(todosLosUsuarios.filter(u => u.nickname.toLowerCase().includes(document.getElementById('buscador').value.toLowerCase()))); }
         
-        async function añadirSaldo(nick, saldo) { 
+        async function añadirSaldo(nick, saldo, puntosActuales) { 
             const result = await openCustomModal({ title: "Añadir Saldo Manual", desc: `Saldo actual: <b>S/ ${saldo.toFixed(2)}</b><br>Monto a recargar a <b>${nick}</b>:`, icon: 'add_circle', color: '#00e676', type: 'prompt', confirmText: 'Añadir' });
             if(!result) return; const m = parseFloat(result); 
             if(m>0){ 
-                await supabaseClient.from('usuarios').update({saldo: saldo+m}).eq('nickname', nick); 
+                const ptsASumar = Math.floor(m * 10);
+                const nuevosPuntos = puntosActuales + ptsASumar;
+
+                await supabaseClient.from('usuarios').update({saldo: saldo+m, puntos: nuevosPuntos}).eq('nickname', nick); 
                 await supabaseClient.from('historial').insert([{nickname: nick, monto: m, tipo: 'Ajuste manual de administrador', estado: 'Completado'}]); 
-                showToast(`Se agregaron S/ ${m.toFixed(2)} a ${nick}`); cargarUsuarios(); cargarHistorial(); 
+                showToast(`Se agregaron S/ ${m.toFixed(2)} y ${ptsASumar} Puntos a ${nick}`); cargarUsuarios(); cargarHistorial(); 
             } else { showToast("Monto inválido", "error"); }
         }
 
-        async function quitarSaldo(nick, saldo) { 
+        async function quitarSaldo(nick, saldo, puntosActuales) { 
             const result = await openCustomModal({ title: "Descontar Saldo Manual", desc: `Saldo actual: <b>S/ ${saldo.toFixed(2)}</b><br>Monto a descontar a <b>${nick}</b>:`, icon: 'remove_circle', color: '#ff4757', textColor: 'white', type: 'prompt', confirmText: 'Quitar' });
             if(!result) return; const m = parseFloat(result); 
             if(m>0 && m<=saldo){ 
-                await supabaseClient.from('usuarios').update({saldo: saldo-m}).eq('nickname', nick); 
+                const ptsARestar = Math.floor(m * 10);
+                const nuevosPuntos = Math.max(0, puntosActuales - ptsARestar);
+
+                await supabaseClient.from('usuarios').update({saldo: saldo-m, puntos: nuevosPuntos}).eq('nickname', nick); 
                 await supabaseClient.from('historial').insert([{nickname: nick, monto: m, tipo: 'Ajuste manual de administrador', estado: 'Descontado'}]); 
-                showToast(`Se quitaron S/ ${m.toFixed(2)} a ${nick}`); cargarUsuarios(); cargarHistorial(); 
+                showToast(`Se quitaron S/ ${m.toFixed(2)} y se ajustaron los puntos a ${nick}`); cargarUsuarios(); cargarHistorial(); 
             } else { showToast("Monto inválido o sin saldo suficiente", "error"); }
         }
 
@@ -487,6 +515,5 @@
             }); 
         }
     </script>
-
 </body>
 </html>

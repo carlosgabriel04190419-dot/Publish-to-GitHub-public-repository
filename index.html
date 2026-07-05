@@ -80,7 +80,17 @@
                     <span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span>
                 </div>
             </div>
-            <div class="user-dropdown-container" style="position: relative;">
+            
+            <!-- PUNTOS VIP AÑADIDOS AL NAVBAR -->
+            <div class="balance-pill" style="border-color: #ffc107; background: rgba(255,193,7,0.1); margin-left: 10px;">
+                <span class="material-icons wallet-icon" style="color: #ffc107;">stars</span>
+                <div class="balance-info">
+                    <span class="balance-label" style="color: #ffc107;">PUNTOS</span>
+                    <span class="balance-amount" style="color: #ffc107;" id="puntos-nav">0</span>
+                </div>
+            </div>
+
+            <div class="user-dropdown-container" style="position: relative; margin-left: 15px;">
     
              <div class="user-profile" onclick="toggleMenu()" id="btn-usuario-nav" style="cursor: pointer;">
                <span>Carlos</span>
@@ -93,6 +103,10 @@
                  </a>
                  <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
                   <span class="material-icons">account_balance_wallet</span> Recargar Saldo
+                 </a>
+                 <!-- ENLACE A LA RULETA VIP -->
+                 <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
+                  <span class="material-icons">casino</span> Ruleta VIP
                  </a>
                 <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;">
                   <span class="material-icons">logout</span> Cerrar Sesión
@@ -175,6 +189,19 @@
                     <div class="game-info">
                         <h3>Cajitas Evolutivas (No disponible)</h3>
                         <p>Paquetes Especiales</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NUEVA TARJETA VIP (RULETA) -->
+            <div class="game-card" onclick="window.location.href='recompensas.html'" style="border: 1px solid rgba(255, 193, 7, 0.4); box-shadow: 0 0 20px rgba(255, 193, 7, 0.1);">
+                <div class="game-content">
+                    <div class="game-image" style="background: linear-gradient(135deg, #a155ff, #ff4757, #ffc107); display: flex; align-items: center; justify-content: center;">
+                        <span class="material-icons" style="font-size: 70px; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">casino</span>
+                    </div>
+                    <div class="game-info">
+                        <h3 style="color: #ffc107;">Club VIP - Ruleta Booyah</h3>
+                        <p>Gana Puntos por recargar y llévate premios gratis.</p>
                     </div>
                 </div>
             </div>
@@ -309,12 +336,16 @@
                 if(menuConectado) menuConectado.style.display = 'flex';
 
                 try {
-                    const { data, error } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
+                    // SE ACTUALIZÓ PARA TRAER SALDO Y PUNTOS
+                    const { data, error } = await supabaseClient.from('usuarios').select('saldo, puntos').eq('nickname', nombreGuardado).single();
                     if (!error && data) {
                         const elementoSaldo = document.getElementById('saldo-nav');
                         if (elementoSaldo) { elementoSaldo.innerText = data.saldo.toFixed(2); }
+
+                        const elementoPuntos = document.getElementById('puntos-nav');
+                        if (elementoPuntos) { elementoPuntos.innerText = data.puntos || 0; }
                     }
-                } catch (err) { console.error("Error al cargar el saldo:", err); }
+                } catch (err) { console.error("Error al cargar el saldo/puntos:", err); }
             }
 
             // LANZAMOS EL MOTOR DEL TICKER Y RANKING REALES
@@ -332,15 +363,11 @@
         async function cargarSistemaComunidadDinamica() {
             try {
                 // 1. FILTRO ANTI-ADMINS Y RESETEO MENSUAL
-                // Lista de usuarios que no deben aparecer en el podio ni en el ticker
                 const usuariosExcluidos = ['carzaadmin', 'carzadcrosito'];
-                
-                // Calculamos el primer día del mes actual para resetear el ranking
                 const hoy = new Date();
                 const primerDiaDelMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1).toISOString();
 
                 // 2. OBTENEMOS LAS ÚLTIMAS COMPRAS GLOBALES (PARA EL TICKER)
-                // Traemos los últimos 50 pedidos (sin importar el mes) para asegurarnos de que la cinta siempre tenga movimiento
                 const { data: pedidosTicker, error: errTicker } = await supabaseClient
                     .from('pedidos')
                     .select('nickname, paquete, id_juego')
@@ -349,7 +376,6 @@
                     .limit(50);
 
                 if (!errTicker && pedidosTicker && pedidosTicker.length > 0) {
-                    // Filtramos a los admins y nos quedamos solo con los 10 más recientes
                     const ultimas10 = pedidosTicker.filter(p => !usuariosExcluidos.includes(p.nickname.toLowerCase())).slice(0, 10);
                     
                     let tickerHtml = '';
@@ -377,7 +403,6 @@
                     let rankingMap = {};
                     
                     pedidosMes.forEach(p => {
-                        // Saltamos a los usuarios excluidos
                         if (usuariosExcluidos.includes(p.nickname.toLowerCase())) return;
 
                         let diamantes = parseInt(p.paquete.replace(/\D/g, ''));
