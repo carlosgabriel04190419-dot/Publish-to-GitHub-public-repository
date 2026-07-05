@@ -6,6 +6,52 @@
     <title>CarzaD'Cross | Tienda de Recargas</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        /* --- ESTILOS DE LA CINTA DE COMPRAS EN VIVO (LIVE TICKER) --- */
+        .live-ticker-wrap {
+            width: 100%;
+            background: rgba(20, 20, 26, 0.9);
+            border-bottom: 1px solid rgba(161, 85, 255, 0.2);
+            overflow: hidden;
+            position: relative;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            z-index: 10;
+        }
+        .ticker-label {
+            background: #a155ff;
+            color: white;
+            font-weight: bold;
+            padding: 6px 12px;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            z-index: 12;
+            position: absolute;
+            left: 0;
+            border-radius: 0 4px 4px 0;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.5);
+        }
+        .ticker-move {
+            display: flex;
+            white-space: nowrap;
+            animation: tickerAnimation 30s linear infinite;
+            padding-left: 150px;
+        }
+        .ticker-item {
+            display: inline-block;
+            padding-right: 3rem;
+            color: #e0e0e0;
+            font-size: 13.5px;
+        }
+        .ticker-item .hl { color: #a155ff; font-weight: bold; }
+        .ticker-item .id-text { color: #888899; font-family: monospace; }
+        
+        @keyframes tickerAnimation {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
+        }
+    </style>
 </head>
 <body>
 
@@ -45,7 +91,6 @@
                  <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
                    <span class="material-icons">person</span> Mis Datos
                  </a>
-                  <!-- NUEVO BOTÓN DE RECARGA -->
                  <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
                   <span class="material-icons">account_balance_wallet</span> Recargar Saldo
                  </a>
@@ -56,6 +101,13 @@
          </div>
         </div>
     </nav>
+
+    <div class="live-ticker-wrap">
+        <div class="ticker-label">COMPRAS EN VIVO ⚡</div>
+        <div class="ticker-move" id="ticker-track">
+            <div class="ticker-item">Sincronizando últimas compras con la bóveda digital...</div>
+        </div>
+    </div>
 
     <header class="hero-container">
         <div class="hero-content">
@@ -87,7 +139,6 @@
                 </div>
             </div>
 
-            <!-- NUEVA TARJETA: RECARGAS DIRECTAS 20% -->
             <div class="game-card" onclick="window.location.href='catalogo-recarga-directa.html'">
                 <div class="game-content">
                     <div class="game-image" style="background: url('recargadirecta.jpg') center/cover no-repeat;"></div>
@@ -108,10 +159,8 @@
                 </div>
             </div>
 
-            <!-- TARJETA PARA FRAGMENTOS -->
             <div class="game-card" onclick="window.location.href='catalogo-fragmentos.html'">
                 <div class="game-content">
-                    <!-- Usando tu imagen fragmentos.png -->
                     <div class="game-image" style="background: url('fragmentos.png') center/cover no-repeat;"></div>
                     <div class="game-info">
                         <h3>Frag. Universales (No disponible)</h3>
@@ -120,10 +169,8 @@
                 </div>
             </div>
 
-            <!-- TARJETA PARA CAJITAS EVOLUTIVAS -->
             <div class="game-card" onclick="window.location.href='catalogo-cajas.html'">
                 <div class="game-content">
-                    <!-- Usando tu imagen cajas.png -->
                     <div class="game-image" style="background: url('cajas.png') center/cover no-repeat;"></div>
                     <div class="game-info">
                         <h3>Cajitas Evolutivas (No disponible)</h3>
@@ -135,7 +182,6 @@
         </div>
     </section>
 
-    <!-- ESTE ES TU CATÁLOGO NORMAL COMPLETO, SIN CORTES -->
     <main class="container" id="catalogo-normal" style="display: none;">
         <div class="category-header"><h2>RECARGA REGULAR 💎</h2></div>
         <section class="products-grid">
@@ -161,104 +207,53 @@
                     <tr>
                         <th>Puesto</th>
                         <th>Usuario</th>
-                        <th>Recargas</th>
+                        <th>Acumulado</th>
                         <th>Rango</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr class="top-rank rank-1">
-                        <td>🥇 1°</td>
-                        <td>Ghost_King99</td>
-                        <td>45 veces</td>
-                        <td><span class="rank-badge gold">Leyenda</span></td>
-                    </tr>
-                    <tr class="top-rank rank-2">
-                        <td>🥈 2°</td>
-                        <td>Viper_FF</td>
-                        <td>32 veces</td>
-                        <td><span class="rank-badge silver">Gran Maestro</span></td>
-                    </tr>
-                    <tr class="top-rank rank-3">
-                        <td>🥉 3°</td>
-                        <td>Kraken_Ica</td>
-                        <td>28 veces</td>
-                        <td><span class="rank-badge bronze">Maestro</span></td>
-                    </tr>
+                <tbody id="ranking-body">
                     <tr>
-                        <td>4°</td>
-                        <td>DarkSlayer</td>
-                        <td>19 veces</td>
-                        <td><span class="rank-badge common">Diamante</span></td>
-                    </tr>
-                    <tr>
-                        <td>5°</td>
-                        <td>CholoGamer Pro</td>
-                        <td>15 veces</td>
-                        <td><span class="rank-badge common">Platino</span></td>
+                        <td colspan="4" style="text-align: center; color: #a8a8b3; padding: 20px;">Calculando podios del mes...</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </section>
 
-    <!-- ========================================== -->
-    <!-- PREGUNTAS FRECUENTES (DISEÑO ORIGINAL)     -->
-    <!-- ========================================== -->
     <style>
         .cz-faq-wrapper { max-width: 850px; margin: 90px auto 60px; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .cz-faq-header { text-align: center; margin-bottom: 50px; }
         .cz-faq-subtitle { color: #a155ff; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 12px; }
         .cz-faq-title { font-size: 32px; color: white; margin: 0; font-weight: 800; letter-spacing: 0.5px; }
-        
         .cz-faq-grid { display: flex; flex-direction: column; gap: 16px; }
-        
-        .cz-faq-item { 
-            background: rgba(20, 20, 26, 0.6); 
-            border: 1px solid rgba(255,255,255,0.03); 
-            border-left: 3px solid transparent; 
-            border-radius: 8px; 
-            overflow: hidden; 
-            transition: all 0.3s ease; 
-        }
+        .cz-faq-item { background: rgba(20, 20, 26, 0.6); border: 1px solid rgba(255,255,255,0.03); border-left: 3px solid transparent; border-radius: 8px; overflow: hidden; transition: all 0.3s ease; }
         .cz-faq-item:hover { background: rgba(30, 30, 38, 0.8); border-left: 3px solid #a155ff; }
         .cz-faq-item.active { border-left: 3px solid #a155ff; background: rgba(30, 30, 38, 0.9); border-color: rgba(161,85,255,0.2); }
-        
         .cz-faq-q { padding: 22px 25px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: #e0e0e0; font-weight: 600; font-size: 16px; transition: color 0.3s; }
         .cz-faq-item.active .cz-faq-q { color: white; }
-        
         .cz-faq-icon { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: #a155ff; font-size: 24px; }
         .cz-faq-item.active .cz-faq-icon { transform: rotate(180deg); }
-        
         .cz-faq-a { padding: 0 25px; max-height: 0; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: #888899; font-size: 14.5px; line-height: 1.7; }
         .cz-faq-item.active .cz-faq-a { padding: 0 25px 25px 25px; max-height: 250px; }
 
-        /* ========================================== */
-        /* FOOTER (ESTILO PINXTORE MODIFICADO)        */
-        /* ========================================== */
         .cz-footer { background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 80px 20px 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 50px; }
         .cz-footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; }
-        
         @media (max-width: 950px) { .cz-footer-content { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 600px) { .cz-footer-content { grid-template-columns: 1fr; gap: 40px; } }
-
         .cz-f-brand { display: flex; flex-direction: column; gap: 18px; }
         .cz-f-logo { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 900; color: white; letter-spacing: -0.5px; }
         .cz-f-logo .avatar { background: #a155ff; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; font-weight: bold; }
         .cz-f-desc { color: #888899; font-size: 14px; line-height: 1.6; max-width: 320px; }
-        
         .cz-f-trust { display: flex; gap: 15px; margin-top: 5px; flex-wrap: wrap; }
         .cz-f-trust span { display: flex; align-items: center; gap: 6px; color: #b3b3cc; font-size: 12.5px; font-weight: 600; }
         .cz-f-trust span .material-icons { color: #a155ff; font-size: 16px; }
-
         .cz-f-col h4 { color: white; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 25px 0; display: flex; align-items: center; gap: 10px; }
         .cz-f-col h4::before { content: ''; display: block; width: 3px; height: 14px; background: #a155ff; border-radius: 2px; }
-        
         .cz-f-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
         .cz-f-col a { color: #888899; text-decoration: none; font-size: 14px; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
         .cz-f-col a:hover { color: white; transform: translateX(5px); }
         .cz-f-col a .material-icons { font-size: 14px; color: #a155ff; opacity: 0; transition: opacity 0.2s; }
         .cz-f-col a:hover .material-icons { opacity: 1; }
-
         .cz-footer-bottom { max-width: 1200px; margin: 60px auto 0; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .cz-copy { color: #555566; font-size: 13px; }
         .cz-made-with { color: #777788; font-size: 13px; display: flex; align-items: center; gap: 6px; }
@@ -269,47 +264,26 @@
             <span class="cz-faq-subtitle">Centro de Ayuda</span>
             <h2 class="cz-faq-title">Preguntas Frecuentes</h2>
         </div>
-
         <div class="cz-faq-grid">
             <div class="cz-faq-item" onclick="toggleCzFaq(this)">
-                <div class="cz-faq-q">
-                    <span>¿Cuánto demora en procesarse mi recarga?</span>
-                    <span class="material-icons cz-faq-icon">expand_more</span>
-                </div>
-                <div class="cz-faq-a">
-                    Nuestro sistema está optimizado para la velocidad. Una vez que validamos la captura de tu comprobante de Yape o Plin en nuestro WhatsApp, el saldo o los diamantes se abonan a tu cuenta en menos de 5 minutos.
-                </div>
+                <div class="cz-faq-q"><span>¿Cuánto demora en procesarse mi recarga?</span><span class="material-icons cz-faq-icon">expand_more</span></div>
+                <div class="cz-faq-a">Nuestro sistema está optimizado para la velocidad. Una vez que validamos la captura de tu comprobante de Yape o Plin en nuestro WhatsApp, el saldo o los diamantes se abonan a tu cuenta en menos de 5 minutos.</div>
             </div>
-
             <div class="cz-faq-item" onclick="toggleCzFaq(this)">
-                <div class="cz-faq-q">
-                    <span>¿Qué datos necesitan de mi cuenta?</span>
-                    <span class="material-icons cz-faq-icon">expand_more</span>
-                </div>
-                <div class="cz-faq-a">
-                    Únicamente necesitamos tu ID de jugador. Jamás te pediremos correos, contraseñas ni accesos a tus redes sociales. Tu cuenta está 100% segura.
-                </div>
+                <div class="cz-faq-q"><span>¿Qué datos necesitan de mi cuenta?</span><span class="material-icons cz-faq-icon">expand_more</span></div>
+                <div class="cz-faq-a">Únicamente necesitamos tu ID de jugador. Jamás te pediremos correos, contraseñas ni accesos a tus redes sociales. Tu cuenta está 100% segura.</div>
             </div>
-
             <div class="cz-faq-item" onclick="toggleCzFaq(this)">
-                <div class="cz-faq-q">
-                    <span>¿Cómo valido mi pago?</span>
-                    <span class="material-icons cz-faq-icon">expand_more</span>
-                </div>
-                <div class="cz-faq-a">
-                    Es muy sencillo: al seleccionar el monto a recargar, la página te generará un mensaje automático. Solo envíanos ese mensaje por WhatsApp junto con la captura de pantalla de tu transferencia.
-                </div>
+                <div class="cz-faq-q"><span>¿Cómo valido mi pago?</span><span class="material-icons cz-faq-icon">expand_more</span></div>
+                <div class="cz-faq-a">Es muy sencillo: al seleccionar el monto a recargar, la página te generará un mensaje automático. Solo envíanos ese mensaje por WhatsApp junto con la captura de pantalla de tu transferencia.</div>
             </div>
         </div>
     </section>
 
-    <!-- SCRIPT DEL NUEVO ACORDEÓN -->
     <script>
         function toggleCzFaq(elemento) {
             const todos = document.querySelectorAll('.cz-faq-item');
-            todos.forEach(item => {
-                if(item !== elemento) item.classList.remove('active');
-            });
+            todos.forEach(item => { if(item !== elemento) item.classList.remove('active'); });
             elemento.classList.toggle('active');
         }
     </script>
@@ -317,21 +291,16 @@
     <!-- MOTOR SUPABASE Y LOGICA DE INTERFAZ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // 1. Configuración de Supabase
         const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
         const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // 2. Función que arranca al abrir la página
         window.onload = async function() {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             
             if (nombreGuardado) {
-                // A. Cambia los botones del menú
                 const btnUsuario = document.getElementById('btn-usuario-nav');
-                if (btnUsuario) {
-                    btnUsuario.innerHTML = nombreGuardado + ' <span class="material-icons" style="font-size: 16px;">expand_more</span>';
-                }
+                if (btnUsuario) { btnUsuario.innerHTML = nombreGuardado + ' <span class="material-icons" style="font-size: 16px;">expand_more</span>'; }
                 
                 const menuDesconectado = document.getElementById('nav-logged-out');
                 const menuConectado = document.getElementById('nav-logged-in');
@@ -339,112 +308,186 @@
                 if(menuDesconectado) menuDesconectado.style.display = 'none';
                 if(menuConectado) menuConectado.style.display = 'flex';
 
-                // B. MAGIA DE SUPABASE: Buscar y mostrar el Saldo
                 try {
-                    const { data, error } = await supabaseClient
-                        .from('usuarios')
-                        .select('saldo')
-                        .eq('nickname', nombreGuardado)
-                        .single();
-
+                    const { data, error } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
                     if (!error && data) {
                         const elementoSaldo = document.getElementById('saldo-nav');
-                        if (elementoSaldo) {
-                            // Muestra el dinero con dos decimales, ej. 9999.00
-                            elementoSaldo.innerText = data.saldo.toFixed(2);
-                        }
+                        if (elementoSaldo) { elementoSaldo.innerText = data.saldo.toFixed(2); }
                     }
-                } catch (err) {
-                    console.error("Error al cargar el saldo:", err);
-                }
+                } catch (err) { console.error("Error al cargar el saldo:", err); }
             }
+
+            // LANZAMOS EL MOTOR DEL TICKER Y RANKING REALES
+            cargarSistemaComunidadDinamica();
         };
 
-        // 3. Funciones visuales
-        function toggleMenu() {
-            const menu = document.getElementById('menu-desplegable');
-            if (menu.style.display === 'none') {
-                menu.style.display = 'block';
-            } else {
-                menu.style.display = 'none';
-            }
-        }
+        function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none') ? 'block' : 'none'; }
+        function cerrarSesionLocal() { localStorage.removeItem('nombreUsuario'); window.location.reload(); }
+        function showNormal() { document.getElementById('catalogo-normal').style.display = 'block'; }
+        function verificarCompra() { if(document.getElementById('nav-logged-in').style.display === 'none') { window.location.href = 'login.html'; } else { window.location.href = 'perfil.html'; } }
 
-        function cerrarSesionLocal() {
-            localStorage.removeItem('nombreUsuario');
-            window.location.reload(); 
-        }
+        // ==========================================
+        // ALGORITMO DEL TICKER Y RANKING REAL-TIME
+        // ==========================================
+        async function cargarSistemaComunidadDinamica() {
+            try {
+                // 1. FILTRO ANTI-ADMINS Y RESETEO MENSUAL
+                // Lista de usuarios que no deben aparecer en el podio ni en el ticker
+                const usuariosExcluidos = ['carzaadmin', 'carzadcrosito'];
+                
+                // Calculamos el primer día del mes actual para resetear el ranking
+                const hoy = new Date();
+                const primerDiaDelMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1).toISOString();
 
-        function showNormal() {
-            document.getElementById('catalogo-normal').style.display = 'block';
-        }
+                // 2. OBTENEMOS LAS ÚLTIMAS COMPRAS GLOBALES (PARA EL TICKER)
+                // Traemos los últimos 50 pedidos (sin importar el mes) para asegurarnos de que la cinta siempre tenga movimiento
+                const { data: pedidosTicker, error: errTicker } = await supabaseClient
+                    .from('pedidos')
+                    .select('nickname, paquete, id_juego')
+                    .eq('estado', 'Completado')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
 
-        function verificarCompra() {
-            if(document.getElementById('nav-logged-in').style.display === 'none') {
-                // Si no está logueado, lo manda a la página real de login
-                window.location.href = 'login.html';
-            } else {
-                // Si está logueado, lo manda a su perfil para ver fondos
-                window.location.href = 'perfil.html';
-            }
+                if (!errTicker && pedidosTicker && pedidosTicker.length > 0) {
+                    // Filtramos a los admins y nos quedamos solo con los 10 más recientes
+                    const ultimas10 = pedidosTicker.filter(p => !usuariosExcluidos.includes(p.nickname.toLowerCase())).slice(0, 10);
+                    
+                    let tickerHtml = '';
+                    ultimas10.forEach(p => {
+                        let idRaw = p.id_juego ? p.id_juego.toString().trim() : '';
+                        let idOculto = idRaw.length > 4 ? idRaw.substring(0, idRaw.length - 4) + '****' : '********';
+                        tickerHtml += `<div class="ticker-item">💎 <span class="hl">${p.nickname}</span> adquirió ${p.paquete} <span class="id-text">| ID: ${idOculto}</span></div>`;
+                    });
+                    
+                    if(tickerHtml !== '') {
+                        document.getElementById('ticker-track').innerHTML = tickerHtml + tickerHtml + tickerHtml;
+                    } else {
+                        document.getElementById('ticker-track').innerHTML = '<div class="ticker-item">Esperando nuevas compras de la comunidad...</div>';
+                    }
+                }
+
+                // 3. OBTENEMOS LAS COMPRAS SOLO DEL MES ACTUAL (PARA EL RANKING)
+                const { data: pedidosMes, error: errMes } = await supabaseClient
+                    .from('pedidos')
+                    .select('nickname, paquete')
+                    .eq('estado', 'Completado')
+                    .gte('created_at', primerDiaDelMes);
+
+                if (!errMes && pedidosMes && pedidosMes.length > 0) {
+                    let rankingMap = {};
+                    
+                    pedidosMes.forEach(p => {
+                        // Saltamos a los usuarios excluidos
+                        if (usuariosExcluidos.includes(p.nickname.toLowerCase())) return;
+
+                        let diamantes = parseInt(p.paquete.replace(/\D/g, ''));
+                        if (p.paquete.toLowerCase().includes("pase")) diamantes = 500;
+
+                        if (!isNaN(diamantes) && p.nickname) {
+                            if (!rankingMap[p.nickname]) rankingMap[p.nickname] = 0;
+                            rankingMap[p.nickname] += diamantes;
+                        }
+                    });
+
+                    let rankingArray = Object.keys(rankingMap).map(nick => ({
+                        nickname: nick,
+                        diamantes: rankingMap[nick]
+                    })).sort((a, b) => b.diamantes - a.diamantes);
+
+                    const tbody = document.getElementById('ranking-body');
+                    if (tbody) {
+                        tbody.innerHTML = '';
+                        const top5 = rankingArray.slice(0, 5);
+
+                        if(top5.length > 0) {
+                            top5.forEach((user, index) => {
+                                let medalla = `${index + 1}°`;
+                                let badgeClass = 'common';
+                                let badgeText = 'Platino';
+
+                                if (index === 0) { medalla = '🥇 1°'; badgeClass = 'gold'; badgeText = 'Leyenda'; }
+                                else if (index === 1) { medalla = '🥈 2°'; badgeClass = 'silver'; badgeText = 'Gran Maestro'; }
+                                else if (index === 2) { medalla = '🥉 3°'; badgeClass = 'bronze'; badgeText = 'Maestro'; }
+                                else if (index === 3) { medalla = '4°'; badgeClass = 'common'; badgeText = 'Diamante'; }
+
+                                tbody.innerHTML += `
+                                    <tr class="${index < 3 ? 'top-rank rank-' + (index + 1) : ''}">
+                                        <td>${medalla}</td>
+                                        <td style="font-weight: bold; color: white;">${user.nickname}</td>
+                                        <td style="font-weight: bold; color: #00e676;">💎 ${user.diamantes.toLocaleString('es-PE')} diams</td>
+                                        <td><span class="rank-badge ${badgeClass}">${badgeText}</span></td>
+                                    </tr>`;
+                            });
+
+                            let placeholders = ['DarkSlayer', 'CholoGamer Pro'];
+                            for (let i = top5.length; i < 5; i++) {
+                                let medalla = `${i + 1}°`;
+                                let badgeText = i === 3 ? 'Diamante' : 'Platino';
+                                let name = placeholders[i - top5.length] || 'GamerAnon';
+                                let cantP = i === 3 ? '💎 1,500 diams' : '💎 500 diams';
+                                tbody.innerHTML += `
+                                    <tr>
+                                        <td>${medalla}</td>
+                                        <td>${name}</td>
+                                        <td style="color: #a8a8b3;">${cantP}</td>
+                                        <td><span class="rank-badge common">${badgeText}</span></td>
+                                    </tr>`;
+                            }
+                        } else {
+                            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #a8a8b3; padding: 20px;">El ranking se reinició. ¡Sé el primero del mes!</td></tr>';
+                        }
+                    }
+                } else {
+                    document.getElementById('ranking-body').innerHTML = '<tr><td colspan="4" style="text-align: center; color: #a8a8b3; padding: 20px;">El ranking mensual acaba de reiniciarse. ¡Empieza la competencia!</td></tr>';
+                }
+            } catch (err) { console.error("Error en sistema dinámico:", err); }
         }
     </script>
-<!-- ========================================== -->
-<!-- FOOTER PROFESIONAL                         -->
-<!-- ========================================== -->
-<footer class="main-footer">
-    <div class="footer-container">
-        <!-- Columna 1: Marca -->
-        <div class="footer-brand">
-            <div class="brand-logo">
-                <div class="logo-icon">C</div>
-                <h2>CarzaD'Cross</h2>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="brand-logo">
+                    <div class="logo-icon">C</div>
+                    <h2>CarzaD'Cross</h2>
+                </div>
+                <p>La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
+                <div class="trust-badges">
+                    <span><i class="material-icons">bolt</i> Entrega &lt; 5 min</span>
+                    <span><i class="material-icons">verified_user</i> 100% Seguro</span>
+                    <span><i class="material-icons">account_balance_wallet</i> Yape / Plin</span>
+                </div>
             </div>
-            <p>La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
-            <div class="trust-badges">
-                <span><i class="material-icons">bolt</i> Entrega < 5 min</span>
-                <span><i class="material-icons">verified_user</i> 100% Seguro</span>
-                <span><i class="material-icons">account_balance_wallet</i> Yape / Plin</span>
+            <div class="footer-links">
+                <h3 class="footer-title">NAVEGACIÓN</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="catalogo-regular.html">Catálogo Free Fire</a></li>
+                    <li><a href="catalogo-cajas.html">Cajas y Fragmentos</a></li>
+                    <li><a href="perfil.html">Mi Panel</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3 class="footer-title">SOPORTE</h3>
+                <ul>
+                    <li><a href="recargar.html">Reportar Pago</a></li>
+                    <li><a href="https://wa.me/51943737572" target="_blank">Contactar por WhatsApp</a></li>
+                    <li><a href="index.html">Centro de Ayuda</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3 class="footer-title">LEGAL</h3>
+                <ul>
+                    <li><a href="terminos.html">Términos de Servicio</a></li>
+                    <li><a href="privacidad.html">Política de Privacidad</a></li>
+                    <li><a href="garantia.html">Garantía de Entrega</a></li>
+                </ul>
             </div>
         </div>
-
-        <!-- Columna 2: Navegación -->
-        <div class="footer-links">
-            <h3 class="footer-title">NAVEGACIÓN</h3>
-            <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="catalogo-regular.html">Catálogo Free Fire</a></li>
-                <li><a href="catalogo-cajas.html">Cajas y Fragmentos</a></li>
-                <li><a href="perfil.html">Mi Panel</a></li>
-            </ul>
+        <div class="footer-bottom">
+            <p>© 2026 CarzaD'Cross. Todos los derechos reservados.</p>
+            <p class="made-with">Hecho con <span class="material-icons heart">favorite</span> en Perú para la comunidad gaming.</p>
         </div>
-
-        <!-- Columna 3: Soporte -->
-        <div class="footer-links">
-            <h3 class="footer-title">SOPORTE</h3>
-            <ul>
-                <li><a href="recargar.html">Reportar Pago</a></li>
-                <!-- El target="_blank" hace que WhatsApp se abra en una pestaña nueva -->
-                <li><a href="https://wa.me/51943737572" target="_blank">Contactar por WhatsApp</a></li>
-                <li><a href="index.html">Centro de Ayuda</a></li>
-            </ul>
-        </div>
-
-        <!-- Columna 4: Legal -->
-        <div class="footer-links">
-            <h3 class="footer-title">LEGAL</h3>
-            <ul>
-                <li><a href="terminos.html">Términos de Servicio</a></li>
-                <li><a href="privacidad.html">Política de Privacidad</a></li>
-                <li><a href="garantia.html">Garantía de Entrega</a></li>
-            </ul>
-        </div>
-    </div>
-    <!-- Copyright -->
-    <div class="footer-bottom">
-        <p>© 2026 CarzaD'Cross. Todos los derechos reservados.</p>
-        <p class="made-with">Hecho con <span class="material-icons heart">favorite</span> en Perú para la comunidad gaming.</p>
-    </div>
-</footer>
+    </footer>
 </body>
 </html>
