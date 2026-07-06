@@ -29,34 +29,23 @@
 
         /* --- ESTILOS DE LA RULETA VIP --- */
         .roulette-wrapper {
-            position: relative;
-            width: 340px;
-            height: 340px;
-            margin: 0 auto;
-            border-radius: 50%;
-            padding: 10px;
+            position: relative; width: 340px; height: 340px; margin: 0 auto;
+            border-radius: 50%; padding: 10px;
             background: linear-gradient(135deg, #a155ff, #ff4757, #ffc107);
             box-shadow: 0 0 40px rgba(255, 193, 7, 0.3), inset 0 0 20px rgba(0,0,0,0.8);
         }
 
         .roulette-wheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            position: relative;
+            width: 100%; height: 100%; border-radius: 50%; position: relative;
             overflow: hidden;
-            transition: transform 5s cubic-bezier(0.2, 0.8, 0.2, 1); /* Curva de desaceleración de casino */
+            transition: transform 5s cubic-bezier(0.2, 0.8, 0.2, 1);
             transform: rotate(0deg);
-            background: #1a1a24;
-            border: 4px solid #0a0a0f;
-            box-sizing: border-box;
+            background: #1a1a24; border: 4px solid #0a0a0f; box-sizing: border-box;
         }
 
-        /* Tramos de la Ruleta creados con Conic Gradient */
+        /* Tramos de la Ruleta (Ajustado para los nuevos premios) */
         .wheel-segments {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
+            width: 100%; height: 100%; border-radius: 50%;
             background: conic-gradient(
                 #1a1a24 0deg 60deg, 
                 #a155ff 60deg 120deg, 
@@ -65,30 +54,22 @@
                 #1a1a24 240deg 300deg, 
                 #ffc107 300deg 360deg
             );
-            position: absolute;
-            top: 0; left: 0;
+            position: absolute; top: 0; left: 0;
         }
 
-        .wheel-lines {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        }
+        .wheel-lines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         .wheel-line {
             position: absolute; top: 0; left: 50%; width: 2px; height: 100%;
-            background: rgba(255,255,255,0.2);
-            transform-origin: center;
+            background: rgba(255,255,255,0.2); transform-origin: center;
         }
         .wheel-line:nth-child(1) { transform: rotate(30deg); }
         .wheel-line:nth-child(2) { transform: rotate(90deg); }
         .wheel-line:nth-child(3) { transform: rotate(150deg); }
 
-        .wheel-text {
-            position: absolute; width: 100%; height: 100%; top: 0; left: 0;
-        }
+        .wheel-text { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
         .prize-text {
-            position: absolute;
-            top: 15px; left: 50%;
-            transform-origin: 50% 150px; /* Centro de rotación = radio */
-            transform: translateX(-50%);
+            position: absolute; top: 15px; left: 50%;
+            transform-origin: 50% 150px; transform: translateX(-50%);
             font-weight: 900; font-size: 13px; text-transform: uppercase;
             color: white; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
             text-align: center; width: 80px;
@@ -100,17 +81,10 @@
         .pt-5 { transform: translateX(-50%) rotate(270deg); }
         .pt-6 { transform: translateX(-50%) rotate(330deg); }
 
-        /* Puntero de la Ruleta */
         .roulette-pointer {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 50px;
-            background: #ffc107;
-            clip-path: polygon(50% 100%, 0 0, 100% 0);
-            z-index: 10;
+            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            width: 40px; height: 50px; background: #ffc107;
+            clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
         }
 
@@ -128,17 +102,58 @@
             box-shadow: 0 0 15px rgba(255, 193, 7, 0.2); margin-bottom: 20px; font-size: 18px;
         }
 
+        /* --- ESTILOS COMPARTIDOS (TICKER, FAQ, FOOTER) --- */
+        .live-ticker-wrap { width: 100%; background: rgba(20, 20, 26, 0.9); border-bottom: 1px solid rgba(161, 85, 255, 0.2); overflow: hidden; position: relative; padding: 10px 0; display: flex; align-items: center; z-index: 10; }
+        .ticker-label { background: #a155ff; color: white; font-weight: bold; padding: 6px 12px; font-size: 11px; letter-spacing: 0.5px; z-index: 12; position: absolute; left: 0; border-radius: 0 4px 4px 0; box-shadow: 4px 0 10px rgba(0,0,0,0.5); }
+        .ticker-move { display: flex; white-space: nowrap; animation: tickerAnimation 30s linear infinite; padding-left: 150px; }
+        .ticker-item { display: inline-block; padding-right: 3rem; color: #e0e0e0; font-size: 13.5px; }
+        .ticker-item .hl { color: #a155ff; font-weight: bold; }
+        .ticker-item .id-text { color: #888899; font-family: monospace; }
+        @keyframes tickerAnimation { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
+
+        .rec-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.3s ease; }
+        .rec-card:hover { border-color: #a155ff; transform: translateY(-3px); background: rgba(161,85,255,0.05); }
+
+        .cz-faq-wrapper { max-width: 850px; margin: 30px auto 60px; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .cz-faq-header { text-align: center; margin-bottom: 50px; }
+        .cz-faq-subtitle { color: #a155ff; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 12px; }
+        .cz-faq-title { font-size: 32px; color: white; margin: 0; font-weight: 800; letter-spacing: 0.5px; }
+        .cz-faq-grid { display: flex; flex-direction: column; gap: 16px; }
+        .cz-faq-item { background: rgba(20, 20, 26, 0.6); border: 1px solid rgba(255,255,255,0.03); border-left: 3px solid transparent; border-radius: 8px; overflow: hidden; transition: all 0.3s ease; }
+        .cz-faq-item:hover { background: rgba(30, 30, 38, 0.8); border-left: 3px solid #a155ff; }
+        .cz-faq-item.active { border-left: 3px solid #a155ff; background: rgba(30, 30, 38, 0.9); border-color: rgba(161,85,255,0.2); }
+        .cz-faq-q { padding: 22px 25px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: #e0e0e0; font-weight: 600; font-size: 16px; transition: color 0.3s; }
+        .cz-faq-item.active .cz-faq-q { color: white; }
+        .cz-faq-icon { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: #a155ff; font-size: 24px; }
+        .cz-faq-item.active .cz-faq-icon { transform: rotate(180deg); }
+        .cz-faq-a { padding: 0 25px; max-height: 0; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: #888899; font-size: 14.5px; line-height: 1.7; }
+        .cz-faq-item.active .cz-faq-a { padding: 0 25px 25px 25px; max-height: 250px; }
+
+        .cz-footer { background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 80px 20px 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 50px; }
+        .cz-footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; }
+        @media (max-width: 950px) { .cz-footer-content { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px) { .cz-footer-content { grid-template-columns: 1fr; gap: 40px; } }
+        .cz-f-brand { display: flex; flex-direction: column; gap: 18px; }
+        .cz-f-logo { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 900; color: white; letter-spacing: -0.5px; }
+        .cz-f-logo .avatar { background: #a155ff; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; font-weight: bold; }
+        .cz-f-desc { color: #888899; font-size: 14px; line-height: 1.6; max-width: 320px; }
+        .cz-f-trust { display: flex; gap: 15px; margin-top: 5px; flex-wrap: wrap; }
+        .cz-f-trust span { display: flex; align-items: center; gap: 6px; color: #b3b3cc; font-size: 12.5px; font-weight: 600; }
+        .cz-f-trust span .material-icons { color: #a155ff; font-size: 16px; }
+        .cz-f-col h4 { color: white; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 25px 0; display: flex; align-items: center; gap: 10px; }
+        .cz-f-col h4::before { content: ''; display: block; width: 3px; height: 14px; background: #a155ff; border-radius: 2px; }
+        .cz-f-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+        .cz-f-col a { color: #888899; text-decoration: none; font-size: 14px; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .cz-f-col a:hover { color: white; transform: translateX(5px); }
+        .cz-f-col a .material-icons { font-size: 14px; color: #a155ff; opacity: 0; transition: opacity 0.2s; }
+        .cz-f-col a:hover .material-icons { opacity: 1; }
+        .cz-footer-bottom { max-width: 1200px; margin: 60px auto 0; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .cz-copy { color: #555566; font-size: 13px; }
+        .cz-made-with { color: #777788; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+
         /* Modal de Premio */
-        .prize-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 8, 0.9); z-index: 9999; align-items: center; justify-content: center;
-            backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s;
-        }
-        .prize-modal-content {
-            background: #1a1a24; padding: 40px; border-radius: 20px; text-align: center;
-            border: 2px solid #ffc107; box-shadow: 0 0 50px rgba(255, 193, 7, 0.3);
-            max-width: 400px; width: 90%; transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        .prize-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.9); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s; }
+        .prize-modal-content { background: #1a1a24; padding: 40px; border-radius: 20px; text-align: center; border: 2px solid #ffc107; box-shadow: 0 0 50px rgba(255, 193, 7, 0.3); max-width: 400px; width: 90%; transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     </style>
 </head>
 <body>
@@ -154,7 +169,6 @@
         </div>
 
         <div class="nav-user-section" id="nav-logged-in" style="display: none;">
-            <!-- SALDO -->
             <div class="balance-pill">
                 <span class="material-icons wallet-icon">account_balance_wallet</span>
                 <div class="balance-info">
@@ -162,7 +176,6 @@
                     <span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span>
                 </div>
             </div>
-            <!-- PUNTOS VIP NUEVOS -->
             <div class="balance-pill" style="border-color: #ffc107; background: rgba(255,193,7,0.1); margin-left: 10px;">
                 <span class="material-icons wallet-icon" style="color: #ffc107;">stars</span>
                 <div class="balance-info">
@@ -183,6 +196,14 @@
          </div>
         </div>
     </nav>
+
+    <!-- CINTA DE COMPRAS EN VIVO (LIVE TICKER) -->
+    <div class="live-ticker-wrap">
+        <div class="ticker-label">COMPRAS EN VIVO ⚡</div>
+        <div class="ticker-move" id="ticker-track">
+            <div class="ticker-item">Sincronizando últimas compras con la bóveda digital...</div>
+        </div>
+    </div>
 
     <header class="hero-container" style="padding: 40px 20px; text-align: center; border-bottom: none;">
         <div class="hero-badge" style="border-color: #ffc107; color: #ffc107; background: rgba(255,193,7,0.1);">👑 CLUB VIP CARZAD'CROSS</div>
@@ -205,11 +226,11 @@
 
                 <h3 style="font-size: 16px; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">🎁 Premios de la Ruleta</h3>
                 <ul style="list-style: none; padding: 0; margin: 0; color: #e0e0e0; font-size: 14px; display: flex; flex-direction: column; gap: 12px;">
-                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #ffc107; font-size: 18px;">diamond</span> 1170 Diamantes (Jackpot)</li>
+                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #ffc107; font-size: 18px;">workspace_premium</span> 1170 Diamantes (Jackpot)</li>
                     <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #a155ff; font-size: 18px;">local_activity</span> Pase Booyah</li>
-                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #00d2ff; font-size: 18px;">diamond</span> 100 Diamantes directos</li>
+                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #00d2ff; font-size: 18px;">diamond</span> 110 Diamantes directos</li>
+                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #00e676; font-size: 18px;">payments</span> S/ 2.00 de Saldo Billetera</li>
                     <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #00e676; font-size: 18px;">payments</span> S/ 1.00 de Saldo Billetera</li>
-                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #00e676; font-size: 18px;">payments</span> S/ 0.50 de Saldo Billetera</li>
                 </ul>
             </div>
         </div>
@@ -225,12 +246,12 @@
                         <div class="wheel-line"></div><div class="wheel-line"></div><div class="wheel-line"></div>
                     </div>
                     <div class="wheel-text">
-                        <!-- Tramos de la Ruleta visuales -->
-                        <div class="prize-text pt-1">S/ 0.50<br><span style="font-size: 10px;">Saldo</span></div>
-                        <div class="prize-text pt-2">S/ 1.00<br><span style="font-size: 10px;">Saldo</span></div>
-                        <div class="prize-text pt-3">S/ 0.50<br><span style="font-size: 10px;">Saldo</span></div>
+                        <!-- Tramos de la Ruleta ajustados al nuevo orden matemático -->
+                        <div class="prize-text pt-1">S/ 1.00<br><span style="font-size: 10px;">Saldo</span></div>
+                        <div class="prize-text pt-2" style="color: #a155ff; text-shadow: none;">S/ 2.00<br><span style="font-size: 10px;">Saldo</span></div>
+                        <div class="prize-text pt-3">S/ 1.00<br><span style="font-size: 10px;">Saldo</span></div>
                         <div class="prize-text pt-4">Pase<br><span style="font-size: 10px;">Booyah</span></div>
-                        <div class="prize-text pt-5">100<br><span style="font-size: 10px;">Diams</span></div>
+                        <div class="prize-text pt-5" style="color: #888;">110<br><span style="font-size: 10px;">Diams</span></div>
                         <div class="prize-text pt-6" style="color: #1a1a24; text-shadow: none;">1170<br><span style="font-size: 10px;">JACKPOT</span></div>
                     </div>
                     <div class="center-dot"></div>
@@ -242,10 +263,30 @@
             </button>
             <p id="ruleta-msg" style="color: #ff4757; font-size: 14px; margin-top: 15px; display: none; font-weight: bold;">No tienes puntos suficientes.</p>
         </div>
-
     </main>
 
-    <!-- MODAL PREMIO -->
+    <!-- SECCIÓN DE RECOMENDACIONES (CROSS-SELLING) -->
+    <div class="container" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 40px; padding-bottom: 40px;">
+        <h3 style="color: white; font-size: 22px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
+            <span class="material-icons" style="color: #00d2ff; font-size: 28px;">local_fire_department</span> También te podría interesar...
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+            <div class="rec-card" onclick="window.location.href='catalogo-regular.html'">
+                <div style="min-width: 70px; height: 70px; border-radius: 8px; background: url('freefire.jpg') center/cover;"></div>
+                <div><h4 style="margin: 0 0 5px 0; font-size: 16px; color: white;">Recarga Regular</h4><p style="margin: 0; font-size: 13px; color: #a8a8b3;">Diamantes con 10% Extra y Pases Booyah. Entrega automática.</p></div>
+            </div>
+            <div class="rec-card" onclick="window.location.href='catalogo-promo.html'">
+                <div style="min-width: 70px; height: 70px; border-radius: 8px; background: linear-gradient(45deg, #ff4757, #ff6b81); display: flex; align-items: center; justify-content: center;"><span class="material-icons" style="color: white; font-size: 32px;">redeem</span></div>
+                <div><h4 style="margin: 0 0 5px 0; font-size: 16px; color: white;">Promo 1ra Vez</h4><p style="margin: 0; font-size: 13px; color: #a8a8b3;">Precios imbatibles exclusivos para la primera recarga.</p></div>
+            </div>
+            <div class="rec-card" onclick="window.location.href='catalogo-recarga-directa.html'">
+                <div style="min-width: 70px; height: 70px; border-radius: 8px; background: url('recargadirecta.jpg') center/cover;"></div>
+                <div><h4 style="margin: 0 0 5px 0; font-size: 16px; color: white;">Recargas Directas</h4><p style="margin: 0; font-size: 13px; color: #a8a8b3;">Lleva 20% más en diamantes. Oferta temporal por ID.</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE PREMIO SALDO (AUTOMÁTICO) -->
     <div class="prize-modal" id="modal-premio">
         <div class="prize-modal-content" id="modal-premio-caja">
             <span class="material-icons" id="premio-icono" style="font-size: 70px; color: #ffc107; margin-bottom: 10px; text-shadow: 0 0 20px rgba(255, 193, 7, 0.5);">emoji_events</span>
@@ -255,11 +296,81 @@
         </div>
     </div>
 
-    <!-- FOOTER BASICO -->
-    <footer class="main-footer" style="background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 40px 20px; text-align: center; color: #555566; font-size: 13px;">
-        © 2026 CarzaD'Cross. Club VIP y Recompensas. Todos los derechos reservados.
+    <!-- NUEVO MODAL DE RECLAMO PARA PREMIOS FÍSICOS (DIAMANTES/PASES) -->
+    <div class="prize-modal" id="modal-reclamar-container" style="z-index: 20000;">
+        <div class="prize-modal-content" style="border-color: #a155ff; box-shadow: 0 0 50px rgba(161, 85, 255, 0.3);">
+            <span class="material-icons" id="reclamar-icono" style="font-size: 60px; color: #a155ff; margin-bottom: 10px; text-shadow: 0 0 20px rgba(161, 85, 255, 0.5);">local_activity</span>
+            <h2 style="font-size: 24px; margin: 0 0 10px 0; color: white;" id="reclamar-titulo">¡Premio Mayor!</h2>
+            <p style="color: #a8a8b3; font-size: 14px; margin-bottom: 25px;">Para enviarte tu premio inmediatamente, ingresa los datos de tu cuenta de Free Fire.</p>
+            
+            <div style="margin-bottom: 15px; text-align: left;">
+                <label style="color: #e0e0e0; font-size: 13px; font-weight: 500;">Ingresa tu ID de Jugador</label>
+                <input type="text" id="reclamo-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);" placeholder="Ej. 24958302" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px; color: white; font-size: 15px; outline: none; box-sizing: border-box; font-family: monospace; text-align: center; margin-top: 5px;">
+            </div>
+            <div style="margin-bottom: 25px; text-align: left;">
+                <label style="color: #e0e0e0; font-size: 13px; font-weight: 500;">Nickname en el juego (Exacto)</label>
+                <input type="text" id="reclamo-nickname-juego" placeholder="Ej. Carlos_Pro" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px; color: white; font-size: 15px; outline: none; box-sizing: border-box; text-align: center; margin-top: 5px;">
+            </div>
+
+            <button id="btn-reclamar" class="btn-primary" style="width: 100%; padding: 15px; font-weight: bold; background: linear-gradient(45deg, #a155ff, #ff4757);" onclick="procesarReclamoPremio()">Reclamar a mi Cuenta</button>
+        </div>
+    </div>
+
+    <!-- PREGUNTAS FRECUENTES -->
+    <section class="cz-faq-wrapper">
+        <div class="cz-faq-header"><span class="cz-faq-subtitle">Centro de Ayuda</span><h2 class="cz-faq-title">Preguntas Frecuentes VIP</h2></div>
+        <div class="cz-faq-grid">
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)"><div class="cz-faq-q"><span>¿Cómo consigo CarzaPuntos?</span><span class="material-icons cz-faq-icon">expand_more</span></div><div class="cz-faq-a">Por cada S/ 1.00 de recarga que realices y sea aprobado en la tienda, el sistema te otorgará 10 Puntos de forma automática a tu billetera.</div></div>
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)"><div class="cz-faq-q"><span>¿Qué pasa si gano Saldo?</span><span class="material-icons cz-faq-icon">expand_more</span></div><div class="cz-faq-a">Si la ruleta cae en un premio de Saldo (Ej. S/ 1.00 o S/ 2.00), el dinero se abonará automáticamente a tu cuenta web. Podrás usarlo para comprar cualquier catálogo.</div></div>
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)"><div class="cz-faq-q"><span>¿Cómo me entregan el Jackpot o los Diamantes?</span><span class="material-icons cz-faq-icon">expand_more</span></div><div class="cz-faq-a">Si sacas un premio mayor, se abrirá una ventana para que ingreses tu ID. El sistema validará tu premio y nos contactará vía WhatsApp para enviarlo de inmediato.</div></div>
+        </div>
+    </section>
+
+    <!-- FOOTER PROFESIONAL -->
+    <footer class="cz-footer">
+        <div class="cz-footer-content">
+            <div class="cz-f-brand">
+                <div class="cz-f-logo"><div class="avatar">C</div> CarzaD'Cross</div>
+                <p class="cz-f-desc">La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
+                <div class="cz-f-trust">
+                    <span><i class="material-icons">bolt</i> Entrega &lt; 5 min</span>
+                    <span><i class="material-icons">verified_user</i> 100% Seguro</span>
+                    <span><i class="material-icons">account_balance_wallet</i> Yape / Plin</span>
+                </div>
+            </div>
+            <div class="cz-f-col">
+                <h4>Navegación</h4>
+                <ul>
+                    <li><a href="index.html"><span class="material-icons">chevron_right</span> Inicio</a></li>
+                    <li><a href="catalogo-regular.html"><span class="material-icons">chevron_right</span> Catálogo Free Fire</a></li>
+                    <li><a href="catalogo-cajas.html"><span class="material-icons">chevron_right</span> Cajas y Fragmentos</a></li>
+                    <li><a href="perfil.html"><span class="material-icons">chevron_right</span> Mi Panel</a></li>
+                </ul>
+            </div>
+            <div class="cz-f-col">
+                <h4>Soporte</h4>
+                <ul>
+                    <li><a href="recargar.html"><span class="material-icons">chevron_right</span> Reportar Pago</a></li>
+                    <li><a href="https://wa.me/51943737572" target="_blank"><span class="material-icons">chevron_right</span> WhatsApp</a></li>
+                    <li><a href="index.html"><span class="material-icons">chevron_right</span> Centro de Ayuda</a></li>
+                </ul>
+            </div>
+            <div class="cz-f-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="terminos.html"><span class="material-icons">chevron_right</span> Términos de Servicio</a></li>
+                    <li><a href="privacidad.html"><span class="material-icons">chevron_right</span> Política de Privacidad</a></li>
+                    <li><a href="garantia.html"><span class="material-icons">chevron_right</span> Garantía de Entrega</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="cz-footer-bottom">
+            <div class="cz-copy">© 2026 CarzaD'Cross. Todos los derechos reservados.</div>
+            <div class="cz-made-with">Hecho con <span class="material-icons" style="color:#ff4757; font-size:14px;">favorite</span> en Perú</div>
+        </div>
     </footer>
 
+    <!-- SCRIPTS CORE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
@@ -268,9 +379,9 @@
 
         let puntosActuales = 0;
         let saldoActual = 0;
-        let idJuegoGuardado = "Sin ID"; 
         let girando = false;
         let rotacionAcumulada = 0;
+        let premioPendiente = ""; // Guarda el nombre del premio para el envío manual
 
         window.onload = async function() {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
@@ -281,7 +392,12 @@
             document.getElementById('nav-logged-in').style.display = 'flex';
 
             await actualizarDatosUsuario(nombreGuardado);
+            cargarSistemaComunidadDinamica();
         };
+
+        function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
+        function cerrarSesionLocal() { localStorage.removeItem('nombreUsuario'); window.location.reload(); }
+        function toggleCzFaq(elemento) { const todos = document.querySelectorAll('.cz-faq-item'); todos.forEach(item => { if(item !== elemento) item.classList.remove('active'); }); elemento.classList.toggle('active'); }
 
         async function actualizarDatosUsuario(nick) {
             try {
@@ -295,7 +411,6 @@
                     
                     const pPantalla = document.getElementById('puntos-pantalla');
                     pPantalla.innerText = puntosActuales;
-                    
                     pPantalla.style.transform = 'scale(1.2)';
                     pPantalla.style.color = 'white';
                     setTimeout(() => { pPantalla.style.transform = 'scale(1)'; pPantalla.style.color = '#ffc107'; }, 300);
@@ -303,11 +418,25 @@
             } catch (err) { console.error("Error al cargar datos:", err); }
         }
 
-        function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
-        function cerrarSesionLocal() { localStorage.removeItem('nombreUsuario'); window.location.reload(); }
+        async function cargarSistemaComunidadDinamica() {
+            try {
+                const usuariosExcluidos = ['carzaadmin', 'carzadcrosito'];
+                const { data: pedidosTicker, error } = await supabaseClient.from('pedidos').select('nickname, paquete, id_juego').eq('estado', 'Completado').order('created_at', { ascending: false }).limit(50);
+                if (!error && pedidosTicker && pedidosTicker.length > 0) {
+                    const ultimas10 = pedidosTicker.filter(p => !usuariosExcluidos.includes(p.nickname.toLowerCase())).slice(0, 10);
+                    let tickerHtml = '';
+                    ultimas10.forEach(p => {
+                        let idRaw = p.id_juego ? p.id_juego.toString().trim() : '';
+                        let idOculto = idRaw.length > 4 ? idRaw.substring(0, idRaw.length - 4) + '****' : '********';
+                        tickerHtml += `<div class="ticker-item">💎 <span class="hl">${p.nickname}</span> adquirió ${p.paquete} <span class="id-text">| ID: ${idOculto}</span></div>`;
+                    });
+                    if(tickerHtml !== '') document.getElementById('ticker-track').innerHTML = tickerHtml + tickerHtml + tickerHtml;
+                }
+            } catch(e) { console.error(e); }
+        }
 
         // ==========================================
-        // MOTOR MATEMÁTICO DE LA RULETA VIP
+        // MOTOR MATEMÁTICO DE LA RULETA VIP CORREGIDO
         // ==========================================
         async function iniciarRuleta() {
             if (girando) return;
@@ -315,11 +444,7 @@
             const msg = document.getElementById('ruleta-msg');
             const nick = localStorage.getItem('nombreUsuario');
 
-            if (puntosActuales < 500) {
-                msg.style.display = 'block';
-                setTimeout(() => { msg.style.display = 'none'; }, 3000);
-                return;
-            }
+            if (puntosActuales < 500) { msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 3000); return; }
 
             girando = true;
             btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; btn.innerText = 'GIRANDO...';
@@ -327,100 +452,162 @@
             puntosActuales -= 500;
             document.getElementById('puntos-nav').innerText = puntosActuales;
             document.getElementById('puntos-pantalla').innerText = puntosActuales;
-            
             await supabaseClient.from('usuarios').update({ puntos: puntosActuales }).eq('nickname', nick);
+
+            // Tramos Visuales Reales (Centro del tramo desde 0 Top)
+            // Index 0: S/ 1.00 (Top: 330 deg de rotacion)
+            // Index 1: S/ 2.00 (Top: 270 deg)
+            // Index 2: S/ 1.00 (Top: 210 deg)
+            // Index 3: Pase (Top: 150 deg)
+            // Index 4: 110 Diams (Top: 90 deg)
+            // Index 5: 1170 Jackpot (Top: 30 deg)
 
             const roll = Math.random() * 100;
             let premioIndex = 0; 
             let premioInfo = {};
 
-            if (roll <= 50) {
-                // 50%: S/ 0.50 Saldo (Índices visuales 0 o 2)
+            if (roll <= 60) {
+                // 60% prob: S/ 1.00 (Cae en Index 0 o 2)
                 premioIndex = Math.random() > 0.5 ? 0 : 2; 
-                premioInfo = { tipo: 'saldo', monto: 0.50, titulo: '¡Saldo Ganado!', desc: 'Has ganado S/ 0.50. Se ha sumado automáticamente a tu billetera web.', icono: 'payments', color: '#00e676' };
-            } 
-            else if (roll <= 80) {
-                // 30%: S/ 1.00 Saldo (Índice visual 1)
-                premioIndex = 1; 
                 premioInfo = { tipo: 'saldo', monto: 1.00, titulo: '¡Saldo Ganado!', desc: 'Acabas de ganar S/ 1.00. Se ha sumado automáticamente a tu billetera web.', icono: 'payments', color: '#00e676' };
             } 
-            else if (roll <= 95) {
-                // 15%: 100 Diamantes (Índice visual 4)
+            else if (roll <= 80) {
+                // 20% prob: S/ 2.00 (Index 1)
+                premioIndex = 1; 
+                premioInfo = { tipo: 'saldo', monto: 2.00, titulo: '¡Saldo Ganado!', desc: 'Acabas de ganar S/ 2.00. Se ha sumado automáticamente a tu billetera web.', icono: 'payments', color: '#00e676' };
+            } 
+            else if (roll <= 94) {
+                // 14% prob: 110 Diamantes (Index 4)
                 premioIndex = 4;
-                premioInfo = { tipo: 'diamantes', paquete: '110 Diamantes', titulo: '¡100 Diamantes!', desc: '¡Felicidades! Se ha creado una solicitud a soporte. Revisa el WhatsApp para reclamar tu premio.', icono: 'diamond', color: '#00d2ff' };
+                premioInfo = { tipo: 'fisico', paquete: '110 Diamantes VIP', titulo: '¡110 Diamantes!', desc: '¡Increíble suerte! Ingresa el ID y Nickname de tu cuenta para realizar el envío directo.', icono: 'diamond', color: '#00d2ff' };
             } 
             else if (roll <= 99) {
-                // 4%: Pase Booyah (Índice visual 3)
+                // 5% prob: Pase Booyah (Index 3)
                 premioIndex = 3;
-                premioInfo = { tipo: 'pase', paquete: 'Pase Booyah (Premio VIP)', titulo: '¡PASE BOOYAH!', desc: '¡Increíble suerte! Has ganado un Pase. Comunícate al WhatsApp oficial para reclamarlo.', icono: 'local_activity', color: '#a155ff' };
+                premioInfo = { tipo: 'fisico', paquete: 'Pase Booyah VIP', titulo: '¡PASE BOOYAH!', desc: '¡Felicidades, ganaste el Pase! Ingresa el ID y Nickname de tu cuenta para realizar el envío.', icono: 'local_activity', color: '#a155ff' };
             } 
             else {
-                // 1%: JACKPOT (Índice visual 5)
+                // 1% prob: JACKPOT (Index 5)
                 premioIndex = 5;
-                premioInfo = { tipo: 'jackpot', paquete: '1170 Diamantes (Premio VIP)', titulo: '¡💎 JACKPOT 💎!', desc: '¡ERES UNA LEYENDA! Has sacado el premio mayor. Escríbenos ahora mismo para enviarte tus 1170 Diamantes.', icono: 'workspace_premium', color: '#ffc107' };
+                premioInfo = { tipo: 'fisico', paquete: '1170 Diamantes (Jackpot)', titulo: '¡💎 JACKPOT 💎!', desc: '¡ERES UNA LEYENDA! Has sacado el premio mayor de la ruleta. Ingresa tu ID ahora mismo para enviarte tus diamantes.', icono: 'workspace_premium', color: '#ffc107' };
             }
 
+            // Cálculo milimétrico del ángulo para alinear con el puntero superior
             const gradosPorTramo = 60;
-            const anguloDestino = 360 - (premioIndex * gradosPorTramo); 
+            const anguloDestino = 330 - (premioIndex * gradosPorTramo); 
             const variacionAleatoria = Math.floor(Math.random() * 40) - 20; 
             
             rotacionAcumulada += (360 * 6) + anguloDestino + variacionAleatoria;
-
-            const ruletaDiv = document.getElementById('ruleta-giratoria');
-            ruletaDiv.style.transform = `rotate(${rotacionAcumulada}deg)`;
+            document.getElementById('ruleta-giratoria').style.transform = `rotate(${rotacionAcumulada}deg)`;
 
             setTimeout(async () => {
-                await entregarPremioBD(nick, premioInfo);
-                mostrarModalPremio(premioInfo);
                 girando = false;
                 btn.style.opacity = '1'; btn.style.cursor = 'pointer'; btn.innerText = 'GIRAR X 500 PTS';
+                
+                if(premioInfo.tipo === 'saldo') {
+                    // Premios automáticos (Saldo)
+                    await entregarPremioSaldo(nick, premioInfo.monto);
+                    mostrarModalPremio(premioInfo);
+                } else {
+                    // Premios físicos que requieren validación de ID (Diamantes / Pase)
+                    mostrarModalReclamo(premioInfo);
+                }
             }, 5200);
         }
 
-        async function entregarPremioBD(nick, info) {
+        async function entregarPremioSaldo(nick, monto) {
             try {
-                if (info.tipo === 'saldo') {
-                    const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nick).single();
-                    await supabaseClient.from('usuarios').update({ saldo: data.saldo + info.monto }).eq('nickname', nick);
-                    await supabaseClient.from('historial').insert([{ nickname: nick, monto: info.monto, tipo: 'Premio Ruleta VIP', estado: 'Completado' }]);
-                    await actualizarDatosUsuario(nick);
-                } 
-                else if (info.tipo === 'diamantes' || info.tipo === 'pase' || info.tipo === 'jackpot') {
-                    await supabaseClient.from('pedidos').insert([{ 
-                        nickname: nick, 
-                        paquete: info.paquete, 
-                        id_juego: 'Premio VIP', 
-                        nickname_juego: 'Ganador Ruleta',
-                        precio: 0.00, 
-                        estado: 'Pendiente',
-                        codigo: 'Envío de premio manual'
-                    }]);
-                    await supabaseClient.from('historial').insert([{ nickname: nick, monto: 0.00, tipo: `Ganador Ruleta: ${info.paquete}`, estado: 'Completado' }]);
-                }
-            } catch (e) { console.error("Error al procesar premio", e); }
+                const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nick).single();
+                await supabaseClient.from('usuarios').update({ saldo: data.saldo + monto }).eq('nickname', nick);
+                await supabaseClient.from('historial').insert([{ nickname: nick, monto: monto, tipo: 'Premio Ruleta VIP', estado: 'Completado' }]);
+                await actualizarDatosUsuario(nick);
+            } catch (e) { console.error("Error al dar saldo", e); }
         }
 
         function mostrarModalPremio(info) {
             document.getElementById('premio-icono').innerText = info.icono;
             document.getElementById('premio-icono').style.color = info.color;
             document.getElementById('premio-icono').style.textShadow = `0 0 30px ${info.color}`;
-            
             document.getElementById('premio-titulo').innerText = info.titulo;
             document.getElementById('premio-desc').innerText = info.desc;
-            
             document.getElementById('modal-premio-caja').style.borderColor = info.color;
             document.getElementById('modal-premio-caja').style.boxShadow = `0 0 50px ${info.color}40`;
 
             const modal = document.getElementById('modal-premio');
-            modal.style.display = 'flex';
-            setTimeout(() => { modal.style.opacity = '1'; document.getElementById('modal-premio-caja').style.transform = 'scale(1)'; }, 10);
+            modal.style.display = 'flex'; setTimeout(() => { modal.style.opacity = '1'; document.getElementById('modal-premio-caja').style.transform = 'scale(1)'; }, 10);
         }
 
         function cerrarModalPremio() {
             const modal = document.getElementById('modal-premio');
-            modal.style.opacity = '0';
-            document.getElementById('modal-premio-caja').style.transform = 'scale(0.8)';
-            setTimeout(() => { modal.style.display = 'none'; }, 300);
+            modal.style.opacity = '0'; document.getElementById('modal-premio-caja').style.transform = 'scale(0.8)'; setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+
+        // ==========================================
+        // LÓGICA DE RECLAMO MANUAL (ID / NICK)
+        // ==========================================
+        function mostrarModalReclamo(info) {
+            premioPendiente = info.paquete;
+            document.getElementById('reclamar-icono').innerText = info.icono;
+            document.getElementById('reclamar-icono').style.color = info.color;
+            document.getElementById('reclamar-icono').style.textShadow = `0 0 20px ${info.color}`;
+            document.getElementById('reclamar-titulo').innerText = info.titulo;
+            document.getElementById('reclamar-titulo').style.color = info.color;
+            
+            document.getElementById('reclamo-id-juego').value = "";
+            document.getElementById('reclamo-nickname-juego').value = "";
+
+            const modal = document.getElementById('modal-reclamar-container');
+            modal.style.display = 'flex'; setTimeout(() => { modal.style.opacity = '1'; }, 10);
+        }
+
+        function cerrarModalReclamo() {
+            const modal = document.getElementById('modal-reclamar-container');
+            modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+
+        async function procesarReclamoPremio() {
+            const idJuego = document.getElementById('reclamo-id-juego').value.trim();
+            const nicknameJuego = document.getElementById('reclamo-nickname-juego').value.trim();
+            const nombreGuardado = localStorage.getItem('nombreUsuario');
+            const btn = document.getElementById('btn-reclamar');
+
+            if (!idJuego || idJuego.length < 7) { alert("El ID ingresado es muy corto o inválido."); return; }
+            if (!nicknameJuego) { alert("Por favor, ingresa tu Nickname del juego."); return; }
+
+            btn.disabled = true; btn.innerText = "Registrando premio...";
+
+            try {
+                // Guarda el pedido en tu panel como si fuera una compra, pero a costo S/ 0.00
+                await supabaseClient.from('pedidos').insert([{ 
+                    nickname: nombreGuardado, 
+                    paquete: premioPendiente, 
+                    id_juego: idJuego, 
+                    nickname_juego: nicknameJuego,
+                    precio: 0.00, 
+                    estado: 'Pendiente',
+                    codigo: 'Premio Ruleta 🎁'
+                }]);
+
+                await supabaseClient.from('historial').insert([{ 
+                    nickname: nombreGuardado, 
+                    monto: 0.00, 
+                    tipo: `Premio Ruleta Reclamado: ${premioPendiente} (ID: ${idJuego})`, 
+                    estado: 'Completado' 
+                }]);
+
+                cerrarModalReclamo();
+                
+                // Abre el WhatsApp para notificarte
+                const numeroAdmin = "51943737572";
+                const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de GANAR en la *RULETA VIP* 🎰 y estoy reclamando mi premio.\n\n👤 *Usuario Web:* ${nombreGuardado}\n🎁 *Premio:* ${premioPendiente}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para enviármelo. ¡Gracias!`;
+                window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
+                
+            } catch (e) {
+                console.error(e);
+                alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
+            } finally {
+                btn.disabled = false; btn.innerText = "Reclamar a mi Cuenta";
+            }
         }
     </script>
 </body>
