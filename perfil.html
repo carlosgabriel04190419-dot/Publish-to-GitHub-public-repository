@@ -7,168 +7,378 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <style>
+        /* --- RESET GLOBAL PARA EVITAR SCROLL HORIZONTAL --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
             background: linear-gradient(rgba(10, 10, 14, 0.85), rgba(10, 10, 14, 0.95)), url('hero-bg.jpg') center/cover fixed no-repeat;
             background-color: #0f0f13;
-            margin: 0;
             min-height: 100vh;
             color: white;
-        }
-        .glass-card {
-            background: rgba(26, 26, 31, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            padding: 30px;
-        }
-        .input-form-profile {
-            width: 100%; 
-            background: rgba(0, 0, 0, 0.4); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 8px; 
-            padding: 14px; 
-            color: white; 
-            font-size: 15px;
-            outline: none; 
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
-        .input-form-profile:focus {
-            border-color: #a155ff;
-            box-shadow: 0 0 10px rgba(161, 85, 255, 0.2);
-        }
-        .phone-container {
-            display: flex; 
-            align-items: center; 
-            background: rgba(0, 0, 0, 0.4); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 8px; 
-            padding: 0 14px;
-        }
-        
-        /* ALERTA DE BLOQUEO INTELIGENTE */
-        .bloqueo-alerta {
-            background: rgba(255, 71, 87, 0.15);
-            border: 1px solid #ff4757;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            display: none; /* Oculto por defecto */
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 0 15px rgba(255, 71, 87, 0.2);
-            animation: pulse-border 2s infinite;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden; /* Fuerza a que no haya scroll horizontal */
         }
 
-        @keyframes pulse-border {
-            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+        /* --- NAVBAR MEJORADO (COMO LA REFERENCIA) --- */
+        .navbar { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid rgba(161, 85, 255, 0.15); z-index: 1000; position: relative; }
+        .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 900; color: white; cursor: pointer; }
+        .profile-avatar { width: 35px; height: 35px; border-radius: 50%; background: #a155ff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; color: white; border: 2px solid white; }
+        
+        .nav-links-desktop { display: flex; gap: 25px; list-style: none; margin: 0; padding: 0; }
+        .nav-links-desktop a { color: #a8a8b3; text-decoration: none; font-size: 15px; font-weight: 600; transition: color 0.3s; }
+        .nav-links-desktop a:hover, .nav-links-desktop a.active { color: #a155ff; }
+
+        .nav-user-section { display: flex; align-items: center; gap: 15px; }
+        .balance-pill { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 20px; }
+        .balance-info { display: flex; flex-direction: column; line-height: 1.1; }
+        .balance-label { font-size: 10px; color: #a8a8b3; font-weight: bold; }
+        .balance-amount { font-size: 14px; color: white; font-weight: 900; }
+        
+        /* Botón de usuario morado */
+        .user-profile-btn { background: #a155ff; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 15px rgba(161, 85, 255, 0.4); transition: transform 0.2s; }
+        .user-profile-btn:hover { transform: scale(1.05); }
+
+        /* --- CINTA EN VIVO --- */
+        .live-ticker-wrap { width: 100%; background: rgba(20, 20, 26, 0.9); border-bottom: 1px solid rgba(161, 85, 255, 0.2); overflow: hidden; position: relative; padding: 10px 0; display: flex; align-items: center; z-index: 10; }
+        .ticker-label { background: #a155ff; color: white; font-weight: bold; padding: 6px 12px; font-size: 11px; letter-spacing: 0.5px; z-index: 12; position: absolute; left: 0; border-radius: 0 4px 4px 0; box-shadow: 4px 0 10px rgba(0,0,0,0.5); }
+        .ticker-move { display: flex; white-space: nowrap; animation: tickerAnimation 30s linear infinite; padding-left: 150px; }
+        .ticker-item { display: inline-block; padding-right: 3rem; color: #e0e0e0; font-size: 13.5px; }
+        .ticker-item .hl { color: #a155ff; font-weight: bold; }
+        .ticker-item .id-text { color: #888899; font-family: monospace; }
+        @keyframes tickerAnimation { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        .profile-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+
+        .panel-module { background: rgba(20, 20, 25, 0.7); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: border-color 0.3s ease; }
+        .panel-module:hover { border-color: rgba(255,255,255,0.1); }
+        
+        .panel-header { display: flex; align-items: center; gap: 12px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
+        .panel-header h2 { margin: 0; font-size: 20px; font-weight: bold; color: white; }
+        .panel-icon { padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+
+        /* Colores paneles */
+        .mod-personal .panel-icon { background: rgba(0,210,255,0.1); color: #00d2ff; }
+        .mod-seguridad .panel-icon { background: rgba(255,152,0,0.1); color: #ff9800; }
+        .mod-billetera .panel-icon { background: rgba(0,230,118,0.1); color: #00e676; }
+        .mod-compras .panel-icon { background: rgba(161,85,255,0.1); color: #a155ff; }
+
+        /* --- FORMULARIOS ESTILO FILA (NUEVO) --- */
+        .input-row { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 12px; margin-bottom: 15px; transition: 0.3s; }
+        .input-row:focus-within { border-color: #a155ff; background: rgba(161,85,255,0.02); }
+        .input-row label { color: #a8a8b3; font-size: 14px; width: 40%; font-weight: 500; }
+        .input-row .input-wrapper { display: flex; align-items: center; justify-content: flex-end; width: 60%; }
+        .input-row input { background: transparent; border: none; color: white; font-size: 15px; text-align: right; width: 100%; outline: none; font-weight: bold; }
+        .input-row input:disabled { color: #666; cursor: not-allowed; }
+        
+        .country-select { background: transparent; border: none; color: white; outline: none; padding-right: 10px; border-right: 1px solid rgba(255,255,255,0.1); margin-right: 10px; cursor: pointer; font-size: 15px; font-weight: bold; }
+        .country-select option { background: #1a1a24; color: white; }
+
+        /* --- BALANCE GIGANTE --- */
+        .big-balance-box { background: linear-gradient(135deg, rgba(0,230,118,0.1), transparent); border: 1px solid rgba(0,230,118,0.2); border-radius: 12px; padding: 30px; text-align: center; margin-bottom: 25px; }
+        .big-balance { font-size: 48px; font-weight: 900; color: #00e676; margin: 0; text-shadow: 0 0 20px rgba(0,230,118,0.3); }
+
+        /* --- TABLAS MODERNAS --- */
+        .table-responsive { overflow-x: auto; width: 100%; }
+        .modern-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        .modern-table th { padding: 15px; text-align: left; font-size: 13px; color: #a8a8b3; border-bottom: 1px solid rgba(255,255,255,0.05); text-transform: uppercase; letter-spacing: 0.5px; }
+        .modern-table td { padding: 18px 15px; border-bottom: 1px solid rgba(255,255,255,0.02); font-size: 14px; color: #e0e0e0; transition: background 0.2s; }
+        .modern-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+        .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; border: 1px solid transparent; }
+        .status-completed { color: #00e676; background: rgba(0,230,118,0.1); border-color: rgba(0,230,118,0.3); }
+        .status-discount { color: #ff4757; background: rgba(255,71,87,0.1); border-color: rgba(255,71,87,0.3); }
+
+        /* --- NUEVOS FILTROS DE COMPRA --- */
+        .filters-wrapper { display: flex; gap: 15px; align-items: center; margin-bottom: 25px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; }
+        .search-box { display: flex; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 15px; flex: 2; min-width: 250px; }
+        .search-box input { background: transparent; border: none; color: white; outline: none; width: 100%; margin-left: 10px; font-size: 14px; }
+        .filter-select { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px 15px; border-radius: 8px; flex: 1; outline: none; min-width: 180px; font-size: 14px; cursor: pointer; }
+        .filter-select option { background: #1a1a24; }
+        .btn-clear { color: #ff4757; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: bold; padding: 10px; transition: 0.2s; }
+        .btn-clear:hover { background: rgba(255,71,87,0.1); border-radius: 8px; }
+
+        /* --- BLOQUEO --- */
+        .bloqueo-alerta { background: rgba(255, 71, 87, 0.15); border: 1px solid #ff4757; color: white; padding: 15px 20px; border-radius: 8px; margin: 40px auto 10px; max-width: 1200px; display: none; align-items: center; gap: 15px; box-shadow: 0 0 15px rgba(255, 71, 87, 0.2); animation: pulse-border 2s infinite; }
+        @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); } }
+
+        /* --- FOOTER COMPLETO --- */
+        .cz-footer { background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 80px 20px 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 50px; }
+        .cz-footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; }
+        .cz-f-brand { display: flex; flex-direction: column; gap: 18px; }
+        .cz-f-logo { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 900; color: white; letter-spacing: -0.5px; }
+        .cz-f-logo .avatar { background: #a155ff; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; font-weight: bold; }
+        .cz-f-desc { color: #888899; font-size: 14px; line-height: 1.6; max-width: 320px; }
+        .cz-f-trust { display: flex; gap: 15px; margin-top: 5px; flex-wrap: wrap; }
+        .cz-f-trust span { display: flex; align-items: center; gap: 6px; color: #b3b3cc; font-size: 12.5px; font-weight: 600; }
+        .cz-f-trust span .material-icons { color: #a155ff; font-size: 16px; }
+        .cz-f-col h4 { color: white; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 25px 0; display: flex; align-items: center; gap: 10px; }
+        .cz-f-col h4::before { content: ''; display: block; width: 3px; height: 14px; background: #a155ff; border-radius: 2px; }
+        .cz-f-col ul { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+        .cz-f-col a { color: #888899; text-decoration: none; font-size: 14px; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .cz-f-col a:hover { color: white; transform: translateX(5px); }
+        .cz-f-col a .material-icons { font-size: 14px; color: #a155ff; opacity: 0; transition: opacity 0.2s; }
+        .cz-f-col a:hover .material-icons { opacity: 1; }
+        .cz-footer-bottom { max-width: 1200px; margin: 60px auto 0; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .cz-copy { color: #555566; font-size: 13px; }
+        .cz-made-with { color: #777788; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+
+        /* --- RESPONSIVIDAD MÓVIL --- */
+        @media (max-width: 900px) {
+            .profile-container { grid-template-columns: 1fr; }
+            .nav-links-desktop { display: none; } /* Oculta menú central en celular */
+        }
+        @media (max-width: 600px) {
+            .input-row { flex-direction: column; align-items: flex-start; padding: 15px; }
+            .input-row label { width: 100%; margin-bottom: 8px; }
+            .input-row .input-wrapper { width: 100%; justify-content: flex-start; }
+            .input-row input { text-align: left; }
+            .cz-footer-content { grid-template-columns: 1fr; gap: 40px; }
+            .filters-wrapper { flex-direction: column; align-items: stretch; }
+            .search-box, .filter-select { width: 100%; }
         }
     </style>
 </head>
 <body>
     
+    <!-- NAVBAR COMPLETA -->
     <nav class="navbar">
-        <div class="nav-logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
+        <div class="nav-logo" onclick="window.location.href='index.html'">
             <div class="profile-avatar">C</div><span>CarzaD'Cross</span>
         </div>
-        <button id="btn-volver-tienda" class="btn-outline" onclick="window.location.href='index.html'">Volver a la Tienda</button>
+
+        <ul class="nav-links-desktop">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="index.html#seccion-ranking">Ranking</a></li>
+            <li><a href="index.html#seccion-soporte">Soporte</a></li>
+        </ul>
+
+        <div class="nav-user-section">
+            <div class="balance-pill">
+                <span class="material-icons wallet-icon" style="color: #a8a8b3;">account_balance_wallet</span>
+                <div class="balance-info"><span class="balance-label">SALDO</span><span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span></div>
+            </div>
+            <div class="balance-pill" style="border-color: #ffc107; background: rgba(255,193,7,0.1);">
+                <span class="material-icons wallet-icon" style="color: #ffc107;">stars</span>
+                <div class="balance-info"><span class="balance-label" style="color: #ffc107;">PUNTOS</span><span class="balance-amount" style="color: #ffc107;" id="puntos-nav">0</span></div>
+            </div>
+
+            <div style="position: relative;">
+                <button class="user-profile-btn" onclick="toggleMenu()" id="btn-usuario-nav">
+                    Cargando... <span class="material-icons" style="font-size: 18px;">expand_more</span>
+                </button>
+                <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 8px; min-width: 180px; z-index: 1000; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                    <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">person</span> Mis Datos</a>
+                    <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
+                    <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">casino</span> Ruleta VIP</a>
+                    <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;"><span class="material-icons">logout</span> Cerrar Sesión</a>
+                </div>
+            </div>
+        </div>
     </nav>
 
-    <main class="container" style="padding-top: 50px; display: flex; gap: 30px; flex-wrap: wrap; justify-content: center;">
+    <!-- CINTA DE COMPRAS EN VIVO -->
+    <div class="live-ticker-wrap">
+        <div class="ticker-label">COMPRAS EN VIVO ⚡</div>
+        <div class="ticker-move" id="ticker-track">
+            <div class="ticker-item">Sincronizando la bóveda de CarzaD'Cross...</div>
+        </div>
+    </div>
+
+    <!-- ALERTA DE BLOQUEO -->
+    <div id="alerta-sin-celular" class="bloqueo-alerta" style="margin-left: 20px; margin-right: 20px;">
+        <span class="material-icons" style="font-size: 30px; color: #ff4757;">error_outline</span>
+        <div>
+            <h3 style="margin: 0 0 5px 0; color: #ff4757; font-size: 16px;">¡Vínculo de WhatsApp Obligatorio!</h3>
+            <p style="margin: 0; font-size: 14px; color: #e0e0e0;">Para habilitar tus compras y recargas en la tienda, completa y guarda tu número abajo.</p>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR PRINCIPAL DOS COLUMNAS -->
+    <main class="profile-container">
         
-        <div style="flex: 1; min-width: 300px; max-width: 350px;">
-            <div class="profile-header glass-card" style="padding: 20px;">
-                <div class="profile-avatar large-avatar" style="box-shadow: 0 0 20px rgba(161,85,255,0.4);">C</div>
-                <div class="profile-info">
-                    <p class="greeting" style="color: #a155ff; font-weight: bold;">USUARIO,</p>
-                    <h2 id="nombre-pantalla" style="font-size: 24px;">Cargando...</h2>
+        <!-- COLUMNA IZQUIERDA -->
+        <div class="left-column">
+            
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
+                <div class="profile-avatar" style="width: 60px; height: 60px; font-size: 24px; box-shadow: 0 0 20px rgba(161,85,255,0.4);">C</div>
+                <div>
+                    <p style="margin: 0; color: #a8a8b3; font-size: 14px;">Bienvenido de vuelta,</p>
+                    <h1 id="nombre-pantalla" style="margin: 0; font-size: 28px; color: white;">Cargando...</h1>
                 </div>
             </div>
-        </div>
 
-        <div style="flex: 2; min-width: 300px; max-width: 600px;">
-            <div class="glass-card" style="text-align: left; max-width: 100%;">
-                
-                <div id="alerta-sin-celular" class="bloqueo-alerta">
-                    <span class="material-icons" style="font-size: 30px; color: #ff4757;">error_outline</span>
-                    <div>
-                        <h3 style="margin: 0 0 5px 0; color: #ff4757; font-size: 16px;">¡Atención requerida!</h3>
-                        <p style="margin: 0; font-size: 14px; color: #e0e0e0;">Para realizar recargas y compras, debes vincular tu número de WhatsApp. Completa el campo abajo.</p>
-                    </div>
-                </div>
-
-                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
-                    <span class="material-icons" style="color: #a155ff; font-size: 32px; background: rgba(161,85,255,0.1); padding: 10px; border-radius: 50%;">manage_accounts</span>
-                    <div>
-                        <h2 style="font-size: 22px; color: white; margin: 0;">Mis Datos Personales</h2>
-                        <p style="color: #a8a8b3; font-size: 14px; margin: 5px 0 0 0;">Modifica tu información. Los cambios se guardarán en la nube.</p>
-                    </div>
-                </div>
-
-                <div style="margin-bottom: 20px;">
-                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 8px; display: block; font-weight: 500;">Nickname (Nombre de usuario)</label>
-                    <input type="text" id="edit-nickname" class="input-form-profile">
+            <!-- PANEL INFORMACIÓN PERSONAL -->
+            <div class="panel-module mod-personal">
+                <div class="panel-header">
+                    <div class="panel-icon"><span class="material-icons">person</span></div>
+                    <h2>Información Personal</h2>
                 </div>
                 
-                <div style="margin-bottom: 20px;">
-                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 8px; display: block; font-weight: 500;">Correo Electrónico (No se puede cambiar)</label>
-                    <input type="email" id="edit-correo" class="input-form-profile" disabled style="opacity: 0.5; cursor: not-allowed;">
+                <div class="input-row">
+                    <label>Nickname (Nombre de usuario)</label>
+                    <div class="input-wrapper"><input type="text" id="edit-nickname"></div>
                 </div>
                 
-                <div style="margin-bottom: 30px;">
-                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 8px; display: block; font-weight: 500;">Número de WhatsApp (Obligatorio) <span style="color: #ff4757;">*</span></label>
-                    <div class="phone-container" id="contenedor-input-celular">
-                        <select id="edit-codigo-pais" style="background: transparent; border: none; color: white; outline: none; padding-right: 8px; border-right: 1px solid rgba(255,255,255,0.2); margin-right: 12px; cursor: pointer; font-size: 15px;">
-                            <option value="+51" style="color: black;">🇵🇪 +51</option>
-                            <option value="+52" style="color: black;">🇲🇽 +52</option>
-                            <option value="+57" style="color: black;">🇨🇴 +57</option>
-                            <option value="+54" style="color: black;">🇦🇷 +54</option>
-                            <option value="+56" style="color: black;">🇨🇱 +56</option>
+                <div class="input-row">
+                    <label>Email de contacto</label>
+                    <div class="input-wrapper"><input type="email" id="edit-correo" disabled></div>
+                </div>
+                
+                <div class="input-row" id="contenedor-input-celular">
+                    <label>Número de WhatsApp <span style="color:#ff4757;">*</span></label>
+                    <div class="input-wrapper">
+                        <select id="edit-codigo-pais" class="country-select">
+                            <option value="+51">🇵🇪 +51 (Perú)</option>
+                            <option value="+54">🇦🇷 +54 (Argentina)</option>
+                            <option value="+591">🇧🇴 +591 (Bolivia)</option>
+                            <option value="+55">🇧🇷 +55 (Brasil)</option>
+                            <option value="+56">🇨🇱 +56 (Chile)</option>
+                            <option value="+57">🇨🇴 +57 (Colombia)</option>
+                            <option value="+593">🇪🇨 +593 (Ecuador)</option>
+                            <option value="+34">🇪🇸 +34 (España)</option>
+                            <option value="+1">🇺🇸 +1 (USA)</option>
+                            <option value="+52">🇲🇽 +52 (México)</option>
+                            <option value="+507">🇵🇦 +507 (Panamá)</option>
+                            <option value="+595">🇵🇾 +595 (Paraguay)</option>
+                            <option value="+598">🇺🇾 +598 (Uruguay)</option>
+                            <option value="+58">🇻🇪 +58 (Venezuela)</option>
                         </select>
-                        <input type="tel" id="edit-celular" maxlength="11" placeholder="Ej: 942395040" class="input-form-profile" style="border: none; background: transparent; padding-left: 0; outline: none;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        <input type="tel" id="edit-celular" maxlength="11" placeholder="942395040" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
                 </div>
+                
+                <button id="btn-guardar-perfil" class="btn-primary" style="width: 100%; padding: 14px; font-weight: bold; background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: black; border-radius: 12px; margin-top: 10px;" onclick="guardarCambios()">Guardar Perfil</button>
+            </div>
 
-                <button id="btn-guardar-perfil" class="btn-primary" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 15px; font-size: 16px;" onclick="guardarCambios()">
-                    <span class="material-icons">cloud_upload</span> Guardar Cambios
-                </button>
+            <!-- PANEL SEGURIDAD (CONTRASEÑA) -->
+            <div class="panel-module mod-seguridad">
+                <div class="panel-header">
+                    <div class="panel-icon"><span class="material-icons">vpn_key</span></div>
+                    <h2>Seguridad de Cuenta</h2>
+                </div>
+                <p style="color: #a8a8b3; font-size: 13px; margin-bottom: 20px;">Actualiza tu contraseña. La sesión se cerrará por seguridad tras el cambio.</p>
+                
+                <div class="input-row" style="background: rgba(255,152,0,0.05); border-color: rgba(255,152,0,0.2);">
+                    <label style="color: #ff9800;">Nueva Contraseña</label>
+                    <div class="input-wrapper"><input type="password" id="nueva-pass" placeholder="Mínimo 6 caracteres"></div>
+                </div>
+                <button id="btn-pass" class="btn-outline" style="width: 100%; padding: 14px; border-color: rgba(255,152,0,0.5); color: #ffc107; border-radius: 12px;" onclick="cambiarPassword()">Actualizar Contraseña</button>
             </div>
         </div>
 
-        <div style="flex-basis: 100%; width: 100%; margin-top: 20px;">
-            <div class="glass-card">
-                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                    <span class="material-icons" style="color: #00bcd4; font-size: 28px;">history</span>
-                    <h2 style="font-size: 20px; color: white; margin: 0;">Historial de Movimientos</h2>
+        <!-- COLUMNA DERECHA -->
+        <div class="right-column">
+            
+            <!-- PANEL BILLETERA Y RECARGAS -->
+            <div class="panel-module mod-billetera">
+                <div class="panel-header">
+                    <div class="panel-icon"><span class="material-icons">account_balance_wallet</span></div>
+                    <h2>Mi Billetera</h2>
                 </div>
                 
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; min-width: 500px;">
-                        <thead>
-                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #a8a8b3;">
-                                <th style="padding: 15px; text-align: left; font-weight: normal;">Fecha</th>
-                                <th style="padding: 15px; text-align: left; font-weight: normal;">Detalle</th>
-                                <th style="padding: 15px; text-align: right; font-weight: normal;">Monto</th>
-                                <th style="padding: 15px; text-align: center; font-weight: normal;">Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-historial">
-                            <tr>
-                                <td colspan="4" style="text-align: center; padding: 30px; color: #a8a8b3;">Cargando historial...</td>
-                            </tr>
-                        </tbody>
+                <div class="big-balance-box">
+                    <p style="margin: 0 0 5px 0; color: #a8a8b3; font-size: 14px; text-transform: uppercase;">Saldo Actual</p>
+                    <h3 class="big-balance">S/ <span id="saldo-billetera">0.00</span></h3>
+                </div>
+
+                <h3 style="font-size: 16px; margin: 0 0 15px 0; color: white;">Historial de Recargas</h3>
+                <div class="table-responsive">
+                    <table class="modern-table">
+                        <thead><tr><th>Fecha</th><th>Método / Detalle</th><th style="text-align: right;">Monto</th></tr></thead>
+                        <tbody id="tabla-recargas"><tr><td colspan="3" style="text-align:center;">Cargando...</td></tr></tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <!-- PANEL INFERIOR: HISTORIAL DE COMPRAS (JUEGOS) OCUPA TODO EL ANCHO -->
+        <div class="panel-module mod-compras" style="grid-column: 1 / -1;">
+            <div class="panel-header">
+                <div class="panel-icon"><span class="material-icons">shopping_cart</span></div>
+                <h2>Historial de Compras (Juegos)</h2>
+            </div>
+            
+            <!-- NUEVOS FILTROS TIPO BÓVEDA -->
+            <div class="filters-wrapper">
+                <div class="search-box">
+                    <span class="material-icons" style="color: #a8a8b3;">search</span>
+                    <input type="text" id="filtro-texto" placeholder="Buscar por pedido, ID o Nick..." onkeyup="aplicarFiltrosCompras()">
+                </div>
+                <select id="filtro-categoria" class="filter-select" onchange="aplicarFiltrosCompras()">
+                    <option value="">Todos los productos</option>
+                    <option value="Diamantes">Solo Diamantes</option>
+                    <option value="Pase">Solo Pases</option>
+                    <option value="Cajita">Cajitas Evolutivas</option>
+                    <option value="Fragmento">Fragmentos</option>
+                </select>
+                <button class="btn-clear" onclick="limpiarFiltros()"><span class="material-icons">cancel</span> Limpiar</button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Juego (Nick / ID)</th>
+                            <th>Producto Adquirido</th>
+                            <th style="text-align: right;">Total</th>
+                            <th style="text-align: center;">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-compras">
+                        <tr><td colspan="5" style="text-align:center;">Cargando compras...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
         
     </main>
 
+    <!-- FOOTER COMPLETO RESTAURADO -->
+    <footer class="cz-footer">
+        <div class="cz-footer-content">
+            <div class="cz-f-brand">
+                <div class="cz-f-logo"><div class="avatar">C</div> CarzaD'Cross</div>
+                <p class="cz-f-desc">La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
+                <div class="cz-f-trust">
+                    <span><i class="material-icons">bolt</i> Entrega &lt; 5 min</span>
+                    <span><i class="material-icons">verified_user</i> 100% Seguro</span>
+                    <span><i class="material-icons">account_balance_wallet</i> Yape / Plin</span>
+                </div>
+            </div>
+            <div class="cz-f-col">
+                <h4>Navegación</h4>
+                <ul>
+                    <li><a href="index.html"><span class="material-icons">chevron_right</span> Inicio</a></li>
+                    <li><a href="catalogo-regular.html"><span class="material-icons">chevron_right</span> Catálogo Free Fire</a></li>
+                    <li><a href="catalogo-cajas.html"><span class="material-icons">chevron_right</span> Cajas y Fragmentos</a></li>
+                    <li><a href="perfil.html"><span class="material-icons">chevron_right</span> Mi Panel</a></li>
+                </ul>
+            </div>
+            <div class="cz-f-col">
+                <h4>Soporte</h4>
+                <ul>
+                    <li><a href="recargar.html"><span class="material-icons">chevron_right</span> Reportar Pago</a></li>
+                    <li><a href="https://wa.me/51943737572" target="_blank"><span class="material-icons">chevron_right</span> WhatsApp Oficial</a></li>
+                    <li><a href="index.html"><span class="material-icons">chevron_right</span> Centro de Ayuda</a></li>
+                </ul>
+            </div>
+            <div class="cz-f-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="terminos.html"><span class="material-icons">chevron_right</span> Términos de Servicio</a></li>
+                    <li><a href="privacidad.html"><span class="material-icons">chevron_right</span> Política de Privacidad</a></li>
+                    <li><a href="garantia.html"><span class="material-icons">chevron_right</span> Garantía de Entrega</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="cz-footer-bottom">
+            <div class="cz-copy">© 2026 CarzaD'Cross. Todos los derechos reservados.</div>
+            <div class="cz-made-with">Hecho con <span class="material-icons" style="color:#ff4757; font-size:14px;">favorite</span> en Perú para la comunidad gaming.</div>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
@@ -177,127 +387,184 @@
         
         const nombreActual = localStorage.getItem('nombreUsuario');
         let celularOriginal = null;
+        let todasLasCompras = []; 
 
         window.onload = async function() {
             if (!nombreActual) { window.location.href = 'login.html'; return; }
-            
             document.getElementById('nombre-pantalla').innerText = nombreActual;
+            document.getElementById('btn-usuario-nav').innerHTML = `${nombreActual} <span class="material-icons" style="font-size: 18px;">expand_more</span>`;
 
-            // 1. Traemos los datos de perfil
+            cargarSistemaComunidadDinamica();
+
+            // 1. CARGAMOS DATOS DE PERFIL
             const { data } = await supabaseClient.from('usuarios').select('*').eq('nickname', nombreActual).single();
             if (data) {
+                document.getElementById('saldo-nav').innerText = data.saldo.toFixed(2);
+                document.getElementById('saldo-billetera').innerText = data.saldo.toFixed(2);
+                document.getElementById('puntos-nav').innerText = data.puntos || 0;
                 document.getElementById('edit-nickname').value = data.nickname;
                 document.getElementById('edit-correo').value = data.correo;
                 celularOriginal = data.celular;
                 
-                // LÓGICA DEL BLOQUEO INTELIGENTE
+                // BLOQUEO INTELIGENTE
                 if(!celularOriginal || celularOriginal.trim() === "") {
-                    // Muestra alerta
                     document.getElementById('alerta-sin-celular').style.display = 'flex';
-                    // Pinta la caja del teléfono de rojo para llamar la atención
-                    document.getElementById('contenedor-input-celular').style.border = '1px solid #ff4757';
-                    // Cambia el enlace de Volver para forzar a que guarden
-                    document.getElementById('btn-volver-tienda').onclick = function() {
-                        alert("⚠️ Debes vincular y guardar tu número de WhatsApp antes de continuar.");
-                    };
+                    document.getElementById('contenedor-input-celular').style.borderColor = '#ff4757';
+                    document.getElementById('contenedor-input-celular').style.boxShadow = '0 0 10px rgba(255,71,87,0.2)';
                 } else {
-                    // Separa el código de país del celular para mostrarlo bonito
-                    const prefijos = ["+51", "+52", "+57", "+54", "+56"];
-                    let prefijoEncontrado = "+51"; // Default
+                    const prefijos = ["+51", "+54", "+591", "+55", "+56", "+57", "+593", "+34", "+1", "+52", "+507", "+595", "+598", "+58"];
+                    let prefijoEncontrado = "+51";
                     let soloNumero = celularOriginal;
-
-                    prefijos.forEach(pref => {
-                        if (celularOriginal.startsWith(pref)) {
-                            prefijoEncontrado = pref;
-                            soloNumero = celularOriginal.replace(pref, '').trim();
-                        }
-                    });
-
+                    prefijos.forEach(pref => { if (celularOriginal.startsWith(pref)) { prefijoEncontrado = pref; soloNumero = celularOriginal.replace(pref, '').trim(); } });
                     document.getElementById('edit-codigo-pais').value = prefijoEncontrado;
                     document.getElementById('edit-celular').value = soloNumero;
                 }
             }
 
-            // 2. Cargamos el historial
-            const { data: historialData } = await supabaseClient
-                .from('historial')
-                .select('*')
-                .eq('nickname', nombreActual)
-                .order('created_at', { ascending: false });
-
-            const tbody = document.getElementById('tabla-historial');
-            if (historialData && historialData.length > 0) {
-                tbody.innerHTML = '';
-                historialData.forEach(mov => {
-                    const fecha = new Date(mov.created_at).toLocaleDateString('es-PE', {
-                        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                    });
-                    
-                    // Lógica para color de monto (Verde si es recarga, Rojo si es compra/gasto)
-                    let colorMonto = "#00e676";
-                    let signoMonto = "+";
-                    if(mov.tipo.toLowerCase().includes("compra")) {
-                        colorMonto = "#ff4757";
-                        signoMonto = "-";
-                    }
-
-                    tbody.innerHTML += `
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                            <td style="padding: 15px; color: white; font-size: 13px;">${fecha}</td>
-                            <td style="padding: 15px; color: #e0e0e0; font-size: 14px;">${mov.tipo}</td>
-                            <td style="padding: 15px; text-align: right; color: ${colorMonto}; font-weight: bold;">${signoMonto} S/ ${mov.monto.toFixed(2)}</td>
-                            <td style="padding: 15px; text-align: center;">
-                                <span style="background: rgba(255,255,255,0.1); color: #a8a8b3; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold;">${mov.estado.toUpperCase()}</span>
-                            </td>
-                        </tr>
-                    `;
+            // 2. CARGAMOS HISTORIAL DE RECARGAS (BILLETERA)
+            const { data: recargasData } = await supabaseClient.from('historial')
+                .select('*').eq('nickname', nombreActual)
+                .not('tipo', 'ilike', '%compra%').not('tipo', 'ilike', '%premio%') 
+                .order('created_at', { ascending: false }).limit(10);
+            
+            const tbRecargas = document.getElementById('tabla-recargas');
+            if(recargasData && recargasData.length > 0) {
+                tbRecargas.innerHTML = '';
+                recargasData.forEach(mov => {
+                    const fecha = new Date(mov.created_at).toLocaleDateString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+                    const color = mov.estado === 'Descontado' ? '#ff4757' : '#00e676';
+                    const signo = mov.estado === 'Descontado' ? '-' : '+';
+                    tbRecargas.innerHTML += `<tr><td style="color:#a8a8b3;">${fecha}</td><td>${mov.tipo}</td><td style="text-align:right; font-weight:bold; color:${color};">${signo} S/ ${mov.monto.toFixed(2)}</td></tr>`;
                 });
             } else {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px; color: #a8a8b3;">Aún no tienes movimientos. ¡Haz tu primera recarga!</td></tr>';
+                tbRecargas.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#a8a8b3;">Aún no tienes recargas.</td></tr>';
+            }
+
+            // 3. CARGAMOS HISTORIAL DE COMPRAS (JUEGOS)
+            const { data: pedidosData } = await supabaseClient.from('pedidos')
+                .select('*').eq('nickname', nombreActual)
+                .order('created_at', { ascending: false });
+            
+            if(pedidosData && pedidosData.length > 0) {
+                todasLasCompras = pedidosData;
+                aplicarFiltrosCompras(); 
+            } else {
+                document.getElementById('tabla-compras').innerHTML = '<tr><td colspan="5" style="text-align:center; color:#a8a8b3;">No has realizado compras en la tienda.</td></tr>';
             }
         };
 
-        // 4. Guardar cambios
+        // RENDER DE COMPRAS (CON FILTROS COMBINADOS)
+        function aplicarFiltrosCompras() {
+            const texto = document.getElementById('filtro-texto').value.toLowerCase();
+            const categoria = document.getElementById('filtro-categoria').value.toLowerCase();
+            const tbCompras = document.getElementById('tabla-compras');
+            tbCompras.innerHTML = '';
+
+            const filtrados = todasLasCompras.filter(p => {
+                const coincideTexto = p.paquete.toLowerCase().includes(texto) || (p.id_juego && p.id_juego.toString().toLowerCase().includes(texto)) || (p.nickname_juego && p.nickname_juego.toLowerCase().includes(texto));
+                const coincideCategoria = categoria === "" || p.paquete.toLowerCase().includes(categoria);
+                return coincideTexto && coincideCategoria;
+            });
+
+            if(filtrados.length === 0) {
+                tbCompras.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#a8a8b3; padding: 20px;">No se encontraron resultados con esos filtros.</td></tr>';
+                return;
+            }
+
+            filtrados.forEach(p => {
+                const fecha = new Date(p.created_at).toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'2-digit', hour:'2-digit', minute:'2-digit' });
+                let claseEstado = p.estado === 'Completado' ? 'status-completed' : (p.estado === 'Rechazado' ? 'status-discount' : '');
+                
+                let datosJuego = `<div style="font-family:monospace; line-height:1.4;">ID: ${p.id_juego||'N/A'}<br>Nick: <span style="color:#a155ff;">${p.nickname_juego||'N/A'}</span></div>`;
+
+                tbCompras.innerHTML += `
+                    <tr>
+                        <td style="color:#a8a8b3;">${fecha}</td>
+                        <td>${datosJuego}</td>
+                        <td style="font-weight:bold; color:white;">${p.paquete}</td>
+                        <td style="text-align:right; font-weight:bold; color:#ff4757;">S/ ${p.precio ? p.precio.toFixed(2) : '0.00'}</td>
+                        <td style="text-align:center;"><span class="status-badge ${claseEstado}">${p.estado}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function limpiarFiltros() {
+            document.getElementById('filtro-texto').value = '';
+            document.getElementById('filtro-categoria').value = '';
+            aplicarFiltrosCompras();
+        }
+
+        // GUARDAR CAMBIOS DE PERFIL
         async function guardarCambios() {
             const nuevoNombre = document.getElementById('edit-nickname').value.trim();
             const inputCelular = document.getElementById('edit-celular').value.trim();
             const codigo = document.getElementById('edit-codigo-pais').value;
             const btn = document.getElementById('btn-guardar-perfil');
 
-            if (!nuevoNombre) {
-                alert("El nombre de usuario no puede estar vacío."); return;
-            }
-
-            if (!inputCelular || inputCelular.length < 8) {
-                alert("Por favor, ingresa un número de WhatsApp válido (Mínimo 8 números)."); return;
-            }
+            if (!nuevoNombre) { alert("El nombre de usuario no puede estar vacío."); return; }
+            if (!inputCelular || inputCelular.length < 8) { alert("Por favor, ingresa un número de WhatsApp válido."); return; }
 
             const celularFinal = `${codigo} ${inputCelular}`;
             btn.disabled = true; btn.innerHTML = "Guardando...";
 
-            const { error } = await supabaseClient
-                .from('usuarios')
-                .update({ 
-                    nickname: nuevoNombre, 
-                    celular: celularFinal 
-                })
-                .eq('nickname', nombreActual);
+            const { error } = await supabaseClient.from('usuarios').update({ nickname: nuevoNombre, celular: celularFinal }).eq('nickname', nombreActual);
 
             if (error) {
                 alert("Error al guardar: " + error.message);
-                btn.disabled = false; btn.innerHTML = '<span class="material-icons">cloud_upload</span> Guardar Cambios';
+                btn.disabled = false; btn.innerHTML = 'Guardar Perfil';
             } else {
                 localStorage.setItem('nombreUsuario', nuevoNombre);
-                
-                // Si el usuario acaba de llenar su celular por primera vez, le damos la bienvenida oficial
                 if(!celularOriginal || celularOriginal.trim() === "") {
-                    alert("¡Gracias! Tu WhatsApp ha sido vinculado. Ya puedes recargar y comprar con normalidad.");
-                    window.location.href = 'index.html'; // Lo mandamos a la tienda
+                    alert("¡Gracias! Tu WhatsApp ha sido vinculado. Ya puedes recargar y comprar.");
+                    window.location.href = 'index.html'; 
                 } else {
                     alert("¡Datos actualizados con éxito!");
                     window.location.reload();
                 }
             }
+        }
+
+        // CAMBIO DE CONTRASEÑA SUPABASE
+        async function cambiarPassword() {
+            const newPass = document.getElementById('nueva-pass').value;
+            const btn = document.getElementById('btn-pass');
+
+            if(newPass.length < 6) { alert("La contraseña debe tener al menos 6 caracteres."); return; }
+            
+            btn.disabled = true; btn.innerText = "Actualizando...";
+
+            const { data, error } = await supabaseClient.auth.updateUser({ password: newPass });
+
+            if(error) {
+                alert("Error al cambiar contraseña: " + error.message);
+                btn.disabled = false; btn.innerText = "Actualizar Contraseña";
+            } else {
+                alert("✅ ¡Contraseña actualizada con éxito! Por seguridad, deberás iniciar sesión nuevamente.");
+                localStorage.removeItem('nombreUsuario');
+                await supabaseClient.auth.signOut();
+                window.location.href = 'login.html';
+            }
+        }
+
+        function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
+        function cerrarSesionLocal() { localStorage.removeItem('nombreUsuario'); window.location.reload(); }
+
+        // CINTA EN VIVO
+        async function cargarSistemaComunidadDinamica() {
+            try {
+                const usuariosExcluidos = ['carzaadmin', 'carzadcrosito'];
+                const { data: pedidosTicker } = await supabaseClient.from('pedidos').select('nickname, paquete, id_juego').eq('estado', 'Completado').order('created_at', { ascending: false }).limit(20);
+                if (pedidosTicker && pedidosTicker.length > 0) {
+                    const ultimas10 = pedidosTicker.filter(p => !usuariosExcluidos.includes(p.nickname.toLowerCase())).slice(0, 10);
+                    let tickerHtml = '';
+                    ultimas10.forEach(p => {
+                        let idOculto = p.id_juego && p.id_juego.length > 4 ? p.id_juego.substring(0, p.id_juego.length - 4) + '****' : '********';
+                        tickerHtml += `<div class="ticker-item">💎 <span class="hl">${p.nickname}</span> adquirió ${p.paquete} <span class="id-text">| ID: ${idOculto}</span></div>`;
+                    });
+                    if(tickerHtml !== '') document.getElementById('ticker-track').innerHTML = tickerHtml + tickerHtml + tickerHtml;
+                }
+            } catch(e) {}
         }
     </script>
 </body>
