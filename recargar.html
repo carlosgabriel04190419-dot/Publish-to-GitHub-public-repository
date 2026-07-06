@@ -180,42 +180,17 @@
 </head>
 <body> 
     
-    <!-- NAVBAR COMPLETA -->
     <nav class="navbar">
-        <div class="nav-logo" onclick="window.location.href='index.html'">
+        <div class="nav-logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
             <div class="profile-avatar">C</div><span>CarzaD'Cross</span>
         </div>
-
-        <ul class="nav-links-desktop">
-            <li><a href="index.html">Inicio</a></li>
-            <li><a href="index.html#seccion-ranking">Ranking</a></li>
-            <li><a href="index.html#seccion-soporte">Soporte</a></li>
-        </ul>
-
-        <div class="nav-user-section">
-            <div class="balance-pill">
-                <span class="material-icons wallet-icon" style="color: #a8a8b3;">account_balance_wallet</span>
-                <div class="balance-info"><span class="balance-label">SALDO</span><span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span></div>
-            </div>
-            <div class="balance-pill" style="border-color: #ffc107; background: rgba(255,193,7,0.1);">
-                <span class="material-icons wallet-icon" style="color: #ffc107;">stars</span>
-                <div class="balance-info"><span class="balance-label" style="color: #ffc107;">PUNTOS</span><span class="balance-amount" style="color: #ffc107;" id="puntos-nav">0</span></div>
-            </div>
-
-            <div style="position: relative;">
-                <button class="user-profile-btn" onclick="toggleMenu()" id="btn-usuario-nav">
-                    Cargando... <span class="material-icons" style="font-size: 18px;">expand_more</span>
-                </button>
-                <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 8px; min-width: 180px; z-index: 1000; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
-                    <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">person</span> Mis Datos</a>
-                    <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
-                    <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">casino</span> Ruleta VIP</a>
-                    <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;"><span class="material-icons">logout</span> Cerrar Sesión</a>
-                </div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <button class="btn-outline" onclick="window.location.href='index.html'">Volver a la Tienda</button>
+            <div class="user-profile" id="btn-usuario-nav" style="background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 20px; font-weight: bold; color: white;">
+               Cargando...
             </div>
         </div>
     </nav>
-
 
     <div class="recharge-layout">
         
