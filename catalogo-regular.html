@@ -67,6 +67,38 @@
             box-shadow: 0 0 15px rgba(161, 85, 255, 0.4);
             transform: scale(1.05);
         }
+
+        /* --- ESTILOS DE LA CINTA DE COMPRAS EN VIVO (LIVE TICKER) --- */
+        .live-ticker-wrap {
+            width: 100%; background: rgba(20, 20, 26, 0.9);
+            border-bottom: 1px solid rgba(161, 85, 255, 0.2);
+            overflow: hidden; position: relative; padding: 10px 0;
+            display: flex; align-items: center; z-index: 10;
+        }
+        .ticker-label {
+            background: #a155ff; color: white; font-weight: bold; padding: 6px 12px;
+            font-size: 11px; letter-spacing: 0.5px; z-index: 12; position: absolute;
+            left: 0; border-radius: 0 4px 4px 0; box-shadow: 4px 0 10px rgba(0,0,0,0.5);
+        }
+        .ticker-move {
+            display: flex; white-space: nowrap; animation: tickerAnimation 30s linear infinite; padding-left: 150px;
+        }
+        .ticker-item { display: inline-block; padding-right: 3rem; color: #e0e0e0; font-size: 13.5px; }
+        .ticker-item .hl { color: #a155ff; font-weight: bold; }
+        .ticker-item .id-text { color: #888899; font-family: monospace; }
+        
+        @keyframes tickerAnimation {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
+        }
+
+        /* Estilos Recomendaciones */
+        .rec-card {
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px;
+            cursor: pointer; transition: 0.3s ease;
+        }
+        .rec-card:hover { border-color: #a155ff; transform: translateY(-3px); background: rgba(161,85,255,0.05); }
     </style>
 </head>
 <body>
@@ -107,6 +139,14 @@
         </div>
     </nav>
 
+    <!-- CINTA DE COMPRAS EN VIVO (LIVE TICKER) -->
+    <div class="live-ticker-wrap">
+        <div class="ticker-label">COMPRAS EN VIVO ⚡</div>
+        <div class="ticker-move" id="ticker-track">
+            <div class="ticker-item">Sincronizando últimas compras con la bóveda digital...</div>
+        </div>
+    </div>
+
     <!-- PORTADA PERSONALIZADA PARA RECARGA REGULAR -->
     <header class="hero-container" style="background: linear-gradient(rgba(18, 18, 20, 0.8), rgba(18, 18, 20, 1)), url('freefire.jpg') center/cover; padding: 60px 20px;">
         <div class="hero-content" style="text-align: center;">
@@ -137,10 +177,48 @@
             <div class="card"><div class="card-badge">-7.19%</div><div class="card-icon">👑💎</div><h3 class="card-title">6160 Diamantes</h3><p class="card-stock">5600 + 560 Extra</p><div class="card-prices"><span class="price-old">S/ 135.00</span><span class="price-current">S/ 129.00</span></div><button class="btn-buy" onclick="abrirModalCompra('6160 Diamantes', 129.00)">Comprar</button></div>
             <div class="card"><div class="card-badge">-7.41%</div><div class="card-icon">👑💎💎</div><h3 class="card-title">12320 Diamantes</h3><p class="card-stock">11200 + 1120 Extra</p><div class="card-prices"><span class="price-old">S/ 268.00</span><span class="price-current">S/ 246.00</span></div><button class="btn-buy" onclick="abrirModalCompra('12320 Diamantes', 246.00)">Comprar</button></div>
         </section>
+
+        <!-- SECCIÓN DE RECOMENDACIONES (CROSS-SELLING) -->
+        <div style="margin-top: 70px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 40px; padding-bottom: 40px;">
+            <h3 style="color: white; font-size: 22px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
+                <span class="material-icons" style="color: #00d2ff; font-size: 28px;">local_fire_department</span> También te podría interesar...
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                
+                <div class="rec-card" onclick="window.location.href='catalogo-recarga-directa.html'">
+                    <div style="min-width: 70px; height: 70px; border-radius: 8px; background: url('recargadirecta.jpg') center/cover;"></div>
+                    <div>
+                        <h4 style="margin: 0 0 5px 0; font-size: 16px; color: white;">Recargas Directas</h4>
+                        <p style="margin: 0; font-size: 13px; color: #a8a8b3;">Lleva 20% más en diamantes. Oferta Temporal.</p>
+                    </div>
+                </div>
+
+                <div class="rec-card" onclick="window.location.href='catalogo-promo.html'">
+                    <div style="min-width: 70px; height: 70px; border-radius: 8px; background: linear-gradient(45deg, #ff4757, #ff6b81); display: flex; align-items: center; justify-content: center;">
+                        <span class="material-icons" style="color: white; font-size: 32px;">redeem</span>
+                    </div>
+                    <div>
+                        <h4 style="margin: 0 0 5px 0; font-size: 16px; color: white;">Promo 1ra Vez</h4>
+                        <p style="margin: 0; font-size: 13px; color: #a8a8b3;">Precios imbatibles exclusivos para la primera recarga.</p>
+                    </div>
+                </div>
+
+                <div class="rec-card" onclick="window.location.href='recompensas.html'" style="border-color: rgba(255, 193, 7, 0.3);">
+                    <div style="min-width: 70px; height: 70px; border-radius: 8px; background: linear-gradient(135deg, #a155ff, #ffc107); display: flex; align-items: center; justify-content: center;">
+                        <span class="material-icons" style="color: white; font-size: 32px;">casino</span>
+                    </div>
+                    <div>
+                        <h4 style="margin: 0 0 5px 0; font-size: 16px; color: #ffc107;">Ruleta Booyah VIP</h4>
+                        <p style="margin: 0; font-size: 13px; color: #a8a8b3;">Gira la ruleta y gana Saldo, Diamantes o Pases gratis.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </main>
 
     <style>
-        .cz-faq-wrapper { max-width: 850px; margin: 90px auto 60px; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .cz-faq-wrapper { max-width: 850px; margin: 30px auto 60px; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .cz-faq-header { text-align: center; margin-bottom: 50px; }
         .cz-faq-subtitle { color: #a155ff; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 12px; }
         .cz-faq-title { font-size: 32px; color: white; margin: 0; font-weight: 800; letter-spacing: 0.5px; }
@@ -179,55 +257,15 @@
     </style>
 
     <section class="cz-faq-wrapper">
-        <div class="cz-faq-header">
-            <span class="cz-faq-subtitle">Centro de Ayuda</span>
-            <h2 class="cz-faq-title">Preguntas Frecuentes</h2>
-        </div>
+        <div class="cz-faq-header"><span class="cz-faq-subtitle">Centro de Ayuda</span><h2 class="cz-faq-title">Preguntas Frecuentes</h2></div>
         <div class="cz-faq-grid">
-            <div class="cz-faq-item" onclick="toggleCzFaq(this)">
-                <div class="cz-faq-q">
-                    <span>¿Cuánto demora en procesarse mi recarga?</span>
-                    <span class="material-icons cz-faq-icon">expand_more</span>
-                </div>
-                <div class="cz-faq-a">
-                    Nuestro sistema está optimizado para la velocidad. Una vez que validamos la captura de tu comprobante de Yape o Plin en nuestro WhatsApp, el saldo o los diamantes se abonan a tu cuenta en menos de 5 minutos.
-                </div>
-            </div>
-
-            <div class="cz-faq-item" onclick="toggleCzFaq(this)">
-                <div class="cz-faq-q">
-                    <span>¿Qué datos necesitan de mi cuenta?</span>
-                    <span class="material-icons cz-faq-icon">expand_more</span>
-                </div>
-                <div class="cz-faq-a">
-                    Únicamente necesitamos tu ID de jugador y Nickname. Jamás te pediremos correos, contraseñas ni accesos a tus redes sociales. Tu cuenta está 100% segura.
-                </div>
-            </div>
-
-            <div class="cz-faq-item" onclick="toggleCzFaq(this)">
-                <div class="cz-faq-q">
-                    <span>¿Cómo valido mi pago?</span>
-                    <span class="material-icons cz-faq-icon">expand_more</span>
-                </div>
-                <div class="cz-faq-a">
-                    Es muy sencillo: al seleccionar el monto a recargar, la página te generará un mensaje automático. Solo envíanos ese mensaje por WhatsApp junto con la captura de pantalla de tu transferencia.
-                </div>
-            </div>
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)"><div class="cz-faq-q"><span>¿Cuánto demora en procesarse mi recarga?</span><span class="material-icons cz-faq-icon">expand_more</span></div><div class="cz-faq-a">Nuestro sistema está optimizado para la velocidad. Una vez que validamos la captura de tu comprobante de Yape o Plin en nuestro WhatsApp, el saldo o los diamantes se abonan a tu cuenta en menos de 5 minutos.</div></div>
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)"><div class="cz-faq-q"><span>¿Qué datos necesitan de mi cuenta?</span><span class="material-icons cz-faq-icon">expand_more</span></div><div class="cz-faq-a">Únicamente necesitamos tu ID de jugador y Nickname. Jamás te pediremos correos, contraseñas ni accesos a tus redes sociales. Tu cuenta está 100% segura.</div></div>
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)"><div class="cz-faq-q"><span>¿Cómo valido mi pago?</span><span class="material-icons cz-faq-icon">expand_more</span></div><div class="cz-faq-a">Es muy sencillo: al seleccionar el monto a recargar, la página te generará un mensaje automático. Solo envíanos ese mensaje por WhatsApp junto con la captura de pantalla de tu transferencia.</div></div>
         </div>
     </section>
 
-    <!-- SCRIPT DEL NUEVO ACORDEÓN -->
-    <script>
-        function toggleCzFaq(elemento) {
-            const todos = document.querySelectorAll('.cz-faq-item');
-            todos.forEach(item => {
-                if(item !== elemento) item.classList.remove('active');
-            });
-            elemento.classList.toggle('active');
-        }
-    </script>
-
-    <!-- MODAL DE COMPRA -->
+    <!-- MODAL DE COMPRA ACTUALIZADO CON FINANZAS -->
     <div id="modal-compra-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
         <div style="width: 100%; max-width: 460px; margin: 20px; padding: 35px; border-radius: 16px; background: #121218; position: relative; border: 1px solid rgba(161, 85, 255, 0.2); box-shadow: 0 0 30px rgba(161, 85, 255, 0.15); box-sizing: border-box;">
             <span onclick="cerrarModalCompra()" style="position: absolute; top: 20px; right: 20px; color: #888899; cursor: pointer; font-size: 24px; font-weight: bold; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#888899'">×</span>
@@ -238,9 +276,24 @@
                     <div><h2 style="font-size: 20px; color: white; margin: 0;">Confirmar Pedido</h2><p style="color: #a8a8b3; font-size: 13px; margin: 3px 0 0 0;">Estás a un paso de adquirir tu producto.</p></div>
                 </div>
 
+                <!-- TICKET FINANCIERO DETALLADO -->
                 <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.03);">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;"><span style="color: #a8a8b3; font-size: 14px;">Producto:</span><strong id="modal-paquete-nombre" style="color: white; font-size: 15px;">---</strong></div>
-                    <div style="display: flex; justify-content: space-between;"><span style="color: #a8a8b3; font-size: 14px;">Total a descontar:</span><strong id="modal-paquete-precio" style="color: #00e676; font-size: 16px;">S/ 0.00</strong></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="color: #a8a8b3; font-size: 14px;">Producto:</span>
+                        <strong id="modal-paquete-nombre" style="color: white; font-size: 15px;">---</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                        <span style="color: #a8a8b3; font-size: 14px;">Costo a descontar:</span>
+                        <strong id="modal-paquete-precio" style="color: #ff4757; font-size: 15px;">S/ 0.00</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="color: #a8a8b3; font-size: 14px;">Tu Saldo Actual:</span>
+                        <strong id="modal-saldo-actual" style="color: white; font-size: 14px;">S/ 0.00</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #a8a8b3; font-size: 14px;">Saldo Restante:</span>
+                        <strong id="modal-saldo-restante" style="color: #00e676; font-size: 16px;">S/ 0.00</strong>
+                    </div>
                 </div>
 
                 <div style="margin-bottom: 20px;">
@@ -296,38 +349,97 @@
                 document.getElementById('btn-usuario-nav').innerHTML = nombreGuardado + ' <span class="material-icons" style="font-size: 16px;">expand_more</span>';
                 
                 try {
-                    // SE ACTUALIZÓ PARA TRAER SALDO Y PUNTOS EN EL MENÚ
                     const { data, error } = await supabaseClient.from('usuarios').select('saldo, puntos').eq('nickname', nombreGuardado).single();
                     if (!error && data) {
                         const elementoSaldo = document.getElementById('saldo-nav');
                         if (elementoSaldo) { elementoSaldo.innerText = data.saldo.toFixed(2); }
-
+                        
                         const elementoPuntos = document.getElementById('puntos-nav');
                         if (elementoPuntos) { elementoPuntos.innerText = data.puntos || 0; }
+                        
+                        saldoActualUsuario = data.saldo;
                     }
                 } catch (error) { console.error("Error cargando datos:", error); }
             }
+
+            // LANZAR TICKER EN VIVO
+            cargarSistemaComunidadDinamica();
         };
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
         function cerrarSesionLocal() { localStorage.removeItem('nombreUsuario'); window.location.reload(); }
+        function toggleCzFaq(elemento) { const todos = document.querySelectorAll('.cz-faq-item'); todos.forEach(item => { if(item !== elemento) item.classList.remove('active'); }); elemento.classList.toggle('active'); }
+
+        // ==========================================
+        // ALGORITMO DEL TICKER EN VIVO
+        // ==========================================
+        async function cargarSistemaComunidadDinamica() {
+            try {
+                const usuariosExcluidos = ['carzaadmin', 'carzadcrosito'];
+                const { data: pedidosTicker, error } = await supabaseClient
+                    .from('pedidos')
+                    .select('nickname, paquete, id_juego')
+                    .eq('estado', 'Completado')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                if (!error && pedidosTicker && pedidosTicker.length > 0) {
+                    const ultimas10 = pedidosTicker.filter(p => !usuariosExcluidos.includes(p.nickname.toLowerCase())).slice(0, 10);
+                    let tickerHtml = '';
+                    ultimas10.forEach(p => {
+                        let idRaw = p.id_juego ? p.id_juego.toString().trim() : '';
+                        let idOculto = idRaw.length > 4 ? idRaw.substring(0, idRaw.length - 4) + '****' : '********';
+                        tickerHtml += `<div class="ticker-item">💎 <span class="hl">${p.nickname}</span> adquirió ${p.paquete} <span class="id-text">| ID: ${idOculto}</span></div>`;
+                    });
+                    if(tickerHtml !== '') {
+                        document.getElementById('ticker-track').innerHTML = tickerHtml + tickerHtml + tickerHtml;
+                    } else {
+                        document.getElementById('ticker-track').innerHTML = '<div class="ticker-item">Esperando nuevas compras de la comunidad...</div>';
+                    }
+                }
+            } catch(e) { console.error(e); }
+        }
 
         async function abrirModalCompra(nombrePaquete, precioPaquete) {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             if (!nombreGuardado) { window.location.href = 'login.html'; return; }
-            paqueteSeleccionado = nombrePaquete; precioSeleccionado = parseFloat(precioPaquete);
+            paqueteSeleccionado = nombrePaquete; 
+            precioSeleccionado = parseFloat(precioPaquete);
+            
             document.getElementById('compra-pantalla-formulario').style.display = 'block';
             document.getElementById('compra-pantalla-error').style.display = 'none';
             document.getElementById('compra-pantalla-exito').style.display = 'none';
-            document.getElementById('modal-id-juego').value = ""; document.getElementById('modal-nickname-juego').value = "";
+            document.getElementById('modal-id-juego').value = ""; 
+            document.getElementById('modal-nickname-juego').value = "";
+            
+            // CÁLCULO FINANCIERO DEL MODAL
             document.getElementById('modal-paquete-nombre').innerText = nombrePaquete;
             document.getElementById('modal-paquete-precio').innerText = `S/ ${precioSeleccionado.toFixed(2)}`;
+            
+            try {
+                // Volvemos a consultar el saldo por seguridad justo antes de abrir
+                const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
+                if (data) { 
+                    saldoActualUsuario = data.saldo; 
+                    document.getElementById('modal-saldo-actual').innerText = `S/ ${saldoActualUsuario.toFixed(2)}`;
+                    
+                    let saldoRestante = saldoActualUsuario - precioSeleccionado;
+                    let txtRestante = document.getElementById('modal-saldo-restante');
+                    
+                    txtRestante.innerText = `S/ ${saldoRestante.toFixed(2)}`;
+                    
+                    if (saldoRestante < 0) {
+                        txtRestante.style.color = '#ff4757'; // Rojo si no le alcanza
+                        document.getElementById('compra-pantalla-formulario').style.display = 'none'; 
+                        document.getElementById('compra-pantalla-error').style.display = 'block';
+                    } else {
+                        txtRestante.style.color = '#00e676'; // Verde si le alcanza
+                    }
+                }
+            } catch (err) { console.error(err); }
+
             const modal = document.getElementById('modal-compra-container');
             modal.style.display = 'flex'; setTimeout(() => { modal.style.opacity = '1'; }, 10);
-            try {
-                const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
-                if (data) { saldoActualUsuario = data.saldo; if (saldoActualUsuario < precioSeleccionado) { document.getElementById('compra-pantalla-formulario').style.display = 'none'; document.getElementById('compra-pantalla-error').style.display = 'block'; } }
-            } catch (err) { console.error(err); }
         }
 
         function cerrarModalCompra() { const modal = document.getElementById('modal-compra-container'); modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; }, 300); }
@@ -348,9 +460,6 @@
 
             if (errorSaldo) { alert("Error: " + errorSaldo.message); btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo"; return; }
 
-            // ========================================================
-            // LÓGICA INTELIGENTE DE CÓDIGOS PARCIALES 
-            // ========================================================
             let codigoAsignado = "";
 
             if (paqueteSeleccionado === "Pase Booyah") {
@@ -359,51 +468,28 @@
                 let cantidadRequerida = 1;
                 let paqueteABuscar = paqueteSeleccionado;
 
-                if (paqueteSeleccionado === "4796 Diamantes") {
-                    paqueteABuscar = "2398 Diamantes";
-                    cantidadRequerida = 2;
-                } else if (paqueteSeleccionado === "12320 Diamantes") {
-                    paqueteABuscar = "6160 Diamantes";
-                    cantidadRequerida = 2;
-                }
+                if (paqueteSeleccionado === "4796 Diamantes") { paqueteABuscar = "2398 Diamantes"; cantidadRequerida = 2; } 
+                else if (paqueteSeleccionado === "12320 Diamantes") { paqueteABuscar = "6160 Diamantes"; cantidadRequerida = 2; }
 
                 codigoAsignado = "⚠️ Sin stock, agrega códigos";
                 
-                const { data: codigosStock, error: errorInv } = await supabaseClient
-                    .from('inventario_codigos')
-                    .select('*')
-                    .eq('paquete', paqueteABuscar)
-                    .eq('estado', 'Disponible')
-                    .limit(cantidadRequerida);
+                const { data: codigosStock } = await supabaseClient.from('inventario_codigos').select('*').eq('paquete', paqueteABuscar).eq('estado', 'Disponible').limit(cantidadRequerida);
 
                 if (codigosStock && codigosStock.length > 0) {
                     const codigosArray = codigosStock.map(item => item.codigo);
                     let faltantes = cantidadRequerida - codigosStock.length;
                     
-                    if (faltantes > 0) {
-                        codigosArray.push(`⚠️ Falta ${faltantes} código(s) de ${paqueteABuscar} (Agrega Stock)`);
-                    }
+                    if (faltantes > 0) codigosArray.push(`⚠️ Falta ${faltantes} código(s) de ${paqueteABuscar} (Agrega Stock)`);
                     
                     codigoAsignado = codigosArray.join(" | ");
 
                     for (let item of codigosStock) {
-                        await supabaseClient.from('inventario_codigos')
-                            .update({ estado: 'Usado', nickname_comprador: nombreGuardado })
-                            .eq('id', item.id);
+                        await supabaseClient.from('inventario_codigos').update({ estado: 'Usado', nickname_comprador: nombreGuardado }).eq('id', item.id);
                     }
                 }
             }
 
-            await supabaseClient.from('pedidos').insert([{ 
-                nickname: nombreGuardado, 
-                paquete: paqueteSeleccionado, 
-                id_juego: idJuego, 
-                nickname_juego: nicknameJuego,
-                precio: precioSeleccionado, 
-                estado: 'Pendiente',
-                codigo: codigoAsignado
-            }]);
-
+            await supabaseClient.from('pedidos').insert([{ nickname: nombreGuardado, paquete: paqueteSeleccionado, id_juego: idJuego, nickname_juego: nicknameJuego, precio: precioSeleccionado, estado: 'Pendiente', codigo: codigoAsignado }]);
             await supabaseClient.from('historial').insert([{ nickname: nombreGuardado, monto: precioSeleccionado, tipo: `Compra: ${paqueteSeleccionado} (ID: ${idJuego} | Nick: ${nicknameJuego})`, estado: 'Descontado' }]);
 
             if(document.getElementById('saldo-nav')) document.getElementById('saldo-nav').innerText = nuevoSaldo.toFixed(2);
@@ -413,7 +499,6 @@
             
             btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo";
 
-            // REDIRECCIÓN A WHATSAPP
             const numeroAdmin = "51943737572";
             const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de realizar una *RECARGA REGULAR* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n💎 *Paquete:* ${paqueteSeleccionado}\n💰 *Precio:* S/ ${precioSeleccionado.toFixed(2)}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para proceder. ¡Gracias!`;
             window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');

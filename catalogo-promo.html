@@ -6,61 +6,102 @@
     <title>Promo 1ra Recarga | CarzaD'Cross</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-</head>
-<body>
-
-    <nav class="navbar">
-        <div class="nav-logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
-            <div class="profile-avatar">C</div><span>CarzaD'Cross</span>
-        </div>
-        <div class="nav-auth-section" id="nav-logged-out">
-         <button class="btn-text" onclick="window.location.href='login.html'">Iniciar Sesión</button>
-         <button class="btn-outline" onclick="window.location.href='register.html'">Crear Cuenta</button>
-        </div>
-        <div class="nav-user-section" id="nav-logged-in" style="display: none;">
-            <div class="balance-pill">
-                <span class="material-icons wallet-icon">account_balance_wallet</span>
-                <div class="balance-info"><span class="balance-label">SALDO</span><span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span></div>
-            </div>
-            <div class="user-dropdown-container" style="position: relative;">
-             <div class="user-profile" onclick="toggleMenu()" id="btn-usuario-nav" style="cursor: pointer;"><span>Carlos</span><span class="material-icons">expand_more</span></div>
-            <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 8px; min-width: 160px; z-index: 1000; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
-                 <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">person</span> Mis Datos</a>
-                 <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
-                <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;"><span class="material-icons">logout</span> Cerrar Sesión</a>
-            </div>
-         </div>
-        </div>
-    </nav>
-
-    <!-- PORTADA PERSONALIZADA PARA RECARGA PROMO -->
-    <header class="hero-container" style="background: linear-gradient(rgba(18, 18, 20, 0.8), rgba(18, 18, 20, 1)), url('freefirepr.jpg') center/cover; padding: 60px 20px;">
-        <div class="hero-content" style="text-align: center;">
-            <div class="hero-badge" style="border-color: #ea1d2c; color: #ffb3b8; background: rgba(234, 29, 44, 0.15); border-radius: 30px; padding: 6px 16px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 20px;">📌 1 VEZ POR CUENTA</div>
-            <h1 class="hero-title" style="font-size: 38px; font-weight: bold; margin-bottom: 15px;">Promo <br><span style="color: #a155ff;">PRIMERA RECARGA 🫦</span></h1>
-            <p class="hero-subtitle" style="color: #a8a8b3; font-size: 15px; max-width: 600px; margin: 0 auto;">Precios especiales exclusivos y válidos únicamente para la primera recarga en cada ID.</p>
-        </div>
-    </header>
-
-    <main class="container" style="padding-top: 30px;">
-        <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600;"><span class="material-icons">arrow_back</span> Volver al inicio</a>
-        <div class="category-header">
-            <h2>PAQUETES PROMOCIONALES 💎 (Previa revisión de tu ID)</h2>
-        </div>
-        
-        <section class="products-grid">
-            <div class="card"><div class="card-badge" style="background: #ea1d2c;">Promo 1x</div><div class="card-icon">💎</div><h3 class="card-title">110 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 2.40</span></div><button class="btn-buy" onclick="abrirModalCompra('110 Diamantes (Promo)', 2.40)">Comprar</button></div>
-            <div class="card"><div class="card-badge" style="background: #ea1d2c;">Promo 1x</div><div class="card-icon">💎</div><h3 class="card-title">331 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 8.00</span></div><button class="btn-buy" onclick="abrirModalCompra('331 Diamantes (Promo)', 8.00)">Comprar</button></div>
-            <div class="card"><div class="card-badge" style="background: #ea1d2c;">Promo 1x</div><div class="card-icon">💎💎</div><h3 class="card-title">572 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 13.00</span></div><button class="btn-buy" onclick="abrirModalCompra('572 Diamantes (Promo)', 13.00)">Comprar</button></div>
-            <div class="card"><div class="card-badge" style="background: #ea1d2c;">Promo 1x</div><div class="card-icon">💎💎</div><h3 class="card-title">1166 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 25.00</span></div><button class="btn-buy" onclick="abrirModalCompra('1166 Diamantes (Promo)', 25.00)">Comprar</button></div>
-            <div class="card"><div class="card-badge" style="background: #ea1d2c;">Promo 1x</div><div class="card-icon">💎💎💎</div><h3 class="card-title">2398 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 48.00</span></div><button class="btn-buy" onclick="abrirModalCompra('2398 Diamantes (Promo)', 48.00)">Comprar</button></div>
-            <div class="card"><div class="card-badge" style="background: #ea1d2c;">Promo 1x</div><div class="card-icon">👑💎</div><h3 class="card-title">6160 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 99.00</span></div><button class="btn-buy" onclick="abrirModalCompra('6160 Diamantes (Promo)', 99.00)">Comprar</button></div>
-        </section>
-    </main>
-
-    <!-- ESTILOS -->
+    
+    <!-- TODOS LOS EFECTOS VISUALES, GAMIFICACIÓN Y FOOTER UNIFICADOS AQUÍ -->
     <style>
-        .cz-faq-wrapper { max-width: 850px; margin: 90px auto 60px; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        /* Efectos de levitación y resplandor para las tarjetas */
+        .products-grid .card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .products-grid .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(234, 29, 44, 0.25);
+            border-color: #ea1d2c;
+            z-index: 2;
+        }
+        /* Luz de fondo en hover (Tono Rojo para Promo) */
+        .products-grid .card::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(234, 29, 44, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .products-grid .card:hover::before {
+            opacity: 1;
+        }
+        /* Brillo mágico en los diamantes */
+        .card-icon {
+            text-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+            transition: transform 0.3s ease, text-shadow 0.3s ease;
+        }
+        .products-grid .card:hover .card-icon {
+            transform: scale(1.15) rotate(5deg);
+            text-shadow: 0 0 25px rgba(0, 210, 255, 0.8);
+        }
+        /* Etiqueta animada de Más Vendido (Fuego) */
+        .badge-bestseller {
+            position: absolute; top: 12px; right: 12px;
+            background: linear-gradient(45deg, #ff4757, #ff9800);
+            color: white; padding: 4px 10px; border-radius: 20px;
+            font-size: 10px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+            animation: pulse-fire 2s infinite;
+            z-index: 10;
+        }
+        @keyframes pulse-fire {
+            0% { box-shadow: 0 0 5px rgba(255, 71, 87, 0.4); transform: scale(1); }
+            50% { box-shadow: 0 0 15px rgba(255, 71, 87, 0.8); transform: scale(1.05); }
+            100% { box-shadow: 0 0 5px rgba(255, 71, 87, 0.4); transform: scale(1); }
+        }
+        /* Botones de compra más vibrantes en hover */
+        .products-grid .card .btn-buy {
+            transition: all 0.3s ease;
+        }
+        .products-grid .card:hover .btn-buy {
+            background: linear-gradient(45deg, #ea1d2c, #ff6b81);
+            box-shadow: 0 0 15px rgba(234, 29, 44, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* --- ESTILOS DE LA CINTA DE COMPRAS EN VIVO (LIVE TICKER) --- */
+        .live-ticker-wrap {
+            width: 100%; background: rgba(20, 20, 26, 0.9);
+            border-bottom: 1px solid rgba(161, 85, 255, 0.2);
+            overflow: hidden; position: relative; padding: 10px 0;
+            display: flex; align-items: center; z-index: 10;
+        }
+        .ticker-label {
+            background: #a155ff; color: white; font-weight: bold; padding: 6px 12px;
+            font-size: 11px; letter-spacing: 0.5px; z-index: 12; position: absolute;
+            left: 0; border-radius: 0 4px 4px 0; box-shadow: 4px 0 10px rgba(0,0,0,0.5);
+        }
+        .ticker-move {
+            display: flex; white-space: nowrap; animation: tickerAnimation 30s linear infinite; padding-left: 150px;
+        }
+        .ticker-item { display: inline-block; padding-right: 3rem; color: #e0e0e0; font-size: 13.5px; }
+        .ticker-item .hl { color: #a155ff; font-weight: bold; }
+        .ticker-item .id-text { color: #888899; font-family: monospace; }
+        
+        @keyframes tickerAnimation {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
+        }
+
+        /* --- Estilos Recomendaciones --- */
+        .rec-card {
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px;
+            cursor: pointer; transition: 0.3s ease;
+        }
+        .rec-card:hover { border-color: #a155ff; transform: translateY(-3px); background: rgba(161,85,255,0.05); }
+
+        /* --- PREGUNTAS FRECUENTES (FAQ) --- */
+        .cz-faq-wrapper { max-width: 850px; margin: 30px auto 60px; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .cz-faq-header { text-align: center; margin-bottom: 50px; }
         .cz-faq-subtitle { color: #a155ff; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 12px; }
         .cz-faq-title { font-size: 32px; color: white; margin: 0; font-weight: 800; letter-spacing: 0.5px; }
@@ -75,6 +116,7 @@
         .cz-faq-a { padding: 0 25px; max-height: 0; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: #888899; font-size: 14.5px; line-height: 1.7; }
         .cz-faq-item.active .cz-faq-a { padding: 0 25px 25px 25px; max-height: 250px; }
 
+        /* --- FOOTER PROFESIONAL --- */
         .cz-footer { background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 80px 20px 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 50px; }
         .cz-footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; }
         @media (max-width: 950px) { .cz-footer-content { grid-template-columns: 1fr 1fr; } }
@@ -97,6 +139,118 @@
         .cz-copy { color: #555566; font-size: 13px; }
         .cz-made-with { color: #777788; font-size: 13px; display: flex; align-items: center; gap: 6px; }
     </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
+            <div class="profile-avatar">C</div><span>CarzaD'Cross</span>
+        </div>
+        <div class="nav-auth-section" id="nav-logged-out">
+         <button class="btn-text" onclick="window.location.href='login.html'">Iniciar Sesión</button>
+         <button class="btn-outline" onclick="window.location.href='register.html'">Crear Cuenta</button>
+        </div>
+        <div class="nav-user-section" id="nav-logged-in" style="display: none;">
+            <!-- SALDO -->
+            <div class="balance-pill">
+                <span class="material-icons wallet-icon">account_balance_wallet</span>
+                <div class="balance-info"><span class="balance-label">SALDO</span><span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span></div>
+            </div>
+            <!-- PUNTOS VIP -->
+            <div class="balance-pill" style="border-color: #ffc107; background: rgba(255,193,7,0.1); margin-left: 10px;">
+                <span class="material-icons wallet-icon" style="color: #ffc107;">stars</span>
+                <div class="balance-info">
+                    <span class="balance-label" style="color: #ffc107;">PUNTOS</span>
+                    <span class="balance-amount" style="color: #ffc107;" id="puntos-nav">0</span>
+                </div>
+            </div>
+
+            <div class="user-dropdown-container" style="position: relative; margin-left: 15px;">
+             <div class="user-profile" onclick="toggleMenu()" id="btn-usuario-nav" style="cursor: pointer;"><span>Carlos</span><span class="material-icons">expand_more</span></div>
+            <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 8px; min-width: 160px; z-index: 1000; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                 <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">person</span> Mis Datos</a>
+                 <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #00e676; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
+                 <!-- ENLACE RULETA VIP -->
+                 <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">casino</span> Ruleta VIP</a>
+                <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;"><span class="material-icons">logout</span> Cerrar Sesión</a>
+            </div>
+         </div>
+        </div>
+    </nav>
+
+    <!-- CINTA DE COMPRAS EN VIVO (LIVE TICKER) -->
+    <div class="live-ticker-wrap">
+        <div class="ticker-label">COMPRAS EN VIVO ⚡</div>
+        <div class="ticker-move" id="ticker-track">
+            <div class="ticker-item">Sincronizando últimas compras con la bóveda digital...</div>
+        </div>
+    </div>
+
+    <!-- PORTADA PERSONALIZADA PARA RECARGA PROMO -->
+    <header class="hero-container" style="background: linear-gradient(rgba(18, 18, 20, 0.8), rgba(18, 18, 20, 1)), url('freefirepr.jpg') center/cover; padding: 60px 20px;">
+        <div class="hero-content" style="text-align: center;">
+            <div class="hero-badge" style="border-color: #ea1d2c; color: #ffb3b8; background: rgba(234, 29, 44, 0.15); border-radius: 30px; padding: 6px 16px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 20px;">📌 1 VEZ POR CUENTA</div>
+            <h1 class="hero-title" style="font-size: 38px; font-weight: bold; margin-bottom: 15px;">Promo <br><span style="color: #a155ff;">PRIMERA RECARGA 🫦</span></h1>
+            <p class="hero-subtitle" style="color: #a8a8b3; font-size: 15px; max-width: 600px; margin: 0 auto;">Precios especiales exclusivos y válidos únicamente para la primera recarga en cada ID.</p>
+            <!-- TEXTO VIP MOTIVACIONAL -->
+            <p style="color: #ffc107; font-size: 13px; font-weight: bold; margin-top: 15px; text-shadow: 0 0 10px rgba(255,193,7,0.5);"><span class="material-icons" style="font-size: 14px; vertical-align: middle;">stars</span> Recuerda que cada S/ 1.00 de saldo que recargas te da 10 Puntos para la Ruleta VIP.</p>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 30px;">
+        <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a8a8b3'"><span class="material-icons">arrow_back</span> Volver al inicio</a>
+        <div class="category-header">
+            <h2>PAQUETES PROMOCIONALES 💎 (Previa revisión de tu ID)</h2>
+        </div>
+        
+        <section class="products-grid">
+            <div class="card"><div class="card-badge" style="background: #ea1d2c;">Promo 1x</div><div class="card-icon">💎</div><h3 class="card-title">110 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 2.40</span></div><button class="btn-buy" onclick="abrirModalCompra('110 Diamantes (Promo)', 2.40)">Comprar</button></div>
+            <div class="card"><div class="card-badge" style="background: #ea1d2c;">Promo 1x</div><div class="card-icon">💎</div><h3 class="card-title">331 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 8.00</span></div><button class="btn-buy" onclick="abrirModalCompra('331 Diamantes (Promo)', 8.00)">Comprar</button></div>
+            <div class="card"><div class="card-badge" style="background: #ea1d2c;">Promo 1x</div><div class="card-icon">💎💎</div><h3 class="card-title">572 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 13.00</span></div><button class="btn-buy" onclick="abrirModalCompra('572 Diamantes (Promo)', 13.00)">Comprar</button></div>
+            
+            <!-- ETIQUETA ANIMADA DE FUEGO EN EL PAQUETE MÁS ATRACTIVO -->
+            <div class="card"><div class="badge-bestseller">🔥 Más Vendido</div><div class="card-badge" style="background: #ea1d2c; top: 12px; left: 12px; right: auto;">Promo 1x</div><div class="card-icon">💎💎</div><h3 class="card-title">1166 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 25.00</span></div><button class="btn-buy" onclick="abrirModalCompra('1166 Diamantes (Promo)', 25.00)">Comprar</button></div>
+            
+            <div class="card"><div class="card-badge" style="background: #ea1d2c;">Promo 1x</div><div class="card-icon">💎💎💎</div><h3 class="card-title">2398 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 48.00</span></div><button class="btn-buy" onclick="abrirModalCompra('2398 Diamantes (Promo)', 48.00)">Comprar</button></div>
+            <div class="card"><div class="card-badge" style="background: #ea1d2c;">Promo 1x</div><div class="card-icon">👑💎</div><h3 class="card-title">6160 Diamantes</h3><div class="card-prices"><span class="price-current">S/ 99.00</span></div><button class="btn-buy" onclick="abrirModalCompra('6160 Diamantes (Promo)', 99.00)">Comprar</button></div>
+        </section>
+
+        <!-- SECCIÓN DE RECOMENDACIONES (CROSS-SELLING) -->
+        <div style="margin-top: 70px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 40px; padding-bottom: 40px;">
+            <h3 style="color: white; font-size: 22px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
+                <span class="material-icons" style="color: #00d2ff; font-size: 28px;">local_fire_department</span> También te podría interesar...
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                
+                <div class="rec-card" onclick="window.location.href='catalogo-regular.html'">
+                    <div style="min-width: 70px; height: 70px; border-radius: 8px; background: url('freefire.jpg') center/cover;"></div>
+                    <div>
+                        <h4 style="margin: 0 0 5px 0; font-size: 16px; color: white;">Recarga Regular</h4>
+                        <p style="margin: 0; font-size: 13px; color: #a8a8b3;">Diamantes con 10% Extra y Pases Booyah. Entrega automática.</p>
+                    </div>
+                </div>
+
+                <div class="rec-card" onclick="window.location.href='catalogo-recarga-directa.html'">
+                    <div style="min-width: 70px; height: 70px; border-radius: 8px; background: url('recargadirecta.jpg') center/cover;"></div>
+                    <div>
+                        <h4 style="margin: 0 0 5px 0; font-size: 16px; color: white;">Recargas Directas</h4>
+                        <p style="margin: 0; font-size: 13px; color: #a8a8b3;">Lleva 20% más en diamantes. Oferta temporal por ID.</p>
+                    </div>
+                </div>
+
+                <div class="rec-card" onclick="window.location.href='recompensas.html'" style="border-color: rgba(255, 193, 7, 0.3);">
+                    <div style="min-width: 70px; height: 70px; border-radius: 8px; background: linear-gradient(135deg, #a155ff, #ffc107); display: flex; align-items: center; justify-content: center;">
+                        <span class="material-icons" style="color: white; font-size: 32px;">casino</span>
+                    </div>
+                    <div>
+                        <h4 style="margin: 0 0 5px 0; font-size: 16px; color: #ffc107;">Ruleta Booyah VIP</h4>
+                        <p style="margin: 0; font-size: 13px; color: #a8a8b3;">Gira la ruleta y gana Saldo, Diamantes o Pases gratis.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
 
     <section class="cz-faq-wrapper">
         <div class="cz-faq-header"><span class="cz-faq-subtitle">Centro de Ayuda</span><h2 class="cz-faq-title">Preguntas Frecuentes</h2></div>
@@ -107,7 +261,7 @@
         </div>
     </section>
 
-    <!-- MODAL DE COMPRA -->
+    <!-- MODAL DE COMPRA ACTUALIZADO CON FINANZAS -->
     <div id="modal-compra-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
         <div style="width: 100%; max-width: 460px; margin: 20px; padding: 35px; border-radius: 16px; background: #121218; position: relative; border: 1px solid rgba(161, 85, 255, 0.2); box-shadow: 0 0 30px rgba(161, 85, 255, 0.15); box-sizing: border-box;">
             <span onclick="cerrarModalCompra()" style="position: absolute; top: 20px; right: 20px; color: #888899; cursor: pointer; font-size: 24px; font-weight: bold; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#888899'">×</span>
@@ -118,9 +272,24 @@
                     <div><h2 style="font-size: 20px; color: white; margin: 0;">Confirmar Pedido</h2><p style="color: #a8a8b3; font-size: 13px; margin: 3px 0 0 0;">Estás a un paso de adquirir tu producto.</p></div>
                 </div>
 
+                <!-- TICKET FINANCIERO DETALLADO -->
                 <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.03);">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;"><span style="color: #a8a8b3; font-size: 14px;">Producto:</span><strong id="modal-paquete-nombre" style="color: white; font-size: 15px;">---</strong></div>
-                    <div style="display: flex; justify-content: space-between;"><span style="color: #a8a8b3; font-size: 14px;">Total a descontar:</span><strong id="modal-paquete-precio" style="color: #00e676; font-size: 16px;">S/ 0.00</strong></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="color: #a8a8b3; font-size: 14px;">Producto:</span>
+                        <strong id="modal-paquete-nombre" style="color: white; font-size: 15px;">---</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                        <span style="color: #a8a8b3; font-size: 14px;">Costo a descontar:</span>
+                        <strong id="modal-paquete-precio" style="color: #ff4757; font-size: 15px;">S/ 0.00</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="color: #a8a8b3; font-size: 14px;">Tu Saldo Actual:</span>
+                        <strong id="modal-saldo-actual" style="color: white; font-size: 14px;">S/ 0.00</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #a8a8b3; font-size: 14px;">Saldo Restante:</span>
+                        <strong id="modal-saldo-restante" style="color: #00e676; font-size: 16px;">S/ 0.00</strong>
+                    </div>
                 </div>
 
                 <div style="margin-bottom: 20px;">
@@ -176,34 +345,98 @@
                 document.getElementById('btn-usuario-nav').innerHTML = nombreGuardado + ' <span class="material-icons" style="font-size: 16px;">expand_more</span>';
                 
                 try {
-                    const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
-                    if (data && document.getElementById('saldo-nav')) {
-                        document.getElementById('saldo-nav').innerText = data.saldo.toFixed(2);
+                    // SE ACTUALIZÓ PARA TRAER SALDO Y PUNTOS EN EL MENÚ
+                    const { data, error } = await supabaseClient.from('usuarios').select('saldo, puntos').eq('nickname', nombreGuardado).single();
+                    if (!error && data) {
+                        const elementoSaldo = document.getElementById('saldo-nav');
+                        if (elementoSaldo) { elementoSaldo.innerText = data.saldo.toFixed(2); }
+
+                        const elementoPuntos = document.getElementById('puntos-nav');
+                        if (elementoPuntos) { elementoPuntos.innerText = data.puntos || 0; }
+                        
+                        saldoActualUsuario = data.saldo;
                     }
-                } catch (error) { console.error("Error cargando saldo:", error); }
+                } catch (err) { console.error("Error al cargar datos:", err); }
             }
+
+            // LANZAMOS EL MOTOR DEL TICKER EN VIVO
+            cargarSistemaComunidadDinamica();
         };
 
-        function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
+        function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none') ? 'block' : 'none'; }
         function cerrarSesionLocal() { localStorage.removeItem('nombreUsuario'); window.location.reload(); }
         function toggleCzFaq(elemento) { const todos = document.querySelectorAll('.cz-faq-item'); todos.forEach(item => { if(item !== elemento) item.classList.remove('active'); }); elemento.classList.toggle('active'); }
+
+        // ==========================================
+        // ALGORITMO DEL TICKER EN VIVO
+        // ==========================================
+        async function cargarSistemaComunidadDinamica() {
+            try {
+                const usuariosExcluidos = ['carzaadmin', 'carzadcrosito'];
+                const { data: pedidosTicker, error } = await supabaseClient
+                    .from('pedidos')
+                    .select('nickname, paquete, id_juego')
+                    .eq('estado', 'Completado')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                if (!error && pedidosTicker && pedidosTicker.length > 0) {
+                    const ultimas10 = pedidosTicker.filter(p => !usuariosExcluidos.includes(p.nickname.toLowerCase())).slice(0, 10);
+                    let tickerHtml = '';
+                    ultimas10.forEach(p => {
+                        let idRaw = p.id_juego ? p.id_juego.toString().trim() : '';
+                        let idOculto = idRaw.length > 4 ? idRaw.substring(0, idRaw.length - 4) + '****' : '********';
+                        tickerHtml += `<div class="ticker-item">💎 <span class="hl">${p.nickname}</span> adquirió ${p.paquete} <span class="id-text">| ID: ${idOculto}</span></div>`;
+                    });
+                    if(tickerHtml !== '') {
+                        document.getElementById('ticker-track').innerHTML = tickerHtml + tickerHtml + tickerHtml;
+                    } else {
+                        document.getElementById('ticker-track').innerHTML = '<div class="ticker-item">Esperando nuevas compras de la comunidad...</div>';
+                    }
+                }
+            } catch(e) { console.error(e); }
+        }
 
         async function abrirModalCompra(nombrePaquete, precioPaquete) {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             if (!nombreGuardado) { window.location.href = 'login.html'; return; }
-            paqueteSeleccionado = nombrePaquete; precioSeleccionado = parseFloat(precioPaquete);
+            paqueteSeleccionado = nombrePaquete; 
+            precioSeleccionado = parseFloat(precioPaquete);
+            
             document.getElementById('compra-pantalla-formulario').style.display = 'block';
             document.getElementById('compra-pantalla-error').style.display = 'none';
             document.getElementById('compra-pantalla-exito').style.display = 'none';
-            document.getElementById('modal-id-juego').value = ""; document.getElementById('modal-nickname-juego').value = "";
+            document.getElementById('modal-id-juego').value = ""; 
+            document.getElementById('modal-nickname-juego').value = "";
+            
+            // CÁLCULO FINANCIERO DEL MODAL
             document.getElementById('modal-paquete-nombre').innerText = nombrePaquete;
             document.getElementById('modal-paquete-precio').innerText = `S/ ${precioSeleccionado.toFixed(2)}`;
+            
+            try {
+                // Volvemos a consultar el saldo por seguridad justo antes de abrir
+                const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
+                if (data) { 
+                    saldoActualUsuario = data.saldo; 
+                    document.getElementById('modal-saldo-actual').innerText = `S/ ${saldoActualUsuario.toFixed(2)}`;
+                    
+                    let saldoRestante = saldoActualUsuario - precioSeleccionado;
+                    let txtRestante = document.getElementById('modal-saldo-restante');
+                    
+                    txtRestante.innerText = `S/ ${saldoRestante.toFixed(2)}`;
+                    
+                    if (saldoRestante < 0) {
+                        txtRestante.style.color = '#ff4757'; // Rojo si no le alcanza
+                        document.getElementById('compra-pantalla-formulario').style.display = 'none'; 
+                        document.getElementById('compra-pantalla-error').style.display = 'block';
+                    } else {
+                        txtRestante.style.color = '#00e676'; // Verde si le alcanza
+                    }
+                }
+            } catch (err) { console.error(err); }
+
             const modal = document.getElementById('modal-compra-container');
             modal.style.display = 'flex'; setTimeout(() => { modal.style.opacity = '1'; }, 10);
-            try {
-                const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
-                if (data) { saldoActualUsuario = data.saldo; if (saldoActualUsuario < precioSeleccionado) { document.getElementById('compra-pantalla-formulario').style.display = 'none'; document.getElementById('compra-pantalla-error').style.display = 'block'; } }
-            } catch (err) { console.error(err); }
         }
 
         function cerrarModalCompra() { const modal = document.getElementById('modal-compra-container'); modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; window.location.reload(); }, 300); }
@@ -261,49 +494,46 @@
     <!-- ========================================== -->
     <!-- FOOTER PROFESIONAL                         -->
     <!-- ========================================== -->
-    <footer class="main-footer">
-        <div class="footer-container">
-            <div class="footer-brand">
-                <div class="brand-logo">
-                    <div class="logo-icon">C</div>
-                    <h2>CarzaD'Cross</h2>
-                </div>
-                <p>La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
-                <div class="trust-badges">
-                    <span><i class="material-icons">bolt</i> Entrega < 5 min</span>
+    <footer class="cz-footer">
+        <div class="cz-footer-content">
+            <div class="cz-f-brand">
+                <div class="cz-f-logo"><div class="avatar">C</div> CarzaD'Cross</div>
+                <p class="cz-f-desc">La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
+                <div class="cz-f-trust">
+                    <span><i class="material-icons">bolt</i> Entrega &lt; 5 min</span>
                     <span><i class="material-icons">verified_user</i> 100% Seguro</span>
                     <span><i class="material-icons">account_balance_wallet</i> Yape / Plin</span>
                 </div>
             </div>
-            <div class="footer-links">
-                <h3 class="footer-title">NAVEGACIÓN</h3>
+            <div class="cz-f-col">
+                <h4>Navegación</h4>
                 <ul>
-                    <li><a href="index.html">Inicio</a></li>
-                    <li><a href="catalogo-regular.html">Catálogo Free Fire</a></li>
-                    <li><a href="catalogo-cajas.html">Cajas y Fragmentos</a></li>
-                    <li><a href="perfil.html">Mi Panel</a></li>
+                    <li><a href="index.html"><span class="material-icons">chevron_right</span> Inicio</a></li>
+                    <li><a href="catalogo-regular.html"><span class="material-icons">chevron_right</span> Catálogo Free Fire</a></li>
+                    <li><a href="catalogo-cajas.html"><span class="material-icons">chevron_right</span> Cajas y Fragmentos</a></li>
+                    <li><a href="perfil.html"><span class="material-icons">chevron_right</span> Mi Panel</a></li>
                 </ul>
             </div>
-            <div class="footer-links">
-                <h3 class="footer-title">SOPORTE</h3>
+            <div class="cz-f-col">
+                <h4>Soporte</h4>
                 <ul>
-                    <li><a href="recargar.html">Reportar Pago</a></li>
-                    <li><a href="https://wa.me/51943737572" target="_blank">Contactar por WhatsApp</a></li>
-                    <li><a href="index.html">Centro de Ayuda</a></li>
+                    <li><a href="recargar.html"><span class="material-icons">chevron_right</span> Reportar Pago</a></li>
+                    <li><a href="https://wa.me/51943737572" target="_blank"><span class="material-icons">chevron_right</span> WhatsApp</a></li>
+                    <li><a href="index.html"><span class="material-icons">chevron_right</span> Centro de Ayuda</a></li>
                 </ul>
             </div>
-            <div class="footer-links">
-                <h3 class="footer-title">LEGAL</h3>
+            <div class="cz-f-col">
+                <h4>Legal</h4>
                 <ul>
-                    <li><a href="terminos.html">Términos de Servicio</a></li>
-                    <li><a href="privacidad.html">Política de Privacidad</a></li>
-                    <li><a href="garantia.html">Garantía de Entrega</a></li>
+                    <li><a href="terminos.html"><span class="material-icons">chevron_right</span> Términos de Servicio</a></li>
+                    <li><a href="privacidad.html"><span class="material-icons">chevron_right</span> Política de Privacidad</a></li>
+                    <li><a href="garantia.html"><span class="material-icons">chevron_right</span> Garantía de Entrega</a></li>
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>© 2026 CarzaD'Cross. Todos los derechos reservados.</p>
-            <p class="made-with">Hecho con <span class="material-icons heart">favorite</span> en Perú para la comunidad gaming.</p>
+        <div class="cz-footer-bottom">
+            <div class="cz-copy">© 2026 CarzaD'Cross. Todos los derechos reservados.</div>
+            <div class="cz-made-with">Hecho con <span class="material-icons" style="color:#ff4757; font-size:14px;">favorite</span> en Perú</div>
         </div>
     </footer>
 </body>
