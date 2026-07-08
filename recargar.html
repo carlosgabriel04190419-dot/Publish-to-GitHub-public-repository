@@ -7,92 +7,77 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <style>
-        /* --- RESET GLOBAL PARA EVITAR SCROLL HORIZONTAL --- */
+        /* --- RESET GLOBAL --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: linear-gradient(rgba(10, 10, 14, 0.85), rgba(10, 10, 14, 0.95)), url('hero-bg.jpg') center/cover fixed no-repeat; background-color: #0f0f13; min-height: 100vh; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
 
-        body {
-            background: linear-gradient(rgba(10, 10, 14, 0.85), rgba(10, 10, 14, 0.95)), url('hero-bg.jpg') center/cover fixed no-repeat;
-            background-color: #0f0f13;
-            min-height: 100vh;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
-        }
+        /* --- NUEVO LOGO PREMIUM --- */
+        .nav-logo-premium { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; transition: transform 0.3s; }
+        .nav-logo-premium:hover { transform: scale(1.05); }
+        .logo-emblem { position: relative; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 0 10px rgba(161, 85, 255, 0.6)); }
+        .logo-text { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -0.5px; display: flex; align-items: center; }
+        .text-carza { color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-transform: uppercase; }
+        .text-d { color: #a155ff; margin: 0 2px; }
+        .text-cross { background: linear-gradient(45deg, #00d2ff, #a155ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-style: italic; text-transform: uppercase; padding-right: 5px; }
 
-        /* --- NAVBAR COMPLETA --- */
-        .navbar { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid rgba(161, 85, 255, 0.15); z-index: 1000; position: relative; }
-        .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 900; color: white; cursor: pointer; }
-        .profile-avatar { width: 35px; height: 35px; border-radius: 50%; background: #a155ff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; color: white; border: 2px solid white; }
-        
+        /* --- NAVBAR --- */
+        .navbar { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: rgba(10, 10, 14, 0.95); border-bottom: 1px solid rgba(161, 85, 255, 0.15); z-index: 1000; position: sticky; top: 0; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
         .nav-links-desktop { display: flex; gap: 25px; list-style: none; }
         .nav-links-desktop a { color: #a8a8b3; text-decoration: none; font-size: 15px; font-weight: 600; transition: color 0.3s; }
         .nav-links-desktop a:hover, .nav-links-desktop a.active { color: #a155ff; }
-
         .nav-user-section { display: flex; align-items: center; gap: 15px; }
-        .balance-pill { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 20px; }
+        .balance-pill { display: flex; align-items: center; gap: 8px; border-radius: 20px; padding: 5px 15px; border: 1px solid transparent; }
+        .pill-saldo { background: rgba(161, 85, 255, 0.15); border-color: rgba(161, 85, 255, 0.4); }
+        .pill-puntos { background: rgba(255, 193, 7, 0.15); border-color: rgba(255, 193, 7, 0.4); }
         .balance-info { display: flex; flex-direction: column; line-height: 1.1; }
-        .balance-label { font-size: 10px; color: #a8a8b3; font-weight: bold; }
-        .balance-amount { font-size: 14px; color: white; font-weight: 900; }
-        
+        .balance-label { font-size: 10px; font-weight: bold; }
+        .balance-amount { font-size: 14px; font-weight: 900; color: white; }
         .user-profile-btn { background: #a155ff; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 15px rgba(161, 85, 255, 0.4); transition: transform 0.2s; }
         .user-profile-btn:hover { transform: scale(1.05); }
 
         /* --- CINTA EN VIVO --- */
         .live-ticker-wrap { width: 100%; background: rgba(20, 20, 26, 0.9); border-bottom: 1px solid rgba(161, 85, 255, 0.2); overflow: hidden; position: relative; padding: 10px 0; display: flex; align-items: center; z-index: 10; }
-        .ticker-label { background: #a155ff; color: white; font-weight: bold; padding: 6px 12px; font-size: 11px; letter-spacing: 0.5px; z-index: 12; position: absolute; left: 0; border-radius: 0 4px 4px 0; box-shadow: 4px 0 10px rgba(0,0,0,0.5); }
+        .ticker-label { background: #a155ff; color: white; font-weight: bold; padding: 6px 12px; font-size: 11px; z-index: 12; position: absolute; left: 0; border-radius: 0 4px 4px 0; box-shadow: 4px 0 10px rgba(0,0,0,0.5); }
         .ticker-move { display: flex; white-space: nowrap; animation: tickerAnimation 30s linear infinite; padding-left: 150px; }
         .ticker-item { display: inline-block; padding-right: 3rem; color: #e0e0e0; font-size: 13.5px; }
         .ticker-item .hl { color: #a155ff; font-weight: bold; }
-        .ticker-item .id-text { color: #888899; font-family: monospace; }
         @keyframes tickerAnimation { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
 
-        /* --- LAYOUT EXCHANGE (DOS COLUMNAS) --- */
+        /* --- LAYOUT RECARGA --- */
         .recharge-layout { display: grid; grid-template-columns: 1.3fr 1fr; gap: 30px; max-width: 1100px; margin: 40px auto 80px; padding: 0 20px; }
+        .glass-card { background: rgba(26, 26, 31, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 35px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
         
-        .glass-card { background: rgba(26, 26, 31, 0.7); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 35px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
-
-        /* --- ESTADÍSTICAS SUPERIORES --- */
         .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
         .stat-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; }
         .stat-label { color: #a8a8b3; font-size: 13px; margin-bottom: 5px; display: block; }
         .stat-value { color: white; font-size: 22px; font-weight: bold; margin: 0; }
 
         /* --- INPUTS Y FORMULARIO --- */
-        .input-group { margin-bottom: 25px; }
-        .input-label { color: #e0e0e0; font-size: 14px; font-weight: 600; margin-bottom: 10px; display: block; }
+        .input-box { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px; margin-bottom: 25px; transition: all 0.3s ease; }
+        .input-box:focus-within { border-color: #a155ff; box-shadow: 0 0 15px rgba(161, 85, 255, 0.15); }
+        .input-label { display: block; color: #a8a8b3; font-size: 13px; font-weight: 600; margin-bottom: 15px; text-transform: uppercase; }
         
-        .amount-input-wrapper { position: relative; display: flex; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 5px 15px; transition: all 0.3s; }
-        .amount-input-wrapper:focus-within { border-color: #00e676; box-shadow: 0 0 10px rgba(0,230,118,0.2); }
-        .amount-input-wrapper span { color: #00e676; font-weight: bold; font-size: 18px; margin-right: 10px; }
-        .amount-input-wrapper input { background: transparent; border: none; color: white; font-size: 18px; width: 100%; padding: 10px 0; outline: none; font-weight: bold; }
+        .amount-input-wrapper { display: flex; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 18px; margin-bottom: 15px; width: 100%; }
+        .amount-input-wrapper span { color: #00e676; font-weight: 900; font-size: 22px; margin-right: 12px; }
+        .amount-input-wrapper input { background: transparent; border: none; color: white; font-size: 22px; width: 100%; flex: 1; min-width: 50px; outline: none; font-weight: bold; }
 
-        .quick-amounts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
-        .amount-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.2s; font-size: 14px; }
+        .quick-amounts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .amount-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.2s; font-size: 15px; }
         .amount-btn:hover { background: rgba(255,255,255,0.1); }
         .amount-btn.active-amount { background: rgba(0, 230, 118, 0.2); border-color: #00e676; color: #00e676; }
 
-        /* --- ZONA DE SUBIDA DE COMPROBANTE --- */
-        .upload-zone { border: 2px dashed rgba(255,255,255,0.2); border-radius: 12px; padding: 30px 20px; text-align: center; background: rgba(0,0,0,0.2); cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; margin-bottom: 25px; }
+        /* --- ZONA UPLOAD --- */
+        .upload-zone { border: 2px dashed rgba(255,255,255,0.2); border-radius: 12px; padding: 30px 20px; text-align: center; background: rgba(0,0,0,0.2); cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; margin-bottom: 25px; width: 100%; }
         .upload-zone:hover { border-color: #a155ff; background: rgba(161,85,255,0.05); }
         .upload-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
         .upload-content { display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
-        .upload-icon { font-size: 40px; color: #a155ff; }
         .preview-image { max-width: 100%; max-height: 150px; border-radius: 8px; display: none; margin: 0 auto; z-index: 5; position: relative; border: 2px solid #00e676; }
 
-        /* --- INSTRUCCIONES LATERALES --- */
+        /* --- INSTRUCCIONES --- */
         .step-item { display: flex; gap: 15px; margin-bottom: 25px; align-items: flex-start; }
         .step-icon { background: rgba(0, 230, 118, 0.1); color: #00e676; border: 1px solid rgba(0,230,118,0.3); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
-        .step-text h4 { margin: 0 0 5px 0; color: white; font-size: 15px; }
-        .step-text p { margin: 0; color: #a8a8b3; font-size: 13px; line-height: 1.5; }
-
         .qr-container { background: white; padding: 10px; border-radius: 12px; display: inline-block; margin-top: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .btn-download-qr { display: inline-flex; align-items: center; gap: 8px; background: rgba(161, 85, 255, 0.15); color: #d480e6; border: 1px solid rgba(161,85,255,0.4); padding: 8px 15px; border-radius: 8px; font-size: 13px; font-weight: bold; text-decoration: none; margin-top: 15px; transition: all 0.3s; }
-        .btn-download-qr:hover { background: rgba(161,85,255,0.3); color: white; }
 
-        .history-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-top: 20px; transition: 0.3s; cursor: pointer; }
-        .history-card:hover { border-color: #a155ff; }
-
-        /* --- ALERTA BLOQUEO --- */
         .bloqueo-alerta { background: rgba(255, 71, 87, 0.15); border: 1px solid #ff4757; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; display: none; align-items: center; gap: 15px; box-shadow: 0 0 15px rgba(255, 71, 87, 0.2); animation: pulse-border 2s infinite; }
         @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); } }
 
@@ -100,41 +85,62 @@
         .cz-footer { background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 80px 20px 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 50px; }
         .cz-footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; }
         .cz-f-brand { display: flex; flex-direction: column; gap: 18px; }
-        .cz-f-logo { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 900; color: white; letter-spacing: -0.5px; }
-        .cz-f-logo .avatar { background: #a155ff; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; font-weight: bold; }
-        .cz-f-desc { color: #888899; font-size: 14px; line-height: 1.6; max-width: 320px; }
         .cz-f-trust { display: flex; gap: 15px; margin-top: 5px; flex-wrap: wrap; }
         .cz-f-trust span { display: flex; align-items: center; gap: 6px; color: #b3b3cc; font-size: 12.5px; font-weight: 600; }
         .cz-f-trust span .material-icons { color: #a155ff; font-size: 16px; }
         .cz-f-col h4 { color: white; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 25px 0; display: flex; align-items: center; gap: 10px; }
         .cz-f-col h4::before { content: ''; display: block; width: 3px; height: 14px; background: #a155ff; border-radius: 2px; }
-        .cz-f-col ul { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+        .cz-f-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
         .cz-f-col a { color: #888899; text-decoration: none; font-size: 14px; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
-        .cz-f-col a:hover { color: white; transform: translateX(5px); }
-        .cz-f-col a .material-icons { font-size: 14px; color: #a155ff; opacity: 0; transition: opacity 0.2s; }
-        .cz-f-col a:hover .material-icons { opacity: 1; }
+        .cz-f-col a:hover { color: white; }
         .cz-footer-bottom { max-width: 1200px; margin: 60px auto 0; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .cz-copy { color: #555566; font-size: 13px; }
-        .cz-made-with { color: #777788; font-size: 13px; display: flex; align-items: center; gap: 6px; }
 
-        /* --- RESPONSIVIDAD MÓVIL --- */
+        /* --- RESPONSIVIDAD MÓVIL ESTRICTA --- */
         @media (max-width: 900px) {
-            .recharge-layout { grid-template-columns: 1fr; }
+            .recharge-layout { grid-template-columns: 1fr; display: flex; flex-direction: column; }
             .nav-links-desktop { display: none; }
             .cz-footer-content { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 600px) {
-            .stats-row { grid-template-columns: 1fr; gap: 10px; }
+            .navbar { padding: 15px 10px; flex-wrap: nowrap; }
+            .logo-text { display: none; } /* Oculta texto, deja el escudo para ganar espacio */
+            .balance-label { display: none; } /* Oculta la palabra SALDO/PUNTOS */
+            .balance-pill { padding: 5px 8px; gap: 4px; }
+            .user-profile-btn { padding: 6px 12px; font-size: 12px; }
+            
+            .recharge-layout { padding: 0 10px; margin-top: 20px; }
+            .glass-card { padding: 20px; }
+            .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .stat-box:last-child { grid-column: 1 / -1; }
+            
+            .amount-input-wrapper { padding: 10px 15px; }
+            .quick-amounts { grid-template-columns: 1fr 1fr; }
             .cz-footer-content { grid-template-columns: 1fr; gap: 40px; }
         }
     </style>
 </head>
 <body> 
     
-    <!-- NAVBAR COMPLETA -->
     <nav class="navbar">
-        <div class="nav-logo" onclick="window.location.href='index.html'">
-            <div class="profile-avatar">C</div><span>CarzaD'Cross</span>
+        <div class="nav-logo-premium" onclick="window.location.href='index.html'">
+            <div class="logo-emblem">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                    <defs>
+                        <linearGradient id="gradLogo" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#a155ff;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M50 5 L90 25 L90 70 L50 95 L10 70 L10 25 Z" fill="#121218" stroke="url(#gradLogo)" stroke-width="6" stroke-linejoin="round"/>
+                    <path d="M50 15 L80 30 L80 65 L50 82 L20 65 L20 30 Z" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+                    <path d="M60 35 A 20 20 0 1 0 60 65" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                    <line x1="45" y1="25" x2="80" y2="75" stroke="#00d2ff" stroke-width="8" stroke-linecap="round"/>
+                    <line x1="80" y1="25" x2="45" y2="75" stroke="#a155ff" stroke-width="8" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <span class="text-carza">Carza</span><span class="text-d">D'</span><span class="text-cross">Cross</span>
+            </div>
         </div>
 
         <ul class="nav-links-desktop">
@@ -144,11 +150,11 @@
         </ul>
 
         <div class="nav-user-section">
-            <div class="balance-pill">
-                <span class="material-icons wallet-icon" style="color: #a8a8b3;">account_balance_wallet</span>
-                <div class="balance-info"><span class="balance-label">SALDO</span><span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span></div>
+            <div class="balance-pill pill-saldo">
+                <span class="material-icons wallet-icon" style="color: #a155ff;">account_balance_wallet</span>
+                <div class="balance-info"><span class="balance-label" style="color:#a155ff;">SALDO</span><span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span></div>
             </div>
-            <div class="balance-pill" style="border-color: #ffc107; background: rgba(255,193,7,0.1);">
+            <div class="balance-pill pill-puntos">
                 <span class="material-icons wallet-icon" style="color: #ffc107;">stars</span>
                 <div class="balance-info"><span class="balance-label" style="color: #ffc107;">PUNTOS</span><span class="balance-amount" style="color: #ffc107;" id="puntos-nav">0</span></div>
             </div>
@@ -157,17 +163,16 @@
                 <button class="user-profile-btn" onclick="toggleMenu()" id="btn-usuario-nav">
                     Cargando... <span class="material-icons" style="font-size: 18px;">expand_more</span>
                 </button>
-                <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 8px; min-width: 180px; z-index: 1000; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
-                    <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">person</span> Mis Datos</a>
-                    <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
-                    <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">casino</span> Ruleta VIP</a>
-                    <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;"><span class="material-icons">logout</span> Cerrar Sesión</a>
+                <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 12px; min-width: 200px; z-index: 1000; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                    <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'"><span class="material-icons" style="color:#a8a8b3;">person</span> Mis Datos</a>
+                    <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #00e676; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(0,230,118,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
+                    <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(255,193,7,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">casino</span> Ruleta VIP</a>
+                    <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 15px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,71,87,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">logout</span> Cerrar Sesión</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- CINTA DE COMPRAS EN VIVO -->
     <div class="live-ticker-wrap">
         <div class="ticker-label">COMPRAS EN VIVO ⚡</div>
         <div class="ticker-move" id="ticker-track">
@@ -175,10 +180,8 @@
         </div>
     </div>
 
-    <!-- LAYOUT PRINCIPAL -->
     <main class="recharge-layout">
         
-        <!-- PANEL IZQUIERDO: FORMULARIO -->
         <div class="form-side glass-card">
             
             <div id="alerta-sin-celular" class="bloqueo-alerta">
@@ -207,7 +210,7 @@
                 </div>
             </div>
 
-            <div class="input-group">
+            <div class="input-box">
                 <label class="input-label">Monto a recargar (S/)</label>
                 <div class="amount-input-wrapper">
                     <span>S/</span>
@@ -221,7 +224,7 @@
                 </div>
             </div>
 
-            <div class="input-group">
+            <div class="input-box">
                 <label class="input-label">Adjuntar comprobante de pago <span style="color: #ff4757;">*</span></label>
                 <div class="upload-zone" id="zona-drop">
                     <input type="file" id="input-comprobante" class="upload-input" accept="image/*" required>
@@ -234,20 +237,19 @@
                 </div>
             </div>
 
-            <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px; margin-bottom: 25px; display: flex; gap: 10px; align-items: flex-start;">
+            <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 15px; margin-bottom: 25px; display: flex; gap: 10px; align-items: flex-start;">
                 <span class="material-icons" style="color: #ffc107; font-size: 20px;">info</span>
                 <p style="margin: 0; color: #ffc107; font-size: 13px; line-height: 1.5;">El monto mínimo de recarga es de <strong>S/ 10.00</strong> para agilizar nuestro sistema.</p>
             </div>
 
-            <button id="btn-whatsapp" class="btn-primary" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; background: #00e676; color: black; font-weight: bold; font-size: 16px; padding: 18px; transition: all 0.3s; border-radius: 12px;" onclick="verificarYNotificar()">
+            <button id="btn-whatsapp" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; background: #00e676; color: black; font-weight: bold; font-size: 16px; padding: 18px; transition: all 0.3s; border-radius: 12px; border: none; cursor: pointer; box-shadow: 0 5px 20px rgba(0, 230, 118, 0.3);" onclick="verificarYNotificar()">
                 <span class="material-icons">task_alt</span> Notificar Pago y Enviar
             </button>
         </div>
 
-        <!-- PANEL DERECHO: INSTRUCCIONES Y QR -->
         <div class="info-side">
-            <div class="glass-card" style="padding: 25px;">
-                <h3 style="margin: 0 0 25px 0; font-size: 18px; color: white;">¿Cómo recargar?</h3>
+            <div class="glass-card" style="padding: 30px;">
+                <h3 style="margin: 0 0 25px 0; font-size: 20px; color: white;">¿Cómo recargar?</h3>
                 
                 <div class="step-item">
                     <div class="step-icon"><span class="material-icons" style="font-size: 18px;">looks_one</span></div>
@@ -266,7 +268,7 @@
                             <img src="qr-yape.png" alt="QR Yape" style="width: 140px; height: 140px; object-fit: contain; border-radius: 8px;">
                         </div>
                         <br>
-                        <a href="qr-yape.png" download="QR_CarzaDCross.png" class="btn-download-qr">
+                        <a href="qr-yape.png" download="QR_CarzaDCross.png" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(161, 85, 255, 0.15); color: #d480e6; border: 1px solid rgba(161,85,255,0.4); padding: 10px 15px; border-radius: 8px; font-size: 13px; font-weight: bold; text-decoration: none; margin-top: 15px; transition: all 0.3s;">
                             <span class="material-icons" style="font-size: 16px;">download</span> Descargar QR a Galería
                         </a>
                     </div>
@@ -280,35 +282,44 @@
                     </div>
                 </div>
             </div>
-
-            <div class="history-card" onclick="window.location.href='perfil.html'">
-                <h4 style="margin: 0 0 5px 0; color: white; display: flex; justify-content: space-between; align-items: center;">
-                    Historial de recargas <span class="material-icons" style="color: #a8a8b3;">open_in_new</span>
-                </h4>
-                <p style="margin: 0; color: #a8a8b3; font-size: 13px;">Revisa el estado de tus depósitos y pagos anteriores.</p>
-            </div>
         </div>
 
     </main>
 
-    <!-- MODAL DE ÉXITO -->
     <div id="modal-exito-recarga" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
         <div class="glass-card" style="width: 100%; max-width: 400px; margin: 20px; text-align: center; border: 1px solid rgba(0, 230, 118, 0.4); box-shadow: 0 0 30px rgba(0, 230, 118, 0.2); position: relative;">
             <span onclick="cerrarModalExito()" style="position: absolute; top: 15px; right: 15px; color: #888899; cursor: pointer; font-size: 24px; font-weight: bold; transition: color 0.2s;">×</span>
             <span class="material-icons" style="font-size: 56px; color: #00e676; background: rgba(0,230,118,0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px;">check_circle</span>
             <h2 style="font-size: 22px; color: white; margin: 0 0 10px 0;">¡Solicitud Registrada!</h2>
             <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">El sistema ya tiene tu orden. Ahora se abrirá WhatsApp. <br><strong style="color: white;">¡OJO! No olvides enviar la foto de tu comprobante en el chat</strong> para que podamos aprobar tu saldo.</p>
-            <button id="btn-ir-whatsapp" class="btn-primary" style="width: 100%; padding: 14px; background: #25D366; color: black; font-weight: bold; font-size: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+            <button id="btn-ir-whatsapp" style="width: 100%; padding: 15px; background: #25D366; color: black; font-weight: bold; font-size: 16px; display: flex; justify-content: center; align-items: center; gap: 8px; border-radius: 10px; border: none; cursor: pointer; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);">
                 Ir a WhatsApp <span class="material-icons" style="font-size: 18px;">arrow_forward</span>
             </button>
         </div>
     </div>
 
-    <!-- FOOTER PROFESIONAL -->
     <footer class="cz-footer">
         <div class="cz-footer-content">
             <div class="cz-f-brand">
-                <div class="cz-f-logo"><div class="avatar">C</div> CarzaD'Cross</div>
+                <div class="nav-logo-premium" style="pointer-events: none;">
+                    <div class="logo-emblem" style="width: 32px; height: 32px;">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                            <defs>
+                                <linearGradient id="gradLogoF" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#a155ff;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M50 5 L90 25 L90 70 L50 95 L10 70 L10 25 Z" fill="#121218" stroke="url(#gradLogoF)" stroke-width="6" stroke-linejoin="round"/>
+                            <path d="M60 35 A 20 20 0 1 0 60 65" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                            <line x1="45" y1="25" x2="80" y2="75" stroke="#00d2ff" stroke-width="8" stroke-linecap="round"/>
+                            <line x1="80" y1="25" x2="45" y2="75" stroke="#a155ff" stroke-width="8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="font-size: 20px;">
+                        <span class="text-carza">Carza</span><span class="text-d">D'</span><span class="text-cross">Cross</span>
+                    </div>
+                </div>
                 <p class="cz-f-desc">La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
                 <div class="cz-f-trust">
                     <span><i class="material-icons">bolt</i> Entrega &lt; 5 min</span>
@@ -376,6 +387,7 @@
                         const btnSumbit = document.getElementById('btn-whatsapp');
                         btnSumbit.style.background = '#333';
                         btnSumbit.style.color = '#888';
+                        btnSumbit.style.boxShadow = 'none';
                         btnSumbit.innerHTML = '<span class="material-icons">error</span> ⚠️ Requiere vincular WhatsApp';
                     }
                 }

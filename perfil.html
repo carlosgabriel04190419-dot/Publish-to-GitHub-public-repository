@@ -19,18 +19,26 @@
             overflow-x: hidden;
         }
 
-        /* --- NAVBAR FIJA Y REDISEÑADA --- */
+        /* --- NUEVO LOGO PREMIUM --- */
+        .nav-logo-premium { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; transition: transform 0.3s; }
+        .nav-logo-premium:hover { transform: scale(1.05); }
+        .logo-emblem { position: relative; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 0 10px rgba(161, 85, 255, 0.6)); }
+        .logo-text { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -0.5px; display: flex; align-items: center; }
+        .text-carza { color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-transform: uppercase; }
+        .text-d { color: #a155ff; margin: 0 2px; }
+        .text-cross { background: linear-gradient(45deg, #00d2ff, #a155ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-style: italic; text-transform: uppercase; padding-right: 5px; }
+
+        /* --- NAVBAR FIJA Y GRISÁCEA (STICKY) --- */
         .navbar { 
             padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; 
-            background: #0a0a0f; /* Color negro profundo */
+            background: rgba(22, 22, 30, 0.98); 
             border-bottom: 1px solid rgba(161, 85, 255, 0.2); 
-            z-index: 1000; 
-            position: sticky; /* Se queda arriba al hacer scroll */
+            z-index: 9999; 
+            position: sticky; 
             top: 0;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
-        .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 900; color: white; cursor: pointer; }
-        .profile-avatar { width: 35px; height: 35px; border-radius: 50%; background: #a155ff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; color: white; border: 2px solid white; box-shadow: 0 0 10px rgba(161, 85, 255, 0.5); }
         
         .nav-links-desktop { display: flex; gap: 25px; list-style: none; margin: 0; padding: 0; }
         .nav-links-desktop a { color: #a8a8b3; text-decoration: none; font-size: 15px; font-weight: 600; transition: color 0.3s; }
@@ -38,10 +46,10 @@
 
         .nav-user-section { display: flex; align-items: center; gap: 15px; }
         
-        /* Píldoras de Saldo y Puntos con colores vibrantes */
-        .balance-pill { display: flex; align-items: center; gap: 8px; border-radius: 20px; padding: 5px 15px; }
-        .pill-saldo { background: rgba(161, 85, 255, 0.15); border: 1px solid rgba(161, 85, 255, 0.4); }
-        .pill-puntos { background: rgba(255, 193, 7, 0.15); border: 1px solid rgba(255, 193, 7, 0.4); }
+        /* Píldoras de Saldo (Morado) y Puntos */
+        .balance-pill { display: flex; align-items: center; gap: 8px; border-radius: 20px; padding: 6px 14px; border: 1px solid transparent; }
+        .pill-saldo { background: rgba(161, 85, 255, 0.15); border-color: rgba(161, 85, 255, 0.4); }
+        .pill-puntos { background: rgba(255, 193, 7, 0.15); border-color: rgba(255, 193, 7, 0.4); }
         
         .balance-info { display: flex; flex-direction: column; line-height: 1.1; }
         .balance-label { font-size: 10px; font-weight: bold; }
@@ -56,93 +64,91 @@
         .ticker-move { display: flex; white-space: nowrap; animation: tickerAnimation 30s linear infinite; padding-left: 150px; }
         .ticker-item { display: inline-block; padding-right: 3rem; color: #e0e0e0; font-size: 13.5px; }
         .ticker-item .hl { color: #a155ff; font-weight: bold; }
-        .ticker-item .id-text { color: #888899; font-family: monospace; }
         @keyframes tickerAnimation { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
 
-        /* --- LAYOUT PRINCIPAL Y PANELES --- */
+        /* --- LAYOUT PRINCIPAL --- */
         .profile-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-
-        .panel-module { background: rgba(18, 18, 22, 0.8); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: border-color 0.3s ease; }
-        .panel-module:hover { border-color: rgba(255,255,255,0.1); }
         
-        .panel-header { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
+        .panel-module { background: rgba(26, 26, 31, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: border-color 0.3s ease; }
+        .panel-module:hover { border-color: rgba(255,255,255,0.15); }
+        
+        .panel-header { display: flex; align-items: center; gap: 12px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
         .panel-header h2 { margin: 0; font-size: 20px; font-weight: bold; color: white; }
         .panel-icon { padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
 
         .mod-personal .panel-icon { background: rgba(0,210,255,0.1); color: #00d2ff; }
-        .mod-seguridad .panel-icon { background: rgba(161,85,255,0.1); color: #a155ff; }
+        .mod-seguridad .panel-icon { background: rgba(255,152,0,0.1); color: #ff9800; }
         .mod-billetera .panel-icon { background: rgba(0,230,118,0.1); color: #00e676; }
-        .mod-compras .panel-icon { background: rgba(255,193,7,0.1); color: #ffc107; }
+        .mod-compras .panel-icon { background: rgba(161,85,255,0.1); color: #a155ff; }
         .mod-resumen .panel-icon { background: rgba(0,210,255,0.1); color: #00d2ff; }
 
-        /* --- FORMULARIOS ESTILO APILADO --- */
-        .input-box { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px 18px; margin-bottom: 20px; transition: all 0.3s ease; width: 100%; display: flex; flex-direction: column; }
+        /* --- INPUTS APILADOS ESTILO BÓVEDA --- */
+        .input-box {
+            background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px 18px; margin-bottom: 20px; transition: all 0.3s ease; width: 100%;
+        }
         .input-box:focus-within { border-color: #a155ff; background: rgba(161, 85, 255, 0.05); box-shadow: 0 0 15px rgba(161, 85, 255, 0.15); }
         .input-box label { display: block; color: #a8a8b3; font-size: 12px; font-weight: 600; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
         .input-flex { display: flex; align-items: center; gap: 10px; width: 100%; }
-        .input-box input { background: transparent; border: none; color: white; font-size: 16px; width: 100%; outline: none; font-weight: 500; font-family: monospace; letter-spacing: 0.5px; }
+        .input-box input { background: transparent; border: none; color: white; font-size: 16px; width: 100%; flex: 1; min-width: 50px; outline: none; font-weight: 500; font-family: monospace; letter-spacing: 0.5px; }
         .input-box input:disabled { color: #666; cursor: not-allowed; }
         
         .country-select { background: transparent; border: none; color: white; outline: none; padding-right: 10px; border-right: 1px solid rgba(255,255,255,0.2); margin-right: 10px; cursor: pointer; font-size: 16px; font-weight: bold; }
         .country-select option { background: #1a1a24; color: white; }
 
+        .btn-primary { border: none; cursor: pointer; transition: all 0.3s ease; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(161, 85, 255, 0.3); }
+
         /* --- BALANCE GIGANTE --- */
-        .big-balance-box { background: linear-gradient(135deg, rgba(0,230,118,0.05), transparent); border: 1px solid rgba(0,230,118,0.15); border-radius: 12px; padding: 35px; text-align: center; margin-bottom: 30px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
-        .big-balance { font-size: 50px; font-weight: 900; color: #00e676; margin: 0; text-shadow: 0 0 20px rgba(0,230,118,0.2); }
+        .big-balance-box { background: linear-gradient(135deg, rgba(0,230,118,0.1), transparent); border: 1px solid rgba(0,230,118,0.2); border-radius: 12px; padding: 30px; text-align: center; margin-bottom: 25px; }
+        .big-balance { font-size: 48px; font-weight: 900; color: #00e676; margin: 0; text-shadow: 0 0 20px rgba(0,230,118,0.3); }
 
         /* --- TABLAS PERFECTAMENTE ALINEADAS --- */
-        .table-responsive { overflow-x: auto; width: 100%; }
+        .table-responsive { overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }
         .modern-table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        .modern-table th { padding: 15px 20px; text-align: left; font-size: 12px; color: #a8a8b3; border-bottom: 1px solid rgba(255,255,255,0.1); text-transform: uppercase; letter-spacing: 1px; font-weight: 800; white-space: nowrap; }
-        .modern-table td { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 14px; color: #e0e0e0; transition: background 0.2s; vertical-align: middle; }
-        .modern-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
-        
-        .modern-table th.align-right, .modern-table td.align-right { text-align: right; }
-        .modern-table th.align-center, .modern-table td.align-center { text-align: center; }
+        .modern-table th { padding: 15px; text-align: left; font-size: 12px; color: #a8a8b3; border-bottom: 1px solid rgba(255,255,255,0.05); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+        .modern-table td { padding: 18px 15px; border-bottom: 1px solid rgba(255,255,255,0.02); font-size: 14px; color: #e0e0e0; transition: background 0.2s; vertical-align: middle; }
+        .modern-table tbody tr:hover td { background: rgba(255,255,255,0.03); }
         .nowrap-text { white-space: nowrap; }
-
-        .status-badge { padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; border: 1px solid transparent; display: inline-block; white-space: nowrap;}
+        
+        .status-badge { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; border: 1px solid transparent; display: inline-block; white-space: nowrap;}
         .status-completed { color: #00e676; background: rgba(0,230,118,0.1); border-color: rgba(0,230,118,0.3); }
         .status-discount { color: #ff4757; background: rgba(255,71,87,0.1); border-color: rgba(255,71,87,0.3); }
 
         /* --- FILTROS Y RESUMEN --- */
         .filters-wrapper { display: flex; gap: 15px; align-items: center; margin-bottom: 25px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; }
-        .search-box { display: flex; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px 15px; flex: 2; min-width: 250px; transition: 0.3s; }
+        .search-box { display: flex; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 15px; flex: 2; min-width: 250px; transition: 0.3s; }
         .search-box:focus-within { border-color: #a155ff; }
-        .search-box input { background: transparent; border: none; color: white; outline: none; width: 100%; margin-left: 10px; font-size: 15px; }
-        .filter-select { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 14px 15px; border-radius: 8px; flex: 1; outline: none; min-width: 180px; font-size: 14px; cursor: pointer; transition: 0.3s; }
+        .search-box input { background: transparent; border: none; color: white; outline: none; width: 100%; flex: 1; min-width: 50px; margin-left: 10px; font-size: 14px; }
+        .filter-select { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px 15px; border-radius: 8px; flex: 1; outline: none; min-width: 180px; font-size: 14px; cursor: pointer; transition: 0.3s; }
         .filter-select:focus { border-color: #a155ff; }
         .filter-select option { background: #1a1a24; }
-        .btn-clear { color: #ff4757; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: bold; padding: 12px; transition: 0.2s; }
-        .btn-clear:hover { background: rgba(255,71,87,0.1); border-radius: 8px; }
+        .btn-clear { color: #ff4757; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: bold; padding: 10px; transition: 0.2s; border-radius: 8px; }
+        .btn-clear:hover { background: rgba(255,71,87,0.15); }
 
-        .resumen-tabs { display: flex; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; padding-bottom: 10px; flex-wrap: wrap; }
-        .res-tab { background: transparent; border: none; color: #a8a8b3; font-weight: bold; font-size: 14px; padding: 8px 15px; cursor: pointer; border-radius: 8px; transition: 0.3s; }
-        .res-tab:hover { color: white; background: rgba(255,255,255,0.05); }
-        .res-tab.active { background: rgba(0,210,255,0.15); color: #00d2ff; }
+        .resumen-tabs { display: flex; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; padding-bottom: 15px; flex-wrap: wrap; }
+        .res-tab { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #a8a8b3; font-weight: bold; font-size: 13px; padding: 8px 18px; cursor: pointer; border-radius: 20px; transition: 0.3s; }
+        .res-tab:hover { color: white; border-color: #00d2ff; }
+        .res-tab.active { background: rgba(0,210,255,0.15); color: #00d2ff; border-color: #00d2ff; }
 
-        .resumen-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 10px; transition: 0.3s; }
-        .resumen-item:hover { border-color: #00d2ff; }
-        .res-item-title { margin: 0 0 5px 0; color: white; font-size: 15px; }
+        .resumen-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 10px; transition: 0.3s; }
+        .resumen-item:hover { border-color: #00d2ff; background: rgba(0,210,255,0.05); }
+        .res-item-title { margin: 0 0 5px 0; color: white; font-size: 15px; font-weight: bold; }
         .res-item-sub { margin: 0; color: #a8a8b3; font-size: 12px; }
 
-        /* --- BLOQUEO --- */
-        .bloqueo-alerta { background: rgba(255, 71, 87, 0.15); border: 1px solid #ff4757; color: white; padding: 20px; border-radius: 12px; margin: 40px auto 10px; max-width: 1200px; display: none; align-items: center; gap: 15px; box-shadow: 0 0 20px rgba(255, 71, 87, 0.2); animation: pulse-border 2s infinite; }
+        /* --- ALERTA DE BLOQUEO --- */
+        .bloqueo-alerta { background: rgba(255, 71, 87, 0.15); border: 1px solid #ff4757; color: white; padding: 15px 20px; border-radius: 12px; margin: 40px auto 10px; max-width: 1200px; display: none; align-items: center; gap: 15px; box-shadow: 0 0 15px rgba(255, 71, 87, 0.2); animation: pulse-border 2s infinite; }
         @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); } }
 
         /* --- FOOTER COMPLETO --- */
         .cz-footer { background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 80px 20px 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 50px; }
         .cz-footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; }
         .cz-f-brand { display: flex; flex-direction: column; gap: 18px; }
-        .cz-f-logo { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 900; color: white; letter-spacing: -0.5px; }
-        .cz-f-logo .avatar { background: #a155ff; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; font-weight: bold; }
-        .cz-f-desc { color: #888899; font-size: 14px; line-height: 1.6; max-width: 320px; }
         .cz-f-trust { display: flex; gap: 15px; margin-top: 5px; flex-wrap: wrap; }
         .cz-f-trust span { display: flex; align-items: center; gap: 6px; color: #b3b3cc; font-size: 12.5px; font-weight: 600; }
         .cz-f-trust span .material-icons { color: #a155ff; font-size: 16px; }
         .cz-f-col h4 { color: white; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 25px 0; display: flex; align-items: center; gap: 10px; }
         .cz-f-col h4::before { content: ''; display: block; width: 3px; height: 14px; background: #a155ff; border-radius: 2px; }
-        .cz-f-col ul { list-style: none; display: flex; flex-direction: column; gap: 14px; padding: 0; margin: 0; }
+        .cz-f-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
         .cz-f-col a { color: #888899; text-decoration: none; font-size: 14px; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
         .cz-f-col a:hover { color: white; transform: translateX(5px); }
         .cz-f-col a .material-icons { font-size: 14px; color: #a155ff; opacity: 0; transition: opacity 0.2s; }
@@ -151,26 +157,57 @@
         .cz-copy { color: #555566; font-size: 13px; }
         .cz-made-with { color: #777788; font-size: 13px; display: flex; align-items: center; gap: 6px; }
 
-        /* --- RESPONSIVIDAD MÓVIL --- */
+        /* --- RESPONSIVIDAD MÓVIL ESTRICTA --- */
         @media (max-width: 950px) {
             .profile-container { grid-template-columns: 1fr; }
             .nav-links-desktop { display: none; }
             .cz-footer-content { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 600px) {
-            .navbar { flex-wrap: wrap; gap: 15px; justify-content: center; }
-            .cz-footer-content { grid-template-columns: 1fr; gap: 40px; }
+            .navbar { flex-wrap: nowrap; justify-content: space-between; padding: 15px 10px; }
+            .logo-text { display: none; }
+            .balance-label { display: none; }
+            .balance-pill { padding: 5px 8px; gap: 4px; }
+            .user-profile-btn { padding: 6px 12px; font-size: 12px; }
+            
+            .profile-container { padding: 0 10px; margin-top: 20px; display: flex; flex-direction: column; gap: 20px; }
+            .panel-module { padding: 20px 15px; }
+            .input-box { padding: 10px 12px; }
+            .country-select { font-size: 14px; padding-right: 5px; margin-right: 5px; max-width: 70px; }
+            .input-box input { font-size: 14px; }
+            .big-balance { font-size: 36px; }
+            
             .filters-wrapper { flex-direction: column; align-items: stretch; }
             .search-box, .filter-select { width: 100%; }
+            .resumen-tabs { gap: 5px; }
+            .res-tab { padding: 6px 12px; font-size: 12px; }
+            
+            .cz-footer-content { grid-template-columns: 1fr; gap: 40px; }
         }
     </style>
 </head>
 <body>
     
-    <!-- NAVBAR COMPLETA FIJA Y MORADA -->
     <nav class="navbar">
-        <div class="nav-logo" onclick="window.location.href='index.html'">
-            <div class="profile-avatar">C</div><span>CarzaD'Cross</span>
+        <div class="nav-logo-premium" onclick="window.location.href='index.html'">
+            <div class="logo-emblem">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                    <defs>
+                        <linearGradient id="gradLogo" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#a155ff;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M50 5 L90 25 L90 70 L50 95 L10 70 L10 25 Z" fill="#121218" stroke="url(#gradLogo)" stroke-width="6" stroke-linejoin="round"/>
+                    <path d="M50 15 L80 30 L80 65 L50 82 L20 65 L20 30 Z" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+                    <path d="M60 35 A 20 20 0 1 0 60 65" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                    <line x1="45" y1="25" x2="80" y2="75" stroke="#00d2ff" stroke-width="8" stroke-linecap="round"/>
+                    <line x1="80" y1="25" x2="45" y2="75" stroke="#a155ff" stroke-width="8" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <span class="text-carza">Carza</span><span class="text-d">D'</span><span class="text-cross">Cross</span>
+            </div>
         </div>
 
         <ul class="nav-links-desktop">
@@ -183,13 +220,16 @@
             <div class="balance-pill pill-saldo">
                 <span class="material-icons wallet-icon" style="color: #a155ff;">account_balance_wallet</span>
                 <div class="balance-info">
-                    <span class="balance-label" style="color: #a155ff;">SALDO</span>
+                    <span class="balance-label" style="color:#a155ff;">SALDO</span>
                     <span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span>
                 </div>
             </div>
             <div class="balance-pill pill-puntos">
                 <span class="material-icons wallet-icon" style="color: #ffc107;">stars</span>
-                <div class="balance-info"><span class="balance-label" style="color: #ffc107;">PUNTOS</span><span class="balance-amount" style="color: #ffc107;" id="puntos-nav">0</span></div>
+                <div class="balance-info">
+                    <span class="balance-label" style="color: #ffc107;">PUNTOS</span>
+                    <span class="balance-amount" style="color: #ffc107;" id="puntos-nav">0</span>
+                </div>
             </div>
 
             <div style="position: relative;">
@@ -206,7 +246,6 @@
         </div>
     </nav>
 
-    <!-- CINTA DE COMPRAS EN VIVO -->
     <div class="live-ticker-wrap">
         <div class="ticker-label">COMPRAS EN VIVO ⚡</div>
         <div class="ticker-move" id="ticker-track">
@@ -214,7 +253,6 @@
         </div>
     </div>
 
-    <!-- ALERTA DE BLOQUEO -->
     <div id="alerta-sin-celular" class="bloqueo-alerta" style="margin-left: 20px; margin-right: 20px;">
         <span class="material-icons" style="font-size: 30px; color: #ff4757;">error_outline</span>
         <div>
@@ -223,10 +261,8 @@
         </div>
     </div>
 
-    <!-- CONTENEDOR PRINCIPAL DOS COLUMNAS -->
     <main class="profile-container">
         
-        <!-- COLUMNA IZQUIERDA -->
         <div class="left-column">
             
             <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 35px;">
@@ -237,7 +273,6 @@
                 </div>
             </div>
 
-            <!-- PANEL INFORMACIÓN PERSONAL -->
             <div class="panel-module mod-personal">
                 <div class="panel-header">
                     <div class="panel-icon"><span class="material-icons">person</span></div>
@@ -273,44 +308,42 @@
                             <option value="+598">🇺🇾 +598</option>
                             <option value="+58">🇻🇪 +58</option>
                         </select>
-                        <!-- Formateo visual dinámico con JS -->
                         <input type="tel" id="edit-celular" placeholder="Ej: 986 434 208" oninput="formatearCelular(this)">
                     </div>
                 </div>
                 
-                <button id="btn-guardar-perfil" class="btn-primary" style="width: 100%; padding: 16px; font-weight: bold; font-size: 16px; background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: black; border-radius: 12px; margin-top: 5px; border: none; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 20px rgba(0, 210, 255, 0.3);" onclick="guardarCambios()">Guardar Perfil</button>
+                <button id="btn-guardar-perfil" class="btn-primary" style="width: 100%; padding: 16px; font-weight: bold; font-size: 16px; background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: black; border-radius: 12px; margin-top: 5px;" onclick="guardarCambios()">Guardar Perfil</button>
             </div>
 
-            <!-- PANEL SEGURIDAD (CONTRASEÑA REDISEÑADA) -->
             <div class="panel-module mod-seguridad">
                 <div class="panel-header">
-                    <div class="panel-icon"><span class="material-icons" style="color: #a155ff;">vpn_key</span></div>
+                    <div class="panel-icon"><span class="material-icons" style="color: #ff9800;">vpn_key</span></div>
                     <h2>Seguridad de Cuenta</h2>
                 </div>
-                <p style="color: #a8a8b3; font-size: 14px; margin-bottom: 25px; line-height: 1.5;">Actualiza tu contraseña para mantener tu saldo a salvo. Tu sesión se cerrará automáticamente.</p>
+                <p style="color: #a8a8b3; font-size: 13px; margin-bottom: 25px; line-height: 1.5;">Actualiza tu contraseña para mantener tu saldo a salvo. Se requiere confirmación por seguridad.</p>
                 
-                <div class="input-box">
-                    <label>Nueva Contraseña</label>
+                <div class="input-box" style="border-color: rgba(255,255,255,0.1); background: rgba(0,0,0,0.5);">
+                    <label style="color: #e0e0e0;">Nueva Contraseña</label>
                     <div class="input-flex">
-                        <span class="material-icons" style="color: #a155ff; font-size: 20px;">lock</span>
+                        <span class="material-icons" style="color: #a8a8b3; font-size: 20px;">lock</span>
                         <input type="password" id="nueva-pass" placeholder="Mínimo 6 caracteres">
                     </div>
                 </div>
-                <div class="input-box">
-                    <label>Confirmar Contraseña</label>
+
+                <div class="input-box" style="border-color: rgba(255,255,255,0.1); background: rgba(0,0,0,0.5);">
+                    <label style="color: #e0e0e0;">Confirmar Contraseña</label>
                     <div class="input-flex">
-                        <span class="material-icons" style="color: #a155ff; font-size: 20px;">lock_outline</span>
-                        <input type="password" id="confirma-pass" placeholder="Repite la contraseña">
+                        <span class="material-icons" style="color: #a8a8b3; font-size: 20px;">lock_outline</span>
+                        <input type="password" id="confirma-pass" placeholder="Repítela para validar">
                     </div>
                 </div>
-                <button id="btn-pass" class="btn-primary" style="width: 100%; padding: 16px; font-weight: bold; font-size: 15px; background: rgba(161, 85, 255, 0.1); border: 1px solid #a155ff; color: #d480e6; border-radius: 12px; cursor: pointer; transition: 0.3s;" onmouseover="this.style.background='#a155ff'; this.style.color='white';" onmouseout="this.style.background='rgba(161, 85, 255, 0.1)'; this.style.color='#d480e6';" onclick="cambiarPassword()">Actualizar Contraseña</button>
+
+                <button id="btn-pass" class="btn-primary" style="width: 100%; padding: 16px; font-weight: bold; font-size: 15px; background: rgba(161, 85, 255, 0.1); border: 1px solid #a155ff; color: #d480e6; border-radius: 12px; transition: 0.3s;" onmouseover="this.style.background='#a155ff'; this.style.color='white';" onmouseout="this.style.background='rgba(161, 85, 255, 0.1)'; this.style.color='#d480e6';" onclick="cambiarPassword()">Actualizar Contraseña</button>
             </div>
         </div>
 
-        <!-- COLUMNA DERECHA -->
         <div class="right-column">
             
-            <!-- PANEL BILLETERA Y RECARGAS -->
             <div class="panel-module mod-billetera">
                 <div class="panel-header">
                     <div class="panel-icon"><span class="material-icons">account_balance_wallet</span></div>
@@ -322,7 +355,7 @@
                     <h3 class="big-balance">S/ <span id="saldo-billetera">0.00</span></h3>
                 </div>
 
-                <h3 style="font-size: 18px; margin: 0 0 20px 0; color: white;">Historial de Recargas</h3>
+                <h3 style="font-size: 16px; margin: 0 0 15px 0; color: white;">Historial de Recargas</h3>
                 <div class="table-responsive">
                     <table class="modern-table">
                         <thead>
@@ -340,13 +373,12 @@
             </div>
         </div>
 
-        <!-- NUEVO PANEL: RESUMEN DE GASTOS -->
         <div class="panel-module mod-resumen" style="grid-column: 1 / -1;">
             <div class="panel-header" style="margin-bottom: 15px;">
                 <div class="panel-icon"><span class="material-icons">bar_chart</span></div>
                 <h2>Resumen de gastos por producto</h2>
             </div>
-            <p style="color: #a8a8b3; font-size: 13px; margin-bottom: 20px;">Solo se contabilizan los pedidos en estado Completado.</p>
+            <p style="color: #a8a8b3; font-size: 13px; margin-bottom: 25px;">Solo se contabilizan los pedidos que fueron entregados (Completados).</p>
 
             <div class="resumen-tabs">
                 <button class="res-tab active" onclick="renderResumen('todo', this)">Todo</button>
@@ -356,13 +388,11 @@
                 <button class="res-tab" onclick="renderResumen('anio', this)">Año</button>
             </div>
 
-            <h3 style="font-size: 16px; margin: 20px 0 15px 0; color: white; display: flex; align-items: center; gap: 8px;"><span class="material-icons" style="color: #00d2ff; font-size: 18px;">history</span> Ventas Completadas</h3>
             <div id="lista-resumen">
                 <div style="text-align:center; padding: 20px; color: #a8a8b3;">Calculando resumen...</div>
             </div>
         </div>
 
-        <!-- PANEL INFERIOR: HISTORIAL DE COMPRAS (JUEGOS) -->
         <div class="panel-module mod-compras" style="grid-column: 1 / -1;">
             <div class="panel-header">
                 <div class="panel-icon"><span class="material-icons">shopping_cart</span></div>
@@ -404,11 +434,29 @@
         
     </main>
 
-    <!-- FOOTER COMPLETO RESTAURADO -->
     <footer class="cz-footer">
         <div class="cz-footer-content">
             <div class="cz-f-brand">
-                <div class="cz-f-logo"><div class="avatar">C</div> CarzaD'Cross</div>
+                <div class="nav-logo-premium" style="pointer-events: none;">
+                    <div class="logo-emblem" style="width: 32px; height: 32px;">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                            <defs>
+                                <linearGradient id="gradLogoF" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#a155ff;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M50 5 L90 25 L90 70 L50 95 L10 70 L10 25 Z" fill="#121218" stroke="url(#gradLogoF)" stroke-width="6" stroke-linejoin="round"/>
+                            <path d="M50 15 L80 30 L80 65 L50 82 L20 65 L20 30 Z" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+                            <path d="M60 35 A 20 20 0 1 0 60 65" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                            <line x1="45" y1="25" x2="80" y2="75" stroke="#00d2ff" stroke-width="8" stroke-linecap="round"/>
+                            <line x1="80" y1="25" x2="45" y2="75" stroke="#a155ff" stroke-width="8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="font-size: 20px;">
+                        <span class="text-carza">Carza</span><span class="text-d">D'</span><span class="text-cross">Cross</span>
+                    </div>
+                </div>
                 <p class="cz-f-desc">La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
                 <div class="cz-f-trust">
                     <span><i class="material-icons">bolt</i> Entrega &lt; 5 min</span>
@@ -444,11 +492,10 @@
         </div>
         <div class="cz-footer-bottom">
             <div class="cz-copy">© 2026 CarzaD'Cross. Todos los derechos reservados.</div>
-            <div class="cz-made-with">Hecho con <span class="material-icons" style="color:#ff4757; font-size:14px;">favorite</span> en Perú para la comunidad gaming.</div>
+            <div class="cz-made-with">Hecho con <span class="material-icons" style="color:#ff4757; font-size:14px;">favorite</span> en Perú</div>
         </div>
     </footer>
 
-    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
@@ -487,7 +534,6 @@
                     prefijos.forEach(pref => { if (celularOriginal.startsWith(pref)) { prefijoEncontrado = pref; soloNumero = celularOriginal.replace(pref, '').trim(); } });
                     document.getElementById('edit-codigo-pais').value = prefijoEncontrado;
                     
-                    // Formateamos visualmente al cargar
                     let inputCel = document.getElementById('edit-celular');
                     inputCel.value = soloNumero;
                     formatearCelular(inputCel);
@@ -507,13 +553,13 @@
                     const fecha = new Date(mov.created_at).toLocaleDateString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
                     const color = mov.estado === 'Descontado' ? '#ff4757' : '#00e676';
                     const signo = mov.estado === 'Descontado' ? '-' : '+';
-                    tbRecargas.innerHTML += `<tr><td class="nowrap-text" style="color:#a8a8b3;">${fecha}</td><td style="width:100%;">${mov.tipo}</td><td class="nowrap-text align-right" style="font-weight:bold; color:${color}; font-size:15px;">${signo} S/ ${mov.monto.toFixed(2)}</td></tr>`;
+                    tbRecargas.innerHTML += `<tr><td class="nowrap-text" style="color:#a8a8b3;">${fecha}</td><td style="width: 100%;">${mov.tipo}</td><td class="nowrap-text align-right" style="font-weight:bold; color:${color}; font-size:15px;">${signo} S/ ${mov.monto.toFixed(2)}</td></tr>`;
                 });
             } else {
                 tbRecargas.innerHTML = '<tr><td colspan="3" class="align-center" style="color:#a8a8b3; padding: 40px;">Aún no tienes recargas.</td></tr>';
             }
 
-            // 3. CARGAMOS HISTORIAL DE COMPRAS
+            // 3. CARGAMOS HISTORIAL DE COMPRAS (JUEGOS)
             const { data: pedidosData } = await supabaseClient.from('pedidos')
                 .select('*').eq('nickname', nombreActual)
                 .order('created_at', { ascending: false });
@@ -521,32 +567,30 @@
             if(pedidosData && pedidosData.length > 0) {
                 todasLasCompras = pedidosData;
                 aplicarFiltrosCompras(); 
-                renderResumen('todo', document.querySelector('.res-tab.active')); // Carga el resumen inicial
+                renderResumen('todo', document.querySelector('.res-tab.active')); 
             } else {
                 document.getElementById('tabla-compras').innerHTML = '<tr><td colspan="5" class="align-center" style="color:#a8a8b3; padding: 40px;">No has realizado compras en la tienda.</td></tr>';
                 document.getElementById('lista-resumen').innerHTML = '<div style="text-align:center; padding: 20px; color: #a8a8b3;">No hay compras completadas para resumir.</div>';
             }
         };
 
-        // --- FUNCION FORMATEO DE CELULAR ---
+        // --- FORMATEO INTELIGENTE DE CELULAR ---
         function formatearCelular(input) {
-            let val = input.value.replace(/\D/g, ''); // Quita todo lo que no sea número
+            let val = input.value.replace(/\D/g, ''); 
             let codigoPais = document.getElementById('edit-codigo-pais').value;
             
             if (codigoPais === '+51') {
-                // Formato Perú: 999 999 999
-                val = val.substring(0, 9);
+                val = val.substring(0, 9); // Perú limita a 9 dígitos
                 val = val.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3').trim();
             } else {
-                // Formato Genérico: Separado en bloques de 3
+                // Generico: grupos de 3 sin límite
                 val = val.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
             }
             input.value = val;
         }
 
-        // --- SISTEMA DE RESUMEN DE COMPRAS ---
+        // --- RESUMEN DE GASTOS ---
         function renderResumen(filtro, botonClick) {
-            // Actualizar botones visualmente
             if(botonClick) {
                 document.querySelectorAll('.res-tab').forEach(b => b.classList.remove('active'));
                 botonClick.classList.add('active');
@@ -564,7 +608,7 @@
                 }
                 if(filtro === 'mes') return fecha.getMonth() === ahora.getMonth() && fecha.getFullYear() === ahora.getFullYear();
                 if(filtro === 'anio') return fecha.getFullYear() === ahora.getFullYear();
-                return true; // 'todo'
+                return true; 
             });
 
             let resumenMap = {};
@@ -578,10 +622,10 @@
             contenedor.innerHTML = '';
             
             let arrayResumen = Object.keys(resumenMap).map(k => ({ nombre: k, ...resumenMap[k] }));
-            arrayResumen.sort((a, b) => b.total - a.total); // Ordena de mayor gasto a menor
+            arrayResumen.sort((a, b) => b.total - a.total); 
 
             if(arrayResumen.length === 0) {
-                contenedor.innerHTML = '<div style="text-align:center; padding: 20px; color: #a8a8b3;">No hay datos para esta fecha.</div>';
+                contenedor.innerHTML = '<div style="text-align:center; padding: 20px; color: #a8a8b3;">No hay datos para este rango de fecha.</div>';
                 return;
             }
 
@@ -590,7 +634,7 @@
                     <div class="resumen-item">
                         <div>
                             <h4 class="res-item-title">${item.nombre}</h4>
-                            <p class="res-item-sub">${item.cantidad} orden(es) completada(s)</p>
+                            <p class="res-item-sub">${item.cantidad} orden(es) en total</p>
                         </div>
                         <div style="text-align: right;">
                             <span style="color: #00e676; font-weight: bold; font-size: 16px;">S/ ${item.total.toFixed(2)}</span>
@@ -600,7 +644,7 @@
             });
         }
 
-        // RENDER DE COMPRAS (CON FILTROS COMBINADOS)
+        // --- FILTROS DE COMPRAS ---
         function aplicarFiltrosCompras() {
             const texto = document.getElementById('filtro-texto').value.toLowerCase();
             const categoria = document.getElementById('filtro-categoria').value.toLowerCase();
@@ -614,7 +658,7 @@
             });
 
             if(filtrados.length === 0) {
-                tbCompras.innerHTML = '<tr><td colspan="5" class="align-center" style="color:#a8a8b3; padding: 40px;">No se encontraron resultados con esos filtros.</td></tr>';
+                tbCompras.innerHTML = '<tr><td colspan="5" class="align-center" style="color:#a8a8b3; padding: 40px;">No se encontraron resultados.</td></tr>';
                 return;
             }
 
@@ -626,7 +670,7 @@
                 tbCompras.innerHTML += `
                     <tr>
                         <td class="nowrap-text" style="color:#a8a8b3;">${fecha}</td>
-                        <td style="white-space: nowrap;">${datosJuego}</td>
+                        <td class="nowrap-text">${datosJuego}</td>
                         <td style="font-weight:bold; color:white; width: 100%;">${p.paquete}</td>
                         <td class="nowrap-text align-right" style="font-weight:bold; color:#ff4757; font-size:15px;">S/ ${p.precio ? p.precio.toFixed(2) : '0.00'}</td>
                         <td class="align-center"><span class="status-badge ${claseEstado}">${p.estado}</span></td>
@@ -645,7 +689,7 @@
         async function guardarCambios() {
             const nuevoNombre = document.getElementById('edit-nickname').value.trim();
             const inputCelularRaw = document.getElementById('edit-celular').value;
-            const inputCelularLimpio = inputCelularRaw.replace(/\D/g, ''); // Para la DB se guarda sin espacios
+            const inputCelularLimpio = inputCelularRaw.replace(/\D/g, ''); 
             const codigo = document.getElementById('edit-codigo-pais').value;
             const btn = document.getElementById('btn-guardar-perfil');
 
@@ -672,7 +716,7 @@
             }
         }
 
-        // CAMBIO DE CONTRASEÑA SUPABASE (CON CONFIRMACIÓN)
+        // CAMBIO DE CONTRASEÑA SEGURO
         async function cambiarPassword() {
             const newPass = document.getElementById('nueva-pass').value;
             const confirmPass = document.getElementById('confirma-pass').value;
@@ -683,7 +727,7 @@
             
             btn.disabled = true; btn.innerText = "Actualizando...";
 
-            const { data, error } = await supabaseClient.auth.updateUser({ password: newPass });
+            const { error } = await supabaseClient.auth.updateUser({ password: newPass });
 
             if(error) {
                 alert("Error al cambiar contraseña: " + error.message);
