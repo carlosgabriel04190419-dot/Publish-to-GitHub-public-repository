@@ -75,3 +75,16 @@ async function cerrarSesionSegura() {
     localStorage.removeItem('nombreUsuario');
     window.location.href = 'login.html';
 }
+
+/**
+ * Devuelve el HTML del mini-avatar + nickname + flechita para el botón de
+ * usuario de la barra de navegación (btn-usuario-nav). Usa la foto de perfil
+ * si el usuario tiene una, o un círculo con su inicial si no.
+ */
+function avatarPillHTML(usuario) {
+    const inicial = usuario.nickname.charAt(0).toUpperCase();
+    const foto = usuario.avatar_url
+        ? `<img src="${usuario.avatar_url}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;vertical-align:middle;border:1px solid rgba(255,255,255,0.4);">`
+        : `<span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.25);color:white;font-size:12px;font-weight:bold;vertical-align:middle;">${inicial}</span>`;
+    return `${foto} <span style="vertical-align:middle;">${usuario.nickname}</span> <span class="material-icons" style="font-size: 18px; vertical-align:middle;">expand_more</span>`;
+}

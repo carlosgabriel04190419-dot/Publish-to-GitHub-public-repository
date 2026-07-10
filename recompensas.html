@@ -204,7 +204,7 @@
                     <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'"><span class="material-icons" style="color:#a8a8b3;">person</span> Mis Datos</a>
                     <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #00e676; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(0,230,118,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
                     <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(255,193,7,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">casino</span> Ruleta VIP</a>
-                    <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 15px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,71,87,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">logout</span> Cerrar Sesión</a>
+                    <a href="#" onclick="cerrarSesionSegura()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 15px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,71,87,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">logout</span> Cerrar Sesión</a>
                 </div>
             </div>
         </div>
@@ -335,7 +335,25 @@
     <footer class="cz-footer">
         <div class="cz-footer-content">
             <div class="cz-f-brand">
-                <div class="cz-f-logo"><div class="avatar">C</div> CarzaD'Cross</div>
+                <div class="nav-logo-premium" style="pointer-events: none;">
+                    <div class="logo-emblem" style="width: 32px; height: 32px;">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                            <defs>
+                                <linearGradient id="gradLogoF" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#a155ff;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M50 5 L90 25 L90 70 L50 95 L10 70 L10 25 Z" fill="#121218" stroke="url(#gradLogoF)" stroke-width="6" stroke-linejoin="round"/>
+                            <path d="M60 35 A 20 20 0 1 0 60 65" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                            <line x1="45" y1="25" x2="80" y2="75" stroke="#00d2ff" stroke-width="8" stroke-linecap="round"/>
+                            <line x1="80" y1="25" x2="45" y2="75" stroke="#a155ff" stroke-width="8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="font-size: 20px;">
+                        <span class="text-carza">Carza</span><span class="text-d">D'</span><span class="text-cross">Cross</span>
+                    </div>
+                </div>
                 <p class="cz-f-desc">La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
                 <div class="cz-f-trust">
                     <span><i class="material-icons">bolt</i> Entrega &lt; 5 min</span>
@@ -377,28 +395,29 @@
 
     <!-- SCRIPTS CORE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="seguridad.js"></script>
     <script>
-        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
-        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
-        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-
         let puntosActuales = 0;
         let saldoActual = 0;
         let abriendoCaja = false;
         let premioPendiente = "";
 
         window.onload = async function() {
-            const nombreGuardado = localStorage.getItem('nombreUsuario');
-            if (!nombreGuardado) { window.location.href = 'login.html'; return; }
-            
-            document.getElementById('btn-usuario-nav').innerHTML = `${nombreGuardado} <span class="material-icons" style="font-size: 18px;">expand_more</span>`;
+            const usuario = await verificarSesion();
+            if (!usuario) return;
 
-            await actualizarDatosUsuario(nombreGuardado);
+            document.getElementById('btn-usuario-nav').innerHTML = avatarPillHTML(usuario);
+
+            saldoActual = usuario.saldo || 0;
+            puntosActuales = usuario.puntos || 0;
+            document.getElementById('saldo-nav').innerText = saldoActual.toFixed(2);
+            document.getElementById('puntos-nav').innerText = puntosActuales;
+            document.getElementById('puntos-pantalla').innerText = puntosActuales;
+
             cargarSistemaComunidadDinamica();
         };
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
-        function cerrarSesionLocal() { localStorage.removeItem('nombreUsuario'); window.location.reload(); }
         function toggleCzFaq(elemento) { const todos = document.querySelectorAll('.cz-faq-item'); todos.forEach(item => { if(item !== elemento) item.classList.remove('active'); }); elemento.classList.toggle('active'); }
 
         async function actualizarDatosUsuario(nick) {

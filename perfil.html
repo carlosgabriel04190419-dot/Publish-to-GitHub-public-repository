@@ -173,6 +173,40 @@
             .profile-container { padding: 0 10px; margin-top: 20px; display: flex; flex-direction: column; gap: 20px; }
             .panel-module { padding: 20px 15px; }
             .input-box { padding: 10px 12px; }
+
+            /* Tablas de historial: en vez de scroll lateral, cada fila se ve como tarjeta */
+            .table-responsive { overflow-x: visible; }
+            .modern-table { min-width: 0; }
+            .modern-table thead { display: none; }
+            .modern-table, .modern-table tbody, .modern-table tr, .modern-table td { display: block; width: 100%; }
+            .modern-table tr {
+                background: rgba(255,255,255,0.03);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 10px;
+                margin-bottom: 10px;
+                padding: 4px 14px;
+            }
+            .modern-table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+                text-align: right;
+                white-space: normal;
+            }
+            .modern-table td:last-child { border-bottom: none; }
+            .modern-table td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: #a8a8b3;
+                font-size: 10px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                text-align: left;
+                flex-shrink: 0;
+            }
             .country-select { font-size: 14px; padding-right: 5px; margin-right: 5px; max-width: 70px; }
             .input-box input { font-size: 14px; }
             .big-balance { font-size: 36px; }
@@ -519,7 +553,7 @@
             document.getElementById('nombre-pantalla').innerText = nombreActual;
             document.getElementById('avatar-letra').innerText = nombreActual.charAt(0).toUpperCase();
             mostrarAvatar(usuario.avatar_url);
-            document.getElementById('btn-usuario-nav').innerHTML = `${nombreActual} <span class="material-icons" style="font-size: 18px;">expand_more</span>`;
+            document.getElementById('btn-usuario-nav').innerHTML = avatarPillHTML(usuario);
 
             cargarSistemaComunidadDinamica();
 
@@ -563,7 +597,7 @@
                     const fecha = new Date(mov.created_at).toLocaleDateString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
                     const color = mov.estado === 'Descontado' ? '#ff4757' : '#00e676';
                     const signo = mov.estado === 'Descontado' ? '-' : '+';
-                    tbRecargas.innerHTML += `<tr><td class="nowrap-text" style="color:#a8a8b3;">${fecha}</td><td style="width: 100%;">${mov.tipo}</td><td class="nowrap-text align-right" style="font-weight:bold; color:${color}; font-size:15px;">${signo} S/ ${mov.monto.toFixed(2)}</td></tr>`;
+                    tbRecargas.innerHTML += `<tr><td data-label="Fecha" class="nowrap-text" style="color:#a8a8b3;">${fecha}</td><td data-label="Método / Detalle" style="width: 100%;">${mov.tipo}</td><td data-label="Monto" class="nowrap-text align-right" style="font-weight:bold; color:${color}; font-size:15px;">${signo} S/ ${mov.monto.toFixed(2)}</td></tr>`;
                 });
             } else {
                 tbRecargas.innerHTML = '<tr><td colspan="3" class="align-center" style="color:#a8a8b3; padding: 40px;">Aún no tienes recargas.</td></tr>';
@@ -736,11 +770,11 @@
 
                 tbCompras.innerHTML += `
                     <tr>
-                        <td class="nowrap-text" style="color:#a8a8b3;">${fecha}</td>
-                        <td class="nowrap-text">${datosJuego}</td>
-                        <td style="font-weight:bold; color:white; width: 100%;">${p.paquete}</td>
-                        <td class="nowrap-text align-right" style="font-weight:bold; color:#ff4757; font-size:15px;">S/ ${p.precio ? p.precio.toFixed(2) : '0.00'}</td>
-                        <td class="align-center"><span class="status-badge ${claseEstado}">${p.estado}</span></td>
+                        <td data-label="Fecha" class="nowrap-text" style="color:#a8a8b3;">${fecha}</td>
+                        <td data-label="Juego (Nick / ID)" class="nowrap-text">${datosJuego}</td>
+                        <td data-label="Producto" style="font-weight:bold; color:white; width: 100%;">${p.paquete}</td>
+                        <td data-label="Total" class="nowrap-text align-right" style="font-weight:bold; color:#ff4757; font-size:15px;">S/ ${p.precio ? p.precio.toFixed(2) : '0.00'}</td>
+                        <td data-label="Estado" class="align-center"><span class="status-badge ${claseEstado}">${p.estado}</span></td>
                     </tr>
                 `;
             });

@@ -7,66 +7,109 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <style>
-        body { background-color: #0a0a0f; color: white; font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-        
+        * { box-sizing: border-box; }
+        body { background-color: #0a0a0f; color: white; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; }
+
         #admin-login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050508; display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .login-box { background: #1a1a24; padding: 40px; border-radius: 16px; border: 1px solid rgba(161, 85, 255, 0.3); box-shadow: 0 0 30px rgba(161, 85, 255, 0.1); width: 100%; max-width: 400px; text-align: center; }
         .login-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 16px; outline: none; text-align: center; letter-spacing: 2px; box-sizing: border-box;}
         .login-input:focus { border-color: #a155ff; }
 
-        .admin-header { display: flex; justify-content: space-between; align-items: center; background: #1a1a24; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
-        .admin-table-container { background: #1a1a24; border-radius: 12px; padding: 20px; border: 1px solid #333; margin-bottom: 30px; }
-        
-        .upload-container { border: 1px solid #00d2ff; box-shadow: 0 0 15px rgba(0, 210, 255, 0.1); }
-        .highlight-container { border: 1px solid #a155ff; box-shadow: 0 0 15px rgba(161, 85, 255, 0.1); }
-        .success-container { border: 1px solid #00e676; box-shadow: 0 0 15px rgba(0, 230, 118, 0.1); }
-        .history-container { border: 1px solid #ff9800; box-shadow: 0 0 15px rgba(255, 152, 0, 0.1); }
-        
+        /* ===================== ESTRUCTURA DEL PANEL ===================== */
+        .admin-shell { display: flex; min-height: 100vh; }
+
+        .admin-sidebar {
+            width: 250px; flex-shrink: 0; background: #0d0d13; border-right: 1px solid #232330;
+            display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; z-index: 400;
+        }
+        .admin-sidebar-brand { padding: 22px 20px; border-bottom: 1px solid #232330; }
+        .admin-sidebar-nav { flex: 1; padding: 14px 10px; overflow-y: auto; }
+        .admin-nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 14px; color: #a8a8b3;
+            cursor: pointer; border-radius: 10px; margin-bottom: 4px; transition: 0.15s; font-size: 14px; font-weight: 600;
+            position: relative; user-select: none;
+        }
+        .admin-nav-item .material-icons { font-size: 20px; }
+        .admin-nav-item:hover { background: rgba(255,255,255,0.04); color: white; }
+        .admin-nav-item.active { background: linear-gradient(90deg, rgba(161,85,255,0.18), rgba(161,85,255,0.02)); color: white; box-shadow: inset 3px 0 0 #a155ff; }
+        .nav-badge { margin-left: auto; background: #ff4757; color: white; font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 20px; min-width: 18px; text-align: center; }
+        .nav-badge.zero { display: none; }
+        .admin-sidebar-footer { padding: 14px; border-top: 1px solid #232330; display: flex; flex-direction: column; gap: 8px; }
+
+        .admin-main { flex: 1; padding: 26px 30px; max-width: 1500px; min-width: 0; }
+        .admin-topbar { display: none; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+        .mobile-menu-btn { background: #1a1a24; border: 1px solid #333; color: white; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 350; }
+
+        .view-title { font-size: 22px; font-weight: 800; margin: 0 0 4px 0; display: flex; align-items: center; gap: 10px; }
+        .view-subtitle { color: #8a8a99; font-size: 13px; margin: 0 0 22px 0; }
+
+        .admin-view { display: none; animation: fadeInView 0.2s ease; }
+        .admin-view.active { display: block; }
+        @keyframes fadeInView { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card-box { background: #14141c; border-radius: 14px; padding: 22px; border: 1px solid #232330; margin-bottom: 22px; }
+        .upload-container { border-color: rgba(0, 210, 255, 0.35); }
+        .success-container { border-color: rgba(0, 230, 118, 0.35); }
+        .highlight-container { border-color: rgba(161, 85, 255, 0.35); }
+        .history-container { border-color: rgba(255, 152, 0, 0.35); }
+
+        .card-box-title { margin: 0 0 18px 0; display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 800; }
+
+        /* -------- DASHBOARD / RESUMEN -------- */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 8px; }
+        .stat-card { background: #14141c; border: 1px solid #232330; border-radius: 14px; padding: 20px; display: flex; align-items: center; gap: 16px; transition: 0.2s; }
+        .stat-card:hover { border-color: #3a3a4a; transform: translateY(-2px); }
+        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .stat-value { font-size: 24px; font-weight: 900; line-height: 1.1; }
+        .stat-label { color: #8a8a99; font-size: 12px; font-weight: 600; margin-top: 3px; }
+        .stat-card.clickable { cursor: pointer; }
+
+        /* -------- TABLAS -------- */
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #333; }
-        th { color: #a155ff; font-weight: bold; }
-        
-        /* BOTONES */
-        .btn-add { background: #00e676; color: black; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 13px; }
+        th, td { padding: 14px 12px; text-align: left; border-bottom: 1px solid #232330; }
+        th { color: #a155ff; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .table-scroll { overflow-x: auto; }
+
+        .btn-add { background: #00e676; color: black; border: none; padding: 8px 14px; border-radius: 7px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
         .btn-add:hover { background: #00c853; }
-        .btn-remove { background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 13px; }
+        .btn-remove { background: #ff4757; color: white; border: none; padding: 8px 14px; border-radius: 7px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
         .btn-remove:hover { background: #ff6b81; }
-        .btn-view { background: #00d2ff; color: black; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 13px; }
-        
-        .btn-complete { background: #a155ff; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.3s; }
-        .btn-copy { background: #2a2a35; color: #a8a8b3; border: 1px solid #444; padding: 4px 8px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; margin-left: 5px; transition: 0.2s;}
-        
-        .search-bar { background: #2a2a35; border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 8px; width: 100%; max-width: 300px; outline: none; box-sizing: border-box; }
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .btn-view { background: #00d2ff; color: black; border: none; padding: 8px 14px; border-radius: 7px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
+        .btn-complete { background: #a155ff; color: white; border: none; padding: 8px 14px; border-radius: 7px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; font-size: 12px; }
+        .btn-copy { background: #23232f; color: #a8a8b3; border: 1px solid #383848; padding: 4px 8px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; margin-left: 5px; }
 
-        .bulk-textarea { width: 100%; height: 120px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: #00e676; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 14px; outline: none; resize: vertical; box-sizing: border-box; margin-bottom: 15px;}
-        .bulk-select { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 12px; border-radius: 8px; font-size: 15px; outline: none; margin-bottom: 15px; width: 100%; box-sizing: border-box;}
+        .search-bar { background: #1c1c26; border: 1px solid #333340; color: white; padding: 10px 15px; border-radius: 8px; width: 100%; max-width: 300px; outline: none; box-sizing: border-box; }
+        .status-badge { padding: 4px 9px; border-radius: 6px; font-size: 11px; font-weight: 700; }
 
-        /* ANIMACIONES TOAST */
+        .bulk-textarea { width: 100%; height: 120px; background: rgba(0,0,0,0.5); border: 1px solid #333340; color: #00e676; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 14px; outline: none; resize: vertical; box-sizing: border-box; margin-bottom: 15px;}
+        .bulk-select { background: rgba(0,0,0,0.5); border: 1px solid #333340; color: white; padding: 12px; border-radius: 8px; font-size: 15px; outline: none; margin-bottom: 15px; width: 100%; box-sizing: border-box;}
+
+        .pagination-bar { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 18px; }
+        .pagination-bar button { background: #1c1c26; border: 1px solid #333340; color: white; width: 38px; height: 38px; border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .pagination-bar button:disabled { opacity: 0.35; cursor: default; }
+        .pagination-bar span { color: #a8a8b3; font-size: 13px; font-weight: 600; }
+
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* DISEÑO RESPONSIVO MÓVIL (TARJETAS EN VEZ DE TABLAS) */
-        @media (max-width: 768px) {
-            .admin-header { flex-direction: column; text-align: center; gap: 15px; }
-            .search-bar { max-width: 100%; margin-top: 10px; }
-            .grid-container { grid-template-columns: 1fr !important; }
-            
-            table, thead, tbody, th, td, tr { display: block; width: 100%; box-sizing: border-box; }
-            thead tr { display: none; } /* Ocultar cabeceras reales */
-            tr { background: rgba(0,0,0,0.3); border: 1px solid #333; border-radius: 12px; margin-bottom: 15px; padding: 15px; }
-            td { text-align: right; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; }
+        /* ===================== MOBILE ===================== */
+        @media (max-width: 980px) {
+            .admin-sidebar { position: fixed; left: 0; top: 0; height: 100%; transform: translateX(-100%); transition: transform 0.25s ease; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
+            .admin-sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .admin-topbar { display: flex; }
+            .admin-main { padding: 16px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .stat-card { padding: 14px; gap: 10px; }
+            .stat-icon { width: 38px; height: 38px; }
+            .stat-value { font-size: 18px; }
+
+            table, thead, tbody, th, td, tr { display: block; width: 100%; }
+            thead tr { display: none; }
+            tr { background: rgba(255,255,255,0.02); border: 1px solid #232330; border-radius: 12px; margin-bottom: 12px; padding: 12px; }
+            td { text-align: right; padding: 8px 2px; border-bottom: 1px solid rgba(255,255,255,0.04); }
             td:last-child { border-bottom: none; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
-            
-            /* Insertar etiquetas falsas antes del contenido en móviles */
-            td::before {
-                content: attr(data-label);
-                float: left;
-                font-weight: bold;
-                color: #a155ff;
-                text-transform: uppercase;
-                font-size: 11px;
-                letter-spacing: 1px;
-            }
+            td::before { content: attr(data-label); float: left; font-weight: 700; color: #a155ff; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
         }
     </style>
 </head>
@@ -120,81 +163,199 @@
     </div>
 
     <div id="admin-dashboard" style="display: none;">
-        
-        <div class="admin-header">
-            <div>
-                <h1 style="margin: 0; color: #a155ff; display: flex; align-items: center; gap: 10px; justify-content: center;">
-                    <span class="material-icons">admin_panel_settings</span> Backoffice CarzaD'Cross
-                </h1>
-            </div>
-            <div style="display: flex; gap: 10px; justify-content: center;">
-                <button class="btn-outline" onclick="window.location.href='index.html'">Ir a Tienda</button>
-                <button class="btn-remove" style="background: transparent; border: 1px solid #ff4757; color: #ff4757;" onclick="cerrarSesionAdmin()">
-                    <span class="material-icons" style="font-size: 16px;">logout</span> Salir
-                </button>
-            </div>
-        </div>
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
 
-        <div class="admin-table-container upload-container">
-            <h2 style="margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px;">
-                <span class="material-icons" style="color: #00d2ff;">inventory_2</span> Ingreso Rápido de Códigos (Stock)
-            </h2>
-            <div class="grid-container" style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
-                <div>
-                    <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">1. Selecciona el Paquete</label>
-                    <select id="bulk-paquete" class="bulk-select">
-                        <option value="" disabled selected>-- Elige un paquete --</option>
-                        <option value="110 Diamantes">110 Diamantes (Regular)</option>
-                        <option value="341 Diamantes">341 Diamantes (Regular)</option>
-                        <option value="572 Diamantes">572 Diamantes (Regular)</option>
-                        <option value="1170 Diamantes">1170 Diamantes (Regular)</option>
-                        <option value="2398 Diamantes">2398 Diamantes (Regular)</option>
-                        <option value="6160 Diamantes">6160 Diamantes (Regular)</option>
-                    </select>
-                    <button class="btn-primary" id="btn-subir-codigos" style="width: 100%; padding: 15px; font-weight: bold; background: #00d2ff; color: black;" onclick="subirCodigosMasivos()">
-                        <span class="material-icons">cloud_upload</span> Guardar Códigos
+        <div class="admin-shell">
+            <aside class="admin-sidebar" id="admin-sidebar">
+                <div class="admin-sidebar-brand">
+                    <div class="nav-logo-premium" style="pointer-events: none;">
+                        <div class="logo-emblem" style="width: 34px; height: 34px;">
+                            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                                <defs>
+                                    <linearGradient id="gradLogoAdmin" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#a155ff;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <path d="M50 5 L90 25 L90 70 L50 95 L10 70 L10 25 Z" fill="#121218" stroke="url(#gradLogoAdmin)" stroke-width="6" stroke-linejoin="round"/>
+                                <path d="M60 35 A 20 20 0 1 0 60 65" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                                <line x1="45" y1="25" x2="80" y2="75" stroke="#00d2ff" stroke-width="8" stroke-linecap="round"/>
+                                <line x1="80" y1="25" x2="45" y2="75" stroke="#a155ff" stroke-width="8" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="logo-text" style="font-size: 17px;">
+                            <span class="text-carza">Carza</span><span class="text-d">D'</span><span class="text-cross">Cross</span>
+                        </div>
+                    </div>
+                    <div style="color:#6a6a78; font-size:11px; font-weight:700; letter-spacing:1px; margin-top:6px; text-transform:uppercase;">Backoffice</div>
+                </div>
+
+                <nav class="admin-sidebar-nav">
+                    <div class="admin-nav-item active" data-view="resumen" onclick="cambiarVista('resumen')"><span class="material-icons">dashboard</span> Resumen</div>
+                    <div class="admin-nav-item" data-view="solicitudes" onclick="cambiarVista('solicitudes')"><span class="material-icons">account_balance_wallet</span> Solicitudes <span class="nav-badge zero" id="badge-recargas">0</span></div>
+                    <div class="admin-nav-item" data-view="pedidos" onclick="cambiarVista('pedidos')"><span class="material-icons">shopping_cart</span> Pedidos <span class="nav-badge zero" id="badge-pedidos">0</span></div>
+                    <div class="admin-nav-item" data-view="usuarios" onclick="cambiarVista('usuarios')"><span class="material-icons">group</span> Usuarios</div>
+                    <div class="admin-nav-item" data-view="stock" onclick="cambiarVista('stock')"><span class="material-icons">inventory_2</span> Stock</div>
+                    <div class="admin-nav-item" data-view="historial" onclick="cambiarVista('historial')"><span class="material-icons">history</span> Historial</div>
+                </nav>
+
+                <div class="admin-sidebar-footer">
+                    <button class="btn-outline" style="width:100%; padding:10px;" onclick="window.location.href='index.html'">Ir a Tienda</button>
+                    <button class="btn-remove" style="width:100%; background: transparent; border: 1px solid #ff4757; color: #ff4757; padding:10px; justify-content:center;" onclick="cerrarSesionAdmin()">
+                        <span class="material-icons" style="font-size: 16px;">logout</span> Salir
                     </button>
                 </div>
-                <div>
-                    <label style="color: #00e676; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">2. Pega tus códigos aquí</label>
-                    <textarea id="bulk-codigos" class="bulk-textarea" placeholder="Un código por línea..."></textarea>
+            </aside>
+
+            <main class="admin-main">
+                <div class="admin-topbar">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar(true)"><span class="material-icons">menu</span></button>
+                    <div class="nav-logo-premium" style="pointer-events: none;">
+                        <div class="logo-emblem" style="width: 30px; height: 30px;">
+                            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                                <path d="M50 5 L90 25 L90 70 L50 95 L10 70 L10 25 Z" fill="#121218" stroke="#a155ff" stroke-width="6" stroke-linejoin="round"/>
+                                <path d="M60 35 A 20 20 0 1 0 60 65" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div style="width:42px;"></div>
                 </div>
-            </div>
-        </div>
 
-        <div class="admin-table-container success-container">
-            <h2 style="margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #00e676;">account_balance_wallet</span> Solicitudes de Saldo</h2>
-            <table><thead><tr><th>Fecha</th><th>Usuario</th><th>Monto</th><th>Método</th><th>Acción</th></tr></thead><tbody id="tabla-recargas"></tbody></table>
-        </div>
+                <!-- ============ RESUMEN ============ -->
+                <div class="admin-view active" id="view-resumen">
+                    <h1 class="view-title"><span class="material-icons" style="color:#a155ff;">dashboard</span> Resumen</h1>
+                    <p class="view-subtitle">Estado general de la tienda en este momento.</p>
 
-        <div class="admin-table-container highlight-container">
-            <h2 style="margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #a155ff;">shopping_cart</span> Pedidos de Juegos</h2>
-            <table><thead><tr><th>Fecha</th><th>Comprador</th><th>Paquete</th><th>Juego (Nick / ID)</th><th>Código Asignado</th><th>Acción</th></tr></thead><tbody id="tabla-pedidos"></tbody></table>
-        </div>
+                    <div class="stats-grid">
+                        <div class="stat-card clickable" onclick="cambiarVista('solicitudes')">
+                            <div class="stat-icon" style="background:rgba(0,230,118,0.12);"><span class="material-icons" style="color:#00e676;">account_balance_wallet</span></div>
+                            <div><div class="stat-value" id="stat-recargas">0</div><div class="stat-label">Solicitudes de saldo pendientes</div></div>
+                        </div>
+                        <div class="stat-card clickable" onclick="cambiarVista('pedidos')">
+                            <div class="stat-icon" style="background:rgba(161,85,255,0.12);"><span class="material-icons" style="color:#a155ff;">shopping_cart</span></div>
+                            <div><div class="stat-value" id="stat-pedidos">0</div><div class="stat-label">Pedidos pendientes</div></div>
+                        </div>
+                        <div class="stat-card clickable" onclick="cambiarVista('usuarios')">
+                            <div class="stat-icon" style="background:rgba(0,210,255,0.12);"><span class="material-icons" style="color:#00d2ff;">group</span></div>
+                            <div><div class="stat-value" id="stat-usuarios">0</div><div class="stat-label">Usuarios registrados</div></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background:rgba(255,152,0,0.12);"><span class="material-icons" style="color:#ff9800;">payments</span></div>
+                            <div><div class="stat-value" id="stat-saldo-total">S/ 0.00</div><div class="stat-label">Saldo total en billeteras</div></div>
+                        </div>
+                    </div>
 
-        <div class="admin-table-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
-                <h2 style="margin: 0;">Lista de Usuarios</h2>
-                <input type="text" id="buscador" class="search-bar" placeholder="🔍 Buscar por Nickname..." onkeyup="filtrarUsuarios()">
-            </div>
-            <!-- SE AÑADIÓ LA COLUMNA "PUNTOS VIP" A LA TABLA -->
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nickname</th>
-                        <th>Correo</th>
-                        <th>Saldo Actual</th>
-                        <th style="color: #ff9800;">Puntos VIP</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-usuarios"></tbody>
-            </table>
-        </div>
+                    <div class="card-box" style="margin-top: 22px;">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ff9800;">bolt</span> Accesos rápidos</h3>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                            <button class="btn-view" onclick="cambiarVista('stock')"><span class="material-icons">inventory_2</span> Agregar stock</button>
+                            <button class="btn-complete" onclick="cambiarVista('usuarios')"><span class="material-icons">group</span> Ver usuarios</button>
+                            <button class="btn-add" onclick="cambiarVista('historial')"><span class="material-icons">history</span> Historial global</button>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="admin-table-container history-container">
-            <h2 style="margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #ff9800;">history</span> Historial Global</h2>
-            <table><thead><tr><th style="color: #ff9800;">Fecha</th><th style="color: #ff9800;">Usuario</th><th style="color: #ff9800;">Descripción</th><th style="color: #ff9800;">Monto S/</th><th style="color: #ff9800;">Estado</th></tr></thead><tbody id="tabla-historial"></tbody></table>
+                <!-- ============ SOLICITUDES DE SALDO ============ -->
+                <div class="admin-view" id="view-solicitudes">
+                    <h1 class="view-title"><span class="material-icons" style="color:#00e676;">account_balance_wallet</span> Solicitudes de Saldo</h1>
+                    <p class="view-subtitle">Recargas Yape/Plin reportadas por los clientes, esperando aprobación.</p>
+                    <div class="card-box success-container">
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Fecha</th><th>Usuario</th><th>Monto</th><th>Método</th><th>Acción</th></tr></thead><tbody id="tabla-recargas"></tbody></table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============ PEDIDOS ============ -->
+                <div class="admin-view" id="view-pedidos">
+                    <h1 class="view-title"><span class="material-icons" style="color:#a155ff;">shopping_cart</span> Pedidos de Juegos</h1>
+                    <p class="view-subtitle">Compras de diamantes, pases y cajas esperando ser entregadas.</p>
+                    <div class="card-box highlight-container">
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Fecha</th><th>Comprador</th><th>Paquete</th><th>Juego (Nick / ID)</th><th>Código Asignado</th><th>Acción</th></tr></thead><tbody id="tabla-pedidos"></tbody></table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============ USUARIOS ============ -->
+                <div class="admin-view" id="view-usuarios">
+                    <h1 class="view-title"><span class="material-icons" style="color:#00d2ff;">group</span> Usuarios</h1>
+                    <p class="view-subtitle">Saldo, puntos VIP y ajustes manuales por usuario.</p>
+                    <div class="card-box">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
+                            <input type="text" id="buscador" class="search-bar" placeholder="🔍 Buscar por Nickname..." onkeyup="filtrarUsuarios()">
+                        </div>
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nickname</th>
+                                        <th>Correo</th>
+                                        <th>Saldo Actual</th>
+                                        <th style="color: #ff9800;">Puntos VIP</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-usuarios"></tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-bar">
+                            <button id="btn-pag-prev" onclick="cambiarPagina(-1)"><span class="material-icons">chevron_left</span></button>
+                            <span id="pag-info">Página 1</span>
+                            <button id="btn-pag-next" onclick="cambiarPagina(1)"><span class="material-icons">chevron_right</span></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============ STOCK ============ -->
+                <div class="admin-view" id="view-stock">
+                    <h1 class="view-title"><span class="material-icons" style="color:#00d2ff;">inventory_2</span> Stock de Códigos</h1>
+                    <p class="view-subtitle">Carga nuevos códigos y revisa cuánto stock disponible te queda por paquete.</p>
+
+                    <div class="card-box upload-container">
+                        <h3 class="card-box-title"><span class="material-icons" style="color: #00d2ff;">cloud_upload</span> Ingreso Rápido de Códigos</h3>
+                        <div class="grid-container" style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+                            <div>
+                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">1. Selecciona el Paquete</label>
+                                <select id="bulk-paquete" class="bulk-select">
+                                    <option value="" disabled selected>-- Elige un paquete --</option>
+                                    <option value="110 Diamantes">110 Diamantes (Regular)</option>
+                                    <option value="341 Diamantes">341 Diamantes (Regular)</option>
+                                    <option value="572 Diamantes">572 Diamantes (Regular)</option>
+                                    <option value="1170 Diamantes">1170 Diamantes (Regular)</option>
+                                    <option value="2398 Diamantes">2398 Diamantes (Regular)</option>
+                                    <option value="6160 Diamantes">6160 Diamantes (Regular)</option>
+                                </select>
+                                <button class="btn-primary" id="btn-subir-codigos" style="width: 100%; padding: 15px; font-weight: bold; background: #00d2ff; color: black; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="subirCodigosMasivos()">
+                                    <span class="material-icons">cloud_upload</span> Guardar Códigos
+                                </button>
+                            </div>
+                            <div>
+                                <label style="color: #00e676; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">2. Pega tus códigos aquí</label>
+                                <textarea id="bulk-codigos" class="bulk-textarea" placeholder="Un código por línea..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">inventory</span> Stock disponible por paquete</h3>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Paquete</th><th>Disponibles</th><th>Usados</th></tr></thead><tbody id="tabla-stock"></tbody></table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============ HISTORIAL GLOBAL ============ -->
+                <div class="admin-view" id="view-historial">
+                    <h1 class="view-title"><span class="material-icons" style="color:#ff9800;">history</span> Historial Global</h1>
+                    <p class="view-subtitle">Últimos 40 movimientos de toda la tienda.</p>
+                    <div class="card-box history-container">
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Fecha</th><th>Usuario</th><th>Descripción</th><th>Monto S/</th><th>Estado</th></tr></thead><tbody id="tabla-historial"></tbody></table>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
 
@@ -204,8 +365,10 @@
         const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        const correoAdministrador = "carlosgabriel04190419@gmail.com"; 
-        let todosLosUsuarios = []; 
+        const correoAdministrador = "carlosgabriel04190419@gmail.com";
+        let todosLosUsuarios = [];
+        let paginaUsuarioActual = 1;
+        const USUARIOS_POR_PAGINA = 12;
 
         function showToast(msg, type='success') {
             const toast = document.createElement('div');
@@ -225,9 +388,9 @@
                 document.getElementById('c-modal-desc').innerHTML = options.desc;
                 document.getElementById('c-modal-icon').innerText = options.icon || 'info';
                 document.getElementById('c-modal-icon').style.color = options.color || '#a155ff';
-                
+
                 const input = document.getElementById('c-modal-input');
-                if(options.type === 'prompt') { input.style.display = 'block'; input.value = ''; setTimeout(()=>input.focus(), 100); } 
+                if(options.type === 'prompt') { input.style.display = 'block'; input.value = ''; setTimeout(()=>input.focus(), 100); }
                 else { input.style.display = 'none'; }
 
                 const btnConfirm = document.getElementById('c-modal-btn-confirm');
@@ -243,10 +406,28 @@
         document.getElementById('c-modal-btn-cancel').onclick = () => { document.getElementById('custom-modal-overlay').style.display = 'none'; if(modalResolve) modalResolve(null); };
         document.getElementById('c-modal-btn-confirm').onclick = () => { document.getElementById('custom-modal-overlay').style.display = 'none'; const isPrompt = document.getElementById('c-modal-input').style.display === 'block'; if(modalResolve) modalResolve(isPrompt ? document.getElementById('c-modal-input').value : true); };
 
+        // ================= NAVEGACIÓN ENTRE SECCIONES =================
+        function cambiarVista(nombre) {
+            document.querySelectorAll('.admin-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.admin-nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('view-' + nombre).classList.add('active');
+            document.querySelector(`.admin-nav-item[data-view="${nombre}"]`).classList.add('active');
+            toggleSidebar(false);
+            window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+
+        function toggleSidebar(abrir) {
+            const sb = document.getElementById('admin-sidebar');
+            const ov = document.getElementById('sidebar-overlay');
+            if (abrir === undefined) abrir = !sb.classList.contains('open');
+            sb.classList.toggle('open', abrir);
+            ov.classList.toggle('open', abrir);
+        }
+
         window.onload = async function() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
-                if (session.user.email === correoAdministrador) { mostrarPanel(); } 
+                if (session.user.email === correoAdministrador) { mostrarPanel(); }
                 else { document.getElementById('admin-error-msg').style.display = 'block'; await supabaseClient.auth.signOut(); }
             } else {
                 document.getElementById('admin-login-screen').style.display = 'flex';
@@ -256,7 +437,17 @@
 
         async function iniciarAdminConGoogle() { await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname }}); }
         async function cerrarSesionAdmin() { await supabaseClient.auth.signOut(); window.location.reload(); }
-        async function mostrarPanel() { document.getElementById('admin-login-screen').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'block'; await cargarUsuarios(); await cargarPedidos(); await cargarRecargas(); await cargarHistorial(); }
+        async function mostrarPanel() {
+            document.getElementById('admin-login-screen').style.display = 'none';
+            document.getElementById('admin-dashboard').style.display = 'block';
+            await cargarUsuarios(); await cargarPedidos(); await cargarRecargas(); await cargarHistorial(); await cargarStock();
+        }
+
+        function actualizarResumen() {
+            document.getElementById('stat-usuarios').innerText = todosLosUsuarios.length;
+            const saldoTotal = todosLosUsuarios.reduce((acc, u) => acc + (u.saldo || 0), 0);
+            document.getElementById('stat-saldo-total').innerText = 'S/ ' + saldoTotal.toFixed(2);
+        }
 
         async function subirCodigosMasivos() {
             const pkt = document.getElementById('bulk-paquete').value;
@@ -268,15 +459,44 @@
             if (!conf) return;
             const datos = lista.map(cod => ({ paquete: pkt, codigo: cod, estado: 'Disponible' }));
             await supabaseClient.from('inventario_codigos').insert(datos);
-            showToast(`¡${lista.length} códigos añadidos!`); document.getElementById('bulk-codigos').value = ''; cargarPedidos();
+            showToast(`¡${lista.length} códigos añadidos!`); document.getElementById('bulk-codigos').value = ''; cargarPedidos(); cargarStock();
         }
 
         function copiarTexto(texto, el) { navigator.clipboard.writeText(texto).then(() => { const t = el.innerHTML; el.innerHTML = '<span class="material-icons" style="font-size:11px;">check</span>'; el.style.background = '#00e676'; el.style.color = 'black'; setTimeout(() => { el.innerHTML = t; el.style.background = ''; el.style.color = ''; }, 2000); }); }
+
+        // ================= STOCK (NUEVO: resumen de inventario) =================
+        async function cargarStock() {
+            const { data, error } = await supabaseClient.rpc('admin_ver_inventario');
+            const tbody = document.getElementById('tabla-stock');
+            if (error || !data) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#a8a8b3;'>No se pudo cargar el inventario.</td></tr>"; return; }
+            const resumen = {};
+            data.forEach(c => {
+                if (!resumen[c.paquete]) resumen[c.paquete] = { disponibles: 0, usados: 0 };
+                if (c.estado === 'Disponible') resumen[c.paquete].disponibles++; else resumen[c.paquete].usados++;
+            });
+            const paquetes = Object.keys(resumen);
+            if (paquetes.length === 0) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#a8a8b3;'>Sin códigos cargados todavía.</td></tr>"; return; }
+            tbody.innerHTML = '';
+            paquetes.sort().forEach(p => {
+                const r = resumen[p];
+                const tr = document.createElement('tr');
+                const colorDisp = r.disponibles === 0 ? '#ff4757' : '#00e676';
+                tr.innerHTML = `
+                    <td data-label="Paquete" style="font-weight:bold;">${p}</td>
+                    <td data-label="Disponibles" style="color:${colorDisp}; font-weight:bold;">${r.disponibles}</td>
+                    <td data-label="Usados" style="color:#a8a8b3;">${r.usados}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
 
         // ================= RECARGAS (AHORA OTORGA PUNTOS AUTOMÁTICAMENTE) =================
         async function cargarRecargas() {
             const { data } = await supabaseClient.from('recargas').select('*').eq('estado', 'Pendiente').order('created_at', { ascending: true });
             const tbody = document.getElementById('tabla-recargas'); tbody.innerHTML = "";
+            const badge = document.getElementById('badge-recargas');
+            const cantidad = data ? data.length : 0;
+            badge.innerText = cantidad; badge.classList.toggle('zero', cantidad === 0);
+            document.getElementById('stat-recargas').innerText = cantidad;
             if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='5' style='text-align: center; color: #a8a8b3;'>✅ Sin solicitudes pendientes.</td></tr>"; return; }
             data.forEach(r => {
                 const tr = document.createElement('tr');
@@ -298,65 +518,49 @@
             if(!conf) return;
 
             await supabaseClient.from('recargas').update({ estado: 'Completado' }).eq('id', id);
-            
-            // TRAEMOS LOS DATOS Y LOS PUNTOS ACTUALES
+
             const { data: user } = await supabaseClient.from('usuarios').select('saldo, celular, puntos').eq('nickname', nickname).single();
-            
-            if(user) { 
-                // CÁLCULO DE PUNTOS: S/ 1 = 10 Puntos
+
+            if(user) {
                 const puntosGanados = Math.floor(monto * 10);
                 const nuevosPuntos = (user.puntos || 0) + puntosGanados;
 
-                // ACTUALIZAMOS SALDO Y PUNTOS AL MISMO TIEMPO
                 await supabaseClient.from('usuarios')
                     .update({ saldo: user.saldo + monto, puntos: nuevosPuntos })
-                    .eq('nickname', nickname); 
-                
-                await supabaseClient.from('historial').insert([{ nickname, monto, tipo: 'Recarga Aprobada', estado: 'Completado' }]); 
-                
-                // MENSAJE AUTOMATICO WHATSAPP ACTUALIZADO
+                    .eq('nickname', nickname);
+
+                await supabaseClient.from('historial').insert([{ nickname, monto, tipo: 'Recarga Aprobada', estado: 'Completado' }]);
+
                 if(user.celular) {
                     let numStr = user.celular.replace(/[^0-9]/g, '');
                     let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga por *S/ ${monto.toFixed(2)}* 💵💵 ha sido aprobada exitosamente.\n🎁 Además, acabas de ganar *${puntosGanados} CarzaPuntos* para la Ruleta VIP.\n\nTu saldo ya está actualizado en tu billetera web.\n\n🌐 carzadcross.com`;
                     window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
                 }
             }
-            showToast(`Saldo aprobado. Se sumaron ${Math.floor(monto * 10)} pts a ${nickname}`); 
+            showToast(`Saldo aprobado. Se sumaron ${Math.floor(monto * 10)} pts a ${nickname}`);
             cargarRecargas(); cargarUsuarios(); cargarHistorial();
         }
 
-        async function rechazarRecarga(id) { 
+        async function rechazarRecarga(id) {
             const conf = await openCustomModal({ title: "Rechazar Recarga", desc: "¿Seguro que deseas rechazar y eliminar esta solicitud?", icon: 'delete', color: '#ff4757', textColor: 'white', type: 'confirm', confirmText: 'Sí, Rechazar' });
-            if(conf) { await supabaseClient.from('recargas').update({ estado: 'Rechazado' }).eq('id', id); showToast("Recarga rechazada", "warning"); cargarRecargas(); } 
+            if(conf) { await supabaseClient.from('recargas').update({ estado: 'Rechazado' }).eq('id', id); showToast("Recarga rechazada", "warning"); cargarRecargas(); }
         }
 
         // ================= PEDIDOS =================
         async function cargarPedidos() {
             const { data } = await supabaseClient.from('pedidos').select('*').eq('estado', 'Pendiente').order('created_at', { ascending: true });
             const tbody = document.getElementById('tabla-pedidos'); tbody.innerHTML = "";
+            const badge = document.getElementById('badge-pedidos');
+            const cantidad = data ? data.length : 0;
+            badge.innerText = cantidad; badge.classList.toggle('zero', cantidad === 0);
+            document.getElementById('stat-pedidos').innerText = cantidad;
             if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='6' style='text-align: center; color: #a8a8b3;'>✅ Sin pedidos pendientes.</td></tr>"; return; }
-            
+
             for (let p of data) {
                 if (p.codigo && p.codigo.includes("⚠️ Falta")) {
-                    let pBuscar = p.paquete, req = 1;
-                    if (pBuscar === "4796 Diamantes") { pBuscar = "2398 Diamantes"; req = 2; }
-                    else if (pBuscar === "12320 Diamantes") { pBuscar = "6160 Diamantes"; req = 2; }
-
-                    let vCodes = p.codigo.split(' | ').filter(c => !c.includes('⚠️'));
-                    let faltantes = req - vCodes.length;
-
-                    if (faltantes > 0) {
-                        const { data: stock } = await supabaseClient.from('inventario_codigos').select('*').eq('paquete', pBuscar).eq('estado', 'Disponible').limit(faltantes);
-                        if (stock && stock.length > 0) {
-                            for (let item of stock) {
-                                vCodes.push(item.codigo);
-                                await supabaseClient.from('inventario_codigos').update({ estado: 'Usado', nickname_comprador: p.nickname }).eq('id', item.id);
-                            }
-                            let remaining = req - vCodes.length;
-                            if (remaining > 0) vCodes.push(`⚠️ Falta ${remaining} código(s) de ${pBuscar} (Agrega Stock)`);
-                            p.codigo = vCodes.join(" | ");
-                            await supabaseClient.from('pedidos').update({ codigo: p.codigo }).eq('id', p.id);
-                        }
+                    const { data: resultado } = await supabaseClient.rpc('admin_completar_codigo_pedido', { p_pedido_id: p.id });
+                    if (resultado && resultado[0] && resultado[0].codigo_actualizado) {
+                        p.codigo = resultado[0].codigo_actualizado;
                     }
                 }
             }
@@ -381,21 +585,20 @@
             });
         }
 
-        async function completarPedido(id, paquete, nick) { 
+        async function completarPedido(id, paquete, nick) {
             const conf = await openCustomModal({ title: "Completar Pedido", desc: `¿Confirmas envío de <b>${paquete}</b> a <b>${nick}</b>?`, icon: 'task_alt', color: '#a155ff', textColor: 'white', type: 'confirm', confirmText: 'Marcar Listo' });
-            if(!conf) return; 
+            if(!conf) return;
 
-            await supabaseClient.from('pedidos').update({ estado: 'Completado' }).eq('id', id); 
+            await supabaseClient.from('pedidos').update({ estado: 'Completado' }).eq('id', id);
             const { data: user } = await supabaseClient.from('usuarios').select('celular').eq('nickname', nick).single();
-            
-            // MENSAJE AUTOMATICO WHATSAPP
+
             if(user && user.celular) {
                 let numStr = user.celular.replace(/[^0-9]/g, '');
                 let msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 💎 *${paquete}* 💎 acaba de ser procesado y completado exitosamente.\n\nRevisa tu cuenta del juego y disfruta. ¡Gracias por preferirnos!`;
                 window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
             }
-            
-            showToast(`Pedido completado.`); cargarPedidos(); cargarHistorial(); 
+
+            showToast(`Pedido completado.`); cargarPedidos(); cargarHistorial();
         }
 
         async function rechazarPedido(id, paquete, nick, precio, codigoStr) {
@@ -403,18 +606,16 @@
             if(!conf) return;
 
             await supabaseClient.from('pedidos').update({ estado: 'Rechazado' }).eq('id', id);
-            
+
             const { data: user } = await supabaseClient.from('usuarios').select('saldo, celular').eq('nickname', nick).single();
             if(user) {
                 await supabaseClient.from('usuarios').update({ saldo: user.saldo + precio }).eq('nickname', nick);
                 await supabaseClient.from('historial').insert([{ nickname: nick, monto: precio, tipo: `Reembolso por pedido rechazado: ${paquete}`, estado: 'Completado' }]);
             }
 
-            if(codigoStr && !codigoStr.includes("Sin stock") && !codigoStr.includes("Pendiente a mandar") && !codigoStr.includes("Activación Promo") && !codigoStr.includes("Envío de")) {
-                let codigos = codigoStr.split(' | ').filter(c => !c.includes('⚠️')).map(c => c.trim());
-                for(let cod of codigos) {
-                    await supabaseClient.from('inventario_codigos').update({ estado: 'Disponible', nickname_comprador: null }).eq('codigo', cod);
-                }
+            if(codigoStr && !codigoStr.includes("Sin stock") && !codigoStr.includes("Pendiente a mandar") && !codigoStr.includes("Activación Promo") && !codigoStr.includes("Activación Directa") && !codigoStr.includes("Envío de")) {
+                let codigos = codigoStr.split(' | ').filter(c => !c.includes('⚠️')).map(c => c.trim()).filter(c => c.length > 0);
+                if (codigos.length > 0) { await supabaseClient.rpc('admin_devolver_codigos', { p_codigos: codigos }); }
             }
 
             if(user && user.celular) {
@@ -424,16 +625,28 @@
             }
 
             showToast("Pedido rechazado. Saldo y códigos devueltos.", "warning");
-            cargarPedidos(); cargarHistorial(); cargarUsuarios();
+            cargarPedidos(); cargarHistorial(); cargarUsuarios(); cargarStock();
         }
 
-        // ================= USUARIOS (CON PUNTOS VIP) =================
-        async function cargarUsuarios() { const { data } = await supabaseClient.from('usuarios').select('*').order('created_at', { ascending: false }); todosLosUsuarios = data || []; mostrarUsuarios(todosLosUsuarios); }
-        
-        function mostrarUsuarios(lista) { 
-            const tbody = document.getElementById('tabla-usuarios'); tbody.innerHTML = ""; 
-            lista.forEach(u => { 
-                const tr = document.createElement('tr'); 
+        // ================= USUARIOS (CON PUNTOS VIP + PAGINACIÓN) =================
+        async function cargarUsuarios() {
+            const { data } = await supabaseClient.from('usuarios').select('*').order('created_at', { ascending: false });
+            todosLosUsuarios = data || [];
+            actualizarResumen();
+            paginaUsuarioActual = 1;
+            mostrarUsuarios(todosLosUsuarios);
+        }
+
+        function mostrarUsuarios(lista) {
+            const totalPaginas = Math.max(1, Math.ceil(lista.length / USUARIOS_POR_PAGINA));
+            if (paginaUsuarioActual > totalPaginas) paginaUsuarioActual = totalPaginas;
+            const inicio = (paginaUsuarioActual - 1) * USUARIOS_POR_PAGINA;
+            const paginaActual = lista.slice(inicio, inicio + USUARIOS_POR_PAGINA);
+
+            const tbody = document.getElementById('tabla-usuarios'); tbody.innerHTML = "";
+            if (lista.length === 0) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#a8a8b3;'>Sin resultados.</td></tr>"; }
+            paginaActual.forEach(u => {
+                const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td data-label="Nickname" style="font-weight: bold;">${u.nickname}</td>
                     <td data-label="Correo" style="color: #a8a8b3; font-size:13px;">${u.correo}</td>
@@ -443,35 +656,47 @@
                         <button class="btn-add" onclick="añadirSaldo('${u.nickname}', ${u.saldo}, ${u.puntos || 0})"><span class="material-icons">add</span></button>
                         <button class="btn-remove" onclick="quitarSaldo('${u.nickname}', ${u.saldo}, ${u.puntos || 0})"><span class="material-icons">remove</span></button>
                         <button class="btn-view" onclick="verHistorialUsuario('${u.nickname}')"><span class="material-icons">visibility</span> Historial</button>
-                    </td>`; 
-                tbody.appendChild(tr); 
-            }); 
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('pag-info').innerText = `Página ${paginaUsuarioActual} de ${totalPaginas} (${lista.length} usuarios)`;
+            document.getElementById('btn-pag-prev').disabled = paginaUsuarioActual <= 1;
+            document.getElementById('btn-pag-next').disabled = paginaUsuarioActual >= totalPaginas;
         }
-        function filtrarUsuarios() { mostrarUsuarios(todosLosUsuarios.filter(u => u.nickname.toLowerCase().includes(document.getElementById('buscador').value.toLowerCase()))); }
-        
-        async function añadirSaldo(nick, saldo, puntosActuales) { 
+
+        function cambiarPagina(delta) {
+            paginaUsuarioActual += delta;
+            const filtro = document.getElementById('buscador').value.toLowerCase();
+            const lista = filtro ? todosLosUsuarios.filter(u => u.nickname.toLowerCase().includes(filtro)) : todosLosUsuarios;
+            mostrarUsuarios(lista);
+        }
+
+        function filtrarUsuarios() { paginaUsuarioActual = 1; mostrarUsuarios(todosLosUsuarios.filter(u => u.nickname.toLowerCase().includes(document.getElementById('buscador').value.toLowerCase()))); }
+
+        async function añadirSaldo(nick, saldo, puntosActuales) {
             const result = await openCustomModal({ title: "Añadir Saldo Manual", desc: `Saldo actual: <b>S/ ${saldo.toFixed(2)}</b><br>Monto a recargar a <b>${nick}</b>:`, icon: 'add_circle', color: '#00e676', type: 'prompt', confirmText: 'Añadir' });
-            if(!result) return; const m = parseFloat(result); 
-            if(m>0){ 
+            if(!result) return; const m = parseFloat(result);
+            if(m>0){
                 const ptsASumar = Math.floor(m * 10);
                 const nuevosPuntos = puntosActuales + ptsASumar;
 
-                await supabaseClient.from('usuarios').update({saldo: saldo+m, puntos: nuevosPuntos}).eq('nickname', nick); 
-                await supabaseClient.from('historial').insert([{nickname: nick, monto: m, tipo: 'Ajuste manual de administrador', estado: 'Completado'}]); 
-                showToast(`Se agregaron S/ ${m.toFixed(2)} y ${ptsASumar} Puntos a ${nick}`); cargarUsuarios(); cargarHistorial(); 
+                await supabaseClient.from('usuarios').update({saldo: saldo+m, puntos: nuevosPuntos}).eq('nickname', nick);
+                await supabaseClient.from('historial').insert([{nickname: nick, monto: m, tipo: 'Ajuste manual de administrador', estado: 'Completado'}]);
+                showToast(`Se agregaron S/ ${m.toFixed(2)} y ${ptsASumar} Puntos a ${nick}`); cargarUsuarios(); cargarHistorial();
             } else { showToast("Monto inválido", "error"); }
         }
 
-        async function quitarSaldo(nick, saldo, puntosActuales) { 
+        async function quitarSaldo(nick, saldo, puntosActuales) {
             const result = await openCustomModal({ title: "Descontar Saldo Manual", desc: `Saldo actual: <b>S/ ${saldo.toFixed(2)}</b><br>Monto a descontar a <b>${nick}</b>:`, icon: 'remove_circle', color: '#ff4757', textColor: 'white', type: 'prompt', confirmText: 'Quitar' });
-            if(!result) return; const m = parseFloat(result); 
-            if(m>0 && m<=saldo){ 
+            if(!result) return; const m = parseFloat(result);
+            if(m>0 && m<=saldo){
                 const ptsARestar = Math.floor(m * 10);
                 const nuevosPuntos = Math.max(0, puntosActuales - ptsARestar);
 
-                await supabaseClient.from('usuarios').update({saldo: saldo-m, puntos: nuevosPuntos}).eq('nickname', nick); 
-                await supabaseClient.from('historial').insert([{nickname: nick, monto: m, tipo: 'Ajuste manual de administrador', estado: 'Descontado'}]); 
-                showToast(`Se quitaron S/ ${m.toFixed(2)} y se ajustaron los puntos a ${nick}`); cargarUsuarios(); cargarHistorial(); 
+                await supabaseClient.from('usuarios').update({saldo: saldo-m, puntos: nuevosPuntos}).eq('nickname', nick);
+                await supabaseClient.from('historial').insert([{nickname: nick, monto: m, tipo: 'Ajuste manual de administrador', estado: 'Descontado'}]);
+                showToast(`Se quitaron S/ ${m.toFixed(2)} y se ajustaron los puntos a ${nick}`); cargarUsuarios(); cargarHistorial();
             } else { showToast("Monto inválido o sin saldo suficiente", "error"); }
         }
 
@@ -480,10 +705,10 @@
             document.getElementById('uh-name').innerText = nick;
             document.getElementById('user-history-modal').style.display = 'flex';
             const tbody = document.getElementById('uh-body'); tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Cargando...</td></tr>";
-            
+
             const { data } = await supabaseClient.from('historial').select('*').eq('nickname', nick).order('created_at', { ascending: false });
             if(!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#888;'>Sin movimientos registrados.</td></tr>"; return; }
-            
+
             tbody.innerHTML = "";
             data.forEach(h => {
                 const colorMonto = h.estado === 'Descontado' ? '#ff4757' : '#00e676';
@@ -499,20 +724,20 @@
         }
 
         // HISTORIAL GLOBAL
-        async function cargarHistorial() { 
-            const { data } = await supabaseClient.from('historial').select('*').order('created_at', { ascending: false }).limit(40); 
-            const tbody = document.getElementById('tabla-historial'); tbody.innerHTML = ""; 
-            if(!data || data.length===0){ tbody.innerHTML = "<tr><td colspan='5' style='text-align: center;'>Vacio</td></tr>"; return;} 
-            data.forEach(h => { 
-                const tr = document.createElement('tr'); 
+        async function cargarHistorial() {
+            const { data } = await supabaseClient.from('historial').select('*').order('created_at', { ascending: false }).limit(40);
+            const tbody = document.getElementById('tabla-historial'); tbody.innerHTML = "";
+            if(!data || data.length===0){ tbody.innerHTML = "<tr><td colspan='5' style='text-align: center;'>Vacio</td></tr>"; return;}
+            data.forEach(h => {
+                const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td data-label="Fecha" style="color: #a8a8b3; font-size: 13px;">${new Date(h.created_at).toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</td>
                     <td data-label="Usuario" style="font-weight: bold;">${h.nickname}</td>
                     <td data-label="Detalle" style="color: #e0e0e0; font-size: 13px;">${h.tipo}</td>
                     <td data-label="Monto" style="font-weight: bold; color: ${h.estado==='Descontado'?'#ff4757':'#00e676'};">S/ ${h.monto.toFixed(2)}</td>
-                    <td data-label="Estado"><span class="status-badge" style="${h.estado==='Descontado'?'background: rgba(255,71,87,0.1); color: #ff4757;':'background: rgba(0,230,118,0.1); color: #00e676;'}">${h.estado}</span></td>`; 
-                tbody.appendChild(tr); 
-            }); 
+                    <td data-label="Estado"><span class="status-badge" style="${h.estado==='Descontado'?'background: rgba(255,71,87,0.1); color: #ff4757;':'background: rgba(0,230,118,0.1); color: #00e676;'}">${h.estado}</span></td>`;
+                tbody.appendChild(tr);
+            });
         }
     </script>
 </body>

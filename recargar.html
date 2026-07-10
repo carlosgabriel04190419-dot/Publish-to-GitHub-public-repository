@@ -369,7 +369,7 @@
             const usuario = await verificarSesion();
             if (!usuario) return;
 
-            document.getElementById('btn-usuario-nav').innerHTML = `${usuario.nickname} <span class="material-icons" style="font-size: 18px;">expand_more</span>`;
+            document.getElementById('btn-usuario-nav').innerHTML = avatarPillHTML(usuario);
 
             const data = usuario;
             if (data) {
