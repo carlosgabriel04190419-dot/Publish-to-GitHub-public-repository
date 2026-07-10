@@ -266,7 +266,16 @@
         <div class="left-column">
             
             <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 35px;">
-                <div class="profile-avatar" style="width: 70px; height: 70px; font-size: 28px; box-shadow: 0 0 25px rgba(161,85,255,0.5);">C</div>
+                <div style="position: relative; width: 70px; height: 70px; flex-shrink: 0;">
+                    <div id="avatar-circulo" class="profile-avatar" style="width: 70px; height: 70px; font-size: 28px; box-shadow: 0 0 25px rgba(161,85,255,0.5); overflow: hidden;">
+                        <img id="avatar-img" src="" alt="Foto de perfil" style="display:none; width: 100%; height: 100%; object-fit: cover;">
+                        <span id="avatar-letra">C</span>
+                    </div>
+                    <label for="input-avatar" title="Cambiar foto de perfil" style="position: absolute; bottom: -2px; right: -2px; width: 26px; height: 26px; background: #a155ff; border: 2px solid #121218; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">
+                        <span class="material-icons" style="font-size: 14px; color: white;">photo_camera</span>
+                    </label>
+                    <input type="file" id="input-avatar" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="subirAvatar(event)">
+                </div>
                 <div>
                     <p style="margin: 0 0 5px 0; color: #a8a8b3; font-size: 15px; letter-spacing: 0.5px;">Bienvenido de vuelta,</p>
                     <h1 id="nombre-pantalla" style="margin: 0; font-size: 32px; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Cargando...</h1>
@@ -508,6 +517,8 @@
 
             const nombreActual = usuario.nickname;
             document.getElementById('nombre-pantalla').innerText = nombreActual;
+            document.getElementById('avatar-letra').innerText = nombreActual.charAt(0).toUpperCase();
+            mostrarAvatar(usuario.avatar_url);
             document.getElementById('btn-usuario-nav').innerHTML = `${nombreActual} <span class="material-icons" style="font-size: 18px;">expand_more</span>`;
 
             cargarSistemaComunidadDinamica();
@@ -574,6 +585,63 @@
         };
 
         // --- FORMATEO INTELIGENTE DE CELULAR ---
+        function mostrarAvatar(url) {
+            const img = document.getElementById('avatar-img');
+            const letra = document.getElementById('avatar-letra');
+            if (url) {
+                img.src = url;
+                img.style.display = 'block';
+                letra.style.display = 'none';
+            } else {
+                img.style.display = 'none';
+                letra.style.display = 'block';
+            }
+        }
+
+        async function subirAvatar(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+                alert("Solo se aceptan imágenes PNG, JPG o WEBP.");
+                event.target.value = '';
+                return;
+            }
+            if (file.size > 3 * 1024 * 1024) {
+                alert("La imagen no debe pesar más de 3 MB.");
+                event.target.value = '';
+                return;
+            }
+
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+
+            const label = document.querySelector('label[for="input-avatar"]');
+            const iconoOriginal = label.innerHTML;
+            label.innerHTML = '<span class="material-icons" style="font-size: 14px; color: white;">hourglass_top</span>';
+
+            const ext = file.name.split('.').pop();
+            const ruta = `${session.user.id}/avatar.${ext}`;
+
+            const { error: errorSubida } = await supabaseClient.storage.from('avatars').upload(ruta, file, { upsert: true });
+
+            if (errorSubida) {
+                alert("Error al subir la foto: " + errorSubida.message);
+                label.innerHTML = iconoOriginal;
+                event.target.value = '';
+                return;
+            }
+
+            const { data: urlData } = supabaseClient.storage.from('avatars').getPublicUrl(ruta);
+            const urlConCache = urlData.publicUrl + '?t=' + Date.now();
+
+            await supabaseClient.from('usuarios').update({ avatar_url: urlConCache }).eq('correo', session.user.email);
+
+            mostrarAvatar(urlConCache);
+            label.innerHTML = iconoOriginal;
+            event.target.value = '';
+        }
+
         function formatearCelular(input) {
             let val = input.value.replace(/\D/g, ''); 
             let codigoPais = document.getElementById('edit-codigo-pais').value;
