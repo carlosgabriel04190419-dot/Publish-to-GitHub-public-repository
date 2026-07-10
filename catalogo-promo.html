@@ -170,8 +170,8 @@
             <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 8px; min-width: 160px; z-index: 1000; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
                  <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">person</span> Mis Datos</a>
                  <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #00e676; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
-                 <!-- ENLACE CAJA Misteriosa -->
-                 <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">casino</span>Caja Misteriosa VIP</a>
+                 <!-- ENLACE RULETA VIP -->
+                 <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">casino</span> Ruleta VIP</a>
                 <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;"><span class="material-icons">logout</span> Cerrar Sesión</a>
             </div>
          </div>
@@ -193,7 +193,7 @@
             <h1 class="hero-title" style="font-size: 38px; font-weight: bold; margin-bottom: 15px;">Promo <br><span style="color: #a155ff;">PRIMERA RECARGA 🫦</span></h1>
             <p class="hero-subtitle" style="color: #a8a8b3; font-size: 15px; max-width: 600px; margin: 0 auto;">Precios especiales exclusivos y válidos únicamente para la primera recarga en cada ID.</p>
             <!-- TEXTO VIP MOTIVACIONAL -->
-            <p style="color: #ffc107; font-size: 13px; font-weight: bold; margin-top: 15px; text-shadow: 0 0 10px rgba(255,193,7,0.5);"><span class="material-icons" style="font-size: 14px; vertical-align: middle;">stars</span> Recuerda que cada S/ 1.00 de saldo que recargas te da 10 Puntos para la Caja Misteriosa VIP.</p>
+            <p style="color: #ffc107; font-size: 13px; font-weight: bold; margin-top: 15px; text-shadow: 0 0 10px rgba(255,193,7,0.5);"><span class="material-icons" style="font-size: 14px; vertical-align: middle;">stars</span> Recuerda que cada S/ 1.00 de saldo que recargas te da 10 Puntos para la Ruleta VIP.</p>
         </div>
     </header>
 
@@ -243,8 +243,8 @@
                         <span class="material-icons" style="color: white; font-size: 32px;">casino</span>
                     </div>
                     <div>
-                        <h4 style="margin: 0 0 5px 0; font-size: 16px; color: #ffc107;">Caja Misteriosa VIP</h4>
-                        <p style="margin: 0; font-size: 13px; color: #a8a8b3;">Abre una caja y gana Saldo, Diamantes o Pases gratis.</p>
+                        <h4 style="margin: 0 0 5px 0; font-size: 16px; color: #ffc107;">Ruleta Booyah VIP</h4>
+                        <p style="margin: 0; font-size: 13px; color: #a8a8b3;">Gira la ruleta y gana Saldo, Diamantes o Pases gratis.</p>
                     </div>
                 </div>
 
@@ -452,31 +452,28 @@
 
             btn.disabled = true; btn.innerText = "Procesando pedido...";
 
-            const { data: user } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
-            if (user.saldo < precioSeleccionado) {
-                document.getElementById('compra-pantalla-formulario').style.display = 'none';
-                document.getElementById('compra-pantalla-error').style.display = 'block'; 
+            const { data: resultadoRpc, error: errorCompra } = await supabaseClient.rpc('procesar_compra', {
+                p_paquete: paqueteSeleccionado,
+                p_id_juego: idJuego,
+                p_nickname_juego: nicknameJuego
+            });
+
+            const resultado = resultadoRpc && resultadoRpc[0];
+
+            if (errorCompra || !resultado || resultado.estado === 'error') {
+                if (resultado && resultado.mensaje === 'Saldo insuficiente.') {
+                    document.getElementById('compra-pantalla-formulario').style.display = 'none';
+                    document.getElementById('compra-pantalla-error').style.display = 'block';
+                    btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo";
+                    return;
+                }
+                const msg = errorCompra ? errorCompra.message : (resultado ? resultado.mensaje : "Error desconocido.");
+                alert("Error: " + msg);
                 btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo";
                 return;
             }
 
-            const nuevoSaldo = user.saldo - precioSeleccionado;
-            const { error: errorSaldo } = await supabaseClient.from('usuarios').update({ saldo: nuevoSaldo }).eq('nickname', nombreGuardado);
-
-            if (errorSaldo) { alert("Error: " + errorSaldo.message); btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo"; return; }
-
-            await supabaseClient.from('pedidos').insert([{ 
-                nickname: nombreGuardado, 
-                paquete: paqueteSeleccionado, 
-                id_juego: idJuego, 
-                nickname_juego: nicknameJuego,
-                precio: precioSeleccionado, 
-                estado: 'Pendiente',
-                codigo: 'Activación Promo ⚡'
-            }]);
-
-            await supabaseClient.from('historial').insert([{ nickname: nombreGuardado, monto: precioSeleccionado, tipo: `Compra: ${paqueteSeleccionado} (ID: ${idJuego} | Nick: ${nicknameJuego})`, estado: 'Descontado' }]);
-
+            const nuevoSaldo = Number(resultado.saldo_restante);
             if(document.getElementById('saldo-nav')) document.getElementById('saldo-nav').innerText = nuevoSaldo.toFixed(2);
 
             document.getElementById('compra-pantalla-formulario').style.display = 'none';
