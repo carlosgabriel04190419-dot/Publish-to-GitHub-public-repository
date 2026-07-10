@@ -85,8 +85,8 @@
 
         <ul class="nav-links-desktop">
             <li><a href="#" class="active">Inicio</a></li>
-            <li><a href="#seccion-ranking">Ranking</a></li>
-            <li><a href="#seccion-soporte">Soporte</a></li>
+            <li><a href="ranking.html">Ranking</a></li>
+            <li><a href="soporte.html">Soporte</a></li>
         </ul>
         
         <div class="nav-auth-section" id="nav-logged-out">
@@ -245,28 +245,12 @@
         </section>
     </main>
 
-    <section class="container" id="seccion-ranking">
-        <div class="category-header">
-            <h2>🏆 TOP COMPRADORES DEL MES 🏆</h2>
-            <p style="color: #a8a8b3; margin-top: 5px;">Los jugadores más activos de la comunidad CarzaD'Cross</p>
+    <section class="container" style="text-align: center; padding-top: 40px; padding-bottom: 40px;">
+        <div class="category-header" style="margin-bottom: 20px;">
+            <h2>🏆 ¿Quién manda este mes?</h2>
+            <p style="color: #a8a8b3; margin-top: 5px;">Descubre a los compradores más activos de la comunidad y su recompensa especial</p>
         </div>
-        <div class="ranking-table-container">
-            <table class="ranking-table">
-                <thead>
-                    <tr>
-                        <th>Puesto</th>
-                        <th>Usuario</th>
-                        <th>Acumulado</th>
-                        <th>Rango</th>
-                    </tr>
-                </thead>
-                <tbody id="ranking-body">
-                    <tr>
-                        <td colspan="4" style="text-align: center; color: #a8a8b3; padding: 20px;">Calculando podios del mes...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <a href="ranking.html" class="btn-primary" style="text-decoration: none; display: inline-flex; margin: 0;">Ver Ranking Completo <span class="material-icons">emoji_events</span></a>
     </section>
 
     <style>
@@ -370,16 +354,12 @@
         function verificarCompra() { if(document.getElementById('nav-logged-in').style.display === 'none') { window.location.href = 'login.html'; } else { window.location.href = 'perfil.html'; } }
 
         // ==========================================
-        // ALGORITMO DEL TICKER Y RANKING REAL-TIME
+        // ALGORITMO DEL TICKER EN VIVO
+        // (El ranking completo ahora vive en ranking.html)
         // ==========================================
         async function cargarSistemaComunidadDinamica() {
             try {
-                // 1. FILTRO ANTI-ADMINS Y RESETEO MENSUAL
                 const usuariosExcluidos = ['carzaadmin', 'carzadcrosito'];
-                const hoy = new Date();
-                const primerDiaDelMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1).toISOString();
-
-                // 2. OBTENEMOS LAS ÚLTIMAS COMPRAS GLOBALES (PARA EL TICKER)
                 const { data: pedidosTicker, error: errTicker } = await supabaseClient
                     .from('pedidos')
                     .select('nickname, paquete, id_juego')
@@ -389,14 +369,14 @@
 
                 if (!errTicker && pedidosTicker && pedidosTicker.length > 0) {
                     const ultimas10 = pedidosTicker.filter(p => !usuariosExcluidos.includes(p.nickname.toLowerCase())).slice(0, 10);
-                    
+
                     let tickerHtml = '';
                     ultimas10.forEach(p => {
                         let idRaw = p.id_juego ? p.id_juego.toString().trim() : '';
                         let idOculto = idRaw.length > 4 ? idRaw.substring(0, idRaw.length - 4) + '****' : '********';
                         tickerHtml += `<div class="ticker-item">💎 <span class="hl">${p.nickname}</span> adquirió ${p.paquete} <span class="id-text">| ID: ${idOculto}</span></div>`;
                     });
-                    
+
                     if(tickerHtml !== '') {
                         const track = document.getElementById('ticker-track');
                         track.innerHTML = tickerHtml + tickerHtml + tickerHtml;
@@ -409,80 +389,6 @@
                     } else {
                         document.getElementById('ticker-track').innerHTML = '<div class="ticker-item">Esperando nuevas compras de la comunidad...</div>';
                     }
-                }
-
-                // 3. OBTENEMOS LAS COMPRAS SOLO DEL MES ACTUAL (PARA EL RANKING)
-                const { data: pedidosMes, error: errMes } = await supabaseClient
-                    .from('pedidos')
-                    .select('nickname, paquete')
-                    .eq('estado', 'Completado')
-                    .gte('created_at', primerDiaDelMes);
-
-                if (!errMes && pedidosMes && pedidosMes.length > 0) {
-                    let rankingMap = {};
-                    
-                    pedidosMes.forEach(p => {
-                        if (usuariosExcluidos.includes(p.nickname.toLowerCase())) return;
-
-                        let diamantes = parseInt(p.paquete.replace(/\D/g, ''));
-                        if (p.paquete.toLowerCase().includes("pase")) diamantes = 500;
-
-                        if (!isNaN(diamantes) && p.nickname) {
-                            if (!rankingMap[p.nickname]) rankingMap[p.nickname] = 0;
-                            rankingMap[p.nickname] += diamantes;
-                        }
-                    });
-
-                    let rankingArray = Object.keys(rankingMap).map(nick => ({
-                        nickname: nick,
-                        diamantes: rankingMap[nick]
-                    })).sort((a, b) => b.diamantes - a.diamantes);
-
-                    const tbody = document.getElementById('ranking-body');
-                    if (tbody) {
-                        tbody.innerHTML = '';
-                        const top5 = rankingArray.slice(0, 5);
-
-                        if(top5.length > 0) {
-                            top5.forEach((user, index) => {
-                                let medalla = `${index + 1}°`;
-                                let badgeClass = 'common';
-                                let badgeText = 'Platino';
-
-                                if (index === 0) { medalla = '🥇 1°'; badgeClass = 'gold'; badgeText = 'Leyenda'; }
-                                else if (index === 1) { medalla = '🥈 2°'; badgeClass = 'silver'; badgeText = 'Gran Maestro'; }
-                                else if (index === 2) { medalla = '🥉 3°'; badgeClass = 'bronze'; badgeText = 'Maestro'; }
-                                else if (index === 3) { medalla = '4°'; badgeClass = 'common'; badgeText = 'Diamante'; }
-
-                                tbody.innerHTML += `
-                                    <tr class="${index < 3 ? 'top-rank rank-' + (index + 1) : ''}">
-                                        <td>${medalla}</td>
-                                        <td style="font-weight: bold; color: white;">${user.nickname}</td>
-                                        <td style="font-weight: bold; color: #00e676;">💎 ${user.diamantes.toLocaleString('es-PE')} Diamantes</td>
-                                        <td><span class="rank-badge ${badgeClass}">${badgeText}</span></td>
-                                    </tr>`;
-                            });
-
-                            let placeholders = ['DarkSlayer', 'CholoGamer Pro'];
-                            for (let i = top5.length; i < 5; i++) {
-                                let medalla = `${i + 1}°`;
-                                let badgeText = i === 3 ? 'Diamante' : 'Platino';
-                                let name = placeholders[i - top5.length] || 'GamerAnon';
-                                let cantP = i === 3 ? '💎 1,500 Diamantes' : '💎 500 Diamantes';
-                                tbody.innerHTML += `
-                                    <tr>
-                                        <td>${medalla}</td>
-                                        <td>${name}</td>
-                                        <td style="color: #a8a8b3;">${cantP}</td>
-                                        <td><span class="rank-badge common">${badgeText}</span></td>
-                                    </tr>`;
-                            }
-                        } else {
-                            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #a8a8b3; padding: 20px;">El ranking se reinició. ¡Sé el primero del mes!</td></tr>';
-                        }
-                    }
-                } else {
-                    document.getElementById('ranking-body').innerHTML = '<tr><td colspan="4" style="text-align: center; color: #a8a8b3; padding: 20px;">El ranking mensual acaba de reiniciarse. ¡Empieza la competencia!</td></tr>';
                 }
             } catch (err) { console.error("Error en sistema dinámico:", err); }
         }
@@ -523,7 +429,7 @@
                 <h3 class="footer-title">NAVEGACIÓN</h3>
                 <ul>
                     <li><a href="index.html">Inicio</a></li>
-                    <li><a href="catalogo-regular.html">Catálogo Free Fire</a></li>
+                    <li><a href="#seccion-juegos">Catálogo Free Fire</a></li>
                     <li><a href="catalogo-cajas.html">Cajas y Fragmentos</a></li>
                     <li><a href="perfil.html">Mi Panel</a></li>
                 </ul>
@@ -533,7 +439,7 @@
                 <ul>
                     <li><a href="recargar.html">Reportar Pago</a></li>
                     <li><a href="https://wa.me/51943737572" target="_blank">Contactar por WhatsApp</a></li>
-                    <li><a href="index.html">Centro de Ayuda</a></li>
+                    <li><a href="soporte.html">Centro de Ayuda</a></li>
                 </ul>
             </div>
             <div class="footer-links">
