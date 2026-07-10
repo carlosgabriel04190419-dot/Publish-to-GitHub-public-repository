@@ -12,13 +12,27 @@
     <a href="index.html" class="back-link"><span class="material-icons">arrow_back</span> Volver a CarzaD'Cross</a>
 
     <div class="login-container">
-        
+
         <div class="login-left">
             <div class="login-header">
-                <div class="profile-avatar">C</div>
-                <div>
-                    <h2>CarzaD'Cross</h2>
-                    <p>Plataforma de Recargas</p>
+                <div class="nav-logo-premium" style="pointer-events: none;">
+                    <div class="logo-emblem" style="width: 38px; height: 38px;">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                            <defs>
+                                <linearGradient id="gradLogoLogin" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#a155ff;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M50 5 L90 25 L90 70 L50 95 L10 70 L10 25 Z" fill="#121218" stroke="url(#gradLogoLogin)" stroke-width="6" stroke-linejoin="round"/>
+                            <path d="M60 35 A 20 20 0 1 0 60 65" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                            <line x1="45" y1="25" x2="80" y2="75" stroke="#00d2ff" stroke-width="8" stroke-linecap="round"/>
+                            <line x1="80" y1="25" x2="45" y2="75" stroke="#a155ff" stroke-width="8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="font-size: 19px;">
+                        <span class="text-carza">Carza</span><span class="text-d">D'</span><span class="text-cross">Cross</span>
+                    </div>
                 </div>
             </div>
 
@@ -31,21 +45,19 @@
                 <label>Usuario o correo</label>
                 <div class="input-group">
                     <span class="material-icons">mail</span>
-                    <!-- Agregada la función de la tecla Enter -->
                     <input type="text" id="login-correo" placeholder="usuario@correo.com" onkeydown="if(event.key === 'Enter') manejarLogin()">
                 </div>
 
                 <label>Contraseña</label>
                 <div class="input-group">
                    <span class="material-icons">lock</span>
-                   <!-- Agregada la función de la tecla Enter -->
                    <input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key === 'Enter') manejarLogin()">
                    <span class="material-icons eye-icon" onclick="togglePassword('login-password', this)" style="cursor: pointer;">visibility_off</span>
                 </div>
 
                 <div class="login-options">
                     <label><input type="checkbox"> Recordarme</label>
-                    <a href="#">¿Olvidaste tu contraseña?</a>
+                    <a href="#" onclick="abrirModalRecuperar(event)">¿Olvidaste tu contraseña?</a>
                 </div>
 
                 <button type="button" id="btn-login" class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="manejarLogin()">Iniciar Sesión</button>
@@ -54,9 +66,6 @@
 
                 <button type="button" class="btn-social" onclick="iniciarConGoogle()">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google"> Iniciar sesión con Google
-                </button>
-                <button type="button" class="btn-social">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook"> Iniciar sesión con Facebook
                 </button>
 
                 <button type="button" class="btn-outline" style="width: 100%; margin-top: 15px;" onclick="window.location.href='register.html'">Registrarme</button>
@@ -89,6 +98,20 @@
         </div>
     </div>
 
+    <!-- MODAL: RECUPERAR CONTRASEÑA -->
+    <div id="modal-recuperar" class="modal-overlay">
+        <div class="modal-box">
+            <span class="material-icons close-btn" onclick="cerrarModalRecuperar()">close</span>
+            <div class="modal-header">
+                <h2>Recuperar Contraseña</h2>
+                <p>Te enviaremos un enlace a tu correo para crear una nueva contraseña.</p>
+            </div>
+            <div id="recuperar-msg" style="display:none; font-size:13px; padding:10px; border-radius:8px; margin-bottom:15px; text-align:center;"></div>
+            <input type="email" id="recuperar-correo" class="input-form" placeholder="tu-correo@ejemplo.com">
+            <button type="button" id="btn-recuperar" class="btn-primary" style="width:100%;" onclick="enviarRecuperacion()">Enviar Enlace</button>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
@@ -97,7 +120,7 @@
 
         function togglePassword(inputId, iconElement) {
             const input = document.getElementById(inputId);
-            if (input.type === "password") { input.type = "text"; iconElement.innerText = "visibility"; } 
+            if (input.type === "password") { input.type = "text"; iconElement.innerText = "visibility"; }
             else { input.type = "password"; iconElement.innerText = "visibility_off"; }
         }
 
@@ -113,21 +136,29 @@
                 btn.innerText = "Sincronizando perfil..."; btn.disabled = true;
 
                 const { data: { session } } = await supabaseClient.auth.getSession();
-                
+
                 if (session) {
                     const email = session.user.email;
                     let fullName = session.user.user_metadata.full_name || email.split('@')[0];
                     let nicknameLimpio = fullName.replace(/[^a-zA-Z0-9_]/g, '');
 
-                    let { data: usuarioData } = await supabaseClient.from('usuarios').select('nickname').eq('correo', email).single();
-                    
+                    let { data: usuarioData } = await supabaseClient.from('usuarios').select('nickname, celular').eq('correo', email).single();
+
+                    let esNuevo = false;
                     if (!usuarioData) {
                         await supabaseClient.from('usuarios').insert([{ nickname: nicknameLimpio, correo: email, saldo: 0 }]);
-                        usuarioData = { nickname: nicknameLimpio };
+                        usuarioData = { nickname: nicknameLimpio, celular: null };
+                        esNuevo = true;
                     }
 
                     localStorage.setItem('nombreUsuario', usuarioData.nickname);
-                    window.location.href = 'index.html';
+
+                    // Si es cuenta nueva de Google, o le falta el WhatsApp, la completamos antes de entrar
+                    if (esNuevo || !usuarioData.celular) {
+                        window.location.href = 'completar-perfil.html';
+                    } else {
+                        window.location.href = 'index.html';
+                    }
                 }
             }
         };
@@ -143,7 +174,7 @@
             const inputUsuario = document.getElementById('login-correo').value.trim();
             const password = document.getElementById('login-password').value;
             const btn = document.getElementById('btn-login');
-            
+
             if (!inputUsuario || !password) return mostrarError("Por favor, ingresa tu correo/usuario y contraseña.");
 
             btn.disabled = true; btn.innerText = "Ingresando...";
@@ -153,7 +184,7 @@
 
             if (!inputUsuario.includes('@')) {
                 const { data: userData } = await supabaseClient.from('usuarios').select('correo').eq('nickname', inputUsuario).single();
-                if (userData && userData.correo) { emailToLogin = userData.correo; } 
+                if (userData && userData.correo) { emailToLogin = userData.correo; }
                 else { btn.disabled = false; btn.innerText = "Iniciar Sesión"; return mostrarError("Usuario no encontrado."); }
             }
 
@@ -166,14 +197,46 @@
                 return mostrarError("Error: " + error.message);
             }
 
-            const { data: currentUser } = await supabaseClient.from('usuarios').select('nickname').eq('correo', emailToLogin).single();
-            
+            const { data: currentUser } = await supabaseClient.from('usuarios').select('nickname, celular').eq('correo', emailToLogin).single();
+
             if (currentUser) {
                 localStorage.setItem('nombreUsuario', currentUser.nickname);
-                window.location.href = 'index.html';
+                window.location.href = currentUser.celular ? 'index.html' : 'completar-perfil.html';
             } else {
                 mostrarError("Error interno: Perfil no encontrado.");
                 btn.disabled = false; btn.innerText = "Iniciar Sesión";
+            }
+        }
+
+        // ================= RECUPERAR CONTRASEÑA =================
+        function abrirModalRecuperar(e) {
+            if (e) e.preventDefault();
+            document.getElementById('recuperar-msg').style.display = 'none';
+            document.getElementById('recuperar-correo').value = document.getElementById('login-correo').value.includes('@') ? document.getElementById('login-correo').value : '';
+            document.getElementById('modal-recuperar').style.display = 'flex';
+        }
+        function cerrarModalRecuperar() { document.getElementById('modal-recuperar').style.display = 'none'; }
+
+        async function enviarRecuperacion() {
+            const correo = document.getElementById('recuperar-correo').value.trim();
+            const msg = document.getElementById('recuperar-msg');
+            const btn = document.getElementById('btn-recuperar');
+            if (!correo || !correo.includes('@')) {
+                msg.style.display = 'block'; msg.style.background = 'rgba(255,71,87,0.1)'; msg.style.color = '#ff4757';
+                msg.innerText = 'Ingresa un correo válido.'; return;
+            }
+            btn.disabled = true; btn.innerText = 'Enviando...';
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(correo, {
+                redirectTo: window.location.origin + '/restablecer-contrasena.html'
+            });
+            btn.disabled = false; btn.innerText = 'Enviar Enlace';
+            msg.style.display = 'block';
+            if (error) {
+                msg.style.background = 'rgba(255,71,87,0.1)'; msg.style.color = '#ff4757';
+                msg.innerText = 'No se pudo enviar: ' + error.message;
+            } else {
+                msg.style.background = 'rgba(0,230,118,0.1)'; msg.style.color = '#00e676';
+                msg.innerText = 'Listo. Si el correo existe, te llegará un enlace en unos minutos (revisa spam).';
             }
         }
     </script>

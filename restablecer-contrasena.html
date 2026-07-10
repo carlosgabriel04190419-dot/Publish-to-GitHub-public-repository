@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarzaD'Cross | Nueva Contraseña</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body class="login-body">
+
+    <a href="login.html" class="back-link"><span class="material-icons">arrow_back</span> Volver al Acceso</a>
+
+    <div class="login-container" style="max-width: 480px;">
+        <div class="login-left">
+            <div class="login-header">
+                <div class="nav-logo-premium" style="pointer-events: none;">
+                    <div class="logo-emblem" style="width: 38px; height: 38px;">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                            <defs>
+                                <linearGradient id="gradLogoRC" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#a155ff;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M50 5 L90 25 L90 70 L50 95 L10 70 L10 25 Z" fill="#121218" stroke="url(#gradLogoRC)" stroke-width="6" stroke-linejoin="round"/>
+                            <path d="M60 35 A 20 20 0 1 0 60 65" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                            <line x1="45" y1="25" x2="80" y2="75" stroke="#00d2ff" stroke-width="8" stroke-linecap="round"/>
+                            <line x1="80" y1="25" x2="45" y2="75" stroke="#a155ff" stroke-width="8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="font-size: 19px;">
+                        <span class="text-carza">Carza</span><span class="text-d">D'</span><span class="text-cross">Cross</span>
+                    </div>
+                </div>
+            </div>
+
+            <h1 class="login-title">Nueva Contraseña</h1>
+            <p class="login-subtitle" id="subtitulo">Escribe tu nueva contraseña para tu cuenta.</p>
+
+            <div id="msg-box" style="display: none; background: rgba(255, 71, 87, 0.1); border: 1px solid #ff4757; color: #ff4757; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; text-align: center; font-weight: bold;"></div>
+
+            <div id="form-wrapper">
+                <form class="login-form" onsubmit="return false;">
+                    <label>Nueva Contraseña</label>
+                    <div class="input-group">
+                       <span class="material-icons">lock</span>
+                       <input type="password" id="rc-password" placeholder="Crea una contraseña segura" oninput="evaluarFuerzaPassword()">
+                       <span class="material-icons eye-icon" onclick="togglePassword('rc-password', this)" style="cursor: pointer;">visibility_off</span>
+                    </div>
+                    <div class="pass-strength-bar"><div id="pass-strength-fill" class="pass-strength-fill"></div></div>
+                    <span id="pass-strength-label" class="pass-strength-label"></span>
+
+                    <label>Repite la Contraseña</label>
+                    <div class="input-group">
+                       <span class="material-icons">lock_clock</span>
+                       <input type="password" id="rc-password2" placeholder="Vuelve a escribirla" oninput="verificarCoincidencia()" onkeydown="if(event.key === 'Enter') guardarNuevaPassword()">
+                       <span class="material-icons eye-icon" onclick="togglePassword('rc-password2', this)" style="cursor: pointer;">visibility_off</span>
+                    </div>
+                    <p id="pass-match-msg" style="margin: -14px 0 18px 0; font-size: 11px; display:none;"></p>
+
+                    <button type="button" id="btn-guardar" class="btn-primary" style="width: 100%;" onclick="guardarNuevaPassword()">Guardar Nueva Contraseña</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
+        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        function togglePassword(inputId, iconElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") { input.type = "text"; iconElement.innerText = "visibility"; }
+            else { input.type = "password"; iconElement.innerText = "visibility_off"; }
+        }
+
+        function mostrarError(mensaje) {
+            const box = document.getElementById('msg-box');
+            box.style.display = 'block';
+            box.style.background = 'rgba(255, 71, 87, 0.1)'; box.style.color = '#ff4757';
+            box.innerText = mensaje;
+        }
+        function mostrarExito(mensaje) {
+            const box = document.getElementById('msg-box');
+            box.style.display = 'block';
+            box.style.background = 'rgba(0, 230, 118, 0.1)'; box.style.color = '#00e676';
+            box.innerText = mensaje;
+        }
+
+        function evaluarFuerzaPassword() {
+            const val = document.getElementById('rc-password').value;
+            const fill = document.getElementById('pass-strength-fill');
+            const label = document.getElementById('pass-strength-label');
+            if (!val) { fill.style.width = '0%'; label.innerText = ''; return; }
+            let puntos = 0;
+            if (val.length >= 6) puntos++;
+            if (val.length >= 10) puntos++;
+            if (/[A-Z]/.test(val)) puntos++;
+            if (/[0-9]/.test(val)) puntos++;
+            if (/[^A-Za-z0-9]/.test(val)) puntos++;
+            let pct, color, texto;
+            if (puntos <= 1) { pct = 25; color = '#ff4757'; texto = 'Muy débil — agrega números y mayúsculas'; }
+            else if (puntos === 2) { pct = 50; color = '#ff9800'; texto = 'Débil — puede ser mejor'; }
+            else if (puntos === 3) { pct = 70; color = '#ffc107'; texto = 'Aceptable'; }
+            else if (puntos === 4) { pct = 90; color = '#8bc34a'; texto = 'Fuerte'; }
+            else { pct = 100; color = '#00e676'; texto = 'Muy fuerte 💪'; }
+            fill.style.width = pct + '%'; fill.style.backgroundColor = color;
+            label.style.color = color; label.innerText = texto;
+            verificarCoincidencia();
+        }
+
+        function verificarCoincidencia() {
+            const p1 = document.getElementById('rc-password').value;
+            const p2 = document.getElementById('rc-password2').value;
+            const msg = document.getElementById('pass-match-msg');
+            if (!p2) { msg.style.display = 'none'; return; }
+            msg.style.display = 'block';
+            if (p1 === p2) { msg.style.color = '#00e676'; msg.innerText = '✓ Las contraseñas coinciden'; }
+            else { msg.style.color = '#ff4757'; msg.innerText = '✗ Las contraseñas no coinciden'; }
+        }
+
+        window.onload = async function() {
+            // Supabase entrega la sesión de recuperación en el hash (#access_token=...&type=recovery)
+            if (!window.location.hash || !window.location.hash.includes('access_token')) {
+                document.getElementById('form-wrapper').style.display = 'none';
+                mostrarError('Este enlace no es válido o ya expiró. Solicita uno nuevo desde "¿Olvidaste tu contraseña?" en el acceso.');
+            }
+        };
+
+        async function guardarNuevaPassword() {
+            const p1 = document.getElementById('rc-password').value;
+            const p2 = document.getElementById('rc-password2').value;
+            const btn = document.getElementById('btn-guardar');
+
+            if (!p1 || !p2) return mostrarError('Completa ambos campos.');
+            if (p1.length < 6) return mostrarError('La contraseña debe tener al menos 6 caracteres.');
+            if (p1 !== p2) return mostrarError('Las contraseñas no coinciden.');
+
+            btn.disabled = true; btn.innerText = 'Guardando...';
+
+            const { error } = await supabaseClient.auth.updateUser({ password: p1 });
+
+            if (error) {
+                btn.disabled = false; btn.innerText = 'Guardar Nueva Contraseña';
+                return mostrarError('No se pudo actualizar: ' + error.message);
+            }
+
+            document.getElementById('form-wrapper').style.display = 'none';
+            mostrarExito('¡Listo! Tu contraseña se actualizó. Redirigiendo al acceso...');
+            await supabaseClient.auth.signOut();
+            setTimeout(() => { window.location.href = 'login.html'; }, 2500);
+        }
+    </script>
+</body>
+</html>

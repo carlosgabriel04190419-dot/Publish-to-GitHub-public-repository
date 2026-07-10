@@ -12,13 +12,27 @@
     <a href="login.html" class="back-link"><span class="material-icons">arrow_back</span> Volver al Acceso</a>
 
     <div class="login-container">
-        
+
         <div class="login-left">
             <div class="login-header">
-                <div class="profile-avatar">C</div>
-                <div>
-                    <h2>CarzaD'Cross</h2>
-                    <p>Únete a la comunidad</p>
+                <div class="nav-logo-premium" style="pointer-events: none;">
+                    <div class="logo-emblem" style="width: 38px; height: 38px;">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                            <defs>
+                                <linearGradient id="gradLogoReg" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#a155ff;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M50 5 L90 25 L90 70 L50 95 L10 70 L10 25 Z" fill="#121218" stroke="url(#gradLogoReg)" stroke-width="6" stroke-linejoin="round"/>
+                            <path d="M60 35 A 20 20 0 1 0 60 65" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                            <line x1="45" y1="25" x2="80" y2="75" stroke="#00d2ff" stroke-width="8" stroke-linecap="round"/>
+                            <line x1="80" y1="25" x2="45" y2="75" stroke="#a155ff" stroke-width="8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="font-size: 19px;">
+                        <span class="text-carza">Carza</span><span class="text-d">D'</span><span class="text-cross">Cross</span>
+                    </div>
                 </div>
             </div>
 
@@ -40,31 +54,41 @@
                     <input type="email" id="reg-correo" placeholder="usuario@correo.com" onkeydown="if(event.key === 'Enter') registrarUsuario()">
                 </div>
 
-                <!-- CAMPO CELULAR AHORA MARCADO COMO OBLIGATORIO -->
                 <label>Número de WhatsApp (Obligatorio) <span style="color: #ff4757;">*</span></label>
-                <div class="input-group" style="display: flex; gap: 10px; padding: 0;">
-                    <div style="background: rgba(0, 0, 0, 0.2); border-right: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; padding: 0 10px; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">
+                <div class="input-group reg-phone-group" style="display: flex; gap: 10px; padding: 0;">
+                    <div style="background: rgba(0, 0, 0, 0.2); border-right: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; padding: 0 10px; border-top-left-radius: 8px; border-bottom-left-radius: 8px; flex-shrink: 0;">
                         <span class="material-icons" style="color: #666; font-size: 18px; margin-right: 5px;">smartphone</span>
-                        <select id="reg-codigo-pais" style="background: transparent; color: white; border: none; outline: none; font-size: 15px; cursor: pointer;">
-                            <option value="51" selected style="color: black;">🇵🇪 +51</option>
-                            <option value="52" style="color: black;">🇲🇽 +52</option>
-                            <option value="57" style="color: black;">🇨🇴 +57</option>
-                            <option value="54" style="color: black;">🇦🇷 +54</option>
-                            <option value="56" style="color: black;">🇨🇱 +56</option>
-                            <option value="58" style="color: black;">🇻🇪 +58</option>
-                            <option value="593" style="color: black;">🇪🇨 +593</option>
-                            <option value="591" style="color: black;">🇧🇴 +591</option>
+                        <select id="reg-codigo-pais" onchange="alCambiarPais()" style="background: transparent; color: white; border: none; outline: none; font-size: 15px; cursor: pointer;">
+                            <option value="51" data-digitos="9" selected style="color: black;">🇵🇪 +51</option>
+                            <option value="52" data-digitos="10" style="color: black;">🇲🇽 +52</option>
+                            <option value="57" data-digitos="10" style="color: black;">🇨🇴 +57</option>
+                            <option value="54" data-digitos="10" style="color: black;">🇦🇷 +54</option>
+                            <option value="56" data-digitos="9" style="color: black;">🇨🇱 +56</option>
+                            <option value="58" data-digitos="10" style="color: black;">🇻🇪 +58</option>
+                            <option value="593" data-digitos="9" style="color: black;">🇪🇨 +593</option>
+                            <option value="591" data-digitos="8" style="color: black;">🇧🇴 +591</option>
                         </select>
                     </div>
-                    <input type="number" id="reg-celular" placeholder="942 395 040" style="flex: 1; border: none; outline: none; background: transparent; color: white; padding: 14px; font-size: 15px;" onkeydown="if(event.key === 'Enter') registrarUsuario()">
+                    <input type="tel" inputmode="numeric" id="reg-celular" placeholder="942 395 040" oninput="formatearCelularReg()" style="flex: 1; border: none; outline: none; background: transparent; color: white; padding: 14px; font-size: 15px; min-width: 0;" onkeydown="if(event.key === 'Enter') registrarUsuario()">
                 </div>
+                <p id="celular-hint" style="margin: -14px 0 18px 0; font-size: 11px; color: #6a6a78;">Perú: 9 dígitos</p>
 
                 <label>Contraseña</label>
                 <div class="input-group">
                    <span class="material-icons">lock</span>
-                   <input type="password" id="reg-password" placeholder="Crea una contraseña segura" onkeydown="if(event.key === 'Enter') registrarUsuario()">
+                   <input type="password" id="reg-password" placeholder="Crea una contraseña segura" oninput="evaluarFuerzaPassword()" onkeydown="if(event.key === 'Enter') document.getElementById('reg-password2').focus()">
                    <span class="material-icons eye-icon" onclick="togglePassword('reg-password', this)" style="cursor: pointer;">visibility_off</span>
                 </div>
+                <div class="pass-strength-bar"><div id="pass-strength-fill" class="pass-strength-fill"></div></div>
+                <span id="pass-strength-label" class="pass-strength-label"></span>
+
+                <label>Repite tu Contraseña</label>
+                <div class="input-group">
+                   <span class="material-icons">lock_clock</span>
+                   <input type="password" id="reg-password2" placeholder="Vuelve a escribirla" oninput="verificarCoincidencia()" onkeydown="if(event.key === 'Enter') registrarUsuario()">
+                   <span class="material-icons eye-icon" onclick="togglePassword('reg-password2', this)" style="cursor: pointer;">visibility_off</span>
+                </div>
+                <p id="pass-match-msg" style="margin: -14px 0 18px 0; font-size: 11px; display:none;"></p>
 
                 <button type="button" id="btn-registrar" class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="registrarUsuario()">Continuar</button>
 
@@ -73,6 +97,7 @@
                 <button type="button" class="btn-social" onclick="iniciarConGoogle()">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google"> Registrarse con Google
                 </button>
+                <p style="text-align:center; font-size:11px; color:#6a6a78; margin-top:10px;">Con Google no necesitas crear contraseña — solo te pediremos tu WhatsApp.</p>
             </form>
         </div>
 
@@ -97,7 +122,7 @@
 
         function togglePassword(inputId, iconElement) {
             const input = document.getElementById(inputId);
-            if (input.type === "password") { input.type = "text"; iconElement.innerText = "visibility"; } 
+            if (input.type === "password") { input.type = "text"; iconElement.innerText = "visibility"; }
             else { input.type = "password"; iconElement.innerText = "visibility_off"; }
         }
 
@@ -112,6 +137,66 @@
             }
         }
 
+        // ================= TELÉFONO: FORMATO 3-3-3 ADAPTADO AL PAÍS =================
+        function digitosEsperados() {
+            const sel = document.getElementById('reg-codigo-pais');
+            return parseInt(sel.options[sel.selectedIndex].getAttribute('data-digitos'), 10);
+        }
+
+        function alCambiarPais() {
+            const n = digitosEsperados();
+            document.getElementById('celular-hint').innerText = `${n} dígitos esperados para este país`;
+            formatearCelularReg();
+        }
+
+        function formatearCelularReg() {
+            const input = document.getElementById('reg-celular');
+            const max = digitosEsperados();
+            let soloNumeros = input.value.replace(/\D/g, '').slice(0, max);
+            const grupos = soloNumeros.match(/.{1,3}/g) || [];
+            input.value = grupos.join(' ');
+        }
+
+        // ================= FUERZA DE CONTRASEÑA =================
+        function evaluarFuerzaPassword() {
+            const val = document.getElementById('reg-password').value;
+            const fill = document.getElementById('pass-strength-fill');
+            const label = document.getElementById('pass-strength-label');
+
+            if (!val) { fill.style.width = '0%'; label.innerText = ''; return; }
+
+            let puntos = 0;
+            if (val.length >= 6) puntos++;
+            if (val.length >= 10) puntos++;
+            if (/[A-Z]/.test(val)) puntos++;
+            if (/[0-9]/.test(val)) puntos++;
+            if (/[^A-Za-z0-9]/.test(val)) puntos++;
+
+            let pct, color, texto;
+            if (puntos <= 1) { pct = 25; color = '#ff4757'; texto = 'Muy débil — agrega números y mayúsculas'; }
+            else if (puntos === 2) { pct = 50; color = '#ff9800'; texto = 'Débil — puede ser mejor'; }
+            else if (puntos === 3) { pct = 70; color = '#ffc107'; texto = 'Aceptable'; }
+            else if (puntos === 4) { pct = 90; color = '#8bc34a'; texto = 'Fuerte'; }
+            else { pct = 100; color = '#00e676'; texto = 'Muy fuerte 💪'; }
+
+            fill.style.width = pct + '%';
+            fill.style.backgroundColor = color;
+            label.style.color = color;
+            label.innerText = texto;
+
+            verificarCoincidencia();
+        }
+
+        function verificarCoincidencia() {
+            const p1 = document.getElementById('reg-password').value;
+            const p2 = document.getElementById('reg-password2').value;
+            const msg = document.getElementById('pass-match-msg');
+            if (!p2) { msg.style.display = 'none'; return; }
+            msg.style.display = 'block';
+            if (p1 === p2) { msg.style.color = '#00e676'; msg.innerText = '✓ Las contraseñas coinciden'; }
+            else { msg.style.color = '#ff4757'; msg.innerText = '✗ Las contraseñas no coinciden'; }
+        }
+
         async function iniciarConGoogle() {
             await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
@@ -123,14 +208,17 @@
             const nickname = document.getElementById('reg-nickname').value.trim();
             const correo = document.getElementById('reg-correo').value.trim();
             const password = document.getElementById('reg-password').value;
-            const celular = document.getElementById('reg-celular').value.trim();
+            const password2 = document.getElementById('reg-password2').value;
+            const celular = document.getElementById('reg-celular').value.replace(/\s/g, '').trim();
             const codigoPais = document.getElementById('reg-codigo-pais').value;
             const btn = document.getElementById('btn-registrar');
 
-            // NUEVA LÓGICA: CELULAR OBLIGATORIO Y MÍNIMO DE DÍGITOS
-            if (!nickname || !correo || !password) return mostrarMensaje("Completa todos los campos.");
-            if (!celular || celular.length < 8) return mostrarMensaje("Ingresa un número de WhatsApp válido.");
+            if (!nickname || !correo || !password || !password2) return mostrarMensaje("Completa todos los campos.");
+            if (password !== password2) return mostrarMensaje("Las contraseñas no coinciden.");
             if (password.length < 6) return mostrarMensaje("La contraseña debe tener al menos 6 caracteres.");
+
+            const nDigitos = digitosEsperados();
+            if (!celular || celular.length !== nDigitos) return mostrarMensaje(`Ingresa un número de WhatsApp válido (${nDigitos} dígitos para este país).`);
 
             btn.disabled = true; btn.innerText = "Procesando...";
 
@@ -147,13 +235,12 @@
                 btn.disabled = false; btn.innerText = "Continuar"; return;
             }
 
-            // GUARDA EL CELULAR UNIDO AL CÓDIGO DE PAÍS
             const numeroCompleto = codigoPais + celular;
             await supabaseClient.from('usuarios').insert([{ nickname: nickname, correo: correo, saldo: 0, celular: numeroCompleto }]);
 
             mostrarMensaje("¡Cuenta creada con éxito!<br>Redirigiendo al acceso...", "exito");
             btn.innerText = "Ingresando...";
-            
+
             setTimeout(() => { window.location.href = 'login.html'; }, 2000);
         }
     </script>
