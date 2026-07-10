@@ -79,7 +79,10 @@
 
         @media (max-width: 700px) {
             .ranking-podium { flex-direction: column; align-items: center; gap: 16px; }
-            .podium-gold, .podium-silver, .podium-bronze { order: 0; width: 100%; max-width: 300px; align-self: center; margin-top: 0; padding-top: 28px; }
+            .podium-gold, .podium-silver, .podium-bronze { width: 100%; max-width: 300px; align-self: center; margin-top: 0; padding-top: 28px; }
+            .podium-gold { order: 1; }
+            .podium-silver { order: 2; }
+            .podium-bronze { order: 3; }
         }
     </style>
 </head>
