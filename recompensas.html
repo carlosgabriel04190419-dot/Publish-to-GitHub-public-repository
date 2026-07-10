@@ -424,23 +424,26 @@
         // ==========================================
         async function abrirCaja(boxId) {
             if (abriendoCaja) return;
-            const nick = localStorage.getItem('nombreUsuario');
             const msg = document.getElementById('ruleta-msg');
-
-            if (puntosActuales < 500) {
-                msg.style.display = 'block';
-                setTimeout(() => { msg.style.display = 'none'; }, 4000);
-                return;
-            }
 
             abriendoCaja = true;
             document.getElementById('caja-instruccion').innerText = "Abriendo caja...";
-            
-            // 1. Cobramos los puntos en UI y BD (Inmediato)
-            puntosActuales -= 500;
+
+            const { data: resultadoRpc, error: errorCaja } = await supabaseClient.rpc('abrir_caja');
+            const resultado = resultadoRpc && resultadoRpc[0];
+
+            if (errorCaja || !resultado || resultado.tipo === 'error') {
+                msg.innerText = resultado ? resultado.desc_premio : "Error al abrir la caja.";
+                msg.style.display = 'block';
+                setTimeout(() => { msg.style.display = 'none'; }, 4000);
+                abriendoCaja = false;
+                document.getElementById('caja-instruccion').innerText = "Toca la caja que te dé más suerte.";
+                return;
+            }
+
+            puntosActuales = resultado.puntos_restantes;
             document.getElementById('puntos-nav').innerText = puntosActuales;
             document.getElementById('puntos-pantalla').innerText = puntosActuales;
-            await supabaseClient.from('usuarios').update({ puntos: puntosActuales }).eq('nickname', nick);
 
             // 2. Animación Inicial: Desaparecer las otras cajas
             [1, 2, 3].forEach(id => {
@@ -456,30 +459,15 @@
             const cajaElegida = document.getElementById('box-' + boxId);
             cajaElegida.classList.add('shaking');
 
-            // 4. Matemáticas de Probabilidad exactas (Igual que la ruleta)
-            const roll = Math.random() * 100;
-            let premioInfo = {};
-
-            if (roll <= 60) {
-                // 60% S/ 1.00
-                premioInfo = { tipo: 'saldo', monto: 1.00, titulo: '¡Saldo Ganado!', desc: 'Acabas de ganar S/ 1.00. Se ha sumado automáticamente a tu billetera web.', icono: 'payments', color: '#00e676' };
-            } 
-            else if (roll <= 80) {
-                // 20% S/ 2.00
-                premioInfo = { tipo: 'saldo', monto: 2.00, titulo: '¡Saldo Ganado!', desc: 'Acabas de ganar S/ 2.00. Se ha sumado automáticamente a tu billetera web.', icono: 'payments', color: '#00e676' };
-            } 
-            else if (roll <= 94) {
-                // 14% 110 Diams
-                premioInfo = { tipo: 'fisico', paquete: '110 Diamantes directos', titulo: '¡110 Diamantes!', desc: '¡Felicidades! Ingresa tu ID y Nickname de tu cuenta para realizar el envío directo.', icono: 'diamond', color: '#00d2ff' };
-            } 
-            else if (roll <= 99) {
-                // 5% Pase
-                premioInfo = { tipo: 'fisico', paquete: 'Pase Booyah', titulo: '¡PASE BOOYAH!', desc: '¡Increíble suerte! Ingresa tu ID y Nickname de tu cuenta para realizar el envío.', icono: 'local_activity', color: '#a155ff' };
-            } 
-            else {
-                // 1% Jackpot
-                premioInfo = { tipo: 'fisico', paquete: '1170 Diamantes (Jackpot)', titulo: '¡💎 JACKPOT 💎!', desc: '¡ERES UNA LEYENDA! Has sacado el premio mayor de la caja. Ingresa tu ID ahora mismo para enviarte tus diamantes.', icono: 'workspace_premium', color: '#ffc107' };
-            }
+            const premioInfo = {
+                tipo: resultado.tipo,
+                monto: resultado.monto,
+                paquete: resultado.paquete,
+                titulo: resultado.titulo,
+                desc: resultado.desc_premio,
+                icono: resultado.icono,
+                color: resultado.color
+            };
 
             // 5. Tras 2 segundos de suspenso, la caja explota y revela el premio
             setTimeout(() => {
@@ -488,9 +476,8 @@
                 cajaElegida.innerHTML = `<span class="material-icons" style="font-size: 80px; color: ${premioInfo.color}; text-shadow: 0 0 30px ${premioInfo.color};">${premioInfo.icono}</span>`;
 
                 // 6. Tras 1 segundo de ver el premio, abrimos el modal
-                setTimeout(async () => {
+                setTimeout(() => {
                     if(premioInfo.tipo === 'saldo') {
-                        await entregarPremioSaldo(nick, premioInfo.monto);
                         mostrarModalPremio(premioInfo);
                     } else {
                         mostrarModalReclamo(premioInfo);
@@ -512,15 +499,6 @@
                 caja.classList.remove('shaking', 'exploding');
                 caja.innerHTML = `<span class="material-icons box-icon">inventory_2</span>`;
             });
-        }
-
-        async function entregarPremioSaldo(nick, monto) {
-            try {
-                const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nick).single();
-                await supabaseClient.from('usuarios').update({ saldo: data.saldo + monto }).eq('nickname', nick);
-                await supabaseClient.from('historial').insert([{ nickname: nick, monto: monto, tipo: 'Premio Caja Misteriosa', estado: 'Completado' }]);
-                await actualizarDatosUsuario(nick);
-            } catch (e) { console.error("Error al dar saldo", e); }
         }
 
         function mostrarModalPremio(info) {
@@ -574,29 +552,29 @@
 
             btn.disabled = true; btn.innerText = "Registrando premio...";
 
-            try {
-                await supabaseClient.from('pedidos').insert([{ 
-                    nickname: nombreGuardado, paquete: premioPendiente, id_juego: idJuego, nickname_juego: nicknameJuego,
-                    precio: 0.00, estado: 'Pendiente', codigo: 'Caja Misteriosa 🎁'
-                }]);
+            const { data: resultadoRpc, error: errorReclamo } = await supabaseClient.rpc('reclamar_premio', {
+                p_paquete: premioPendiente,
+                p_id_juego: idJuego,
+                p_nickname_juego: nicknameJuego
+            });
 
-                await supabaseClient.from('historial').insert([{ 
-                    nickname: nombreGuardado, monto: 0.00, tipo: `Premio Caja Reclamado: ${premioPendiente} (ID: ${idJuego})`, estado: 'Completado' 
-                }]);
+            const resultado = resultadoRpc && resultadoRpc[0];
 
-                const modal = document.getElementById('modal-reclamar-container');
-                modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; resetCajas(); }, 300);
-                
-                const numeroAdmin = "51943737572";
-                const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de GANAR en una *CAJA MISTERIOSA VIP* 🎁 y estoy reclamando mi premio.\n\n👤 *Usuario Web:* ${nombreGuardado}\n🏆 *Premio:* ${premioPendiente}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para enviármelo. ¡Gracias!`;
-                window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
-                
-            } catch (e) {
-                console.error(e);
-                alert("Ocurrió un error al registrar. Inténtalo nuevamente.");
-            } finally {
+            if (errorReclamo || !resultado || resultado.estado === 'error') {
+                const msg = errorReclamo ? errorReclamo.message : (resultado ? resultado.mensaje : "Error desconocido.");
+                alert("Error: " + msg);
                 btn.disabled = false; btn.innerText = "Reclamar a mi Cuenta";
+                return;
             }
+
+            const modal = document.getElementById('modal-reclamar-container');
+            modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; resetCajas(); }, 300);
+
+            const numeroAdmin = "51943737572";
+            const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de GANAR en una *CAJA MISTERIOSA VIP* 🎁 y estoy reclamando mi premio.\n\n👤 *Usuario Web:* ${nombreGuardado}\n🏆 *Premio:* ${premioPendiente}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para enviármelo. ¡Gracias!`;
+            window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
+
+            btn.disabled = false; btn.innerText = "Reclamar a mi Cuenta";
         }
     </script>
 </body>
