@@ -457,7 +457,7 @@
                                     <tr class="${index < 3 ? 'top-rank rank-' + (index + 1) : ''}">
                                         <td>${medalla}</td>
                                         <td style="font-weight: bold; color: white;">${user.nickname}</td>
-                                        <td style="font-weight: bold; color: #00e676;">💎 ${user.diamantes.toLocaleString('es-PE')} diams</td>
+                                        <td style="font-weight: bold; color: #00e676;">💎 ${user.diamantes.toLocaleString('es-PE')} Diamantes</td>
                                         <td><span class="rank-badge ${badgeClass}">${badgeText}</span></td>
                                     </tr>`;
                             });
@@ -467,7 +467,7 @@
                                 let medalla = `${i + 1}°`;
                                 let badgeText = i === 3 ? 'Diamante' : 'Platino';
                                 let name = placeholders[i - top5.length] || 'GamerAnon';
-                                let cantP = i === 3 ? '💎 1,500 diams' : '💎 500 diams';
+                                let cantP = i === 3 ? '💎 1,500 Diamantes' : '💎 500 Diamantes';
                                 tbody.innerHTML += `
                                     <tr>
                                         <td>${medalla}</td>

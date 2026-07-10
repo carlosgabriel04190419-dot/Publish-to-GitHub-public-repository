@@ -231,17 +231,22 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
 
     /* Tarjetas de categoría (index): imagen mucho más compacta en celular */
     .games-section { padding: 25px 15px; }
-    .games-grid { gap: 14px; }
+    .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .game-card { width: 100%; max-width: none; }
     .game-info { padding: 12px; }
-    .game-info h3 { font-size: 14px; }
+    .game-info h3 { font-size: 13px; line-height: 1.25; }
+    .game-info p { font-size: 10px; padding: 3px 6px; }
+
+    .ranking-table th, .ranking-table td { padding: 12px 8px; font-size: 12.5px; }
+    .ranking-table td:first-child, .ranking-table th:first-child { padding-left: 12px; }
 
     /* Los h1 de cada catálogo tienen tamaño en línea (style="font-size:...") que gana a esta regla,
        por eso el !important: sin esto, se quedan grandes en celular pase lo que pase. */
     .hero-title { font-size: 26px !important; }
 
-    /* Píldoras de saldo/puntos/usuario: mismo achique que ya tenía recargar.html, ahora en todo el sitio */
+    /* Píldoras de saldo/puntos/usuario: mismo estilo limpio que ya tenía recargar.html, ahora en todo el sitio */
     .balance-pill { padding: 5px 8px; gap: 4px; }
-    .balance-label { font-size: 9px; }
+    .balance-label { display: none; }
     .balance-amount { font-size: 12px; }
     .user-profile { padding: 6px 12px; font-size: 12px; gap: 5px; }
 
@@ -261,7 +266,6 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
     .balance-card h1 { font-size: 32px; }
     .quick-amounts { justify-content: center; }
     .amount-btn { flex: 1 1 calc(50% - 10px); }
-    .ranking-table th, .ranking-table td { padding: 10px; font-size: 13px; }
     .support-card { padding: 20px; }
 
     /* Ocultar la foto de la derecha en celulares para ahorrar espacio */
