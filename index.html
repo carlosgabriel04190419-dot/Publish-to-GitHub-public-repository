@@ -108,7 +108,7 @@
                  <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
                   <span class="material-icons">casino</span> Caja Misteriosa
                  </a>
-                <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;">
+                <a href="#" onclick="cerrarSesionSegura()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;">
                   <span class="material-icons">logout</span> Cerrar Sesión
                 </a>
             </div>
@@ -317,35 +317,26 @@
 
     <!-- MOTOR SUPABASE Y LOGICA DE INTERFAZ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="seguridad.js"></script>
     <script>
-        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
-        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
-        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-
         window.onload = async function() {
-            const nombreGuardado = localStorage.getItem('nombreUsuario');
-            
-            if (nombreGuardado) {
+            const usuario = await verificarSesion(false); // false = no obliga a iniciar sesión
+
+            if (usuario) {
                 const btnUsuario = document.getElementById('btn-usuario-nav');
-                if (btnUsuario) { btnUsuario.innerHTML = nombreGuardado + ' <span class="material-icons" style="font-size: 16px;">expand_more</span>'; }
-                
+                if (btnUsuario) { btnUsuario.innerHTML = usuario.nickname + ' <span class="material-icons" style="font-size: 16px;">expand_more</span>'; }
+
                 const menuDesconectado = document.getElementById('nav-logged-out');
                 const menuConectado = document.getElementById('nav-logged-in');
-                
+
                 if(menuDesconectado) menuDesconectado.style.display = 'none';
                 if(menuConectado) menuConectado.style.display = 'flex';
 
-                try {
-                    // SE ACTUALIZÓ PARA TRAER SALDO Y PUNTOS
-                    const { data, error } = await supabaseClient.from('usuarios').select('saldo, puntos').eq('nickname', nombreGuardado).single();
-                    if (!error && data) {
-                        const elementoSaldo = document.getElementById('saldo-nav');
-                        if (elementoSaldo) { elementoSaldo.innerText = data.saldo.toFixed(2); }
+                const elementoSaldo = document.getElementById('saldo-nav');
+                if (elementoSaldo) { elementoSaldo.innerText = usuario.saldo.toFixed(2); }
 
-                        const elementoPuntos = document.getElementById('puntos-nav');
-                        if (elementoPuntos) { elementoPuntos.innerText = data.puntos || 0; }
-                    }
-                } catch (err) { console.error("Error al cargar el saldo/puntos:", err); }
+                const elementoPuntos = document.getElementById('puntos-nav');
+                if (elementoPuntos) { elementoPuntos.innerText = usuario.puntos || 0; }
             }
 
             // LANZAMOS EL MOTOR DEL TICKER Y RANKING REALES
@@ -353,7 +344,6 @@
         };
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none') ? 'block' : 'none'; }
-        function cerrarSesionLocal() { localStorage.removeItem('nombreUsuario'); window.location.reload(); }
         function showNormal() { document.getElementById('catalogo-normal').style.display = 'block'; }
         function verificarCompra() { if(document.getElementById('nav-logged-in').style.display === 'none') { window.location.href = 'login.html'; } else { window.location.href = 'perfil.html'; } }
 

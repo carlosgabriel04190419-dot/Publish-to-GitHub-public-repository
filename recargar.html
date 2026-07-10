@@ -167,7 +167,7 @@
                     <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'"><span class="material-icons" style="color:#a8a8b3;">person</span> Mis Datos</a>
                     <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #00e676; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(0,230,118,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
                     <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(255,193,7,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">casino</span> Caja Misteriosa VIP</a>
-                    <a href="#" onclick="cerrarSesionLocal()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 15px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,71,87,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">logout</span> Cerrar Sesión</a>
+                    <a href="#" onclick="cerrarSesionSegura()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 15px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,71,87,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">logout</span> Cerrar Sesión</a>
                 </div>
             </div>
         </div>
@@ -360,46 +360,40 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="seguridad.js"></script>
     <script>
-        const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
-        const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
-        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-
         let correoUsuarioGlobal = ""; 
         let celularUsuarioGlobal = null; 
 
         window.onload = async function() {
-            const nombreGuardado = localStorage.getItem('nombreUsuario');
-            if (nombreGuardado) {
-                document.getElementById('btn-usuario-nav').innerHTML = `${nombreGuardado} <span class="material-icons" style="font-size: 18px;">expand_more</span>`;
-                
-                const { data } = await supabaseClient.from('usuarios').select('saldo, puntos, correo, celular').eq('nickname', nombreGuardado).single();
-                if (data) {
-                    document.getElementById('saldo-nav').innerText = data.saldo.toFixed(2);
-                    document.getElementById('saldo-pantalla').innerText = data.saldo.toFixed(2);
-                    document.getElementById('puntos-nav').innerText = data.puntos || 0;
-                    
-                    correoUsuarioGlobal = data.correo;
-                    celularUsuarioGlobal = data.celular;
+            const usuario = await verificarSesion();
+            if (!usuario) return;
 
-                    if (!celularUsuarioGlobal || celularUsuarioGlobal.trim() === "") {
-                        document.getElementById('alerta-sin-celular').style.display = 'flex';
-                        const btnSumbit = document.getElementById('btn-whatsapp');
-                        btnSumbit.style.background = '#333';
-                        btnSumbit.style.color = '#888';
-                        btnSumbit.style.boxShadow = 'none';
-                        btnSumbit.innerHTML = '<span class="material-icons">error</span> ⚠️ Requiere vincular WhatsApp';
-                    }
+            document.getElementById('btn-usuario-nav').innerHTML = `${usuario.nickname} <span class="material-icons" style="font-size: 18px;">expand_more</span>`;
+
+            const data = usuario;
+            if (data) {
+                document.getElementById('saldo-nav').innerText = data.saldo.toFixed(2);
+                document.getElementById('saldo-pantalla').innerText = data.saldo.toFixed(2);
+                document.getElementById('puntos-nav').innerText = data.puntos || 0;
+
+                correoUsuarioGlobal = data.correo;
+                celularUsuarioGlobal = data.celular;
+
+                if (!celularUsuarioGlobal || celularUsuarioGlobal.trim() === "") {
+                    document.getElementById('alerta-sin-celular').style.display = 'flex';
+                    const btnSumbit = document.getElementById('btn-whatsapp');
+                    btnSumbit.style.background = '#333';
+                    btnSumbit.style.color = '#888';
+                    btnSumbit.style.boxShadow = 'none';
+                    btnSumbit.innerHTML = '<span class="material-icons">error</span> ⚠️ Requiere vincular WhatsApp';
                 }
-            } else {
-                window.location.href = 'login.html';
             }
 
             cargarSistemaComunidadDinamica();
         };
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
-        function cerrarSesionLocal() { localStorage.removeItem('nombreUsuario'); window.location.reload(); }
 
         // CINTA EN VIVO
         async function cargarSistemaComunidadDinamica() {
