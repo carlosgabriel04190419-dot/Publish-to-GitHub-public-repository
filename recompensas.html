@@ -31,7 +31,7 @@
         
         .balance-info { display: flex; flex-direction: column; line-height: 1.1; }
         .balance-label { font-size: 10px; font-weight: bold; }
-        .balance-amount { font-size: 14px; font-weight: 900; color: white; }
+        .balance-amount { font-size: 14px; font-weight: 900; color: white; white-space: nowrap; }
         
         .user-profile-btn { background: #a155ff; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 15px rgba(161, 85, 255, 0.4); transition: transform 0.2s; }
         .user-profile-btn:hover { transform: scale(1.05); }
@@ -133,7 +133,7 @@
         /* --- FOOTER COMPLETO --- */
         .cz-footer { background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 80px 20px 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 50px; }
         .cz-footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; }
-        @media (max-width: 950px) { .cz-footer-content { grid-template-columns: 1fr 1fr; } .nav-links-desktop { display: none; } }
+        @media (max-width: 950px) { .cz-footer-content { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 600px) { .cz-footer-content { grid-template-columns: 1fr; gap: 40px; } .navbar { flex-wrap: wrap; justify-content: center; gap: 15px; } }
         .cz-f-brand { display: flex; flex-direction: column; gap: 18px; }
         .cz-f-logo { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 900; color: white; letter-spacing: -0.5px; }

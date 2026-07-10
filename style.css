@@ -55,7 +55,7 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
 .wallet-icon { color: #a800ff; font-size: 20px; }
 .balance-info { display: flex; flex-direction: column; line-height: 1.1; }
 .balance-label { font-size: 10px; color: #a8a8b3; font-weight: 600; }
-.balance-amount { font-size: 14px; color: #ffffff; font-weight: 700; }
+.balance-amount { font-size: 14px; color: #ffffff; font-weight: 700; white-space: nowrap; }
 
 .user-profile {
     display: flex; align-items: center; gap: 8px; background-color: #a800ff; color: white;
@@ -239,6 +239,7 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
 
     .ranking-table th, .ranking-table td { padding: 12px 8px; font-size: 12.5px; }
     .ranking-table td:first-child, .ranking-table th:first-child { padding-left: 12px; }
+    .ranking-table th:last-child, .ranking-table td:last-child { display: none; }
 
     /* Los h1 de cada catálogo tienen tamaño en línea (style="font-size:...") que gana a esta regla,
        por eso el !important: sin esto, se quedan grandes en celular pase lo que pase. */

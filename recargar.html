@@ -31,7 +31,7 @@
         .pill-puntos { background: rgba(255, 193, 7, 0.15); border-color: rgba(255, 193, 7, 0.4); }
         .balance-info { display: flex; flex-direction: column; line-height: 1.1; }
         .balance-label { font-size: 10px; font-weight: bold; }
-        .balance-amount { font-size: 14px; font-weight: 900; color: white; }
+        .balance-amount { font-size: 14px; font-weight: 900; color: white; white-space: nowrap; }
         .user-profile-btn { background: #a155ff; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 15px rgba(161, 85, 255, 0.4); transition: transform 0.2s; }
         .user-profile-btn:hover { transform: scale(1.05); }
 
@@ -103,7 +103,6 @@
         /* --- RESPONSIVIDAD MÓVIL ESTRICTA --- */
         @media (max-width: 900px) {
             .recharge-layout { grid-template-columns: 1fr; display: flex; flex-direction: column; }
-            .nav-links-desktop { display: none; }
             .cz-footer-content { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 600px) {
