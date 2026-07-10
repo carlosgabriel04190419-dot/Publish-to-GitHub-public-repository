@@ -222,12 +222,23 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
     .nav-links-desktop { gap: 20px; }
     .nav-auth-section, .nav-user-section { width: 100%; justify-content: center; }
     .hero-container { padding: 40px 15px 25px 15px; }
-    .hero-title { font-size: 28px; }
     .hero-stats { flex-direction: column; gap: 20px; }
     .games-grid { flex-direction: column; align-items: center; }
     .game-card { width: 100%; max-width: 320px; }
 
     .container { padding: 30px 12px; }
+    html, body { overflow-x: hidden; }
+
+    /* Tarjetas de categoría (index): imagen mucho más compacta en celular */
+    .games-section { padding: 25px 15px; }
+    .games-grid { gap: 14px; }
+    .game-image { height: 130px; }
+    .game-info { padding: 12px; }
+    .game-info h3 { font-size: 14px; }
+
+    /* Los h1 de cada catálogo tienen tamaño en línea (style="font-size:...") que gana a esta regla,
+       por eso el !important: sin esto, se quedan grandes en celular pase lo que pase. */
+    .hero-title { font-size: 26px !important; }
 
     /* Catálogo: cuadrícula compacta de 2 columnas en vez de 1 columna gigante */
     .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }

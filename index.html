@@ -51,6 +51,11 @@
             0% { transform: translate3d(0, 0, 0); }
             100% { transform: translate3d(-50%, 0, 0); }
         }
+        @media (max-width: 768px) {
+            .ticker-label { font-size: 9.5px; padding: 5px 10px; }
+            .ticker-move { padding-left: 110px; }
+            .ticker-item { font-size: 11.5px; padding-right: 2rem; }
+        }
     </style>
 </head>
 <body>
@@ -392,7 +397,13 @@
                     });
                     
                     if(tickerHtml !== '') {
-                        document.getElementById('ticker-track').innerHTML = tickerHtml + tickerHtml + tickerHtml;
+                        const track = document.getElementById('ticker-track');
+                        track.innerHTML = tickerHtml + tickerHtml + tickerHtml;
+                        // Velocidad constante en px/seg, sin importar cuántas compras haya (antes iba a veces rápido, a veces lento)
+                        const anchoUnaCopia = track.scrollWidth / 3;
+                        const pixelesPorSegundo = 55;
+                        const duracion = Math.max(18, anchoUnaCopia / pixelesPorSegundo);
+                        track.style.animationDuration = duracion + 's';
                     } else {
                         document.getElementById('ticker-track').innerHTML = '<div class="ticker-item">Esperando nuevas compras de la comunidad...</div>';
                     }
