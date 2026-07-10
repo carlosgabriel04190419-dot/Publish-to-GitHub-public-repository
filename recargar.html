@@ -41,7 +41,7 @@
         .ticker-move { display: flex; white-space: nowrap; animation: tickerAnimation 30s linear infinite; padding-left: 150px; }
         .ticker-item { display: inline-block; padding-right: 3rem; color: #e0e0e0; font-size: 13.5px; }
         .ticker-item .hl { color: #a155ff; font-weight: bold; }
-        @keyframes tickerAnimation { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
+        @keyframes tickerAnimation { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(var(--loop-dist, -33.3333%), 0, 0); } }
 
         /* --- LAYOUT RECARGA --- */
         .recharge-layout { display: grid; grid-template-columns: 1.3fr 1fr; gap: 30px; max-width: 1100px; margin: 40px auto 80px; padding: 0 20px; }
@@ -407,7 +407,13 @@
                         let idOculto = p.id_juego && p.id_juego.length > 4 ? p.id_juego.substring(0, p.id_juego.length - 4) + '****' : '********';
                         tickerHtml += `<div class="ticker-item">💎 <span class="hl">${p.nickname}</span> adquirió ${p.paquete} <span class="id-text">| ID: ${idOculto}</span></div>`;
                     });
-                    if(tickerHtml !== '') document.getElementById('ticker-track').innerHTML = tickerHtml + tickerHtml + tickerHtml;
+                    if(tickerHtml !== '') {
+                        const track = document.getElementById('ticker-track');
+                        track.innerHTML = tickerHtml + tickerHtml + tickerHtml;
+                        const anchoUnaCopia = track.scrollWidth / 3;
+                        track.style.setProperty('--loop-dist', '-' + anchoUnaCopia + 'px');
+                        track.style.animationDuration = Math.max(18, anchoUnaCopia / 55) + 's';
+                    }
                 }
             } catch(e) {}
         }

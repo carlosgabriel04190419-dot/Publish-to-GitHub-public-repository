@@ -116,7 +116,7 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
 @keyframes rotateWorm { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* Estilos y rutas de las imágenes de los juegos */
-.game-image { height: 250px; background-color: #29292e; background-size: cover; background-position: center; }
+.game-image { aspect-ratio: 4 / 5; height: auto; background-color: #29292e; background-size: cover; background-position: center; }
 .free-fire-bg { background-image: url('freefire.jpg'); }
 .free-fire-pr-bg { background-image: url('freefirepr.jpg'); }
 
@@ -232,13 +232,18 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
     /* Tarjetas de categoría (index): imagen mucho más compacta en celular */
     .games-section { padding: 25px 15px; }
     .games-grid { gap: 14px; }
-    .game-image { height: 130px; }
     .game-info { padding: 12px; }
     .game-info h3 { font-size: 14px; }
 
     /* Los h1 de cada catálogo tienen tamaño en línea (style="font-size:...") que gana a esta regla,
        por eso el !important: sin esto, se quedan grandes en celular pase lo que pase. */
     .hero-title { font-size: 26px !important; }
+
+    /* Píldoras de saldo/puntos/usuario: mismo achique que ya tenía recargar.html, ahora en todo el sitio */
+    .balance-pill { padding: 5px 8px; gap: 4px; }
+    .balance-label { font-size: 9px; }
+    .balance-amount { font-size: 12px; }
+    .user-profile { padding: 6px 12px; font-size: 12px; gap: 5px; }
 
     /* Catálogo: cuadrícula compacta de 2 columnas en vez de 1 columna gigante */
     .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }

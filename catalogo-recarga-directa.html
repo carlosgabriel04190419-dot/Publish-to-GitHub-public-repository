@@ -89,7 +89,7 @@
         
         @keyframes tickerAnimation {
             0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-50%, 0, 0); }
+            100% { transform: translate3d(var(--loop-dist, -33.3333%), 0, 0); }
         }
 
         /* --- Estilos Recomendaciones --- */
@@ -401,7 +401,11 @@
                         tickerHtml += `<div class="ticker-item">💎 <span class="hl">${p.nickname}</span> adquirió ${p.paquete} <span class="id-text">| ID: ${idOculto}</span></div>`;
                     });
                     if(tickerHtml !== '') {
-                        document.getElementById('ticker-track').innerHTML = tickerHtml + tickerHtml + tickerHtml;
+                        const track = document.getElementById('ticker-track');
+                        track.innerHTML = tickerHtml + tickerHtml + tickerHtml;
+                        const anchoUnaCopia = track.scrollWidth / 3;
+                        track.style.setProperty('--loop-dist', '-' + anchoUnaCopia + 'px');
+                        track.style.animationDuration = Math.max(18, anchoUnaCopia / 55) + 's';
                     } else {
                         document.getElementById('ticker-track').innerHTML = '<div class="ticker-item">Esperando nuevas compras de la comunidad...</div>';
                     }
