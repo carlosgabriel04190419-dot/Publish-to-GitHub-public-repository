@@ -437,4 +437,4 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
 .logo-text { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -0.5px; display: flex; align-items: center; }
 .text-carza { color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-transform: uppercase; }
 .text-d { color: #a155ff; margin: 0 2px; }
-.text-cross { background: linear-gradient(45deg, #00d2ff, #a155ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-style: italic; text-transform: uppercase; padding-right: 5px; }
+.text-cross { background: linear-gradient(45deg, #00d2ff, #a155ff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-style: italic; text-transform: uppercase; padding-right: 5px; }
