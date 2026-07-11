@@ -186,7 +186,10 @@
         }
 
         async function manejarLogin() {
-            const inputUsuario = document.getElementById('login-correo').value.trim();
+            const valorIngresado = document.getElementById('login-correo').value.trim();
+            // El correo no distingue mayúsculas/minúsculas; el nickname si lo escribieron con
+            // "@" lo tratamos como correo, así que igual se normaliza sin afectar nicknames reales.
+            const inputUsuario = valorIngresado.includes('@') ? valorIngresado.toLowerCase() : valorIngresado;
             const password = document.getElementById('login-password').value;
             const btn = document.getElementById('btn-login');
 
