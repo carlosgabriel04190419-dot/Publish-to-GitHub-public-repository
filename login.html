@@ -207,7 +207,7 @@
 
             if (error) {
                 btn.disabled = false; btn.innerText = "Iniciar Sesión";
-                if (error.message.includes("Email not confirmed")) return mostrarError("Ve a Supabase > Authentication > Providers y desactiva 'Confirm email'.");
+                if (error.message.includes("Email not confirmed")) return mostrarError("Tu cuenta aún no está confirmada. Revisa tu correo (y la carpeta de spam) o regístrate de nuevo para recibir un nuevo código.");
                 if (error.message.includes("Invalid login credentials")) return mostrarError("Usuario, correo o contraseña incorrectos.");
                 return mostrarError("Error: " + error.message);
             }

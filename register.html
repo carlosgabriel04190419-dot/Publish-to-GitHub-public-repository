@@ -56,64 +56,87 @@
 
             <div id="msg-box" style="display: none; background: rgba(255, 71, 87, 0.1); border: 1px solid #ff4757; color: #ff4757; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; text-align: center; font-weight: bold;"></div>
 
-            <form class="login-form">
-                <label>Nickname (¿Cómo te llamamos?)</label>
-                <div class="input-group">
-                    <span class="material-icons">person</span>
-                    <input type="text" id="reg-nickname" placeholder="Ej. CarlosGamer" onkeydown="if(event.key === 'Enter') registrarUsuario()">
-                </div>
-
-                <label>Correo Electrónico</label>
-                <div class="input-group">
-                    <span class="material-icons">mail</span>
-                    <input type="email" id="reg-correo" placeholder="usuario@correo.com" onkeydown="if(event.key === 'Enter') registrarUsuario()">
-                </div>
-
-                <label>Número de WhatsApp (Obligatorio) <span style="color: #ff4757;">*</span></label>
-                <div class="input-group reg-phone-group" style="display: flex; gap: 10px; padding: 0;">
-                    <div style="background: rgba(0, 0, 0, 0.2); border-right: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; padding: 0 10px; border-top-left-radius: 8px; border-bottom-left-radius: 8px; flex-shrink: 0;">
-                        <span class="material-icons" style="color: #666; font-size: 18px; margin-right: 5px;">smartphone</span>
-                        <select id="reg-codigo-pais" onchange="alCambiarPais()" style="background: transparent; color: white; border: none; outline: none; font-size: 15px; cursor: pointer;">
-                            <option value="51" data-digitos="9" selected style="color: black;">🇵🇪 +51</option>
-                            <option value="52" data-digitos="10" style="color: black;">🇲🇽 +52</option>
-                            <option value="57" data-digitos="10" style="color: black;">🇨🇴 +57</option>
-                            <option value="54" data-digitos="10" style="color: black;">🇦🇷 +54</option>
-                            <option value="56" data-digitos="9" style="color: black;">🇨🇱 +56</option>
-                            <option value="58" data-digitos="10" style="color: black;">🇻🇪 +58</option>
-                            <option value="593" data-digitos="9" style="color: black;">🇪🇨 +593</option>
-                            <option value="591" data-digitos="8" style="color: black;">🇧🇴 +591</option>
-                        </select>
+            <div id="paso-1-registro">
+                <form class="login-form">
+                    <label>Nickname (¿Cómo te llamamos?)</label>
+                    <div class="input-group">
+                        <span class="material-icons">person</span>
+                        <input type="text" id="reg-nickname" placeholder="Ej. CarlosGamer" onkeydown="if(event.key === 'Enter') registrarUsuario()">
                     </div>
-                    <input type="tel" inputmode="numeric" id="reg-celular" placeholder="942 395 040" oninput="formatearCelularReg()" style="flex: 1; border: none; outline: none; background: transparent; color: white; padding: 14px; font-size: 15px; min-width: 0;" onkeydown="if(event.key === 'Enter') registrarUsuario()">
+
+                    <label>Correo Electrónico</label>
+                    <div class="input-group">
+                        <span class="material-icons">mail</span>
+                        <input type="email" id="reg-correo" placeholder="usuario@correo.com" onkeydown="if(event.key === 'Enter') registrarUsuario()">
+                    </div>
+
+                    <label>Número de WhatsApp (Obligatorio) <span style="color: #ff4757;">*</span></label>
+                    <div class="input-group reg-phone-group" style="display: flex; gap: 10px; padding: 0;">
+                        <div style="background: rgba(0, 0, 0, 0.2); border-right: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; padding: 0 10px; border-top-left-radius: 8px; border-bottom-left-radius: 8px; flex-shrink: 0;">
+                            <span class="material-icons" style="color: #666; font-size: 18px; margin-right: 5px;">smartphone</span>
+                            <select id="reg-codigo-pais" onchange="alCambiarPais()" style="background: transparent; color: white; border: none; outline: none; font-size: 15px; cursor: pointer;">
+                                <option value="51" data-digitos="9" selected style="color: black;">🇵🇪 +51</option>
+                                <option value="52" data-digitos="10" style="color: black;">🇲🇽 +52</option>
+                                <option value="57" data-digitos="10" style="color: black;">🇨🇴 +57</option>
+                                <option value="54" data-digitos="10" style="color: black;">🇦🇷 +54</option>
+                                <option value="56" data-digitos="9" style="color: black;">🇨🇱 +56</option>
+                                <option value="58" data-digitos="10" style="color: black;">🇻🇪 +58</option>
+                                <option value="593" data-digitos="9" style="color: black;">🇪🇨 +593</option>
+                                <option value="591" data-digitos="8" style="color: black;">🇧🇴 +591</option>
+                            </select>
+                        </div>
+                        <input type="tel" inputmode="numeric" id="reg-celular" placeholder="942 395 040" oninput="formatearCelularReg()" style="flex: 1; border: none; outline: none; background: transparent; color: white; padding: 14px; font-size: 15px; min-width: 0;" onkeydown="if(event.key === 'Enter') registrarUsuario()">
+                    </div>
+                    <p id="celular-hint" style="margin: -14px 0 18px 0; font-size: 11px; color: #6a6a78;">Perú: 9 dígitos</p>
+
+                    <label>Contraseña</label>
+                    <div class="input-group">
+                       <span class="material-icons">lock</span>
+                       <input type="password" id="reg-password" placeholder="Crea una contraseña segura" oninput="evaluarFuerzaPassword()" onkeydown="if(event.key === 'Enter') document.getElementById('reg-password2').focus()">
+                       <span class="material-icons eye-icon" onclick="togglePassword('reg-password', this)" style="cursor: pointer;">visibility_off</span>
+                    </div>
+                    <div class="pass-strength-bar"><div id="pass-strength-fill" class="pass-strength-fill"></div></div>
+                    <span id="pass-strength-label" class="pass-strength-label"></span>
+
+                    <label>Repite tu Contraseña</label>
+                    <div class="input-group">
+                       <span class="material-icons">lock_clock</span>
+                       <input type="password" id="reg-password2" placeholder="Vuelve a escribirla" oninput="verificarCoincidencia()" onkeydown="if(event.key === 'Enter') registrarUsuario()">
+                       <span class="material-icons eye-icon" onclick="togglePassword('reg-password2', this)" style="cursor: pointer;">visibility_off</span>
+                    </div>
+                    <p id="pass-match-msg" style="margin: -14px 0 18px 0; font-size: 11px; display:none;"></p>
+
+                    <button type="button" id="btn-registrar" class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="registrarUsuario()">Continuar</button>
+
+                    <div class="divider" style="margin: 25px 0;"><span>o</span></div>
+
+                    <button type="button" class="btn-social" onclick="iniciarConGoogle()">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google"> Registrarse con Google
+                    </button>
+                    <p style="text-align:center; font-size:11px; color:#6a6a78; margin-top:10px;">Con Google no necesitas crear contraseña — solo te pediremos tu WhatsApp.</p>
+                </form>
+            </div>
+
+            <div id="paso-2-codigo" style="display: none;">
+                <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">
+                    Te enviamos un código de 6 dígitos a <strong id="correo-mostrado" style="color: white;"></strong>. Ingrésalo abajo para activar tu cuenta.
+                </p>
+
+                <div class="code-inputs" id="code-inputs-container">
+                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="0">
+                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="1">
+                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="2">
+                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="3">
+                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="4">
+                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="5">
                 </div>
-                <p id="celular-hint" style="margin: -14px 0 18px 0; font-size: 11px; color: #6a6a78;">Perú: 9 dígitos</p>
 
-                <label>Contraseña</label>
-                <div class="input-group">
-                   <span class="material-icons">lock</span>
-                   <input type="password" id="reg-password" placeholder="Crea una contraseña segura" oninput="evaluarFuerzaPassword()" onkeydown="if(event.key === 'Enter') document.getElementById('reg-password2').focus()">
-                   <span class="material-icons eye-icon" onclick="togglePassword('reg-password', this)" style="cursor: pointer;">visibility_off</span>
-                </div>
-                <div class="pass-strength-bar"><div id="pass-strength-fill" class="pass-strength-fill"></div></div>
-                <span id="pass-strength-label" class="pass-strength-label"></span>
+                <button type="button" id="btn-verificar-codigo" class="btn-primary" style="width: 100%; margin-top: 30px;" onclick="verificarCodigo()">Verificar y Activar Cuenta</button>
 
-                <label>Repite tu Contraseña</label>
-                <div class="input-group">
-                   <span class="material-icons">lock_clock</span>
-                   <input type="password" id="reg-password2" placeholder="Vuelve a escribirla" oninput="verificarCoincidencia()" onkeydown="if(event.key === 'Enter') registrarUsuario()">
-                   <span class="material-icons eye-icon" onclick="togglePassword('reg-password2', this)" style="cursor: pointer;">visibility_off</span>
-                </div>
-                <p id="pass-match-msg" style="margin: -14px 0 18px 0; font-size: 11px; display:none;"></p>
-
-                <button type="button" id="btn-registrar" class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="registrarUsuario()">Continuar</button>
-
-                <div class="divider" style="margin: 25px 0;"><span>o</span></div>
-
-                <button type="button" class="btn-social" onclick="iniciarConGoogle()">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google"> Registrarse con Google
-                </button>
-                <p style="text-align:center; font-size:11px; color:#6a6a78; margin-top:10px;">Con Google no necesitas crear contraseña — solo te pediremos tu WhatsApp.</p>
-            </form>
+                <p style="text-align:center; font-size:13px; color:#a8a8b3; margin-top:20px;">
+                    ¿No te llegó? <a href="#" id="link-reenviar" onclick="reenviarCodigo(event)" style="color:#a155ff; font-weight:600; text-decoration:none;">Reenviar código</a>
+                </p>
+            </div>
         </div>
 
         <div class="login-right">
@@ -219,6 +242,10 @@
             });
         }
 
+        // Datos del registro en curso, guardados en memoria mientras se espera el código.
+        // No se toca la tabla "usuarios" hasta que el código sea válido.
+        let registroPendiente = null;
+
         async function registrarUsuario() {
             const nickname = document.getElementById('reg-nickname').value.trim();
             const correo = document.getElementById('reg-correo').value.trim();
@@ -251,12 +278,108 @@
             }
 
             const numeroCompleto = codigoPais + celular;
-            await supabaseClient.from('usuarios').insert([{ nickname: nickname, correo: correo, saldo: 0, celular: numeroCompleto }]);
+            registroPendiente = { nickname, correo, celular: numeroCompleto };
 
-            mostrarMensaje("¡Cuenta creada con éxito!<br>Redirigiendo al acceso...", "exito");
+            if (data.session) {
+                // La confirmación de correo está desactivada en Supabase: la cuenta ya quedó activa.
+                await crearFilaUsuario();
+                mostrarMensaje("¡Cuenta creada con éxito!<br>Redirigiendo al acceso...", "exito");
+                btn.innerText = "Ingresando...";
+                setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+                return;
+            }
+
+            // Confirmación de correo activada: pedimos el código de 6 dígitos que Supabase acaba de enviar.
+            btn.disabled = false; btn.innerText = "Continuar";
+            mostrarPasoCodigo(correo);
+        }
+
+        async function crearFilaUsuario() {
+            if (!registroPendiente) return;
+            await supabaseClient.from('usuarios').insert([{
+                nickname: registroPendiente.nickname,
+                correo: registroPendiente.correo,
+                saldo: 0,
+                celular: registroPendiente.celular
+            }]);
+        }
+
+        // ================= PASO 2: CÓDIGO DE VERIFICACIÓN =================
+        function mostrarPasoCodigo(correo) {
+            document.getElementById('msg-box').style.display = 'none';
+            document.getElementById('correo-mostrado').innerText = correo;
+            document.getElementById('paso-1-registro').style.display = 'none';
+            document.getElementById('paso-2-codigo').style.display = 'block';
+
+            const cajas = document.querySelectorAll('.code-box');
+            cajas.forEach((caja, i) => {
+                caja.value = '';
+                caja.oninput = () => {
+                    caja.value = caja.value.replace(/\D/g, '');
+                    if (caja.value && i < cajas.length - 1) cajas[i + 1].focus();
+                };
+                caja.onkeydown = (e) => {
+                    if (e.key === 'Backspace' && !caja.value && i > 0) cajas[i - 1].focus();
+                    if (e.key === 'Enter') verificarCodigo();
+                };
+            });
+            cajas[0].focus();
+        }
+
+        function obtenerCodigoIngresado() {
+            return [...document.querySelectorAll('.code-box')].map(c => c.value).join('');
+        }
+
+        async function verificarCodigo() {
+            const codigo = obtenerCodigoIngresado();
+            const btn = document.getElementById('btn-verificar-codigo');
+
+            if (codigo.length !== 6) return mostrarMensaje("Ingresa el código completo de 6 dígitos.");
+            if (!registroPendiente) return mostrarMensaje("Tu sesión de registro expiró. Vuelve a empezar.");
+
+            btn.disabled = true; btn.innerText = "Verificando...";
+
+            const { data, error } = await supabaseClient.auth.verifyOtp({
+                email: registroPendiente.correo,
+                token: codigo,
+                type: 'signup'
+            });
+
+            if (error) {
+                mostrarMensaje("Código incorrecto o expirado. Puedes pedir uno nuevo abajo.");
+                btn.disabled = false; btn.innerText = "Verificar y Activar Cuenta";
+                return;
+            }
+
+            await crearFilaUsuario();
+            mostrarMensaje("¡Cuenta verificada con éxito!<br>Redirigiendo al acceso...", "exito");
             btn.innerText = "Ingresando...";
-
             setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+        }
+
+        let reenvioEnEspera = false;
+        async function reenviarCodigo(e) {
+            e.preventDefault();
+            if (reenvioEnEspera || !registroPendiente) return;
+
+            const link = document.getElementById('link-reenviar');
+            reenvioEnEspera = true;
+
+            const { error } = await supabaseClient.auth.resend({ type: 'signup', email: registroPendiente.correo });
+            mostrarMensaje(error ? "No se pudo reenviar: " + error.message : "Código reenviado. Revisa tu correo.", error ? "error" : "exito");
+
+            let segundos = 30;
+            link.style.pointerEvents = 'none'; link.style.opacity = '0.5';
+            const intervalo = setInterval(() => {
+                link.innerText = `Reenviar código (${segundos}s)`;
+                segundos--;
+                if (segundos < 0) {
+                    clearInterval(intervalo);
+                    link.innerText = 'Reenviar código';
+                    link.style.pointerEvents = 'auto'; link.style.opacity = '1';
+                    reenvioEnEspera = false;
+                }
+            }, 1000);
         }
     </script>
 </body>
