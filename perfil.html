@@ -415,6 +415,7 @@
                 <div class="big-balance-box">
                     <p style="margin: 0 0 8px 0; color: #a8a8b3; font-size: 14px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Saldo Actual</p>
                     <h3 class="big-balance">S/ <span id="saldo-billetera">0.00</span></h3>
+                    <p id="saldo-billetera-alt" style="display:none; margin-top: 4px; font-size: 13px; color: #8a8a9a; font-weight: 600;"></p>
                 </div>
 
                 <h3 style="font-size: 16px; margin: 0 0 15px 0; color: white;">Historial de Recargas</h3>
@@ -581,6 +582,7 @@
             if (data) {
                 document.getElementById('saldo-nav').innerText = data.saldo.toFixed(2);
                 document.getElementById('saldo-billetera').innerText = data.saldo.toFixed(2);
+                actualizarElementoConversion('saldo-billetera-alt', data.saldo, data);
                 document.getElementById('puntos-nav').innerText = data.puntos || 0;
                 document.getElementById('edit-nickname').value = data.nickname;
                 document.getElementById('edit-correo').value = data.correo;

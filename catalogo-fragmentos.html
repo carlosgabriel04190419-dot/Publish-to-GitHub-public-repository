@@ -331,17 +331,26 @@
                         <span style="color: #a8a8b3; font-size: 14px;">Producto:</span>
                         <strong id="modal-paquete-nombre" style="color: white; font-size: 15px;">---</strong>
                     </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
-                        <span style="color: #a8a8b3; font-size: 14px;">Costo a descontar:</span>
-                        <strong id="modal-paquete-precio" style="color: #ff4757; font-size: 15px;">S/ 0.00</strong>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                        <span style="color: #a8a8b3; font-size: 14px; padding-top: 2px;">Costo a descontar:</span>
+                        <div style="text-align: right;">
+                            <strong id="modal-paquete-precio" style="color: #ff4757; font-size: 15px; display: block;">S/ 0.00</strong>
+                            <span id="modal-paquete-precio-alt" style="display:none; font-size: 10px; color: #8a8a9a; font-weight: 600;"></span>
+                        </div>
                     </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span style="color: #a8a8b3; font-size: 14px;">Tu Saldo Actual:</span>
-                        <strong id="modal-saldo-actual" style="color: white; font-size: 14px;">S/ 0.00</strong>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
+                        <span style="color: #a8a8b3; font-size: 14px; padding-top: 2px;">Tu Saldo Actual:</span>
+                        <div style="text-align: right;">
+                            <strong id="modal-saldo-actual" style="color: white; font-size: 14px; display: block;">S/ 0.00</strong>
+                            <span id="modal-saldo-actual-alt" style="display:none; font-size: 10px; color: #8a8a9a; font-weight: 600;"></span>
+                        </div>
                     </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #a8a8b3; font-size: 14px;">Saldo Restante:</span>
-                        <strong id="modal-saldo-restante" style="color: #00e676; font-size: 16px;">S/ 0.00</strong>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <span style="color: #a8a8b3; font-size: 14px; padding-top: 2px;">Saldo Restante:</span>
+                        <div style="text-align: right;">
+                            <strong id="modal-saldo-restante" style="color: #00e676; font-size: 16px; display: block;">S/ 0.00</strong>
+                            <span id="modal-saldo-restante-alt" style="display:none; font-size: 10px; color: #8a8a9a; font-weight: 600;"></span>
+                        </div>
                     </div>
                 </div>
 
@@ -386,6 +395,7 @@
         let paqueteSeleccionado = "";
         let precioSeleccionado = 0;
         let saldoActualUsuario = 0;
+        let usuarioActualCompleto = null;
 
         window.onload = async function() {
             const usuario = await verificarSesion(false);
@@ -402,6 +412,7 @@
                 if (elementoPuntos) { elementoPuntos.innerText = usuario.puntos || 0; }
 
                 saldoActualUsuario = usuario.saldo;
+                usuarioActualCompleto = usuario;
             }
 
             // LANZAMOS EL MOTOR DEL TICKER EN VIVO
@@ -471,6 +482,7 @@
             // CÁLCULO FINANCIERO DEL MODAL
             document.getElementById('modal-paquete-nombre').innerText = nombrePaquete;
             document.getElementById('modal-paquete-precio').innerText = `S/ ${precioSeleccionado.toFixed(2)}`;
+            actualizarElementoConversion('modal-paquete-precio-alt', precioSeleccionado, usuarioActualCompleto);
 
             try {
                 // Volvemos a consultar el saldo por seguridad justo antes de abrir
@@ -478,10 +490,12 @@
                 if (data) {
                     saldoActualUsuario = data.saldo;
                     document.getElementById('modal-saldo-actual').innerText = `S/ ${saldoActualUsuario.toFixed(2)}`;
-                    
+                    actualizarElementoConversion('modal-saldo-actual-alt', saldoActualUsuario, usuarioActualCompleto);
+
                     let saldoRestante = saldoActualUsuario - precioSeleccionado;
                     let txtRestante = document.getElementById('modal-saldo-restante');
-                    
+                    actualizarElementoConversion('modal-saldo-restante-alt', saldoRestante, usuarioActualCompleto);
+
                     txtRestante.innerText = `S/ ${saldoRestante.toFixed(2)}`;
                     
                     if (saldoRestante < 0) {

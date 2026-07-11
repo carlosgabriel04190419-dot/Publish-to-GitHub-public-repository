@@ -150,13 +150,23 @@ async function prepararConversion(usuario) {
 
 /** Si la página tiene un elemento #saldo-nav-alt, lo llena con el saldo convertido a la moneda del usuario. */
 async function actualizarSaldoConvertido(usuario) {
-    const elemento = document.getElementById('saldo-nav-alt');
-    if (!elemento) return;
+    await actualizarElementoConversion('saldo-nav-alt', usuario.saldo, usuario);
+}
+
+/**
+ * Llena cualquier elemento (identificado por su id) con la conversión de un monto en
+ * soles a la moneda del usuario, ej. para usarlo en el modal de compra ("Costo a
+ * descontar", "Saldo Restante", etc). Lo oculta si el usuario es de Perú o no se pudo
+ * calcular la conversión.
+ */
+async function actualizarElementoConversion(idElemento, montoPEN, usuario) {
+    const elemento = document.getElementById(idElemento);
+    if (!elemento || !usuario) return;
 
     const conversion = await prepararConversion(usuario);
     if (!conversion) { elemento.style.display = 'none'; return; }
 
-    elemento.innerText = formatearMontoConvertido(usuario.saldo, conversion.moneda, conversion.tasas);
+    elemento.innerText = formatearMontoConvertido(montoPEN, conversion.moneda, conversion.tasas);
     elemento.style.display = 'block';
 }
 
