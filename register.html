@@ -279,6 +279,15 @@
                 btn.disabled = false; btn.innerText = "Continuar"; return;
             }
 
+            // Cuando el correo ya pertenece a una cuenta CONFIRMADA, Supabase no manda error
+            // ni código nuevo (para no revelar qué correos existen): devuelve un usuario con
+            // identities vacío. Sin este chequeo, la persona se queda esperando un código
+            // que nunca llega.
+            if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+                mostrarMensaje("Ese correo ya tiene una cuenta activa. Inicia sesión, o usa \"¿Olvidaste tu contraseña?\" si no la recuerdas.");
+                btn.disabled = false; btn.innerText = "Continuar"; return;
+            }
+
             const numeroCompleto = codigoPais + celular;
             registroPendiente = { nickname, correo, celular: numeroCompleto };
 
