@@ -260,8 +260,8 @@
 
             btn.disabled = true; btn.innerText = "Procesando...";
 
-            const { data: nickExistente } = await supabaseClient.from('usuarios').select('nickname').eq('nickname', nickname).single();
-            if (nickExistente) {
+            const { data: correoDeEseNick } = await supabaseClient.rpc('obtener_correo_por_nickname', { p_nickname: nickname });
+            if (correoDeEseNick) {
                 mostrarMensaje("Ese nickname ya está en uso. Elige otro.");
                 btn.disabled = false; btn.innerText = "Continuar"; return;
             }

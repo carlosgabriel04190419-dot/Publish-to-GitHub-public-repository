@@ -198,8 +198,8 @@
             let emailToLogin = inputUsuario;
 
             if (!inputUsuario.includes('@')) {
-                const { data: userData } = await supabaseClient.from('usuarios').select('correo').eq('nickname', inputUsuario).single();
-                if (userData && userData.correo) { emailToLogin = userData.correo; }
+                const { data: correoEncontrado } = await supabaseClient.rpc('obtener_correo_por_nickname', { p_nickname: inputUsuario });
+                if (correoEncontrado) { emailToLogin = correoEncontrado; }
                 else { btn.disabled = false; btn.innerText = "Iniciar Sesión"; return mostrarError("Usuario no encontrado."); }
             }
 
