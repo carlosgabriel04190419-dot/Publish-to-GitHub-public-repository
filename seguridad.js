@@ -216,3 +216,33 @@ function avatarPillHTML(usuario) {
         : `<span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.25);color:white;font-size:12px;font-weight:bold;vertical-align:middle;">${inicial}</span>`;
     return `${foto} <span style="vertical-align:middle;">${usuario.nickname}</span> <span class="material-icons" style="font-size: 18px; vertical-align:middle;">expand_more</span>`;
 }
+
+// ==========================================
+// VALIDACIÓN DE ID DE FREE FIRE (nickname real del jugador)
+// ==========================================
+// API gratuita de terceros (no oficial de Garena), usada solo para confirmar
+// el nickname real detrás de un ID antes de procesar una recarga.
+const FF_API_BASE = 'https://siambhau69.eu.cc/freefireinfo/bhau';
+const FF_API_KEY = 'FFINFO-Free';
+const FF_API_REGION = 'SAC'; // Sudamérica: cubre Perú y el resto de países que atiende la tienda
+
+/**
+ * Consulta el nickname real de una cuenta de Free Fire a partir de su UID.
+ * @returns {Promise<{ok: true, nickname: string, nivel: number} | {ok: false, error: string}>}
+ */
+async function validarUidFreeFire(uid) {
+    try {
+        const url = `${FF_API_BASE}?uid=${encodeURIComponent(uid)}&region=${FF_API_REGION}&key=${FF_API_KEY}`;
+        const resp = await fetch(url);
+        const datos = await resp.json();
+
+        if (!datos || !datos.basicInfo || !datos.basicInfo.nickname) {
+            return { ok: false, error: 'No se encontró ninguna cuenta con ese ID.' };
+        }
+
+        return { ok: true, nickname: datos.basicInfo.nickname, nivel: datos.basicInfo.level };
+    } catch (e) {
+        console.error('Error validando UID de Free Fire:', e);
+        return { ok: false, error: 'No se pudo validar el ID en este momento. Puedes escribir tu nickname manualmente.' };
+    }
+}

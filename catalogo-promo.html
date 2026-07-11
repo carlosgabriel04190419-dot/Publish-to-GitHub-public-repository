@@ -344,7 +344,13 @@
 
                 <div style="margin-bottom: 20px;">
                     <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador (Máx. 11 números)</label>
-                    <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);" autocomplete="off" placeholder="Ej. 24958302" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('modal-id-mensaje').style.display='none';" autocomplete="off" placeholder="Ej. 24958302" style="flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
+                        <button type="button" id="btn-validar-id" onclick="validarIdEnModal()" style="background: rgba(0,230,118,0.1); border: 1px solid #00e676; color: #00e676; border-radius: 8px; padding: 0 16px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+                            <span class="material-icons" style="font-size: 16px;">search</span> Validar
+                        </button>
+                    </div>
+                    <p id="modal-id-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
                 </div>
 
                 <div style="margin-bottom: 25px;">
@@ -442,6 +448,40 @@
                     }
                 }
             } catch(e) { console.error(e); }
+        }
+
+        async function validarIdEnModal() {
+            const idInput = document.getElementById('modal-id-juego');
+            const btn = document.getElementById('btn-validar-id');
+            const msg = document.getElementById('modal-id-mensaje');
+            const uid = idInput.value.trim();
+
+            if (!uid || uid.length < 7) {
+                msg.style.display = 'block';
+                msg.style.color = '#ff4757';
+                msg.innerText = 'Ingresa un ID válido primero.';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-icons" style="font-size:16px;">hourglass_top</span> Validando...';
+            msg.style.display = 'none';
+
+            const resultado = await validarUidFreeFire(uid);
+
+            btn.disabled = false;
+            btn.innerHTML = '<span class="material-icons" style="font-size:16px;">search</span> Validar';
+
+            if (resultado.ok) {
+                document.getElementById('modal-nickname-juego').value = resultado.nickname;
+                msg.style.display = 'block';
+                msg.style.color = '#00e676';
+                msg.innerText = `✓ Cuenta encontrada: ${resultado.nickname} (Nivel ${resultado.nivel})`;
+            } else {
+                msg.style.display = 'block';
+                msg.style.color = '#ff4757';
+                msg.innerText = resultado.error;
+            }
         }
 
         async function abrirModalCompra(nombrePaquete, precioPaquete) {
