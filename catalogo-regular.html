@@ -349,7 +349,7 @@
                 <div style="margin-bottom: 20px;">
                     <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador (Máx. 11 números)</label>
                     <div style="display: flex; gap: 10px;">
-                        <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('modal-id-mensaje').style.display='none';" autocomplete="off" placeholder="Ej. 24958302" style="flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
+                        <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('modal-id-mensaje').style.display='none'; desbloquearNickname();" autocomplete="off" placeholder="Ej. 24958302" style="flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
                         <button type="button" id="btn-validar-id" onclick="validarIdEnModal()" style="background: rgba(0,230,118,0.1); border: 1px solid #00e676; color: #00e676; border-radius: 8px; padding: 0 16px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
                             <span class="material-icons" style="font-size: 16px;">search</span> Validar
                         </button>
@@ -358,7 +358,7 @@
                 </div>
 
                 <div style="margin-bottom: 25px;">
-                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Nickname en el juego (Exacto)</label>
+                    <label id="modal-nickname-label" style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Nombre de Usuario</label>
                     <input type="text" id="modal-nickname-juego" autocomplete="off" placeholder="Ej. Carlos_Pro" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; text-align: center; transition: all 0.3s;">
                 </div>
 
@@ -454,6 +454,28 @@
             } catch(e) { console.error(e); }
         }
 
+        function bloquearNickname(nickname) {
+            const campo = document.getElementById('modal-nickname-juego');
+            campo.value = nickname;
+            campo.readOnly = true;
+            campo.style.background = 'rgba(0,230,118,0.08)';
+            campo.style.borderColor = '#00e676';
+            campo.style.color = '#00e676';
+            campo.style.fontWeight = 'bold';
+            campo.style.cursor = 'not-allowed';
+        }
+
+        function desbloquearNickname() {
+            const campo = document.getElementById('modal-nickname-juego');
+            campo.value = '';
+            campo.readOnly = false;
+            campo.style.background = 'rgba(0, 0, 0, 0.5)';
+            campo.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            campo.style.color = 'white';
+            campo.style.fontWeight = 'normal';
+            campo.style.cursor = 'text';
+        }
+
         async function validarIdEnModal() {
             const idInput = document.getElementById('modal-id-juego');
             const btn = document.getElementById('btn-validar-id');
@@ -477,14 +499,15 @@
             btn.innerHTML = '<span class="material-icons" style="font-size:16px;">search</span> Validar';
 
             if (resultado.ok) {
-                document.getElementById('modal-nickname-juego').value = resultado.nickname;
+                bloquearNickname(resultado.nickname);
                 msg.style.display = 'block';
                 msg.style.color = '#00e676';
                 msg.innerText = `✓ Cuenta encontrada: ${resultado.nickname} (Nivel ${resultado.nivel})`;
             } else {
+                desbloquearNickname();
                 msg.style.display = 'block';
                 msg.style.color = '#ff4757';
-                msg.innerText = resultado.error;
+                msg.innerText = resultado.error + ' Puedes escribir tu nombre de usuario manualmente.';
             }
         }
 
@@ -498,7 +521,7 @@
             document.getElementById('compra-pantalla-error').style.display = 'none';
             document.getElementById('compra-pantalla-exito').style.display = 'none';
             document.getElementById('modal-id-juego').value = ""; 
-            document.getElementById('modal-nickname-juego').value = "";
+            desbloquearNickname();
             
             // CÁLCULO FINANCIERO DEL MODAL
             document.getElementById('modal-paquete-nombre').innerText = nombrePaquete;
