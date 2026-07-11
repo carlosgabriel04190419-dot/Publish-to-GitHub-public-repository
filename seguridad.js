@@ -66,7 +66,84 @@ async function verificarSesion(requerido = true) {
     }
 
     localStorage.setItem('nombreUsuario', usuario.nickname);
+    actualizarSaldoConvertido(usuario);
     return usuario;
+}
+
+// ==========================================
+// CONVERSIÓN DE SALDO A LA MONEDA DEL PAÍS DEL USUARIO
+// ==========================================
+// Todo el saldo se guarda siempre en soles (PEN) — esto es solo para MOSTRAR
+// una referencia aproximada en la moneda local, usando el código de país que
+// el usuario ya eligió en su número de WhatsApp al registrarse.
+
+const MONEDA_POR_PREFIJO = [
+    { prefijo: '591', moneda: 'BOB' }, // Bolivia (va antes que "51" para no chocar con Perú)
+    { prefijo: '593', moneda: 'USD' }, // Ecuador usa dólar
+    { prefijo: '595', moneda: 'PYG' }, // Paraguay
+    { prefijo: '598', moneda: 'UYU' }, // Uruguay
+    { prefijo: '507', moneda: 'USD' }, // Panamá usa dólar
+    { prefijo: '51', moneda: 'PEN' },  // Perú
+    { prefijo: '52', moneda: 'MXN' },  // México
+    { prefijo: '54', moneda: 'ARS' },  // Argentina
+    { prefijo: '55', moneda: 'BRL' },  // Brasil
+    { prefijo: '56', moneda: 'CLP' },  // Chile
+    { prefijo: '57', moneda: 'COP' },  // Colombia
+    { prefijo: '58', moneda: 'USD' },  // Venezuela (bolívar muy inestable, mostramos USD)
+    { prefijo: '34', moneda: 'EUR' },  // España
+    { prefijo: '1', moneda: 'USD' },   // EE. UU. / Canadá
+];
+
+function monedaSegunCelular(celular) {
+    if (!celular) return null;
+    const limpio = celular.replace(/\D/g, '');
+    const encontrado = MONEDA_POR_PREFIJO.find(m => limpio.startsWith(m.prefijo));
+    return encontrado ? encontrado.moneda : null;
+}
+
+const SIMBOLO_MONEDA = { USD: '$', EUR: '€', PEN: 'S/', MXN: '$', ARS: '$', CLP: '$', COP: '$', UYU: '$', BRL: 'R$', BOB: 'Bs', PYG: '₲' };
+
+async function obtenerTasasCambio() {
+    const CACHE_KEY = 'tasasCambioPEN';
+    const CACHE_HORAS = 12;
+    try {
+        const cache = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+        if (cache && (Date.now() - cache.guardadoEn) < CACHE_HORAS * 60 * 60 * 1000) {
+            return cache.rates;
+        }
+        const resp = await fetch('https://open.er-api.com/v6/latest/PEN');
+        const datos = await resp.json();
+        if (datos.result !== 'success') return cache ? cache.rates : null;
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ rates: datos.rates, guardadoEn: Date.now() }));
+        return datos.rates;
+    } catch (e) {
+        console.error('No se pudo obtener el tipo de cambio:', e);
+        const cache = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+        return cache ? cache.rates : null;
+    }
+}
+
+/** Si la página tiene un elemento #saldo-nav-alt, lo llena con el saldo convertido a la moneda del usuario. */
+async function actualizarSaldoConvertido(usuario) {
+    const elemento = document.getElementById('saldo-nav-alt');
+    if (!elemento) return;
+
+    const moneda = monedaSegunCelular(usuario.celular);
+    if (!moneda || moneda === 'PEN') { elemento.style.display = 'none'; return; }
+
+    const tasas = await obtenerTasasCambio();
+    if (!tasas || !tasas[moneda]) { elemento.style.display = 'none'; return; }
+
+    const montoConvertido = usuario.saldo * tasas[moneda];
+    const simbolo = SIMBOLO_MONEDA[moneda] || '';
+    // ARS, CLP, COP y PYG no se usan con centavos en la vida diaria: se redondean a entero.
+    const sinDecimales = ['ARS', 'CLP', 'COP', 'PYG'].includes(moneda);
+    const montoFormateado = montoConvertido.toLocaleString('es', {
+        minimumFractionDigits: sinDecimales ? 0 : 2,
+        maximumFractionDigits: sinDecimales ? 0 : 2,
+    });
+    elemento.innerText = `≈ ${simbolo} ${montoFormateado} ${moneda}`;
+    elemento.style.display = 'block';
 }
 
 /** Cierra sesión de verdad (invalida la sesión en Supabase) y limpia el caché local. */
