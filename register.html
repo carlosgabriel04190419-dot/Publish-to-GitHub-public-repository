@@ -122,9 +122,15 @@
                     Te enviamos un código a <strong id="correo-mostrado" style="color: white;"></strong>. Ingrésalo abajo para activar tu cuenta.
                 </p>
 
-                <div class="input-group">
-                    <span class="material-icons">pin</span>
-                    <input type="text" inputmode="numeric" id="input-codigo" placeholder="Código de verificación" style="text-align:center; letter-spacing:4px; font-size:20px; font-weight:700;" onkeydown="if(event.key === 'Enter') verificarCodigo()">
+                <div class="code-inputs" id="code-inputs-container" style="gap:8px;">
+                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="0" style="width:38px;">
+                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="1" style="width:38px;">
+                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="2" style="width:38px;">
+                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="3" style="width:38px;">
+                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="4" style="width:38px;">
+                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="5" style="width:38px;">
+                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="6" style="width:38px;">
+                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="7" style="width:38px;">
                 </div>
 
                 <button type="button" id="btn-verificar-codigo" class="btn-primary" style="width: 100%; margin-top: 30px;" onclick="verificarCodigo()">Verificar y Activar Cuenta</button>
@@ -244,7 +250,7 @@
 
         async function registrarUsuario() {
             const nickname = document.getElementById('reg-nickname').value.trim();
-            const correo = document.getElementById('reg-correo').value.trim();
+            const correo = document.getElementById('reg-correo').value.trim().toLowerCase();
             const password = document.getElementById('reg-password').value;
             const password2 = document.getElementById('reg-password2').value;
             const celular = document.getElementById('reg-celular').value.replace(/\s/g, '').trim();
@@ -307,14 +313,39 @@
             document.getElementById('paso-1-registro').style.display = 'none';
             document.getElementById('paso-2-codigo').style.display = 'block';
 
-            const input = document.getElementById('input-codigo');
-            input.value = '';
-            input.focus();
+            const cajas = [...document.querySelectorAll('.code-box')];
+            cajas.forEach((caja, i) => {
+                caja.value = '';
+                caja.oninput = () => {
+                    const soloDigitos = caja.value.replace(/\D/g, '');
+                    if (soloDigitos.length > 1) {
+                        // El usuario pegó el código completo en una casilla: lo repartimos desde aquí.
+                        distribuirCodigo(soloDigitos, i);
+                        return;
+                    }
+                    caja.value = soloDigitos;
+                    if (caja.value && i < cajas.length - 1) cajas[i + 1].focus();
+                };
+                caja.onkeydown = (e) => {
+                    if (e.key === 'Backspace' && !caja.value && i > 0) cajas[i - 1].focus();
+                    if (e.key === 'Enter') verificarCodigo();
+                };
+            });
+            cajas[0].focus();
+        }
+
+        function distribuirCodigo(digitos, desde) {
+            const cajas = [...document.querySelectorAll('.code-box')];
+            digitos.split('').forEach((d, offset) => {
+                const idx = desde + offset;
+                if (cajas[idx]) cajas[idx].value = d;
+            });
+            const siguienteVacia = cajas.find(c => !c.value);
+            (siguienteVacia || cajas[cajas.length - 1]).focus();
         }
 
         function obtenerCodigoIngresado() {
-            // No asumimos una cantidad fija de dígitos: Supabase puede generar códigos de distinto largo.
-            return document.getElementById('input-codigo').value.replace(/\s/g, '').trim();
+            return [...document.querySelectorAll('.code-box')].map(c => c.value).join('');
         }
 
         async function verificarCodigo() {
