@@ -352,6 +352,44 @@
                         </div>
                     </div>
 
+                    <div class="card-box upload-container">
+                        <h3 class="card-box-title"><span class="material-icons" style="color: #a155ff;">live_tv</span> Stock de Plataformas (Streaming)</h3>
+                        <p style="color: #a8a8b3; font-size: 13px; margin: -10px 0 15px 0;">Cada cuenta que agregues se reparte automáticamente en perfiles, o se guarda como venta única si eliges Cuenta Completa.</p>
+                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Plataforma</label>
+                                <select id="plat-stock-plataforma" class="bulk-select" onchange="actualizarTipoCargaDisponible()">
+                                    <option value="Netflix 4K" data-cuenta="1">Netflix 4K</option>
+                                    <option value="Disney+ (incluye ESPN)" data-cuenta="1">Disney+ (incluye ESPN)</option>
+                                    <option value="HBO Max" data-cuenta="1">HBO Max</option>
+                                    <option value="Prime Video" data-cuenta="1">Prime Video</option>
+                                    <option value="DirecTV Go" data-cuenta="0">DirecTV Go</option>
+                                    <option value="Paramount+" data-cuenta="0">Paramount+</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="color: #00e676; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Tipo de carga</label>
+                                <select id="plat-stock-tipo" class="bulk-select">
+                                    <option value="perfil">Perfil (se divide automático)</option>
+                                    <option value="cuenta_completa">Cuenta Completa (venta única)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Correo</label>
+                                <input type="email" id="plat-stock-correo" class="bulk-select" placeholder="cuenta@gmail.com" style="width: 100%; box-sizing: border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Contraseña</label>
+                                <input type="text" id="plat-stock-contrasena" class="bulk-select" placeholder="Contraseña de la cuenta" style="width: 100%; box-sizing: border-box;">
+                            </div>
+                        </div>
+                        <button class="btn-primary" id="btn-guardar-cuenta-plataforma" style="width: 100%; padding: 15px; font-weight: bold; background: #a155ff; color: white; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-top: 15px;" onclick="guardarCuentaPlataforma()">
+                            <span class="material-icons">save</span> Guardar Cuenta
+                        </button>
+                    </div>
+
                     <div class="card-box">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">inventory</span> Stock disponible por paquete</h3>
                         <div class="table-scroll">
@@ -475,6 +513,47 @@
             const datos = lista.map(cod => ({ paquete: pkt, codigo: cod, estado: 'Disponible' }));
             await supabaseClient.from('inventario_codigos').insert(datos);
             showToast(`¡${lista.length} códigos añadidos!`); document.getElementById('bulk-codigos').value = ''; cargarPedidos(); cargarStock();
+        }
+
+        function actualizarTipoCargaDisponible() {
+            const sel = document.getElementById('plat-stock-plataforma');
+            const tieneCuenta = sel.options[sel.selectedIndex].dataset.cuenta === '1';
+            const tipoSel = document.getElementById('plat-stock-tipo');
+            tipoSel.querySelector('option[value="cuenta_completa"]').disabled = !tieneCuenta;
+            if (!tieneCuenta && tipoSel.value === 'cuenta_completa') tipoSel.value = 'perfil';
+        }
+
+        async function guardarCuentaPlataforma() {
+            const plataforma = document.getElementById('plat-stock-plataforma').value;
+            const tipo = document.getElementById('plat-stock-tipo').value;
+            const correo = document.getElementById('plat-stock-correo').value.trim();
+            const contrasena = document.getElementById('plat-stock-contrasena').value.trim();
+
+            const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!regexEmail.test(correo)) return showToast("Ingresa un correo válido.", "warning");
+            if (!contrasena) return showToast("Ingresa la contraseña de la cuenta.", "warning");
+
+            const tipoTexto = tipo === 'cuenta_completa' ? 'Cuenta Completa (venta única)' : 'Perfil (se divide automático)';
+            const conf = await openCustomModal({ title: "Guardar Cuenta", desc: `¿Guardar esta cuenta de <b>${plataforma}</b> como <b>${tipoTexto}</b>?`, icon: 'live_tv', color: '#a155ff', textColor: 'white', type: 'confirm', confirmText: 'Guardar' });
+            if (!conf) return;
+
+            const { data, error } = await supabaseClient.rpc('admin_agregar_stock_plataforma', {
+                p_plataforma: plataforma, p_tipo: tipo, p_correo: correo, p_contrasena: contrasena
+            });
+
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+
+            const resultado = data && data[0];
+            const filas = resultado ? resultado.filas_creadas : 0;
+            const completados = resultado ? resultado.pedidos_completados : 0;
+
+            let msg = `Se agregaron ${filas} unidad(es) de stock.`;
+            if (completados > 0) msg += ` Se completaron ${completados} pedido(s) pendiente(s) automáticamente.`;
+            showToast(msg);
+
+            document.getElementById('plat-stock-correo').value = '';
+            document.getElementById('plat-stock-contrasena').value = '';
+            cargarPedidos(); cargarStock();
         }
 
         function copiarTexto(texto, el) { navigator.clipboard.writeText(texto).then(() => { const t = el.innerHTML; el.innerHTML = '<span class="material-icons" style="font-size:11px;">check</span>'; el.style.background = '#00e676'; el.style.color = 'black'; setTimeout(() => { el.innerHTML = t; el.style.background = ''; el.style.color = ''; }, 2000); }); }
@@ -603,14 +682,22 @@
             data.forEach(p => {
                 let codHTML = '<span style="color:#666;">Activación directa</span>';
                 if (p.codigo) {
-                    codHTML = p.codigo.split(' | ').map(l => l.includes("⚠️") ? `<span style="color:#ff4757; font-size:12px; font-weight:bold;">${l}</span>` : `${l} <button class="btn-copy" onclick="copiarTexto('${l}', this)"><span class="material-icons">content_copy</span></button>`).join('<br>');
+                    codHTML = p.codigo.split(' | ').map(l => (l.includes("⚠️") || l.includes("Pendiente —")) ? `<span style="color:#ff4757; font-size:12px; font-weight:bold;">${l}</span>` : `${l} <button class="btn-copy" onclick="copiarTexto('${l}', this)"><span class="material-icons">content_copy</span></button>`).join('<br>');
+                }
+                let colDetalle;
+                if (p.nota_cliente) {
+                    colDetalle = `<span style="color:#ffc107;">📩 Contacto:</span><br>${p.nota_cliente} <button class="btn-copy" onclick="copiarTexto('${p.nota_cliente}', this)"><span class="material-icons">content_copy</span></button>`;
+                } else if (!p.id_juego && !p.nickname_juego) {
+                    colDetalle = `<span style="color:#666;">— (Entrega automática)</span>`;
+                } else {
+                    colDetalle = `Nick: ${p.nickname_juego||'N/A'}<br>ID: ${p.id_juego} <button class="btn-copy" onclick="copiarTexto('${p.id_juego}', this)"><span class="material-icons">content_copy</span></button>`;
                 }
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td data-label="Fecha" style="color: #a8a8b3; font-size: 13px;">${new Date(p.created_at).toLocaleString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}</td>
                     <td data-label="Comprador" style="font-weight: bold;">${p.nickname}</td>
                     <td data-label="Paquete" style="color: #a155ff; font-weight: bold;">${p.paquete}</td>
-                    <td data-label="Juego" style="font-family: monospace; font-size:13px;">Nick: ${p.nickname_juego||'N/A'}<br>ID: ${p.id_juego} <button class="btn-copy" onclick="copiarTexto('${p.id_juego}', this)"><span class="material-icons">content_copy</span></button></td>
+                    <td data-label="Juego" style="font-family: monospace; font-size:13px;">${colDetalle}</td>
                     <td data-label="Códigos" style="font-family: monospace; color: #00e676; line-height: 1.8;">${codHTML}</td>
                     <td data-label="Acción">
                         <button class="btn-complete" onclick="completarPedido(${p.id}, '${p.paquete}', '${p.nickname}')"><span class="material-icons">check_circle</span> Listo</button>
@@ -621,15 +708,27 @@
         }
 
         async function completarPedido(id, paquete, nick) {
+            const { data: pedidoActual } = await supabaseClient.from('pedidos').select('codigo').eq('id', id).single();
+            if (pedidoActual && pedidoActual.codigo && (pedidoActual.codigo.includes('⚠️') || pedidoActual.codigo.includes('Pendiente —'))) {
+                showToast('Todavía falta stock/invitación para este pedido. Agrégalo antes de marcarlo Listo.', 'error');
+                return;
+            }
+
             const conf = await openCustomModal({ title: "Completar Pedido", desc: `¿Confirmas envío de <b>${paquete}</b> a <b>${nick}</b>?`, icon: 'task_alt', color: '#a155ff', textColor: 'white', type: 'confirm', confirmText: 'Marcar Listo' });
             if(!conf) return;
 
+            const { data: producto } = await supabaseClient.from('productos').select('categoria').eq('paquete', paquete.replace(' (Renovación)', '')).maybeSingle();
+            const esStreaming = producto && producto.categoria === 'streaming';
+
             await supabaseClient.from('pedidos').update({ estado: 'Completado' }).eq('id', id);
+            await supabaseClient.rpc('crear_suscripcion_si_falta', { p_pedido_id: id });
             const { data: user } = await supabaseClient.from('usuarios').select('celular').eq('nickname', nick).single();
 
             if(user && user.celular) {
                 let numStr = user.celular.replace(/[^0-9]/g, '');
-                let msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 💎 *${paquete}* 💎 acaba de ser procesado y completado exitosamente.\n\nRevisa tu cuenta del juego y disfruta. ¡Gracias por preferirnos!`;
+                let msg = esStreaming
+                    ? `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 📺 *${paquete}* 📺 acaba de ser procesado y completado exitosamente.\n\nYa puedes ver tus datos de acceso en tu panel de *Mis Plataformas* dentro de la web. ¡Gracias por preferirnos!`
+                    : `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 💎 *${paquete}* 💎 acaba de ser procesado y completado exitosamente.\n\nRevisa tu cuenta del juego y disfruta. ¡Gracias por preferirnos!`;
                 window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
             }
 
@@ -648,7 +747,7 @@
                 await supabaseClient.from('historial').insert([{ nickname: nick, monto: precio, tipo: `Reembolso por pedido rechazado: ${paquete}`, estado: 'Completado' }]);
             }
 
-            if(codigoStr && !codigoStr.includes("Sin stock") && !codigoStr.includes("Pendiente a mandar") && !codigoStr.includes("Activación Promo") && !codigoStr.includes("Activación Directa") && !codigoStr.includes("Envío de")) {
+            if(codigoStr && !codigoStr.includes("Sin stock") && !codigoStr.includes("Pendiente —") && !codigoStr.includes("Pendiente a mandar") && !codigoStr.includes("Activación Promo") && !codigoStr.includes("Activación Directa") && !codigoStr.includes("Envío de")) {
                 let codigos = codigoStr.split(' | ').filter(c => !c.includes('⚠️')).map(c => c.trim()).filter(c => c.length > 0);
                 if (codigos.length > 0) { await supabaseClient.rpc('admin_devolver_codigos', { p_codigos: codigos }); }
             }

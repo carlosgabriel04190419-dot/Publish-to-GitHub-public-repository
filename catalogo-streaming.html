@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Streaming | CarzaD'Cross</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="description" content="Cuentas y perfiles de Netflix, Disney+, HBO Max, Prime Video, YouTube Premium, Apple One, DirecTV Go y Paramount+. Entrega automática con tu saldo.">
+    <link rel="canonical" href="https://carzadcross.com/catalogo-streaming.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="CarzaD'Cross">
+    <meta property="og:locale" content="es_PE">
+    <meta property="og:title" content="Catálogo Streaming | CarzaD'Cross">
+    <meta property="og:description" content="Cuentas y perfiles de Netflix, Disney+, HBO Max, Prime Video, YouTube Premium, Apple One, DirecTV Go y Paramount+. Entrega automática con tu saldo.">
+    <meta property="og:image" content="https://carzadcross.com/hero-bg.jpg">
+    <meta property="og:url" content="https://carzadcross.com/catalogo-streaming.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Catálogo Streaming | CarzaD'Cross">
+    <meta name="twitter:description" content="Cuentas y perfiles de Netflix, Disney+, HBO Max, Prime Video, YouTube Premium, Apple One, DirecTV Go y Paramount+. Entrega automática con tu saldo.">
+    <meta name="twitter:image" content="https://carzadcross.com/hero-bg.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <style>
+        /* --- LIVE TICKER (igual al resto del sitio) --- */
+        .live-ticker-wrap { width: 100%; background: rgba(20, 20, 26, 0.9); border-bottom: 1px solid rgba(161, 85, 255, 0.2); overflow: hidden; position: relative; padding: 10px 0; display: flex; align-items: center; z-index: 10; }
+        .ticker-label { background: #a155ff; color: white; font-weight: bold; padding: 6px 12px; font-size: 11px; letter-spacing: 0.5px; z-index: 12; position: absolute; left: 0; border-radius: 0 4px 4px 0; box-shadow: 4px 0 10px rgba(0,0,0,0.5); }
+        .ticker-move { display: flex; white-space: nowrap; animation: tickerAnimation 30s linear infinite; padding-left: 150px; }
+        .ticker-item { display: inline-block; padding-right: 3rem; color: #e0e0e0; font-size: 13.5px; }
+        .ticker-item .hl { color: #a155ff; font-weight: bold; }
+        .ticker-item .id-text { color: #888899; font-family: monospace; }
+        @keyframes tickerAnimation { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(var(--loop-dist, -33.3333%), 0, 0); } }
+        @media (max-width: 768px) { .ticker-label { font-size: 9.5px; padding: 5px 10px; } .ticker-move { padding-left: 110px; } .ticker-item { font-size: 11.5px; padding-right: 2rem; } }
+
+        /* --- PESTAÑAS DE PLATAFORMA --- */
+        .plat-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; }
+        .plat-tab { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.3); color: #a8a8b3; font-weight: bold; font-size: 13px; cursor: pointer; transition: all 0.25s ease; }
+        .plat-tab:hover { border-color: rgba(255,255,255,0.25); color: #e0e0e0; }
+        .plat-tab.activa { border-color: var(--plat-color, #a155ff); color: var(--plat-color, #a155ff); background: rgba(255,255,255,0.06); }
+        .plat-badge { width: 24px; height: 24px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; color: white; flex-shrink: 0; }
+        .plat-desc { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 18px 20px; margin-bottom: 20px; }
+        .plat-planes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+
+        .cz-footer { background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 80px 20px 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 50px; }
+        .cz-footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; }
+        @media (max-width: 950px) { .cz-footer-content { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px) { .cz-footer-content { grid-template-columns: 1fr; gap: 40px; } }
+        .cz-f-brand { display: flex; flex-direction: column; gap: 18px; }
+        .cz-f-desc { color: #888899; font-size: 14px; line-height: 1.6; max-width: 320px; }
+        .cz-f-trust { display: flex; gap: 15px; margin-top: 5px; flex-wrap: wrap; }
+        .cz-f-trust span { display: flex; align-items: center; gap: 6px; color: #b3b3cc; font-size: 12.5px; font-weight: 600; }
+        .cz-f-trust span .material-icons { color: #a155ff; font-size: 16px; }
+        .cz-f-col h4 { color: white; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 25px 0; display: flex; align-items: center; gap: 10px; }
+        .cz-f-col h4::before { content: ''; display: block; width: 3px; height: 14px; background: #a155ff; border-radius: 2px; }
+        .cz-f-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+        .cz-f-col a { color: #888899; text-decoration: none; font-size: 14px; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .cz-f-col a:hover { color: white; transform: translateX(5px); }
+        .cz-f-col a .material-icons { font-size: 14px; color: #a155ff; opacity: 0; transition: opacity 0.2s; }
+        .cz-f-col a:hover .material-icons { opacity: 1; }
+        .cz-footer-bottom { max-width: 1200px; margin: 60px auto 0; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .cz-copy { color: #555566; font-size: 13px; }
+        .cz-made-with { color: #777788; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-logo-premium" onclick="window.location.href='index.html'">
+            <div class="logo-emblem">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                    <defs>
+                        <linearGradient id="gradLogo" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#a155ff;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M50 5 L90 25 L90 70 L50 95 L10 70 L10 25 Z" fill="#121218" stroke="url(#gradLogo)" stroke-width="6" stroke-linejoin="round"/>
+                    <path d="M50 15 L80 30 L80 65 L50 82 L20 65 L20 30 Z" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+                    <path d="M60 35 A 20 20 0 1 0 60 65" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                    <line x1="45" y1="25" x2="80" y2="75" stroke="#00d2ff" stroke-width="8" stroke-linecap="round"/>
+                    <line x1="80" y1="25" x2="45" y2="75" stroke="#a155ff" stroke-width="8" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <span class="text-carza">Carza</span><span class="text-d">D'</span><span class="text-cross">Cross</span>
+            </div>
+        </div>
+        <ul class="nav-links-desktop">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="ranking.html">Ranking</a></li>
+            <li><a href="soporte.html">Soporte</a></li>
+        </ul>
+        <div class="nav-auth-section" id="nav-logged-out">
+         <button class="btn-text" onclick="window.location.href='login.html'">Iniciar Sesión</button>
+         <button class="btn-outline" onclick="window.location.href='register.html'">Crear Cuenta</button>
+        </div>
+        <div class="nav-user-section" id="nav-logged-in" style="display: none;">
+            <div class="balance-pill">
+                <span class="material-icons wallet-icon">account_balance_wallet</span>
+                <div class="balance-info"><span class="balance-label">SALDO</span><span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span><span id="saldo-nav-alt" style="display:none; font-size:10px; color:#8a8a9a; font-weight:600; margin-top:1px;"></span></div>
+            </div>
+            <div class="balance-pill" style="border-color: #ffc107; background: rgba(255,193,7,0.1); margin-left: 10px;">
+                <span class="material-icons wallet-icon" style="color: #ffc107;">stars</span>
+                <div class="balance-info">
+                    <span class="balance-label" style="color: #ffc107;">PUNTOS</span>
+                    <span class="balance-amount" style="color: #ffc107;" id="puntos-nav">0</span>
+                </div>
+            </div>
+            <div class="user-dropdown-container" style="position: relative; margin-left: 15px;">
+             <div class="user-profile" onclick="toggleMenu()" id="btn-usuario-nav" style="cursor: pointer;"><span>Carlos</span><span class="material-icons">expand_more</span></div>
+            <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 8px; min-width: 160px; z-index: 1000; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                 <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">person</span> Mis Datos</a>
+                 <a href="mis-plataformas.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">live_tv</span> Mis Plataformas</a>
+                 <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #00e676; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
+                 <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">casino</span> Caja Misteriosa VIP</a>
+                <a href="#" onclick="cerrarSesionSegura()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;"><span class="material-icons">logout</span> Cerrar Sesión</a>
+            </div>
+         </div>
+        </div>
+    </nav>
+
+    <div class="live-ticker-wrap">
+        <div class="ticker-label">COMPRAS EN VIVO ⚡</div>
+        <div class="ticker-move" id="ticker-track">
+            <div class="ticker-item">Sincronizando la bóveda de CarzaD'Cross...</div>
+        </div>
+    </div>
+
+    <header class="hero-container" style="background: linear-gradient(rgba(18, 18, 20, 0.85), rgba(18, 18, 20, 1)), linear-gradient(135deg, #00d2ff, #a155ff, #ff4757); padding: 60px 20px;">
+        <div class="hero-content" style="text-align: center;">
+            <div class="hero-badge" style="border-color: #a155ff; color: #a155ff; background: rgba(161,85,255,0.1); border-radius: 30px; padding: 6px 16px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 20px;">📺 STREAMING</div>
+            <h1 class="hero-title" style="font-size: 38px; font-weight: bold; margin-bottom: 15px;">Cuentas y perfiles <br><span style="color: #a155ff;">100% renovables</span></h1>
+            <p class="hero-subtitle" style="color: #a8a8b3; font-size: 15px; max-width: 600px; margin: 0 auto;">Elige tu plataforma, la duración que necesites y recibe tus datos de acceso al instante con tu saldo.</p>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 30px;">
+        <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a8a8b3'"><span class="material-icons">arrow_back</span> Volver al inicio</a>
+
+        <div class="plat-tabs" id="plat-tabs"></div>
+        <div id="plat-paneles"></div>
+    </main>
+
+    <!-- MODAL DE COMPRA STREAMING -->
+    <div id="modal-compra-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <div style="width: 100%; max-width: 460px; margin: 20px; padding: 35px; border-radius: 16px; background: #121218; position: relative; border: 1px solid rgba(161, 85, 255, 0.2); box-shadow: 0 0 30px rgba(161, 85, 255, 0.15); box-sizing: border-box;">
+            <span onclick="cerrarModalCompra()" style="position: absolute; top: 20px; right: 20px; color: #888899; cursor: pointer; font-size: 24px; font-weight: bold; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#888899'">×</span>
+
+            <div id="compra-pantalla-formulario">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+                    <span class="material-icons" style="color: #a155ff; font-size: 32px; background: rgba(161,85,255,0.1); padding: 10px; border-radius: 50%;">live_tv</span>
+                    <div><h2 style="font-size: 20px; color: white; margin: 0;">Confirmar Suscripción</h2><p style="color: #a8a8b3; font-size: 13px; margin: 3px 0 0 0;">Estás a un paso de adquirir tu cuenta.</p></div>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.03);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="color: #a8a8b3; font-size: 14px;">Producto:</span>
+                        <strong id="modal-paquete-nombre" style="color: white; font-size: 15px; text-align: right;">---</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
+                        <span style="color: #a8a8b3; font-size: 14px;">Duración:</span>
+                        <select id="modal-meses" onchange="recalcularTotalStreaming()" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 12px; color: white; font-size: 14px; outline: none; font-weight: bold;">
+                            <option value="1">1 mes</option>
+                            <option value="2">2 meses</option>
+                            <option value="3">3 meses</option>
+                            <option value="6">6 meses</option>
+                            <option value="12">12 meses</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                        <span style="color: #a8a8b3; font-size: 14px; padding-top: 2px;">Costo a descontar:</span>
+                        <div style="text-align: right;">
+                            <strong id="modal-paquete-precio" style="color: #ff4757; font-size: 15px; display: block;">S/ 0.00</strong>
+                            <span id="modal-paquete-precio-alt" style="display:none; font-size: 10px; color: #8a8a9a; font-weight: 600;"></span>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
+                        <span style="color: #a8a8b3; font-size: 14px; padding-top: 2px;">Tu Saldo Actual:</span>
+                        <div style="text-align: right;">
+                            <strong id="modal-saldo-actual" style="color: white; font-size: 14px; display: block;">S/ 0.00</strong>
+                            <span id="modal-saldo-actual-alt" style="display:none; font-size: 10px; color: #8a8a9a; font-weight: 600;"></span>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <span style="color: #a8a8b3; font-size: 14px; padding-top: 2px;">Saldo Restante:</span>
+                        <div style="text-align: right;">
+                            <strong id="modal-saldo-restante" style="color: #00e676; font-size: 16px; display: block;">S/ 0.00</strong>
+                            <span id="modal-saldo-restante-alt" style="display:none; font-size: 10px; color: #8a8a9a; font-weight: 600;"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="modal-nota-cliente-box" style="display: none; margin-bottom: 20px;">
+                    <label id="modal-nota-cliente-label" style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Dato de contacto</label>
+                    <input type="text" id="modal-nota-cliente" autocomplete="off" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 15px; outline: none; box-sizing: border-box;">
+                </div>
+
+                <div id="modal-info-box" style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px; margin-bottom: 25px; display: flex; gap: 10px; align-items: flex-start;">
+                    <span class="material-icons" style="color: #ffc107; font-size: 20px;">info</span>
+                    <p id="modal-info-texto" style="margin: 0; color: #ffc107; font-size: 12px; line-height: 1.5;">Cada mes equivale a 30 días desde tu fecha de compra. Podrás renovar antes de que venza desde tu panel "Mis Plataformas".</p>
+                </div>
+
+                <button id="btn-confirmar-pago" class="btn-primary" style="width: 100%; padding: 15px; font-size: 15px; font-weight: bold;" onclick="procesarTransaccionStreaming()">Confirmar y Descontar Saldo</button>
+            </div>
+
+            <div id="compra-pantalla-error" style="display: none; text-align: center; padding: 10px 0;">
+                <span class="material-icons" style="font-size: 56px; color: #ff4757; background: rgba(255,71,87,0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px;">gpp_bad</span>
+                <h2 style="font-size: 22px; color: white; margin: 0 0 10px 0;">Saldo Insuficiente</h2>
+                <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">No cuentas con fondos suficientes en tu billetera.</p>
+                <button class="btn-primary" style="width: 100%; padding: 14px; background: #a155ff; color: white;" onclick="window.location.href='recargar.html'">+ Recargar Saldo Ahora</button>
+            </div>
+
+            <div id="compra-pantalla-exito" style="display: none; text-align: center; padding: 10px 0;"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="seguridad.js"></script>
+    <script>
+        const PLATAFORMAS = [
+            { key: 'netflix', nombre: 'Netflix 4K', color: '#e50914', imagen: 'netflix.png', descripcion: null,
+                planes: [
+                    { paquete: 'Netflix 4K - Perfil', tipo: 'Perfil', precio: 16.00 },
+                    { paquete: 'Netflix 4K - Cuenta Completa', tipo: 'Cuenta Completa', precio: 65.00 }
+                ] },
+            { key: 'disney', nombre: 'Disney+ (incluye ESPN)', color: '#0d3f7a', imagen: 'Disney-plus.png', descripcion: null,
+                planes: [
+                    { paquete: 'Disney+ (ESPN) - Perfil', tipo: 'Perfil', precio: 15.00 },
+                    { paquete: 'Disney+ (ESPN) - Cuenta Completa', tipo: 'Cuenta Completa', precio: 65.00 }
+                ] },
+            { key: 'hbomax', nombre: 'HBO Max', color: '#7b2ff7', imagen: 'HBO-MAX.png', descripcion: null,
+                planes: [
+                    { paquete: 'HBO Max - Perfil', tipo: 'Perfil', precio: 10.00 },
+                    { paquete: 'HBO Max - Cuenta Completa', tipo: 'Cuenta Completa', precio: 25.00 }
+                ] },
+            { key: 'primevideo', nombre: 'Prime Video', color: '#00a8e1', imagen: 'prime-video.png', descripcion: null,
+                planes: [
+                    { paquete: 'Prime Video - Perfil', tipo: 'Perfil', precio: 10.00 },
+                    { paquete: 'Prime Video - Cuenta Completa', tipo: 'Cuenta Completa', precio: 23.00 }
+                ] },
+            { key: 'youtube', nombre: 'YouTube Premium + Music', color: '#ff0000', imagen: 'yt-music.png',
+                requiereNota: 'correo',
+                descripcion: '<div class="plat-desc"><p style="margin:0;color:#e0e0e0;font-size:14px;line-height:1.6;">✅ Se envía por invitación a tu propio correo Gmail &nbsp;·&nbsp; Cero caídas y garantía ilimitada.</p></div>',
+                planes: [
+                    { paquete: 'YouTube Premium + Music - Perfil', tipo: 'Perfil', precio: 16.00 }
+                ] },
+            { key: 'appleone', nombre: 'Apple One 2TB', color: '#8e9297', imagen: 'apple-one.png',
+                requiereNota: 'imessage',
+                descripcion: `<div class="plat-desc">
+                    <p style="margin:0 0 10px 0;font-weight:bold;color:white;font-size:15px;">🍎 Apple One + 2TB de almacenamiento en la nube 🌥️</p>
+                    <p style="margin:0 0 8px 0;color:#a8a8b3;font-size:13px;">Incluye:</p>
+                    <ul style="margin:0;padding-left:20px;color:#a8a8b3;font-size:13.5px;line-height:1.9;">
+                        <li>iCloud+ 2TB en la nube 🌥️</li>
+                        <li>Apple Music ilimitado</li>
+                        <li>Apple Fitness+</li>
+                        <li>Apple Arcade (miles de juegos sin publicidad)</li>
+                        <li>Apple TV+ (series y películas originales)</li>
+                    </ul>
+                    <p style="margin:10px 0 0 0;color:#ffc107;font-size:12.5px;">Se entrega por invitación a tu Apple ID/iMessage, no es instantáneo.</p>
+                </div>`,
+                planes: [
+                    { paquete: 'Apple One 2TB - Perfil', tipo: 'Perfil', precio: 20.00 }
+                ] },
+            { key: 'directvgo', nombre: 'DirecTV Go', color: '#0057b8', imagen: 'dgo.png',
+                requiereFotoTv: true,
+                descripcion: '<div class="plat-desc"><p style="margin:0;color:#e0e0e0;font-size:14px;line-height:1.6;">📺 Para activar necesitamos una foto del código que aparece en tu TV — te lo pedimos por WhatsApp apenas compres.</p></div>',
+                planes: [
+                    { paquete: 'DirecTV Go - Perfil', tipo: 'Perfil', precio: 30.00 }
+                ] },
+            { key: 'paramount', nombre: 'Paramount+', color: '#0064ff', imagen: 'paramount+.png', descripcion: null,
+                planes: [
+                    { paquete: 'Paramount+ - Perfil', tipo: 'Perfil', precio: 15.00 }
+                ] }
+        ];
+
+        let plataformaActiva = PLATAFORMAS[0].key;
+        let paqueteSeleccionado = "";
+        let precioBaseSeleccionado = 0;
+        let precioTotalSeleccionado = 0;
+        let saldoActualUsuario = 0;
+        let usuarioActualCompleto = null;
+        let platSeleccionada = null;
+
+        function renderTabs() {
+            document.getElementById('plat-tabs').innerHTML = PLATAFORMAS.map(p => `
+                <button type="button" class="plat-tab${p.key === plataformaActiva ? ' activa' : ''}" data-plat="${p.key}" style="--plat-color:${p.color};" onclick="cambiarPlataforma('${p.key}')">
+                    <span class="plat-badge" style="background:#0a0a0d;"><img src="${p.imagen}" alt="${p.nombre}" style="width:100%; height:100%; object-fit:contain; border-radius:5px;"></span> ${p.nombre}
+                </button>
+            `).join('');
+        }
+
+        function renderPaneles() {
+            document.getElementById('plat-paneles').innerHTML = PLATAFORMAS.map(p => `
+                <div class="plat-panel" data-plat="${p.key}" style="display:${p.key === plataformaActiva ? 'block' : 'none'};">
+                    ${p.descripcion || ''}
+                    <div class="plat-planes-grid">
+                        ${p.planes.map(pl => `
+                            <div class="card">
+                                <div class="card-icon" style="display:flex; align-items:center; justify-content:center; height:60px;"><img src="${p.imagen}" alt="${p.nombre}" style="max-width:80px; max-height:56px; object-fit:contain;"></div>
+                                <h3 class="card-title">${pl.tipo}</h3>
+                                <p class="card-stock">${p.requiereNota ? 'Por invitación · Entrega manual' : 'Renovable · Entrega automática'}</p>
+                                <div class="card-prices"><span class="price-current">S/ ${pl.precio.toFixed(2)}</span><span style="font-size:12px;color:#a8a8b3;">&nbsp;/mes</span></div>
+                                <button class="btn-buy" onclick="abrirModalStreaming('${pl.paquete}', ${pl.precio}, '${p.nombre.replace(/'/g, "\\'")}', '${pl.tipo}', '${p.key}')">Comprar</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function cambiarPlataforma(key) {
+            plataformaActiva = key;
+            document.querySelectorAll('.plat-tab').forEach(t => t.classList.toggle('activa', t.dataset.plat === key));
+            document.querySelectorAll('.plat-panel').forEach(p => p.style.display = (p.dataset.plat === key ? 'block' : 'none'));
+        }
+
+        window.onload = async function() {
+            renderTabs();
+            renderPaneles();
+
+            const usuario = await verificarSesion(false);
+            if (usuario) {
+                document.getElementById('nav-logged-out').style.display = 'none';
+                document.getElementById('nav-logged-in').style.display = 'flex';
+                document.getElementById('btn-usuario-nav').innerHTML = avatarPillHTML(usuario);
+
+                const elementoSaldo = document.getElementById('saldo-nav');
+                if (elementoSaldo) { elementoSaldo.innerText = usuario.saldo.toFixed(2); }
+
+                const elementoPuntos = document.getElementById('puntos-nav');
+                if (elementoPuntos) { elementoPuntos.innerText = usuario.puntos || 0; }
+
+                saldoActualUsuario = usuario.saldo;
+                usuarioActualCompleto = usuario;
+            }
+
+            cargarSistemaComunidadDinamica();
+        };
+
+        function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
+
+        async function cargarSistemaComunidadDinamica() {
+            try {
+                const usuariosExcluidos = ['carzaadmin', 'carzadcrosito'];
+                const { data: pedidosTicker, error } = await supabaseClient
+                    .from('pedidos')
+                    .select('nickname, paquete, id_juego')
+                    .eq('estado', 'Completado')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                if (!error && pedidosTicker && pedidosTicker.length > 0) {
+                    const ultimas10 = pedidosTicker.filter(p => !usuariosExcluidos.includes(p.nickname.toLowerCase())).slice(0, 10);
+                    let tickerHtml = '';
+                    ultimas10.forEach(p => {
+                        tickerHtml += `<div class="ticker-item">🛒 <span class="hl">${p.nickname}</span> adquirió ${p.paquete}</div>`;
+                    });
+                    if (tickerHtml !== '') {
+                        const track = document.getElementById('ticker-track');
+                        track.innerHTML = tickerHtml + tickerHtml + tickerHtml;
+                        const anchoUnaCopia = track.scrollWidth / 3;
+                        track.style.setProperty('--loop-dist', '-' + anchoUnaCopia + 'px');
+                        track.style.animationDuration = Math.max(18, anchoUnaCopia / 55) + 's';
+                    } else {
+                        document.getElementById('ticker-track').innerHTML = '<div class="ticker-item">Esperando nuevas compras de la comunidad...</div>';
+                    }
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function abrirModalStreaming(paquete, precioBase, plataformaNombre, tipoPlan, platKey) {
+            const nombreGuardado = localStorage.getItem('nombreUsuario');
+            if (!nombreGuardado) { window.location.href = 'login.html'; return; }
+
+            paqueteSeleccionado = paquete;
+            precioBaseSeleccionado = parseFloat(precioBase);
+            platSeleccionada = PLATAFORMAS.find(p => p.key === platKey) || null;
+
+            document.getElementById('compra-pantalla-formulario').style.display = 'block';
+            document.getElementById('compra-pantalla-error').style.display = 'none';
+            document.getElementById('compra-pantalla-exito').style.display = 'none';
+            document.getElementById('modal-meses').value = '1';
+            document.getElementById('modal-paquete-nombre').innerText = `${plataformaNombre} — ${tipoPlan}`;
+
+            const notaBox = document.getElementById('modal-nota-cliente-box');
+            const notaInput = document.getElementById('modal-nota-cliente');
+            const notaLabel = document.getElementById('modal-nota-cliente-label');
+            const infoTexto = document.getElementById('modal-info-texto');
+            notaInput.value = '';
+
+            if (platSeleccionada && platSeleccionada.requiereNota === 'imessage') {
+                notaBox.style.display = 'block';
+                notaLabel.innerText = 'Tu número de iMessage (Apple ID)';
+                notaInput.placeholder = 'Ej. +51 987 654 321';
+                infoTexto.innerHTML = 'Esta plataforma se entrega por <b>invitación manual</b>: te la enviaremos a este número apenas confirmemos tu pago, no es instantáneo.';
+            } else if (platSeleccionada && platSeleccionada.requiereNota === 'correo') {
+                notaBox.style.display = 'block';
+                notaLabel.innerText = 'Tu correo Gmail (para la invitación)';
+                notaInput.placeholder = 'tunombre@gmail.com';
+                infoTexto.innerHTML = 'Esta plataforma se entrega por <b>invitación manual</b>: te la enviaremos a este correo apenas confirmemos tu pago, no es instantáneo.';
+            } else if (platSeleccionada && platSeleccionada.requiereFotoTv) {
+                notaBox.style.display = 'none';
+                infoTexto.innerHTML = 'Apenas compres te pediremos por WhatsApp una <b>foto del código que aparece en tu TV</b> para poder activarlo.';
+            } else {
+                notaBox.style.display = 'none';
+                infoTexto.innerText = 'Cada mes equivale a 30 días desde tu fecha de compra. Podrás renovar antes de que venza desde tu panel "Mis Plataformas".';
+            }
+
+            try {
+                const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
+                if (data) { saldoActualUsuario = data.saldo; }
+            } catch (err) { console.error(err); }
+
+            recalcularTotalStreaming();
+
+            const modal = document.getElementById('modal-compra-container');
+            modal.style.display = 'flex'; setTimeout(() => { modal.style.opacity = '1'; }, 10);
+        }
+
+        function recalcularTotalStreaming() {
+            const meses = parseInt(document.getElementById('modal-meses').value);
+            precioTotalSeleccionado = precioBaseSeleccionado * meses;
+
+            document.getElementById('modal-paquete-precio').innerText = `S/ ${precioTotalSeleccionado.toFixed(2)}`;
+            actualizarElementoConversion('modal-paquete-precio-alt', precioTotalSeleccionado, usuarioActualCompleto);
+
+            document.getElementById('modal-saldo-actual').innerText = `S/ ${saldoActualUsuario.toFixed(2)}`;
+            actualizarElementoConversion('modal-saldo-actual-alt', saldoActualUsuario, usuarioActualCompleto);
+
+            const saldoRestante = saldoActualUsuario - precioTotalSeleccionado;
+            const txtRestante = document.getElementById('modal-saldo-restante');
+            txtRestante.innerText = `S/ ${saldoRestante.toFixed(2)}`;
+            actualizarElementoConversion('modal-saldo-restante-alt', saldoRestante, usuarioActualCompleto);
+
+            if (saldoRestante < 0) {
+                txtRestante.style.color = '#ff4757';
+                document.getElementById('compra-pantalla-formulario').style.display = 'none';
+                document.getElementById('compra-pantalla-error').style.display = 'block';
+            } else {
+                txtRestante.style.color = '#00e676';
+                document.getElementById('compra-pantalla-formulario').style.display = 'block';
+                document.getElementById('compra-pantalla-error').style.display = 'none';
+            }
+        }
+
+        function cerrarModalCompra() { const modal = document.getElementById('modal-compra-container'); modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; }, 300); }
+
+        function copiarCredencial(texto) {
+            navigator.clipboard.writeText(texto).then(() => {
+                const el = document.getElementById('credencial-texto');
+                if (el) { const original = el.innerText; el.innerText = '✓ Copiado'; setTimeout(() => { el.innerText = original; }, 1500); }
+            });
+        }
+
+        async function procesarTransaccionStreaming() {
+            const meses = parseInt(document.getElementById('modal-meses').value);
+            const nombreGuardado = localStorage.getItem('nombreUsuario');
+            const btn = document.getElementById('btn-confirmar-pago');
+            const notaCliente = document.getElementById('modal-nota-cliente').value.trim();
+
+            if (platSeleccionada && platSeleccionada.requiereNota === 'imessage' && !notaCliente) {
+                alert('Ingresa tu número de iMessage (Apple ID) para poder enviarte la invitación.');
+                return;
+            }
+            if (platSeleccionada && platSeleccionada.requiereNota === 'correo') {
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(notaCliente)) {
+                    alert('Ingresa un correo Gmail válido para poder enviarte la invitación.');
+                    return;
+                }
+            }
+
+            btn.disabled = true; btn.innerText = "Procesando...";
+
+            const { data: resultadoRpc, error: errorCompra } = await supabaseClient.rpc('procesar_compra_streaming', {
+                p_paquete: paqueteSeleccionado,
+                p_meses: meses,
+                p_nota_cliente: notaCliente || null
+            });
+
+            const resultado = resultadoRpc && resultadoRpc[0];
+
+            if (errorCompra || !resultado || resultado.estado === 'error') {
+                const msg = errorCompra ? errorCompra.message : (resultado ? resultado.mensaje : "Error desconocido.");
+                alert("Error: " + msg);
+                btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo";
+                return;
+            }
+
+            const nuevoSaldo = Number(resultado.saldo_restante);
+            if (document.getElementById('saldo-nav')) document.getElementById('saldo-nav').innerText = nuevoSaldo.toFixed(2);
+            saldoActualUsuario = nuevoSaldo;
+
+            document.getElementById('compra-pantalla-formulario').style.display = 'none';
+            const exito = document.getElementById('compra-pantalla-exito');
+            exito.style.display = 'block';
+
+            if (resultado.estado === 'completado') {
+                const fechaTexto = new Date(resultado.fecha_vencimiento + 'T00:00:00').toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' });
+                const credencialEscapada = (resultado.codigo || '').replace(/'/g, "\\'");
+                exito.innerHTML = `
+                    <span class="material-icons" style="font-size: 56px; color: #00e676; background: rgba(0,230,118,0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px;">check_circle</span>
+                    <h2 style="font-size: 22px; color: white; margin: 0 0 10px 0;">¡Cuenta entregada!</h2>
+                    <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 15px;">Vence el <strong style="color: white;">${fechaTexto}</strong>. Podrás renovarla desde "Mis Plataformas".</p>
+                    <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
+                        <div style="font-size: 11px; color: #a8a8b3; text-transform: uppercase; margin-bottom: 6px;">Tus datos de acceso</div>
+                        <div id="credencial-texto" style="font-family: monospace; color: #00e676; font-size: 14px; word-break: break-word;">${resultado.codigo}</div>
+                    </div>
+                    <button class="btn-outline" style="width: 100%; padding: 12px; border-color: rgba(255,255,255,0.15); margin-bottom: 10px;" onclick="copiarCredencial('${credencialEscapada}')"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">content_copy</span> Copiar datos</button>
+                    <button class="btn-primary" style="width: 100%; padding: 12px;" onclick="cerrarModalCompra()">Entendido</button>
+                `;
+            } else {
+                const mensajePendiente = (platSeleccionada && platSeleccionada.requiereNota)
+                    ? 'Tu saldo ya fue descontado. Te enviaremos la invitación al dato de contacto que nos diste en breve.'
+                    : 'Tu saldo ya fue descontado. Te enviaremos tus datos de acceso en breve, apenas confirmemos el stock.';
+                exito.innerHTML = `
+                    <span class="material-icons" style="font-size: 56px; color: #ffc107; background: rgba(255,193,7,0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px;">hourglass_top</span>
+                    <h2 style="font-size: 22px; color: white; margin: 0 0 10px 0;">¡Pedido Recibido!</h2>
+                    <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">${mensajePendiente}</p>
+                    <button class="btn-outline" style="width: 100%; padding: 14px; border-color: rgba(255,255,255,0.15);" onclick="cerrarModalCompra()">Entendido</button>
+                `;
+            }
+
+            btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo";
+
+            const numeroAdmin = "51943737572";
+            let mensaje;
+            if (platSeleccionada && platSeleccionada.requiereNota === 'imessage') {
+                mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar *${paqueteSeleccionado}* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioTotalSeleccionado.toFixed(2)}\n📱 *Mi Apple ID/iMessage:* ${notaCliente}\n\nQuedo atento a la invitación. ¡Gracias!`;
+            } else if (platSeleccionada && platSeleccionada.requiereNota === 'correo') {
+                mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar *${paqueteSeleccionado}* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioTotalSeleccionado.toFixed(2)}\n📧 *Mi correo para la invitación:* ${notaCliente}\n\nQuedo atento a la invitación. ¡Gracias!`;
+            } else if (platSeleccionada && platSeleccionada.requiereFotoTv) {
+                mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar *${paqueteSeleccionado}* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioTotalSeleccionado.toFixed(2)}\n\n📺 Ya te mando la foto de mi TV con el código de activación en pantalla.`;
+            } else {
+                mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar una suscripción de *STREAMING* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n📺 *Producto:* ${paqueteSeleccionado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioTotalSeleccionado.toFixed(2)}\n\n¡Gracias!`;
+            }
+            window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
+        }
+    </script>
+
+    <footer class="cz-footer">
+        <div class="cz-footer-content">
+            <div class="cz-f-brand">
+                <div class="nav-logo-premium" style="pointer-events: none;">
+                    <div class="logo-emblem" style="width: 32px; height: 32px;">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                            <defs>
+                                <linearGradient id="gradLogoF" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#a155ff;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M50 5 L90 25 L90 70 L50 95 L10 70 L10 25 Z" fill="#121218" stroke="url(#gradLogoF)" stroke-width="6" stroke-linejoin="round"/>
+                            <path d="M60 35 A 20 20 0 1 0 60 65" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                            <line x1="45" y1="25" x2="80" y2="75" stroke="#00d2ff" stroke-width="8" stroke-linecap="round"/>
+                            <line x1="80" y1="25" x2="45" y2="75" stroke="#a155ff" stroke-width="8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="font-size: 20px;">
+                        <span class="text-carza">Carza</span><span class="text-d">D'</span><span class="text-cross">Cross</span>
+                    </div>
+                </div>
+                <p class="cz-f-desc">La plataforma líder en recargas gaming. Conectamos a los jugadores con los mejores productos digitales del mercado de forma rápida y segura.</p>
+                <div class="cz-f-trust">
+                    <span><i class="material-icons">bolt</i> Entrega &lt; 5 min</span>
+                    <span><i class="material-icons">verified_user</i> 100% Seguro</span>
+                    <span><i class="material-icons">account_balance_wallet</i> Yape / Plin</span>
+                </div>
+            </div>
+            <div class="cz-f-col">
+                <h4>Navegación</h4>
+                <ul>
+                    <li><a href="index.html"><span class="material-icons">chevron_right</span> Inicio</a></li>
+                    <li><a href="catalogo-freefire.html"><span class="material-icons">chevron_right</span> Catálogo Free Fire</a></li>
+                    <li><a href="catalogo-streaming.html"><span class="material-icons">chevron_right</span> Catálogo Streaming</a></li>
+                    <li><a href="perfil.html"><span class="material-icons">chevron_right</span> Mi Panel</a></li>
+                </ul>
+            </div>
+            <div class="cz-f-col">
+                <h4>Soporte</h4>
+                <ul>
+                    <li><a href="recargar.html"><span class="material-icons">chevron_right</span> Reportar Pago</a></li>
+                    <li><a href="https://wa.me/51943737572" target="_blank"><span class="material-icons">chevron_right</span> WhatsApp</a></li>
+                    <li><a href="soporte.html"><span class="material-icons">chevron_right</span> Centro de Ayuda</a></li>
+                </ul>
+            </div>
+            <div class="cz-f-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="terminos.html"><span class="material-icons">chevron_right</span> Términos de Servicio</a></li>
+                    <li><a href="privacidad.html"><span class="material-icons">chevron_right</span> Política de Privacidad</a></li>
+                    <li><a href="garantia.html"><span class="material-icons">chevron_right</span> Garantía de Entrega</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="cz-footer-bottom">
+            <div class="cz-copy">© 2026 CarzaD'Cross. Todos los derechos reservados.</div>
+            <div class="cz-made-with">Hecho con <span class="material-icons" style="color:#ff4757; font-size:14px;">favorite</span> en Perú</div>
+        </div>
+    </footer>
+</body>
+</html>

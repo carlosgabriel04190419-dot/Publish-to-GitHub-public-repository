@@ -136,6 +136,9 @@
                  <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
                    <span class="material-icons">person</span> Mis Datos
                  </a>
+                 <a href="mis-plataformas.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
+                   <span class="material-icons">live_tv</span> Mis Plataformas
+                 </a>
                  <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;">
                   <span class="material-icons">account_balance_wallet</span> Recargar Saldo
                  </a>
@@ -177,66 +180,23 @@
     <section class="games-section" id="seccion-juegos">
         <div class="section-badge"><span class="dot"></span> ELIGE TU CATÁLOGO</div>
         <div class="games-grid">
-            
-            <div class="game-card" onclick="window.location.href='catalogo-regular.html'">
+
+            <div class="game-card" style="width: 280px;" onclick="window.location.href='catalogo-freefire.html'">
                 <div class="game-content">
-                    <div class="game-image free-fire-bg"></div>
+                    <div class="game-image free-fire-bg" style="aspect-ratio: 1 / 1;"></div>
                     <div class="game-info">
-                        <h3>Recargas Free Fire (Paquete Regular)</h3>
-                        <p>Diamantes con 10% Adicional y Pases</p>
+                        <h3 style="font-size: 20px;">Free Fire</h3>
+                        <p>Diamantes, pases, cajas y fragmentos</p>
                     </div>
                 </div>
             </div>
 
-            <div class="game-card" onclick="window.location.href='catalogo-recarga-directa.html'">
+            <div class="game-card" style="width: 280px;" onclick="window.location.href='catalogo-streaming.html'">
                 <div class="game-content">
-                    <div class="game-image" style="background: url('recargadirecta.jpg') center/cover no-repeat;"></div>
+                    <div class="game-image" style="aspect-ratio: 1 / 1; background: url('catalogo-plataformas.png') center/cover no-repeat;"></div>
                     <div class="game-info">
-                        <h3>Recargas Directas (Oferta Temporal)</h3>
-                        <p>Diamantes con 20% Adicional</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card" onclick="window.location.href='catalogo-promo.html'">
-                <div class="game-content">
-                    <div class="game-image free-fire-pr-bg"></div>
-                    <div class="game-info">
-                        <h3>Promo Especial</h3>
-                        <p>1ra Recarga</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card" onclick="window.location.href='catalogo-fragmentos.html'">
-                <div class="game-content">
-                    <div class="game-image" style="background: url('fragmentos.png') center/cover no-repeat;"></div>
-                    <div class="game-info">
-                        <h3>Frag. Universales</h3>
-                        <p>Mejora tus armas</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card" onclick="window.location.href='catalogo-cajas.html'">
-                <div class="game-content">
-                    <div class="game-image" style="background: url('cajas.png') center/cover no-repeat;"></div>
-                    <div class="game-info">
-                        <h3>Cajitas Evolutivas</h3>
-                        <p>Paquetes Especiales</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- NUEVA TARJETA VIP (RULETA) -->
-            <div class="game-card" onclick="window.location.href='recompensas.html'" style="border: 1px solid rgba(255, 193, 7, 0.4); box-shadow: 0 0 20px rgba(255, 193, 7, 0.1);">
-                <div class="game-content">
-                    <div class="game-image" style="background: linear-gradient(135deg, #a155ff, #ff4757, #ffc107); display: flex; align-items: center; justify-content: center;">
-                        <span class="material-icons" style="font-size: 70px; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">casino</span>
-                    </div>
-                    <div class="game-info">
-                        <h3 style="color: #ffc107;">Caja Misteriosa VIP</h3>
-                        <p>Gana Puntos por recargar y llévate premios gratis.</p>
+                        <h3 style="font-size: 20px;">Streaming</h3>
+                        <p>Netflix, Disney+, HBO Max y más</p>
                     </div>
                 </div>
             </div>
@@ -442,7 +402,8 @@
                 <h3 class="footer-title">NAVEGACIÓN</h3>
                 <ul>
                     <li><a href="index.html">Inicio</a></li>
-                    <li><a href="#seccion-juegos">Catálogo Free Fire</a></li>
+                    <li><a href="catalogo-freefire.html">Catálogo Free Fire</a></li>
+                    <li><a href="catalogo-streaming.html">Catálogo Streaming</a></li>
                     <li><a href="catalogo-cajas.html">Cajas y Fragmentos</a></li>
                     <li><a href="perfil.html">Mi Panel</a></li>
                 </ul>
