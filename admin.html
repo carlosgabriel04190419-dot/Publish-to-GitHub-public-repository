@@ -405,7 +405,7 @@
                 document.getElementById('c-modal-icon').style.color = options.color || '#a155ff';
 
                 const input = document.getElementById('c-modal-input');
-                if(options.type === 'prompt') { input.style.display = 'block'; input.value = ''; setTimeout(()=>input.focus(), 100); }
+                if(options.type === 'prompt') { input.style.display = 'block'; input.value = options.valorInicial || ''; setTimeout(()=>{ input.focus(); input.select(); }, 100); }
                 else { input.style.display = 'none'; }
 
                 const btnConfirm = document.getElementById('c-modal-btn-confirm');
@@ -521,38 +521,58 @@
                     <td data-label="Monto" style="font-size: 16px; color: #00e676; font-weight: bold;">S/ ${r.monto.toFixed(2)}</td>
                     <td data-label="Método">${r.metodo}</td>
                     <td data-label="Acción">
-                        <button class="btn-add" onclick="aprobarRecarga(${r.id}, '${r.nickname}', ${r.monto})"><span class="material-icons">check</span> Aprobar</button>
+                        <button class="btn-add" onclick="aprobarRecarga(${r.id}, '${r.nickname}', ${r.monto}, '${(r.metodo || '').replace(/'/g, "\\'")}')"><span class="material-icons">check</span> Aprobar</button>
                         <button class="btn-remove" onclick="rechazarRecarga(${r.id})"><span class="material-icons">close</span> Rechazar</button>
                     </td>`;
                 tbody.appendChild(tr);
             });
         }
 
-        async function aprobarRecarga(id, nickname, monto) {
-            const conf = await openCustomModal({ title: "Aprobar Saldo", desc: `¿Confirmas ingreso de <b>S/ ${monto}</b> a <b>${nickname}</b>?`, icon: 'account_balance_wallet', color: '#00e676', type: 'confirm', confirmText: 'Aprobar Saldo' });
-            if(!conf) return;
+        async function aprobarRecarga(id, nickname, monto, metodo) {
+            let montoFinal = monto;
+            const esBinance = metodo && metodo.includes('Binance');
+
+            if (esBinance) {
+                // El monto en soles fue calculado con una tasa referencial al momento del reporte.
+                // El tipo de cambio real varía, así que se deja editable justo antes de acreditar.
+                const valorIngresado = await openCustomModal({
+                    title: "Aprobar Saldo (Binance)",
+                    desc: `<b>${nickname}</b> pagó por Binance. El monto en soles es un <b>estimado</b> — ajústalo según la tasa real que obtuviste al convertir tu USDT, y confirma.`,
+                    icon: 'currency_bitcoin',
+                    color: '#f0b90b',
+                    type: 'prompt',
+                    valorInicial: monto.toFixed(2),
+                    confirmText: 'Aprobar Saldo'
+                });
+                if (valorIngresado === null) return;
+                montoFinal = parseFloat(valorIngresado);
+                if (isNaN(montoFinal) || montoFinal <= 0) { showToast('Monto inválido.', 'error'); return; }
+            } else {
+                const conf = await openCustomModal({ title: "Aprobar Saldo", desc: `¿Confirmas ingreso de <b>S/ ${monto}</b> a <b>${nickname}</b>?`, icon: 'account_balance_wallet', color: '#00e676', type: 'confirm', confirmText: 'Aprobar Saldo' });
+                if (!conf) return;
+            }
 
             await supabaseClient.from('recargas').update({ estado: 'Completado' }).eq('id', id);
 
             const { data: user } = await supabaseClient.from('usuarios').select('saldo, celular, puntos').eq('nickname', nickname).single();
 
             if(user) {
-                const puntosGanados = Math.floor(monto * 10);
+                const puntosGanados = Math.floor(montoFinal * 10);
                 const nuevosPuntos = (user.puntos || 0) + puntosGanados;
 
                 await supabaseClient.from('usuarios')
-                    .update({ saldo: user.saldo + monto, puntos: nuevosPuntos })
+                    .update({ saldo: user.saldo + montoFinal, puntos: nuevosPuntos })
                     .eq('nickname', nickname);
 
-                await supabaseClient.from('historial').insert([{ nickname, monto, tipo: 'Recarga Aprobada', estado: 'Completado' }]);
+                await supabaseClient.from('historial').insert([{ nickname, monto: montoFinal, tipo: 'Recarga Aprobada', estado: 'Completado' }]);
 
                 if(user.celular) {
                     let numStr = user.celular.replace(/[^0-9]/g, '');
-                    let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga por *S/ ${monto.toFixed(2)}* 💵💵 ha sido aprobada exitosamente.\n🎁 Además, acabas de ganar *${puntosGanados} CarzaPuntos* para la Ruleta VIP.\n\nTu saldo ya está actualizado en tu billetera web.\n\n🌐 carzadcross.com`;
+                    let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga por *S/ ${montoFinal.toFixed(2)}* 💵💵 ha sido aprobada exitosamente.\n🎁 Además, acabas de ganar *${puntosGanados} CarzaPuntos* para la Ruleta VIP.\n\nTu saldo ya está actualizado en tu billetera web.\n\n🌐 carzadcross.com`;
                     window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
                 }
             }
-            showToast(`Saldo aprobado. Se sumaron ${Math.floor(monto * 10)} pts a ${nickname}`);
+            showToast(`Saldo aprobado. Se sumaron ${Math.floor(montoFinal * 10)} pts a ${nickname}`);
             cargarRecargas(); cargarUsuarios(); cargarHistorial();
         }
 
