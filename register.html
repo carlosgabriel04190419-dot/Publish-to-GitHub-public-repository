@@ -119,16 +119,12 @@
 
             <div id="paso-2-codigo" style="display: none;">
                 <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">
-                    Te enviamos un código de 6 dígitos a <strong id="correo-mostrado" style="color: white;"></strong>. Ingrésalo abajo para activar tu cuenta.
+                    Te enviamos un código a <strong id="correo-mostrado" style="color: white;"></strong>. Ingrésalo abajo para activar tu cuenta.
                 </p>
 
-                <div class="code-inputs" id="code-inputs-container">
-                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="0">
-                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="1">
-                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="2">
-                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="3">
-                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="4">
-                    <input type="text" inputmode="numeric" maxlength="1" class="code-box" data-idx="5">
+                <div class="input-group">
+                    <span class="material-icons">pin</span>
+                    <input type="text" inputmode="numeric" id="input-codigo" placeholder="Código de verificación" style="text-align:center; letter-spacing:4px; font-size:20px; font-weight:700;" onkeydown="if(event.key === 'Enter') verificarCodigo()">
                 </div>
 
                 <button type="button" id="btn-verificar-codigo" class="btn-primary" style="width: 100%; margin-top: 30px;" onclick="verificarCodigo()">Verificar y Activar Cuenta</button>
@@ -311,30 +307,21 @@
             document.getElementById('paso-1-registro').style.display = 'none';
             document.getElementById('paso-2-codigo').style.display = 'block';
 
-            const cajas = document.querySelectorAll('.code-box');
-            cajas.forEach((caja, i) => {
-                caja.value = '';
-                caja.oninput = () => {
-                    caja.value = caja.value.replace(/\D/g, '');
-                    if (caja.value && i < cajas.length - 1) cajas[i + 1].focus();
-                };
-                caja.onkeydown = (e) => {
-                    if (e.key === 'Backspace' && !caja.value && i > 0) cajas[i - 1].focus();
-                    if (e.key === 'Enter') verificarCodigo();
-                };
-            });
-            cajas[0].focus();
+            const input = document.getElementById('input-codigo');
+            input.value = '';
+            input.focus();
         }
 
         function obtenerCodigoIngresado() {
-            return [...document.querySelectorAll('.code-box')].map(c => c.value).join('');
+            // No asumimos una cantidad fija de dígitos: Supabase puede generar códigos de distinto largo.
+            return document.getElementById('input-codigo').value.replace(/\s/g, '').trim();
         }
 
         async function verificarCodigo() {
             const codigo = obtenerCodigoIngresado();
             const btn = document.getElementById('btn-verificar-codigo');
 
-            if (codigo.length !== 6) return mostrarMensaje("Ingresa el código completo de 6 dígitos.");
+            if (!codigo) return mostrarMensaje("Ingresa el código que te enviamos por correo.");
             if (!registroPendiente) return mostrarMensaje("Tu sesión de registro expiró. Vuelve a empezar.");
 
             btn.disabled = true; btn.innerText = "Verificando...";
