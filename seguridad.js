@@ -67,6 +67,7 @@ async function verificarSesion(requerido = true) {
 
     localStorage.setItem('nombreUsuario', usuario.nickname);
     actualizarSaldoConvertido(usuario);
+    convertirPreciosCatalogo(usuario);
     return usuario;
 }
 
@@ -123,18 +124,9 @@ async function obtenerTasasCambio() {
     }
 }
 
-/** Si la página tiene un elemento #saldo-nav-alt, lo llena con el saldo convertido a la moneda del usuario. */
-async function actualizarSaldoConvertido(usuario) {
-    const elemento = document.getElementById('saldo-nav-alt');
-    if (!elemento) return;
-
-    const moneda = monedaSegunCelular(usuario.celular);
-    if (!moneda || moneda === 'PEN') { elemento.style.display = 'none'; return; }
-
-    const tasas = await obtenerTasasCambio();
-    if (!tasas || !tasas[moneda]) { elemento.style.display = 'none'; return; }
-
-    const montoConvertido = usuario.saldo * tasas[moneda];
+/** Convierte un monto en soles a la moneda indicada y lo devuelve ya formateado, ej: "≈ $ 515,48 MXN". */
+function formatearMontoConvertido(montoPEN, moneda, tasas) {
+    const montoConvertido = montoPEN * tasas[moneda];
     const simbolo = SIMBOLO_MONEDA[moneda] || '';
     // ARS, CLP, COP y PYG no se usan con centavos en la vida diaria: se redondean a entero.
     const sinDecimales = ['ARS', 'CLP', 'COP', 'PYG'].includes(moneda);
@@ -142,8 +134,57 @@ async function actualizarSaldoConvertido(usuario) {
         minimumFractionDigits: sinDecimales ? 0 : 2,
         maximumFractionDigits: sinDecimales ? 0 : 2,
     });
-    elemento.innerText = `≈ ${simbolo} ${montoFormateado} ${moneda}`;
+    return `≈ ${simbolo} ${montoFormateado} ${moneda}`;
+}
+
+/** Devuelve la moneda del usuario y las tasas de cambio, o null si es de Perú / no hay datos. */
+async function prepararConversion(usuario) {
+    const moneda = monedaSegunCelular(usuario.celular);
+    if (!moneda || moneda === 'PEN') return null;
+
+    const tasas = await obtenerTasasCambio();
+    if (!tasas || !tasas[moneda]) return null;
+
+    return { moneda, tasas };
+}
+
+/** Si la página tiene un elemento #saldo-nav-alt, lo llena con el saldo convertido a la moneda del usuario. */
+async function actualizarSaldoConvertido(usuario) {
+    const elemento = document.getElementById('saldo-nav-alt');
+    if (!elemento) return;
+
+    const conversion = await prepararConversion(usuario);
+    if (!conversion) { elemento.style.display = 'none'; return; }
+
+    elemento.innerText = formatearMontoConvertido(usuario.saldo, conversion.moneda, conversion.tasas);
     elemento.style.display = 'block';
+}
+
+/** Agrega debajo de cada precio de producto (.card-prices) su equivalente en la moneda del usuario. */
+async function convertirPreciosCatalogo(usuario) {
+    const tarjetasPrecio = document.querySelectorAll('.card-prices');
+    if (tarjetasPrecio.length === 0) return;
+
+    const conversion = await prepararConversion(usuario);
+    if (!conversion) return;
+
+    tarjetasPrecio.forEach(contenedor => {
+        if (contenedor.dataset.conversionAgregada) return;
+
+        const precioActual = contenedor.querySelector('.price-current');
+        if (!precioActual) return;
+
+        const soles = parseFloat(precioActual.innerText.replace(/[^\d.]/g, ''));
+        if (isNaN(soles)) return;
+
+        const linea = document.createElement('div');
+        linea.className = 'price-alt';
+        linea.style.cssText = 'font-size:11px; color:#8a8a9a; font-weight:600; text-align:center; margin-top:-14px; margin-bottom:16px;';
+        linea.innerText = formatearMontoConvertido(soles, conversion.moneda, conversion.tasas);
+
+        contenedor.insertAdjacentElement('afterend', linea);
+        contenedor.dataset.conversionAgregada = '1';
+    });
 }
 
 /** Cierra sesión de verdad (invalida la sesión en Supabase) y limpia el caché local. */
