@@ -440,6 +440,17 @@
             setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(()=>toast.remove(),300); }, 3500);
         }
 
+        async function enviarNotificacionCorreo(correo, nickname, titulo, mensaje, ctaTexto, ctaUrl) {
+            if (!correo) return;
+            try {
+                await supabaseClient.functions.invoke('enviar-notificacion', {
+                    body: { destinatario: correo, nickname, titulo, mensaje, ctaTexto, ctaUrl }
+                });
+            } catch (e) {
+                console.error('No se pudo enviar el correo de notificación:', e);
+            }
+        }
+
         let modalResolve = null;
         function openCustomModal(options) {
             return new Promise(resolve => {
@@ -713,7 +724,7 @@
 
             await supabaseClient.from('recargas').update({ estado: 'Completado' }).eq('id', id);
 
-            const { data: user } = await supabaseClient.from('usuarios').select('saldo, celular, puntos').eq('nickname', nickname).single();
+            const { data: user } = await supabaseClient.from('usuarios').select('saldo, celular, correo, puntos').eq('nickname', nickname).single();
 
             if(user) {
                 const puntosGanados = Math.floor(montoFinal * 10);
@@ -730,6 +741,13 @@
                     let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga por *S/ ${montoFinal.toFixed(2)}* 💵💵 ha sido aprobada exitosamente.\n🎁 Además, acabas de ganar *${puntosGanados} CarzaPuntos* para la Ruleta VIP.\n\nTu saldo ya está actualizado en tu billetera web.\n\n🌐 carzadcross.com`;
                     window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
                 }
+
+                enviarNotificacionCorreo(
+                    user.correo, nickname,
+                    '✅ Tu recarga fue aprobada',
+                    `Tu recarga por <b>S/ ${montoFinal.toFixed(2)}</b> ya fue aprobada y tu saldo está actualizado. Además ganaste <b>${puntosGanados} CarzaPuntos</b> para la Ruleta VIP.`,
+                    'Ver mi saldo', 'https://carzadcross.com/perfil.html'
+                );
             }
             showToast(`Saldo aprobado. Se sumaron ${Math.floor(montoFinal * 10)} pts a ${nickname}`);
             cargarRecargas(); cargarUsuarios(); cargarHistorial();
@@ -802,7 +820,7 @@
 
             await supabaseClient.from('pedidos').update({ estado: 'Completado' }).eq('id', id);
             await supabaseClient.rpc('crear_suscripcion_si_falta', { p_pedido_id: id });
-            const { data: user } = await supabaseClient.from('usuarios').select('celular').eq('nickname', nick).single();
+            const { data: user } = await supabaseClient.from('usuarios').select('celular, correo').eq('nickname', nick).single();
 
             if(user && user.celular) {
                 let numStr = user.celular.replace(/[^0-9]/g, '');
@@ -810,6 +828,18 @@
                     ? `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 📺 *${paquete}* 📺 acaba de ser procesado y completado exitosamente.\n\nYa puedes ver tus datos de acceso en tu panel de *Mis Plataformas* dentro de la web. ¡Gracias por preferirnos!`
                     : `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 💎 *${paquete}* 💎 acaba de ser procesado y completado exitosamente.\n\nRevisa tu cuenta del juego y disfruta. ¡Gracias por preferirnos!`;
                 window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+
+            if (user) {
+                enviarNotificacionCorreo(
+                    user.correo, nick,
+                    esStreaming ? '✅ Tu pedido de streaming está listo' : '✅ Tu pedido fue completado',
+                    esStreaming
+                        ? `Tu pedido de <b>${paquete}</b> ya fue procesado. Ya puedes ver tus datos de acceso en tu panel de Mis Plataformas.`
+                        : `Tu pedido de <b>${paquete}</b> ya fue procesado. Revisa tu cuenta del juego.`,
+                    esStreaming ? 'Ver Mis Plataformas' : 'Ir a la tienda',
+                    esStreaming ? 'https://carzadcross.com/mis-plataformas.html' : 'https://carzadcross.com/'
+                );
             }
 
             showToast(`Pedido completado.`); cargarPedidos(); cargarHistorial();
