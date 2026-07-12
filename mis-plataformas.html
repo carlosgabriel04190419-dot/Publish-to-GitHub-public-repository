@@ -167,17 +167,26 @@
                         <option value="12">12 meses</option>
                     </select>
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-                    <span style="color: #a8a8b3; font-size: 14px;">Costo:</span>
-                    <strong id="rm-costo" style="color: #ff4757; font-size: 15px;">S/ 0.00</strong>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                    <span style="color: #a8a8b3; font-size: 14px; padding-top: 2px;">Costo:</span>
+                    <div style="text-align: right;">
+                        <strong id="rm-costo" style="color: #ff4757; font-size: 15px; display: block;">S/ 0.00</strong>
+                        <span id="rm-costo-alt" style="display:none; font-size: 10px; color: #8a8a9a; font-weight: 600;"></span>
+                    </div>
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <span style="color: #a8a8b3; font-size: 14px;">Tu Saldo Actual:</span>
-                    <strong id="rm-saldo-actual" style="color: white; font-size: 14px;">S/ 0.00</strong>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
+                    <span style="color: #a8a8b3; font-size: 14px; padding-top: 2px;">Tu Saldo Actual:</span>
+                    <div style="text-align: right;">
+                        <strong id="rm-saldo-actual" style="color: white; font-size: 14px; display: block;">S/ 0.00</strong>
+                        <span id="rm-saldo-actual-alt" style="display:none; font-size: 10px; color: #8a8a9a; font-weight: 600;"></span>
+                    </div>
                 </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <span style="color: #a8a8b3; font-size: 14px;">Saldo Restante:</span>
-                    <strong id="rm-saldo-restante" style="color: #00e676; font-size: 16px;">S/ 0.00</strong>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <span style="color: #a8a8b3; font-size: 14px; padding-top: 2px;">Saldo Restante:</span>
+                    <div style="text-align: right;">
+                        <strong id="rm-saldo-restante" style="color: #00e676; font-size: 16px; display: block;">S/ 0.00</strong>
+                        <span id="rm-saldo-restante-alt" style="display:none; font-size: 10px; color: #8a8a9a; font-weight: 600;"></span>
+                    </div>
                 </div>
             </div>
             <p id="rm-error-saldo" style="display:none; color:#ff4757; font-size:13px; margin: 0 0 15px;">No te alcanza el saldo para esta duración.</p>
@@ -203,12 +212,14 @@
         let saldoActualGlobal = 0;
         let suscripcionesCache = {};
         let renovacionActual = null;
+        let usuarioActualCompleto = null;
 
         window.onload = async function() {
             const usuario = await verificarSesion();
             if (!usuario) return;
 
             nombreActualGlobal = usuario.nickname;
+            usuarioActualCompleto = usuario;
             document.getElementById('nav-logged-in').style.display = 'flex';
             document.getElementById('btn-usuario-nav').innerHTML = avatarPillHTML(usuario);
             document.getElementById('saldo-nav').innerText = usuario.saldo.toFixed(2);
@@ -382,6 +393,10 @@
             document.getElementById('rm-costo').innerText = `S/ ${costo.toFixed(2)}`;
             document.getElementById('rm-saldo-actual').innerText = `S/ ${saldoActualGlobal.toFixed(2)}`;
             document.getElementById('rm-saldo-restante').innerText = `S/ ${saldoRestante.toFixed(2)}`;
+
+            actualizarElementoConversion('rm-costo-alt', costo, usuarioActualCompleto);
+            actualizarElementoConversion('rm-saldo-actual-alt', saldoActualGlobal, usuarioActualCompleto);
+            actualizarElementoConversion('rm-saldo-restante-alt', saldoRestante, usuarioActualCompleto);
 
             const errorSaldo = document.getElementById('rm-error-saldo');
             const btnConfirmar = document.getElementById('rm-btn-confirmar');
