@@ -807,10 +807,6 @@
 
         async function completarPedido(id, paquete, nick) {
             const { data: pedidoActual } = await supabaseClient.from('pedidos').select('codigo, id_juego, nickname_juego, nota_cliente').eq('id', id).single();
-            if (pedidoActual && pedidoActual.codigo && (pedidoActual.codigo.includes('⚠️') || pedidoActual.codigo.includes('Pendiente —'))) {
-                showToast('Todavía falta stock/invitación para este pedido. Agrégalo antes de marcarlo Listo.', 'error');
-                return;
-            }
 
             const conf = await openCustomModal({ title: "Completar Pedido", desc: `¿Confirmas envío de <b>${paquete}</b> a <b>${nick}</b>?`, icon: 'task_alt', color: '#a155ff', textColor: 'white', type: 'confirm', confirmText: 'Marcar Listo' });
             if(!conf) return;
