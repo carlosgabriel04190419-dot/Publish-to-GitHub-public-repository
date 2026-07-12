@@ -744,7 +744,7 @@
 
                 enviarNotificacionCorreo(
                     user.correo, nickname,
-                    '✅ Tu recarga fue aprobada',
+                    `✅ Tu recarga de S/ ${montoFinal.toFixed(2)} fue aprobada (#${id})`,
                     `Tu recarga por <b>S/ ${montoFinal.toFixed(2)}</b> ya fue aprobada y tu saldo está actualizado. Además ganaste <b>${puntosGanados} CarzaPuntos</b> para la Ruleta VIP.`,
                     'Ver mi saldo', 'https://carzadcross.com/perfil.html'
                 );
@@ -840,7 +840,7 @@
 
                 enviarNotificacionCorreo(
                     user.correo, nick,
-                    esStreaming ? '✅ Tu pedido de streaming está listo' : '✅ Tu pedido fue completado',
+                    `✅ Pedido #${id} completado — ${paquete}`,
                     esStreaming
                         ? `Tu pedido de <b>${paquete}</b> ya fue procesado. Ya puedes ver tus datos de acceso en tu panel de Mis Plataformas.`
                         : `Tu pedido de <b>${paquete}</b> ya fue procesado. Revisa tu cuenta del juego.`,
