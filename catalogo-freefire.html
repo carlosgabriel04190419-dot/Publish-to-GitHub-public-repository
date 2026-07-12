@@ -136,7 +136,7 @@
         </div>
     </div>
 
-    <header class="hero-container" style="background: linear-gradient(rgba(18, 18, 20, 0.8), rgba(18, 18, 20, 1)), url('freefire.jpg') center/cover; padding: 60px 20px;">
+    <header class="hero-container" id="portada-hero-freefire" style="background: linear-gradient(rgba(18, 18, 20, 0.8), rgba(18, 18, 20, 1)), url('freefire.jpg') center/cover; padding: 60px 20px;">
         <div class="hero-content" style="text-align: center;">
             <div class="hero-badge" style="border-color: #a155ff; color: #a155ff; background: rgba(161,85,255,0.1); border-radius: 30px; padding: 6px 16px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 20px;">🔥 FREE FIRE</div>
             <h1 class="hero-title" style="font-size: 38px; font-weight: bold; margin-bottom: 15px;">Elige tu <span style="color: #a155ff;">catálogo</span></h1>
@@ -151,7 +151,7 @@
 
             <div class="game-card" onclick="window.location.href='catalogo-regular.html'">
                 <div class="game-content">
-                    <div class="game-image free-fire-bg"></div>
+                    <div class="game-image free-fire-bg" id="portada-freefire-regular"></div>
                     <div class="game-info">
                         <h3>Recargas Free Fire (Paquete Regular)</h3>
                         <p>Diamantes con 10% Adicional y Pases</p>
@@ -161,7 +161,7 @@
 
             <div class="game-card" onclick="window.location.href='catalogo-recarga-directa.html'">
                 <div class="game-content">
-                    <div class="game-image" style="background: url('recargadirecta.jpg') center/cover no-repeat;"></div>
+                    <div class="game-image" id="portada-freefire-directa" style="background: url('recargadirecta.jpg') center/cover no-repeat;"></div>
                     <div class="game-info">
                         <h3>Recargas Directas (Oferta Temporal)</h3>
                         <p>Diamantes con 20% Adicional</p>
@@ -171,7 +171,7 @@
 
             <div class="game-card" onclick="window.location.href='catalogo-promo.html'">
                 <div class="game-content">
-                    <div class="game-image free-fire-pr-bg"></div>
+                    <div class="game-image free-fire-pr-bg" id="portada-freefire-promo"></div>
                     <div class="game-info">
                         <h3>Promo Especial</h3>
                         <p>1ra Recarga</p>
@@ -181,7 +181,7 @@
 
             <div class="game-card" onclick="window.location.href='catalogo-fragmentos.html'">
                 <div class="game-content">
-                    <div class="game-image" style="background: url('fragmentos.png') center/cover no-repeat;"></div>
+                    <div class="game-image" id="portada-freefire-fragmentos" style="background: url('fragmentos.png') center/cover no-repeat;"></div>
                     <div class="game-info">
                         <h3>Frag. Universales</h3>
                         <p>Mejora tus armas</p>
@@ -191,7 +191,7 @@
 
             <div class="game-card" onclick="window.location.href='catalogo-cajas.html'">
                 <div class="game-content">
-                    <div class="game-image" style="background: url('cajas.png') center/cover no-repeat;"></div>
+                    <div class="game-image" id="portada-freefire-cajas" style="background: url('cajas.png') center/cover no-repeat;"></div>
                     <div class="game-info">
                         <h3>Cajitas Evolutivas</h3>
                         <p>Paquetes Especiales</p>
@@ -233,6 +233,15 @@
             }
 
             cargarSistemaComunidadDinamica();
+
+            aplicarPortadas({
+                'portada-hero-freefire': { slug: 'hub-freefire', plantilla: "linear-gradient(rgba(18, 18, 20, 0.8), rgba(18, 18, 20, 1)), url('{url}') center/cover" },
+                'portada-freefire-regular': { slug: 'hub-freefire' },
+                'portada-freefire-directa': { slug: 'freefire-directa' },
+                'portada-freefire-promo': { slug: 'freefire-promo' },
+                'portada-freefire-fragmentos': { slug: 'freefire-fragmentos' },
+                'portada-freefire-cajas': { slug: 'freefire-cajas' }
+            });
         };
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }

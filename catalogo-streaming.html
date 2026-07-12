@@ -233,32 +233,34 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="seguridad.js"></script>
     <script>
+        // NOTA: el precio de cada "paquete" ya NO se define acá — se carga en vivo desde la tabla
+        // productos (ver cargarPreciosStreaming()). Este array solo guarda config/copy por plataforma.
         const PLATAFORMAS = [
             { key: 'netflix', nombre: 'Netflix 4K', color: '#e50914', imagen: 'netflix.png', descripcion: null,
                 planes: [
-                    { paquete: 'Netflix 4K - Perfil', tipo: 'Perfil', precio: 16.00 },
-                    { paquete: 'Netflix 4K - Cuenta Completa', tipo: 'Cuenta Completa', precio: 65.00 }
+                    { paquete: 'Netflix 4K - Perfil', tipo: 'Perfil' },
+                    { paquete: 'Netflix 4K - Cuenta Completa', tipo: 'Cuenta Completa' }
                 ] },
             { key: 'disney', nombre: 'Disney+ (incluye ESPN)', color: '#0d3f7a', imagen: 'Disney-plus.png', descripcion: null,
                 planes: [
-                    { paquete: 'Disney+ (ESPN) - Perfil', tipo: 'Perfil', precio: 15.00 },
-                    { paquete: 'Disney+ (ESPN) - Cuenta Completa', tipo: 'Cuenta Completa', precio: 65.00 }
+                    { paquete: 'Disney+ (ESPN) - Perfil', tipo: 'Perfil' },
+                    { paquete: 'Disney+ (ESPN) - Cuenta Completa', tipo: 'Cuenta Completa' }
                 ] },
             { key: 'hbomax', nombre: 'HBO Max', color: '#7b2ff7', imagen: 'HBO-MAX.png', descripcion: null,
                 planes: [
-                    { paquete: 'HBO Max - Perfil', tipo: 'Perfil', precio: 10.00 },
-                    { paquete: 'HBO Max - Cuenta Completa', tipo: 'Cuenta Completa', precio: 25.00 }
+                    { paquete: 'HBO Max - Perfil', tipo: 'Perfil' },
+                    { paquete: 'HBO Max - Cuenta Completa', tipo: 'Cuenta Completa' }
                 ] },
             { key: 'primevideo', nombre: 'Prime Video', color: '#00a8e1', imagen: 'prime-video.png', descripcion: null,
                 planes: [
-                    { paquete: 'Prime Video - Perfil', tipo: 'Perfil', precio: 10.00 },
-                    { paquete: 'Prime Video - Cuenta Completa', tipo: 'Cuenta Completa', precio: 23.00 }
+                    { paquete: 'Prime Video - Perfil', tipo: 'Perfil' },
+                    { paquete: 'Prime Video - Cuenta Completa', tipo: 'Cuenta Completa' }
                 ] },
             { key: 'youtube', nombre: 'YouTube Premium + Music', color: '#ff0000', imagen: 'yt-music.png',
                 requiereNota: 'correo',
                 descripcion: '<div class="plat-desc"><p style="margin:0;color:#e0e0e0;font-size:14px;line-height:1.6;">✅ Se envía por invitación a tu propio correo Gmail &nbsp;·&nbsp; Cero caídas y garantía ilimitada.</p></div>',
                 planes: [
-                    { paquete: 'YouTube Premium + Music - Perfil', tipo: 'Perfil', precio: 16.00 }
+                    { paquete: 'YouTube Premium + Music - Perfil', tipo: 'Perfil' }
                 ] },
             { key: 'appleone', nombre: 'Apple One 2TB', color: '#8e9297', imagen: 'apple-one.png',
                 requiereNota: 'imessage',
@@ -275,19 +277,27 @@
                     <p style="margin:10px 0 0 0;color:#ffc107;font-size:12.5px;">Se entrega por invitación a tu Apple ID/iMessage, no es instantáneo.</p>
                 </div>`,
                 planes: [
-                    { paquete: 'Apple One 2TB - Perfil', tipo: 'Perfil', precio: 20.00 }
+                    { paquete: 'Apple One 2TB - Perfil', tipo: 'Perfil' }
                 ] },
             { key: 'directvgo', nombre: 'DirecTV Go', color: '#0057b8', imagen: 'dgo.png',
                 requiereFotoTv: true,
                 descripcion: '<div class="plat-desc"><p style="margin:0;color:#e0e0e0;font-size:14px;line-height:1.6;">📺 Para activar necesitamos una foto del código que aparece en tu TV — te lo pedimos por WhatsApp apenas compres.</p></div>',
                 planes: [
-                    { paquete: 'DirecTV Go - Perfil', tipo: 'Perfil', precio: 30.00 }
+                    { paquete: 'DirecTV Go - Perfil', tipo: 'Perfil' }
                 ] },
             { key: 'paramount', nombre: 'Paramount+', color: '#0064ff', imagen: 'paramount+.png', descripcion: null,
                 planes: [
-                    { paquete: 'Paramount+ - Perfil', tipo: 'Perfil', precio: 15.00 }
+                    { paquete: 'Paramount+ - Perfil', tipo: 'Perfil' }
                 ] }
         ];
+
+        let PRECIOS_STREAMING = {};
+
+        async function cargarPreciosStreaming() {
+            const { data } = await supabaseClient.from('productos').select('paquete, precio').eq('categoria', 'streaming').eq('activo', true);
+            PRECIOS_STREAMING = {};
+            (data || []).forEach(p => { PRECIOS_STREAMING[p.paquete] = Number(p.precio); });
+        }
 
         let plataformaActiva = PLATAFORMAS[0].key;
         let paqueteSeleccionado = "";
@@ -309,22 +319,27 @@
         }
 
         function renderPaneles() {
-            document.getElementById('plat-paneles').innerHTML = PLATAFORMAS.map(p => `
+            document.getElementById('plat-paneles').innerHTML = PLATAFORMAS.map(p => {
+                const planesConPrecio = p.planes.filter(pl => PRECIOS_STREAMING[pl.paquete] !== undefined);
+                if (planesConPrecio.length === 0) return '';
+                return `
                 <div class="plat-panel" data-plat="${p.key}" style="display:${p.key === plataformaActiva ? 'block' : 'none'};">
                     ${p.descripcion || ''}
                     <div class="plat-planes-grid">
-                        ${p.planes.map(pl => `
+                        ${planesConPrecio.map(pl => {
+                            const precio = PRECIOS_STREAMING[pl.paquete];
+                            return `
                             <div class="card">
                                 <div class="card-icon" style="display:flex; align-items:center; justify-content:center; height:90px;"><img src="${p.imagen}" alt="${p.nombre}" style="max-width:130px; max-height:84px; object-fit:contain;"></div>
                                 <h3 class="card-title">${pl.tipo}</h3>
                                 <p class="card-stock">${p.requiereNota ? 'Por invitación · Entrega manual' : 'Renovable · Entrega automática'}</p>
-                                <div class="card-prices"><span class="price-current">S/ ${pl.precio.toFixed(2)}</span><span style="font-size:12px;color:#a8a8b3;">&nbsp;/mes</span></div>
-                                <button class="btn-buy" onclick="abrirModalStreaming('${pl.paquete}', ${pl.precio}, '${p.nombre.replace(/'/g, "\\'")}', '${pl.tipo}', '${p.key}')">Comprar</button>
+                                <div class="card-prices"><span class="price-current">S/ ${precio.toFixed(2)}</span><span style="font-size:12px;color:#a8a8b3;">&nbsp;/mes</span></div>
+                                <button class="btn-buy" onclick="abrirModalStreaming('${pl.paquete}', ${precio}, '${p.nombre.replace(/'/g, "\\'")}', '${pl.tipo}', '${p.key}')">Comprar</button>
                             </div>
-                        `).join('')}
+                        `;}).join('')}
                     </div>
                 </div>
-            `).join('');
+            `;}).join('');
         }
 
         function cambiarPlataforma(key) {
@@ -335,6 +350,7 @@
 
         window.onload = async function() {
             renderTabs();
+            await cargarPreciosStreaming();
             renderPaneles();
 
             const usuario = await verificarSesion(false);

@@ -245,15 +245,8 @@
         
         <div class="category-header"><h2>CATÁLOGO DE CAJAS 🗃️</h2></div>
         
-        <section class="products-grid">
-            <div class="card"><div class="card-icon">🗃️</div><h3 class="card-title">50 Cajitas</h3><div class="card-prices"><span class="price-current">S/ 35.50</span></div><button class="btn-buy" onclick="abrirModalCompra('50 Cajitas Evolutivas', 35.50)">Comprar</button></div>
-            <div class="card"><div class="card-icon">🗃️🗃️</div><h3 class="card-title">100 Cajitas</h3><div class="card-prices"><span class="price-current">S/ 60.90</span></div><button class="btn-buy" onclick="abrirModalCompra('100 Cajitas Evolutivas', 60.90)">Comprar</button></div>
-            <div class="card"><div class="card-icon">🗃️🗃️🗃️</div><h3 class="card-title">150 Cajitas</h3><div class="card-prices"><span class="price-current">S/ 89.90</span></div><button class="btn-buy" onclick="abrirModalCompra('150 Cajitas Evolutivas', 89.90)">Comprar</button></div>
-            <div class="card"><div class="card-icon">🔥🗃️🗃️</div><h3 class="card-title">200 Cajitas</h3><div class="card-prices"><span class="price-current">S/ 119.90</span></div><button class="btn-buy" onclick="abrirModalCompra('200 Cajitas Evolutivas', 119.90)">Comprar</button></div>
-            <div class="card"><div class="card-icon">🔥🗃️🗃️🗃️</div><h3 class="card-title">250 Cajitas</h3><div class="card-prices"><span class="price-current">S/ 139.90</span></div><button class="btn-buy" onclick="abrirModalCompra('250 Cajitas Evolutivas', 139.90)">Comprar</button></div>
-
-            <!-- ETIQUETA ANIMADA DE FUEGO EN EL PAQUETE MÁS ATRACTIVO -->
-            <div class="card"><div class="badge-bestseller">🔥 Más Popular</div><div class="card-icon">🔥🗃️🗃️🔥</div><h3 class="card-title">300 Cajitas</h3><div class="card-prices"><span class="price-current">S/ 165.90</span></div><button class="btn-buy" onclick="abrirModalCompra('300 Cajitas Evolutivas', 165.90)">Comprar</button></div>
+        <section class="products-grid" id="products-grid">
+            <p style="color: #a8a8b3;">Cargando catálogo...</p>
         </section>
 
         <!-- SECCIÓN DE RECOMENDACIONES (CROSS-SELLING) -->
@@ -431,9 +424,49 @@
                 usuarioActualCompleto = usuario;
             }
 
+            cargarProductosCatalogo('cajas');
+
             // LANZAMOS EL MOTOR DEL TICKER EN VIVO
             cargarSistemaComunidadDinamica();
         };
+
+        // ================= CATÁLOGO DINÁMICO (desde la tabla productos) =================
+        function crearTarjetaProducto(p) {
+            let badgeHtml = '';
+            if (p.etiqueta) {
+                badgeHtml = `<div class="card-badge">${p.etiqueta}</div>`;
+            } else if (p.precio_anterior) {
+                const pct = Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100);
+                badgeHtml = `<div class="card-badge">-${pct}%</div>`;
+            }
+
+            let iconoHtml;
+            if (p.imagen_url) {
+                iconoHtml = `<div class="card-icon" style="height: 60px; background: url('${p.imagen_url}') center/contain no-repeat; margin-bottom: 10px;"></div>`;
+            } else {
+                iconoHtml = `<div class="card-icon">${p.emoji_fallback || '💎'}</div>`;
+            }
+
+            const descHtml = p.descripcion ? `<p class="card-stock">${p.descripcion}</p>` : '';
+
+            const preciosHtml = p.precio_anterior
+                ? `<span class="price-old">S/ ${Number(p.precio_anterior).toFixed(2)}</span><span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`
+                : `<span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`;
+
+            const paqueteEscapado = p.paquete.replace(/'/g, "\\'");
+
+            return `<div class="card">${badgeHtml}${iconoHtml}<h3 class="card-title">${p.paquete}</h3>${descHtml}<div class="card-prices">${preciosHtml}</div><button class="btn-buy" onclick="abrirModalCompra('${paqueteEscapado}', ${p.precio})">Comprar</button></div>`;
+        }
+
+        async function cargarProductosCatalogo(categoria) {
+            const grid = document.getElementById('products-grid');
+            const { data, error } = await supabaseClient.from('productos').select('*').eq('categoria', categoria).eq('activo', true).order('precio');
+            if (error || !data || data.length === 0) {
+                grid.innerHTML = "<p style='color:#a8a8b3;'>No hay productos disponibles en este momento.</p>";
+                return;
+            }
+            grid.innerHTML = data.map(crearTarjetaProducto).join('');
+        }
 
         function toggleMenu() {
             const menu = document.getElementById('menu-desplegable');

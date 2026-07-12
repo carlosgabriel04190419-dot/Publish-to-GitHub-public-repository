@@ -245,17 +245,8 @@
         
         <div class="category-header"><h2>CATÁLOGO DE FRAGMENTOS ⚛️</h2></div>
         
-        <section class="products-grid">
-            <div class="card"><div class="card-icon">⚛️</div><h3 class="card-title">200 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 33.00</span></div><button class="btn-buy" onclick="abrirModalCompra('200 Fragmentos', 33.00)">Comprar</button></div>
-            <div class="card"><div class="card-icon">⚛️⚛️</div><h3 class="card-title">300 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 42.00</span></div><button class="btn-buy" onclick="abrirModalCompra('300 Fragmentos', 42.00)">Comprar</button></div>
-            <div class="card"><div class="card-icon">⚛️⚛️⚛️</div><h3 class="card-title">400 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 49.00</span></div><button class="btn-buy" onclick="abrirModalCompra('400 Fragmentos', 49.00)">Comprar</button></div>
-            <div class="card"><div class="card-icon">🔥⚛️</div><h3 class="card-title">500 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 59.00</span></div><button class="btn-buy" onclick="abrirModalCompra('500 Fragmentos', 59.00)">Comprar</button></div>
-            <div class="card"><div class="card-icon">🔥⚛️⚛️</div><h3 class="card-title">600 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 69.00</span></div><button class="btn-buy" onclick="abrirModalCompra('600 Fragmentos', 69.00)">Comprar</button></div>
-            <div class="card"><div class="card-icon">🔥⚛️⚛️⚛️</div><h3 class="card-title">700 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 79.00</span></div><button class="btn-buy" onclick="abrirModalCompra('700 Fragmentos', 79.00)">Comprar</button></div>
-            <div class="card"><div class="card-icon">🔥⚛️🔥</div><h3 class="card-title">800 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 89.00</span></div><button class="btn-buy" onclick="abrirModalCompra('800 Fragmentos', 89.00)">Comprar</button></div>
-            
-            <!-- ETIQUETA ANIMADA DE FUEGO EN EL PAQUETE MÁS ATRACTIVO -->
-            <div class="card"><div class="badge-bestseller">🔥 Mejor Precio</div><div class="card-icon">🔥⚛️⚛️🔥</div><h3 class="card-title">900 Fragmentos</h3><div class="card-prices"><span class="price-current">S/ 104.90</span></div><button class="btn-buy" onclick="abrirModalCompra('900 Fragmentos', 104.90)">Comprar</button></div>
+        <section class="products-grid" id="products-grid">
+            <p style="color: #a8a8b3;">Cargando catálogo...</p>
         </section>
 
         <!-- SECCIÓN DE RECOMENDACIONES (CROSS-SELLING) -->
@@ -435,9 +426,49 @@
                 usuarioActualCompleto = usuario;
             }
 
+            cargarProductosCatalogo('fragmentos');
+
             // LANZAMOS EL MOTOR DEL TICKER EN VIVO
             cargarSistemaComunidadDinamica();
         };
+
+        // ================= CATÁLOGO DINÁMICO (desde la tabla productos) =================
+        function crearTarjetaProducto(p) {
+            let badgeHtml = '';
+            if (p.etiqueta) {
+                badgeHtml = `<div class="card-badge">${p.etiqueta}</div>`;
+            } else if (p.precio_anterior) {
+                const pct = Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100);
+                badgeHtml = `<div class="card-badge">-${pct}%</div>`;
+            }
+
+            let iconoHtml;
+            if (p.imagen_url) {
+                iconoHtml = `<div class="card-icon" style="height: 60px; background: url('${p.imagen_url}') center/contain no-repeat; margin-bottom: 10px;"></div>`;
+            } else {
+                iconoHtml = `<div class="card-icon">${p.emoji_fallback || '💎'}</div>`;
+            }
+
+            const descHtml = p.descripcion ? `<p class="card-stock">${p.descripcion}</p>` : '';
+
+            const preciosHtml = p.precio_anterior
+                ? `<span class="price-old">S/ ${Number(p.precio_anterior).toFixed(2)}</span><span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`
+                : `<span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`;
+
+            const paqueteEscapado = p.paquete.replace(/'/g, "\\'");
+
+            return `<div class="card">${badgeHtml}${iconoHtml}<h3 class="card-title">${p.paquete}</h3>${descHtml}<div class="card-prices">${preciosHtml}</div><button class="btn-buy" onclick="abrirModalCompra('${paqueteEscapado}', ${p.precio})">Comprar</button></div>`;
+        }
+
+        async function cargarProductosCatalogo(categoria) {
+            const grid = document.getElementById('products-grid');
+            const { data, error } = await supabaseClient.from('productos').select('*').eq('categoria', categoria).eq('activo', true).order('precio');
+            if (error || !data || data.length === 0) {
+                grid.innerHTML = "<p style='color:#a8a8b3;'>No hay productos disponibles en este momento.</p>";
+                return;
+            }
+            grid.innerHTML = data.map(crearTarjetaProducto).join('');
+        }
 
         function toggleMenu() {
             const menu = document.getElementById('menu-desplegable');

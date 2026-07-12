@@ -197,6 +197,25 @@ async function convertirPreciosCatalogo(usuario) {
     });
 }
 
+/**
+ * Aplica imágenes de portada configurables desde el admin (tabla portadas_catalogo).
+ * @param {Object} mapa - { idDeElemento: { slug, plantilla? } }. `plantilla` es opcional,
+ * usa {url} como marcador si el fondo necesita algo más que un url() simple (ej. un degradado).
+ */
+async function aplicarPortadas(mapa) {
+    const slugs = Object.values(mapa).map(cfg => cfg.slug);
+    const { data } = await supabaseClient.from('portadas_catalogo').select('slug, imagen_url').in('slug', slugs);
+    if (!data) return;
+    const porSlug = {};
+    data.forEach(r => { porSlug[r.slug] = r.imagen_url; });
+    Object.entries(mapa).forEach(([elementId, cfg]) => {
+        const url = porSlug[cfg.slug];
+        const el = document.getElementById(elementId);
+        if (!el || !url) return;
+        el.style.background = cfg.plantilla ? cfg.plantilla.replace('{url}', url) : `url('${url}') center/cover no-repeat`;
+    });
+}
+
 /** Cierra sesión de verdad (invalida la sesión en Supabase) y limpia el caché local. */
 async function cerrarSesionSegura() {
     await supabaseClient.auth.signOut();

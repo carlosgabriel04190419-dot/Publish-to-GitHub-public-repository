@@ -244,19 +244,8 @@
         
         <div class="category-header"><h2>CATÁLOGO RECARGAS DIRECTAS 💎 (Ilimitado)</h2></div>
         
-        <section class="products-grid">
-            <div class="card"><div class="card-badge">+20% Bono</div><div class="card-icon">💎</div><h3 class="card-title">120 Diamantes</h3><p class="card-stock">100 + 20 Extra</p><div class="card-prices"><span class="price-current">S/ 3.30</span></div><button class="btn-buy" onclick="abrirModalCompra('120 Diamantes (Directa)', 3.30)">Comprar</button></div>
-            <div class="card"><div class="card-badge">+20% Bono</div><div class="card-icon">💎💎</div><h3 class="card-title">372 Diamantes</h3><p class="card-stock">310 + 62 Extra</p><div class="card-prices"><span class="price-current">S/ 10.00</span></div><button class="btn-buy" onclick="abrirModalCompra('372 Diamantes (Directa)', 10.00)">Comprar</button></div>
-            <div class="card"><div class="card-badge">+20% Bono</div><div class="card-icon">💎💎</div><h3 class="card-title">624 Diamantes</h3><p class="card-stock">520 + 104 Extra</p><div class="card-prices"><span class="price-current">S/ 14.50</span></div><button class="btn-buy" onclick="abrirModalCompra('624 Diamantes (Directa)', 14.50)">Comprar</button></div>
-            
-            <!-- ETIQUETA ANIMADA DE FUEGO EN EL PAQUETE MÁS ATRACTIVO -->
-            <div class="card"><div class="badge-bestseller">🔥 Más Vendido</div><div class="card-badge" style="top: 12px; left: 12px; right: auto;">+20% Bono</div><div class="card-icon">👑💎</div><h3 class="card-title">1272 Diamantes</h3><p class="card-stock">1060 + 212 Extra</p><div class="card-prices"><span class="price-current">S/ 28.00</span></div><button class="btn-buy" onclick="abrirModalCompra('1272 Diamantes (Directa)', 28.00)">Comprar</button></div>
-            
-            <div class="card"><div class="card-badge">+20% Bono</div><div class="card-icon">👑💎💎</div><h3 class="card-title">2596 Diamantes</h3><p class="card-stock">2160 + 436 Extra</p><div class="card-prices"><span class="price-current">S/ 51.90</span></div><button class="btn-buy" onclick="abrirModalCompra('2596 Diamantes (Directa)', 51.90)">Comprar</button></div>
-            
-            <div class="card"><div class="card-badge">+20% Bono</div><div class="card-icon">👑💎💎💎</div><h3 class="card-title">5192 Diamantes</h3><p class="card-stock">4320 + 872 Extra</p><div class="card-prices"><span class="price-current">S/ 102.00</span></div><button class="btn-buy" onclick="abrirModalCompra('5192 Diamantes (Directa)', 102.00)">Comprar</button></div>
-            <div class="card"><div class="card-badge">+20% Bono</div><div class="card-icon">👑💎👑</div><h3 class="card-title">6720 Diamantes</h3><p class="card-stock">5600 + 1120 Extra</p><div class="card-prices"><span class="price-current">S/ 128.00</span></div><button class="btn-buy" onclick="abrirModalCompra('6720 Diamantes (Directa)', 128.00)">Comprar</button></div>
-            <div class="card"><div class="card-badge">+20% Bono</div><div class="card-icon">👑💎💎👑</div><h3 class="card-title">13440 Diamantes</h3><p class="card-stock">11200 + 2240 Extra</p><div class="card-prices"><span class="price-current">S/ 253.00</span></div><button class="btn-buy" onclick="abrirModalCompra('13440 Diamantes (Directa)', 253.00)">Comprar</button></div>
+        <section class="products-grid" id="products-grid">
+            <p style="color: #a8a8b3;">Cargando catálogo...</p>
         </section>
 
         <!-- SECCIÓN DE RECOMENDACIONES (CROSS-SELLING) -->
@@ -428,8 +417,48 @@
                 usuarioActualCompleto = usuario;
             }
 
+            cargarProductosCatalogo('directa');
+
             cargarSistemaComunidadDinamica();
         };
+
+        // ================= CATÁLOGO DINÁMICO (desde la tabla productos) =================
+        function crearTarjetaProducto(p) {
+            let badgeHtml = '';
+            if (p.etiqueta) {
+                badgeHtml = `<div class="card-badge">${p.etiqueta}</div>`;
+            } else if (p.precio_anterior) {
+                const pct = Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100);
+                badgeHtml = `<div class="card-badge">-${pct}%</div>`;
+            }
+
+            let iconoHtml;
+            if (p.imagen_url) {
+                iconoHtml = `<div class="card-icon" style="height: 60px; background: url('${p.imagen_url}') center/contain no-repeat; margin-bottom: 10px;"></div>`;
+            } else {
+                iconoHtml = `<div class="card-icon">${p.emoji_fallback || '💎'}</div>`;
+            }
+
+            const descHtml = p.descripcion ? `<p class="card-stock">${p.descripcion}</p>` : '';
+
+            const preciosHtml = p.precio_anterior
+                ? `<span class="price-old">S/ ${Number(p.precio_anterior).toFixed(2)}</span><span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`
+                : `<span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`;
+
+            const paqueteEscapado = p.paquete.replace(/'/g, "\\'");
+
+            return `<div class="card">${badgeHtml}${iconoHtml}<h3 class="card-title">${p.paquete}</h3>${descHtml}<div class="card-prices">${preciosHtml}</div><button class="btn-buy" onclick="abrirModalCompra('${paqueteEscapado}', ${p.precio})">Comprar</button></div>`;
+        }
+
+        async function cargarProductosCatalogo(categoria) {
+            const grid = document.getElementById('products-grid');
+            const { data, error } = await supabaseClient.from('productos').select('*').eq('categoria', categoria).eq('activo', true).order('precio');
+            if (error || !data || data.length === 0) {
+                grid.innerHTML = "<p style='color:#a8a8b3;'>No hay productos disponibles en este momento.</p>";
+                return;
+            }
+            grid.innerHTML = data.map(crearTarjetaProducto).join('');
+        }
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
         function toggleCzFaq(elemento) { const todos = document.querySelectorAll('.cz-faq-item'); todos.forEach(item => { if(item !== elemento) item.classList.remove('active'); }); elemento.classList.toggle('active'); }

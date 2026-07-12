@@ -205,19 +205,8 @@
         
         <div class="category-header"><h2>PAQUETES DISPONIBLES 💎 (Ilimitado)</h2></div>
         
-        <section class="products-grid">
-            <div class="card"><div class="card-badge">Premium</div><div class="card-icon" style="height: 60px; background: url('pasebooyah.png') center/contain no-repeat; margin-bottom: 10px;"></div><h3 class="card-title">Pase Booyah</h3><p class="card-stock">Activación por ID</p><div class="card-prices"><span class="price-current">S/ 5.30</span></div><button class="btn-buy" onclick="abrirModalCompra('Pase Booyah', 5.30)">Comprar</button></div>
-            <div class="card"><div class="card-badge">-17%</div><div class="card-icon">💎</div><h3 class="card-title">110 Diamantes</h3><p class="card-stock">100 + 10 Extra</p><div class="card-prices"><span class="price-old">S/ 3.50</span><span class="price-current">S/ 2.90</span></div><button class="btn-buy" onclick="abrirModalCompra('110 Diamantes', 2.90)">Comprar</button></div>
-            <div class="card"><div class="card-badge">-22%</div><div class="card-icon">💎</div><h3 class="card-title">341 Diamantes</h3><p class="card-stock">310 + 31 Extra</p><div class="card-prices"><span class="price-old">S/ 12.00</span><span class="price-current">S/ 9.30</span></div><button class="btn-buy" onclick="abrirModalCompra('341 Diamantes', 9.30)">Comprar</button></div>
-            <div class="card"><div class="card-badge">-8%</div><div class="card-icon">💎💎</div><h3 class="card-title">572 Diamantes</h3><p class="card-stock">520 + 52 Extra</p><div class="card-prices"><span class="price-old">S/ 15.90</span><span class="price-current">S/ 13.70</span></div><button class="btn-buy" onclick="abrirModalCompra('572 Diamantes', 13.70)">Comprar</button></div>
-            
-            <!-- ETIQUETA ANIMADA DE FUEGO EN EL PAQUETE MÁS ATRACTIVO -->
-            <div class="card"><div class="badge-bestseller">🔥 Más Vendido</div><div class="card-badge" style="top: 12px; left: 12px; right: auto;">-15%</div><div class="card-icon">🔥💎</div><h3 class="card-title">1166 Diamantes</h3><p class="card-stock">1060 + 106 Extra</p><div class="card-prices"><span class="price-old">S/ 30.90</span><span class="price-current">S/ 25.30</span></div><button class="btn-buy" onclick="abrirModalCompra('1166 Diamantes', 25.30)">Comprar</button></div>
-            
-            <div class="card"><div class="card-badge">-13%</div><div class="card-icon">🔥💎💎</div><h3 class="card-title">2398 Diamantes</h3><p class="card-stock">2180 + 218 Extra</p><div class="card-prices"><span class="price-old">S/ 58.90</span><span class="price-current">S/ 50.30</span></div><button class="btn-buy" onclick="abrirModalCompra('2398 Diamantes', 50.30)">Comprar</button></div>
-            <div class="card"><div class="card-badge">-12%</div><div class="card-icon">🔥💎💎🔥</div><h3 class="card-title">4796 Diamantes</h3><p class="card-stock">4360 + 436 Extra</p><div class="card-prices"><span class="price-old">S/ 114.00</span><span class="price-current">S/ 100.00</span></div><button class="btn-buy" onclick="abrirModalCompra('4796 Diamantes', 100.00)">Comprar</button></div>
-            <div class="card"><div class="card-badge">-7%</div><div class="card-icon">🔥💎🔥</div><h3 class="card-title">6160 Diamantes</h3><p class="card-stock">5600 + 560 Extra</p><div class="card-prices"><span class="price-old">S/ 135.00</span><span class="price-current">S/ 125.30</span></div><button class="btn-buy" onclick="abrirModalCompra('6160 Diamantes', 125.30)">Comprar</button></div>
-            <div class="card"><div class="card-badge">-6%</div><div class="card-icon">🔥💎💎🔥</div><h3 class="card-title">12320 Diamantes</h3><p class="card-stock">11200 + 1120 Extra</p><div class="card-prices"><span class="price-old">S/ 268.00</span><span class="price-current">S/ 250.00</span></div><button class="btn-buy" onclick="abrirModalCompra('12320 Diamantes', 250.00)">Comprar</button></div>
+        <section class="products-grid" id="products-grid">
+            <p style="color: #a8a8b3;">Cargando catálogo...</p>
         </section>
 
         <!-- SECCIÓN DE RECOMENDACIONES (CROSS-SELLING) -->
@@ -427,9 +416,49 @@
                 usuarioActualCompleto = usuario;
             }
 
+            cargarProductosCatalogo('regular');
+
             // LANZAR TICKER EN VIVO
             cargarSistemaComunidadDinamica();
         };
+
+        // ================= CATÁLOGO DINÁMICO (desde la tabla productos) =================
+        function crearTarjetaProducto(p) {
+            let badgeHtml = '';
+            if (p.etiqueta) {
+                badgeHtml = `<div class="card-badge">${p.etiqueta}</div>`;
+            } else if (p.precio_anterior) {
+                const pct = Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100);
+                badgeHtml = `<div class="card-badge">-${pct}%</div>`;
+            }
+
+            let iconoHtml;
+            if (p.imagen_url) {
+                iconoHtml = `<div class="card-icon" style="height: 60px; background: url('${p.imagen_url}') center/contain no-repeat; margin-bottom: 10px;"></div>`;
+            } else {
+                iconoHtml = `<div class="card-icon">${p.emoji_fallback || '💎'}</div>`;
+            }
+
+            const descHtml = p.descripcion ? `<p class="card-stock">${p.descripcion}</p>` : '';
+
+            const preciosHtml = p.precio_anterior
+                ? `<span class="price-old">S/ ${Number(p.precio_anterior).toFixed(2)}</span><span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`
+                : `<span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`;
+
+            const paqueteEscapado = p.paquete.replace(/'/g, "\\'");
+
+            return `<div class="card">${badgeHtml}${iconoHtml}<h3 class="card-title">${p.paquete}</h3>${descHtml}<div class="card-prices">${preciosHtml}</div><button class="btn-buy" onclick="abrirModalCompra('${paqueteEscapado}', ${p.precio})">Comprar</button></div>`;
+        }
+
+        async function cargarProductosCatalogo(categoria) {
+            const grid = document.getElementById('products-grid');
+            const { data, error } = await supabaseClient.from('productos').select('*').eq('categoria', categoria).eq('activo', true).order('precio');
+            if (error || !data || data.length === 0) {
+                grid.innerHTML = "<p style='color:#a8a8b3;'>No hay productos disponibles en este momento.</p>";
+                return;
+            }
+            grid.innerHTML = data.map(crearTarjetaProducto).join('');
+        }
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
         function toggleCzFaq(elemento) { const todos = document.querySelectorAll('.cz-faq-item'); todos.forEach(item => { if(item !== elemento) item.classList.remove('active'); }); elemento.classList.toggle('active'); }

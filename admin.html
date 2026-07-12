@@ -213,6 +213,7 @@
                     <div class="admin-nav-item solo-full" data-view="usuarios" onclick="cambiarVista('usuarios')"><span class="material-icons">group</span> Usuarios</div>
                     <div class="admin-nav-item" data-view="stock" onclick="cambiarVista('stock')"><span class="material-icons">inventory_2</span> Stock <span class="nav-badge zero" id="badge-stock-bajo">0</span></div>
                     <div class="admin-nav-item" data-view="historial" onclick="cambiarVista('historial')"><span class="material-icons">history</span> Historial</div>
+                    <div class="admin-nav-item" data-view="catalogo" onclick="cambiarVista('catalogo')"><span class="material-icons">storefront</span> Catálogo</div>
                     <div class="admin-nav-item solo-full" data-view="cupones" onclick="cambiarVista('cupones')"><span class="material-icons">sell</span> Cupones</div>
                     <div class="admin-nav-item solo-full" data-view="administradores" onclick="cambiarVista('administradores')"><span class="material-icons">admin_panel_settings</span> Administradores</div>
                 </nav>
@@ -418,6 +419,125 @@
                         <div class="table-scroll">
                             <table><thead><tr><th>Fecha</th><th>Usuario</th><th>Descripción</th><th>Monto S/</th><th>Estado</th></tr></thead><tbody id="tabla-historial"></tbody></table>
                         </div>
+                    </div>
+                </div>
+
+                <!-- ============ CATALOGO ============ -->
+                <div class="admin-view" id="view-catalogo">
+                    <h1 class="view-title"><span class="material-icons" style="color:#ffc107;">storefront</span> Catálogo</h1>
+                    <p class="view-subtitle">Precios, productos nuevos y portadas de cada catálogo.</p>
+
+                    <!-- DIAMANTES -->
+                    <div class="card-box" data-rol="diamantes">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">diamond</span> Catálogo de Diamantes</h3>
+                        <div style="margin-bottom: 15px;">
+                            <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Categoría</label>
+                            <select id="cat-diam-categoria" class="bulk-select" onchange="cargarProductosDiamantesAdmin()" style="max-width: 260px;">
+                                <option value="regular">Regular</option>
+                                <option value="directa">Recargas Directas</option>
+                                <option value="promo">Promo Especial</option>
+                                <option value="fragmentos">Fragmentos Universales</option>
+                                <option value="cajas">Cajitas Evolutivas</option>
+                            </select>
+                        </div>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Paquete</th><th>Precio</th><th>Precio anterior</th><th>% Desc</th><th>Etiqueta</th><th>Descripción</th><th>Foto</th><th>Activo</th><th>Acción</th></tr></thead><tbody id="tabla-catalogo-diamantes"></tbody></table>
+                        </div>
+                    </div>
+
+                    <div class="card-box upload-container" data-rol="diamantes">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#00d2ff;">add_circle</span> Agregar Producto de Diamantes</h3>
+                        <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 15px 0;">Se agrega a la categoría seleccionada arriba (<b id="cat-diam-nombre-actual">Regular</b>).</p>
+                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Paquete (nombre)</label>
+                                <input type="text" id="nuevo-diam-paquete" class="bulk-select" placeholder="Ej. 80000 Diamantes" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #00e676; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Precio (S/)</label>
+                                <input type="number" id="nuevo-diam-precio" class="bulk-select" placeholder="1800.00" min="0.01" step="0.01" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Precio anterior (opcional)</label>
+                                <input type="number" id="nuevo-diam-precio-anterior" class="bulk-select" placeholder="Sin descuento" min="0.01" step="0.01" style="width:100%; box-sizing:border-box;">
+                            </div>
+                        </div>
+                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Etiqueta (opcional)</label>
+                                <input type="text" id="nuevo-diam-etiqueta" class="bulk-select" placeholder="Ej. Promo 1x" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Descripción (opcional)</label>
+                                <input type="text" id="nuevo-diam-descripcion" class="bulk-select" placeholder="Ej. 80000 + 8000 Extra" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Foto (opcional)</label>
+                                <input type="file" id="nuevo-diam-foto" accept="image/png,image/jpeg,image/webp" class="bulk-select" style="width:100%; box-sizing:border-box;">
+                            </div>
+                        </div>
+                        <button class="btn-primary" style="width: 100%; padding: 15px; font-weight: bold; background: #00d2ff; color: black; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-top: 15px;" onclick="agregarProductoDiamantes()">
+                            <span class="material-icons">add_circle</span> Agregar Producto
+                        </button>
+                    </div>
+
+                    <div class="card-box" data-rol="diamantes">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">image</span> Portadas de Diamantes</h3>
+                        <div id="portadas-diamantes" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:15px;"></div>
+                    </div>
+
+                    <!-- STREAMING -->
+                    <div class="card-box" data-rol="streaming">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">live_tv</span> Catálogo de Streaming</h3>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Plataforma</th><th>Tipo</th><th>Precio</th><th>Precio anterior</th><th>% Desc</th><th>Perfiles/cuenta</th><th>Foto</th><th>Activo</th><th>Acción</th></tr></thead><tbody id="tabla-catalogo-streaming"></tbody></table>
+                        </div>
+                    </div>
+
+                    <div class="card-box upload-container" data-rol="streaming">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#00d2ff;">add_circle</span> Agregar Producto de Streaming</h3>
+                        <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 15px 0;">Nota: si agregas una <b>plataforma completamente nueva</b> (que hoy no existe en el catálogo público), avísame para conectarla también ahí — es un paso único. Cambiar el precio de una plataforma existente, o agregar un plan nuevo a una que ya está (ej. "Cuenta Completa" a una que solo tenía "Perfil"), sí funciona de una vez.</p>
+                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Plataforma</label>
+                                <input type="text" id="nuevo-strm-plataforma" class="bulk-select" placeholder="Ej. Spotify Premium" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #00e676; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Tipo de plan</label>
+                                <select id="nuevo-strm-tipo" class="bulk-select" onchange="document.getElementById('nuevo-strm-perfiles-wrap').style.display = this.value === 'Perfil' ? 'block' : 'none';">
+                                    <option value="Perfil">Perfil</option>
+                                    <option value="Cuenta Completa">Cuenta Completa</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Precio (S/)</label>
+                                <input type="number" id="nuevo-strm-precio" class="bulk-select" placeholder="15.00" min="0.01" step="0.01" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Precio anterior (opcional)</label>
+                                <input type="number" id="nuevo-strm-precio-anterior" class="bulk-select" placeholder="Sin descuento" min="0.01" step="0.01" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div id="nuevo-strm-perfiles-wrap">
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Perfiles por cuenta</label>
+                                <input type="number" id="nuevo-strm-perfiles" class="bulk-select" placeholder="Ej. 5" min="1" step="1" style="width:100%; box-sizing:border-box;">
+                            </div>
+                        </div>
+                        <div class="grid-container" style="display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px;">
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Foto (opcional)</label>
+                                <input type="file" id="nuevo-strm-foto" accept="image/png,image/jpeg,image/webp" class="bulk-select" style="width:100%; box-sizing:border-box;">
+                            </div>
+                        </div>
+                        <button class="btn-primary" style="width: 100%; padding: 15px; font-weight: bold; background: #a155ff; color: white; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-top: 15px;" onclick="agregarProductoStreaming()">
+                            <span class="material-icons">add_circle</span> Agregar Producto
+                        </button>
+                    </div>
+
+                    <div class="card-box" data-rol="streaming">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">image</span> Portada de Streaming</h3>
+                        <div id="portadas-streaming" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:15px;"></div>
                     </div>
                 </div>
 
@@ -629,6 +749,9 @@
                 cambiarVista('pedidos');
             }
             await cargarPedidos(); await cargarHistorial(); await cargarStock();
+
+            if (rol === 'full' || rol === 'diamantes') { await cargarProductosDiamantesAdmin(); await cargarPortadasAdmin('diamantes'); }
+            if (rol === 'full' || rol === 'streaming') { await cargarProductosStreamingAdmin(); await cargarPortadasAdmin('streaming'); }
         }
 
         // ================= ADMINISTRADORES =================
@@ -741,6 +864,253 @@
             if (error) { showToast("Error: " + error.message, "error"); return; }
             showToast(nuevoEstado ? "Cupón activado." : "Cupón desactivado.", nuevoEstado ? "success" : "warning");
             cargarCupones();
+        }
+
+        // ================= CATÁLOGO: DIAMANTES =================
+        function escAttr(v) { return (v === null || v === undefined) ? '' : String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+        function escHtml(v) { return (v === null || v === undefined) ? '' : String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+        async function cargarProductosDiamantesAdmin() {
+            const selectCat = document.getElementById('cat-diam-categoria');
+            const categoria = selectCat.value;
+            document.getElementById('cat-diam-nombre-actual').innerText = selectCat.selectedOptions[0].text;
+            const { data } = await supabaseClient.from('productos').select('*').eq('categoria', categoria).order('precio');
+            const tbody = document.getElementById('tabla-catalogo-diamantes'); tbody.innerHTML = '';
+            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='9' style='text-align:center; color:#a8a8b3;'>Sin productos en esta categoría.</td></tr>"; return; }
+            data.forEach(p => tbody.insertAdjacentHTML('beforeend', filaProductoDiamante(p)));
+        }
+
+        function filaProductoDiamante(p) {
+            const pct = p.precio_anterior ? Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100) : null;
+            return `<tr data-id="${p.id}">
+                <td data-label="Paquete" style="font-weight:bold;">${escHtml(p.paquete)}</td>
+                <td data-label="Precio"><input type="number" step="0.01" class="bulk-select campo-precio" value="${p.precio}" style="width:90px;"></td>
+                <td data-label="Precio anterior"><input type="number" step="0.01" class="bulk-select campo-precio-anterior" value="${p.precio_anterior ?? ''}" placeholder="—" style="width:90px;"></td>
+                <td data-label="% Desc" style="color:#00e676; font-weight:bold;">${pct !== null ? '-' + pct + '%' : '—'}</td>
+                <td data-label="Etiqueta"><input type="text" class="bulk-select campo-etiqueta" value="${escAttr(p.etiqueta)}" placeholder="opcional" style="width:110px;"></td>
+                <td data-label="Descripción"><input type="text" class="bulk-select campo-descripcion" value="${escAttr(p.descripcion)}" placeholder="opcional" style="width:150px;"></td>
+                <td data-label="Foto">
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+                        ${p.imagen_url ? `<img src="${p.imagen_url}" style="width:32px;height:32px;object-fit:cover;border-radius:6px;">` : `<span style="font-size:20px;">${p.emoji_fallback || '💎'}</span>`}
+                        <input type="file" accept="image/png,image/jpeg,image/webp" style="width:110px; font-size:10px;" onchange="subirFotoProducto(${p.id}, this)">
+                    </div>
+                </td>
+                <td data-label="Activo"><input type="checkbox" ${p.activo ? 'checked' : ''} onchange="toggleActivoProducto(${p.id}, this.checked)"></td>
+                <td data-label="Acción"><button class="btn-primary" style="background:#00e676; color:black; border:none; border-radius:6px; padding:8px 12px; cursor:pointer;" onclick="guardarProductoCatalogo(${p.id})"><span class="material-icons" style="font-size:16px;">save</span></button></td>
+            </tr>`;
+        }
+
+        async function guardarProductoCatalogo(id) {
+            const tr = document.querySelector(`tr[data-id="${id}"]`);
+            if (!tr) return;
+            const precio = parseFloat(tr.querySelector('.campo-precio').value);
+            const precioAnteriorRaw = tr.querySelector('.campo-precio-anterior').value;
+            const precioAnterior = precioAnteriorRaw ? parseFloat(precioAnteriorRaw) : null;
+
+            if (isNaN(precio) || precio <= 0) return showToast("Ingresa un precio válido.", "warning");
+            if (precioAnterior !== null && precioAnterior <= precio) return showToast("El precio anterior debe ser mayor al precio actual.", "warning");
+
+            const cambios = { precio, precio_anterior: precioAnterior };
+            const campoEtiqueta = tr.querySelector('.campo-etiqueta');
+            if (campoEtiqueta) cambios.etiqueta = campoEtiqueta.value.trim() || null;
+            const campoDescripcion = tr.querySelector('.campo-descripcion');
+            if (campoDescripcion) cambios.descripcion = campoDescripcion.value.trim() || null;
+            const campoPerfiles = tr.querySelector('.campo-perfiles');
+            if (campoPerfiles) cambios.perfiles_por_cuenta = campoPerfiles.value ? parseInt(campoPerfiles.value) : null;
+
+            const { error } = await supabaseClient.from('productos').update(cambios).eq('id', id);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast("Producto actualizado.");
+            if (tr.closest('#tabla-catalogo-streaming')) cargarProductosStreamingAdmin(); else cargarProductosDiamantesAdmin();
+        }
+
+        async function toggleActivoProducto(id, activo) {
+            const { error } = await supabaseClient.from('productos').update({ activo }).eq('id', id);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast(activo ? "Producto activado." : "Producto desactivado.", activo ? "success" : "warning");
+        }
+
+        async function subirFotoProducto(id, inputEl) {
+            const file = inputEl.files[0];
+            if (!file) return;
+            if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) { showToast("Solo se aceptan imágenes PNG, JPG o WEBP.", "warning"); inputEl.value = ''; return; }
+            if (file.size > 3 * 1024 * 1024) { showToast("La imagen no debe pesar más de 3 MB.", "warning"); inputEl.value = ''; return; }
+
+            const ext = file.name.split('.').pop();
+            const ruta = `producto-${id}.${ext}`;
+            const { error: errorSubida } = await supabaseClient.storage.from('productos').upload(ruta, file, { upsert: true });
+            if (errorSubida) { showToast("Error al subir: " + errorSubida.message, "error"); inputEl.value = ''; return; }
+
+            const { data: urlData } = supabaseClient.storage.from('productos').getPublicUrl(ruta);
+            const urlConCache = urlData.publicUrl + '?t=' + Date.now();
+
+            const { error } = await supabaseClient.from('productos').update({ imagen_url: urlConCache }).eq('id', id);
+            if (error) { showToast("Error al guardar: " + error.message, "error"); inputEl.value = ''; return; }
+
+            showToast("Foto actualizada.");
+            const tr = document.querySelector(`tr[data-id="${id}"]`);
+            if (tr && tr.closest('#tabla-catalogo-streaming')) cargarProductosStreamingAdmin(); else cargarProductosDiamantesAdmin();
+        }
+
+        async function agregarProductoDiamantes() {
+            const selectCat = document.getElementById('cat-diam-categoria');
+            const categoria = selectCat.value;
+            const paquete = document.getElementById('nuevo-diam-paquete').value.trim();
+            const precio = parseFloat(document.getElementById('nuevo-diam-precio').value);
+            const precioAnteriorRaw = document.getElementById('nuevo-diam-precio-anterior').value;
+            const precioAnterior = precioAnteriorRaw ? parseFloat(precioAnteriorRaw) : null;
+            const etiqueta = document.getElementById('nuevo-diam-etiqueta').value.trim() || null;
+            const descripcion = document.getElementById('nuevo-diam-descripcion').value.trim() || null;
+            const fotoInput = document.getElementById('nuevo-diam-foto');
+            const file = fotoInput.files[0];
+
+            if (!paquete) return showToast("Ingresa el nombre del paquete.", "warning");
+            if (isNaN(precio) || precio <= 0) return showToast("Ingresa un precio válido.", "warning");
+            if (precioAnterior !== null && precioAnterior <= precio) return showToast("El precio anterior debe ser mayor al precio actual.", "warning");
+            if (file) {
+                if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) return showToast("Solo se aceptan imágenes PNG, JPG o WEBP.", "warning");
+                if (file.size > 3 * 1024 * 1024) return showToast("La imagen no debe pesar más de 3 MB.", "warning");
+            }
+
+            const conf = await openCustomModal({ title: "Agregar Producto", desc: `¿Agregar <b>${paquete}</b> a <b>${selectCat.selectedOptions[0].text}</b> por S/ ${precio.toFixed(2)}?`, icon: 'add_circle', color: '#00d2ff', textColor: 'black', type: 'confirm', confirmText: 'Agregar' });
+            if (!conf) return;
+
+            const { data, error } = await supabaseClient.from('productos').insert([{ paquete, categoria, precio, precio_anterior: precioAnterior, etiqueta, descripcion }]).select().single();
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+
+            if (file) {
+                const ext = file.name.split('.').pop();
+                const ruta = `producto-${data.id}.${ext}`;
+                const { error: errorSubida } = await supabaseClient.storage.from('productos').upload(ruta, file, { upsert: true });
+                if (!errorSubida) {
+                    const { data: urlData } = supabaseClient.storage.from('productos').getPublicUrl(ruta);
+                    await supabaseClient.from('productos').update({ imagen_url: urlData.publicUrl + '?t=' + Date.now() }).eq('id', data.id);
+                }
+            }
+
+            showToast("Producto agregado.");
+            document.getElementById('nuevo-diam-paquete').value = '';
+            document.getElementById('nuevo-diam-precio').value = '';
+            document.getElementById('nuevo-diam-precio-anterior').value = '';
+            document.getElementById('nuevo-diam-etiqueta').value = '';
+            document.getElementById('nuevo-diam-descripcion').value = '';
+            fotoInput.value = '';
+            cargarProductosDiamantesAdmin();
+        }
+
+        // ================= CATÁLOGO: STREAMING =================
+        async function cargarProductosStreamingAdmin() {
+            const { data } = await supabaseClient.from('productos').select('*').eq('categoria', 'streaming').order('plataforma').order('precio');
+            const tbody = document.getElementById('tabla-catalogo-streaming'); tbody.innerHTML = '';
+            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='9' style='text-align:center; color:#a8a8b3;'>Sin productos de streaming todavía.</td></tr>"; return; }
+            data.forEach(p => tbody.insertAdjacentHTML('beforeend', filaProductoStreaming(p)));
+        }
+
+        function filaProductoStreaming(p) {
+            const pct = p.precio_anterior ? Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100) : null;
+            return `<tr data-id="${p.id}">
+                <td data-label="Plataforma" style="font-weight:bold;">${escHtml(p.plataforma)}</td>
+                <td data-label="Tipo">${escHtml(p.tipo_plan)}</td>
+                <td data-label="Precio"><input type="number" step="0.01" class="bulk-select campo-precio" value="${p.precio}" style="width:90px;"></td>
+                <td data-label="Precio anterior"><input type="number" step="0.01" class="bulk-select campo-precio-anterior" value="${p.precio_anterior ?? ''}" placeholder="—" style="width:90px;"></td>
+                <td data-label="% Desc" style="color:#00e676; font-weight:bold;">${pct !== null ? '-' + pct + '%' : '—'}</td>
+                <td data-label="Perfiles/cuenta">${p.tipo_plan === 'Perfil' ? `<input type="number" min="1" step="1" class="bulk-select campo-perfiles" value="${p.perfiles_por_cuenta ?? ''}" style="width:70px;">` : '—'}</td>
+                <td data-label="Foto">
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+                        ${p.imagen_url ? `<img src="${p.imagen_url}" style="width:32px;height:32px;object-fit:cover;border-radius:6px;">` : '—'}
+                        <input type="file" accept="image/png,image/jpeg,image/webp" style="width:110px; font-size:10px;" onchange="subirFotoProducto(${p.id}, this)">
+                    </div>
+                </td>
+                <td data-label="Activo"><input type="checkbox" ${p.activo ? 'checked' : ''} onchange="toggleActivoProducto(${p.id}, this.checked)"></td>
+                <td data-label="Acción"><button class="btn-primary" style="background:#00e676; color:black; border:none; border-radius:6px; padding:8px 12px; cursor:pointer;" onclick="guardarProductoCatalogo(${p.id})"><span class="material-icons" style="font-size:16px;">save</span></button></td>
+            </tr>`;
+        }
+
+        async function agregarProductoStreaming() {
+            const plataforma = document.getElementById('nuevo-strm-plataforma').value.trim();
+            const tipoPlan = document.getElementById('nuevo-strm-tipo').value;
+            const precio = parseFloat(document.getElementById('nuevo-strm-precio').value);
+            const precioAnteriorRaw = document.getElementById('nuevo-strm-precio-anterior').value;
+            const precioAnterior = precioAnteriorRaw ? parseFloat(precioAnteriorRaw) : null;
+            const perfilesRaw = document.getElementById('nuevo-strm-perfiles').value;
+            const perfiles = (tipoPlan === 'Perfil' && perfilesRaw) ? parseInt(perfilesRaw) : null;
+            const fotoInput = document.getElementById('nuevo-strm-foto');
+            const file = fotoInput.files[0];
+
+            if (!plataforma) return showToast("Ingresa el nombre de la plataforma.", "warning");
+            if (isNaN(precio) || precio <= 0) return showToast("Ingresa un precio válido.", "warning");
+            if (precioAnterior !== null && precioAnterior <= precio) return showToast("El precio anterior debe ser mayor al precio actual.", "warning");
+            if (file) {
+                if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) return showToast("Solo se aceptan imágenes PNG, JPG o WEBP.", "warning");
+                if (file.size > 3 * 1024 * 1024) return showToast("La imagen no debe pesar más de 3 MB.", "warning");
+            }
+
+            const paquete = `${plataforma} - ${tipoPlan}`;
+
+            const conf = await openCustomModal({ title: "Agregar Producto", desc: `¿Agregar <b>${paquete}</b> por S/ ${precio.toFixed(2)}?`, icon: 'add_circle', color: '#a155ff', type: 'confirm', confirmText: 'Agregar' });
+            if (!conf) return;
+
+            const { data, error } = await supabaseClient.from('productos').insert([{ paquete, categoria: 'streaming', plataforma, tipo_plan: tipoPlan, perfiles_por_cuenta: perfiles, precio, precio_anterior: precioAnterior }]).select().single();
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+
+            if (file) {
+                const ext = file.name.split('.').pop();
+                const ruta = `producto-${data.id}.${ext}`;
+                const { error: errorSubida } = await supabaseClient.storage.from('productos').upload(ruta, file, { upsert: true });
+                if (!errorSubida) {
+                    const { data: urlData } = supabaseClient.storage.from('productos').getPublicUrl(ruta);
+                    await supabaseClient.from('productos').update({ imagen_url: urlData.publicUrl + '?t=' + Date.now() }).eq('id', data.id);
+                }
+            }
+
+            showToast("Producto agregado.");
+            document.getElementById('nuevo-strm-plataforma').value = '';
+            document.getElementById('nuevo-strm-precio').value = '';
+            document.getElementById('nuevo-strm-precio-anterior').value = '';
+            document.getElementById('nuevo-strm-perfiles').value = '';
+            fotoInput.value = '';
+            cargarProductosStreamingAdmin();
+        }
+
+        // ================= CATÁLOGO: PORTADAS =================
+        async function cargarPortadasAdmin(tipo) {
+            const cont = document.getElementById(tipo === 'streaming' ? 'portadas-streaming' : 'portadas-diamantes');
+            if (!cont) return;
+            const { data } = await supabaseClient.from('portadas_catalogo').select('*').eq('tipo', tipo).order('etiqueta');
+            cont.innerHTML = '';
+            (data || []).forEach(p => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:10px; padding:10px; text-align:center;';
+                div.innerHTML = `
+                    <img src="${p.imagen_url || ''}" style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px; margin-bottom:8px; background:#1a1a20;">
+                    <div style="font-size:12px; color:#a8a8b3; margin-bottom:8px;">${escHtml(p.etiqueta)}</div>
+                    <input type="file" accept="image/png,image/jpeg,image/webp" style="width:100%; font-size:11px;" onchange="subirPortada('${p.slug}', this)">
+                `;
+                cont.appendChild(div);
+            });
+        }
+
+        async function subirPortada(slug, inputEl) {
+            const file = inputEl.files[0];
+            if (!file) return;
+            if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) { showToast("Solo se aceptan imágenes PNG, JPG o WEBP.", "warning"); inputEl.value = ''; return; }
+            if (file.size > 3 * 1024 * 1024) { showToast("La imagen no debe pesar más de 3 MB.", "warning"); inputEl.value = ''; return; }
+
+            const ext = file.name.split('.').pop();
+            const ruta = `portadas/${slug}.${ext}`;
+            const { error: errorSubida } = await supabaseClient.storage.from('productos').upload(ruta, file, { upsert: true });
+            if (errorSubida) { showToast("Error al subir: " + errorSubida.message, "error"); inputEl.value = ''; return; }
+
+            const { data: urlData } = supabaseClient.storage.from('productos').getPublicUrl(ruta);
+            const urlConCache = urlData.publicUrl + '?t=' + Date.now();
+
+            const { error } = await supabaseClient.from('portadas_catalogo').update({ imagen_url: urlConCache, actualizado_en: new Date().toISOString() }).eq('slug', slug);
+            if (error) { showToast("Error al guardar: " + error.message, "error"); inputEl.value = ''; return; }
+
+            showToast("Portada actualizada.");
+            inputEl.value = '';
+            cargarPortadasAdmin('diamantes');
+            cargarPortadasAdmin('streaming');
         }
 
         function actualizarResumen() {
