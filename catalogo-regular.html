@@ -452,6 +452,16 @@
 
         async function cargarProductosCatalogo(categoria) {
             const grid = document.getElementById('products-grid');
+            const { data: mant } = await supabaseClient.from('categorias_mantenimiento').select('en_mantenimiento, mensaje').eq('categoria', categoria).maybeSingle();
+            if (mant && mant.en_mantenimiento) {
+                const msgSafe = (mant.mensaje || 'Estamos actualizando este catálogo. Vuelve a intentarlo en un rato — gracias por tu paciencia.').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                grid.innerHTML = `<div style="grid-column: 1/-1; background: rgba(255,152,0,0.08); border: 1px solid #ff9800; border-radius: 12px; padding: 30px; text-align: center;">
+                    <span class="material-icons" style="font-size: 44px; color: #ff9800;">construction</span>
+                    <h3 style="color: white; margin: 12px 0 8px; font-size: 18px;">Catálogo en mantenimiento</h3>
+                    <p style="color: #a8a8b3; font-size: 14px; margin: 0 auto; max-width: 420px;">${msgSafe}</p>
+                </div>`;
+                return;
+            }
             const { data, error } = await supabaseClient.from('productos').select('*').eq('categoria', categoria).eq('activo', true).order('precio');
             if (error || !data || data.length === 0) {
                 grid.innerHTML = "<p style='color:#a8a8b3;'>No hay productos disponibles en este momento.</p>";

@@ -142,6 +142,12 @@
     <main class="container" style="padding-top: 30px;">
         <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a8a8b3'"><span class="material-icons">arrow_back</span> Volver al inicio</a>
 
+        <div id="streaming-mantenimiento-banner" style="display:none; background: rgba(255,152,0,0.08); border: 1px solid #ff9800; border-radius: 12px; padding: 30px; text-align: center;">
+            <span class="material-icons" style="font-size: 44px; color: #ff9800;">construction</span>
+            <h3 style="color: white; margin: 12px 0 8px; font-size: 18px;">Catálogo en mantenimiento</h3>
+            <p id="streaming-mantenimiento-mensaje" style="color: #a8a8b3; font-size: 14px; margin: 0 auto; max-width: 420px;"></p>
+        </div>
+
         <div class="plat-tabs" id="plat-tabs"></div>
         <div id="plat-paneles"></div>
     </main>
@@ -291,6 +297,18 @@
                 ] }
         ];
 
+        async function verificarMantenimientoStreaming() {
+            const { data: mant } = await supabaseClient.from('categorias_mantenimiento').select('en_mantenimiento, mensaje').eq('categoria', 'streaming').maybeSingle();
+            if (mant && mant.en_mantenimiento) {
+                document.getElementById('plat-tabs').style.display = 'none';
+                document.getElementById('plat-paneles').style.display = 'none';
+                document.getElementById('streaming-mantenimiento-mensaje').innerText = mant.mensaje || 'Estamos actualizando este catálogo. Vuelve a intentarlo en un rato — gracias por tu paciencia.';
+                document.getElementById('streaming-mantenimiento-banner').style.display = 'block';
+                return true;
+            }
+            return false;
+        }
+
         let PRECIOS_STREAMING = {};
 
         async function cargarPreciosStreaming() {
@@ -349,9 +367,12 @@
         }
 
         window.onload = async function() {
-            renderTabs();
-            await cargarPreciosStreaming();
-            renderPaneles();
+            const enMantenimiento = await verificarMantenimientoStreaming();
+            if (!enMantenimiento) {
+                renderTabs();
+                await cargarPreciosStreaming();
+                renderPaneles();
+            }
 
             const usuario = await verificarSesion(false);
             if (usuario) {

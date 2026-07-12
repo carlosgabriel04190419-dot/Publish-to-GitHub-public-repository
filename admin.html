@@ -127,6 +127,19 @@
             td:last-child { border-bottom: none; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
             td::before { content: attr(data-label); float: left; font-weight: 700; color: #a155ff; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
         }
+
+        @media print {
+            .admin-sidebar, .admin-topbar, #sidebar-overlay, .no-imprimir { display: none !important; }
+            .admin-main { margin: 0 !important; padding: 0 !important; }
+            .admin-view { display: none !important; }
+            .admin-view.active { display: block !important; }
+            body[data-imprimir="diamantes"] [data-rol="streaming"] { display: none !important; }
+            body[data-imprimir="streaming"] [data-rol="diamantes"] { display: none !important; }
+            body[data-imprimir] .card-box.solo-full { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .card-box { background: white !important; border: 1px solid #ccc !important; color: black !important; box-shadow: none !important; }
+            table, th, td { color: black !important; border-color: #ccc !important; }
+        }
     </style>
 </head>
 <body>
@@ -142,6 +155,16 @@
                 <button id="c-modal-btn-cancel" class="btn-outline" style="flex:1; padding:12px; font-weight:bold; min-width: 120px;">Cancelar</button>
                 <button id="c-modal-btn-confirm" class="btn-complete" style="flex:1; justify-content:center; padding:12px; font-weight:bold; color:black; min-width: 120px;">Confirmar</button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL BUSCADOR DE USUARIO (excluir de Ganancias) -->
+    <div id="modal-buscar-usuario-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:20px; box-sizing:border-box;">
+        <div style="background:#121218; width:100%; max-width:420px; max-height:70vh; padding:24px; border:1px solid #ff9800; border-radius:16px; box-shadow:0 0 30px rgba(255,152,0,0.15); display:flex; flex-direction:column;">
+            <h3 style="margin:0 0 15px 0; font-size:18px; display:flex; align-items:center; gap:8px;"><span class="material-icons" style="color:#ff9800;">search</span> Buscar usuario a excluir</h3>
+            <input type="text" id="buscador-nickname-excluir" class="bulk-select" placeholder="Escribe un nickname..." style="width:100%; box-sizing:border-box; margin-bottom:12px;" oninput="buscarNicknamesParaExcluir()">
+            <div id="resultados-busqueda-nickname" style="overflow-y:auto; flex:1; min-height:80px;"></div>
+            <button class="btn-outline" style="width:100%; margin-top:15px; padding:10px;" onclick="document.getElementById('modal-buscar-usuario-overlay').style.display='none';">Cancelar</button>
         </div>
     </div>
 
@@ -214,6 +237,7 @@
                     <div class="admin-nav-item" data-view="stock" onclick="cambiarVista('stock')"><span class="material-icons">inventory_2</span> Stock <span class="nav-badge zero" id="badge-stock-bajo">0</span></div>
                     <div class="admin-nav-item" data-view="historial" onclick="cambiarVista('historial')"><span class="material-icons">history</span> Historial</div>
                     <div class="admin-nav-item" data-view="catalogo" onclick="cambiarVista('catalogo')"><span class="material-icons">storefront</span> Catálogo</div>
+                    <div class="admin-nav-item" data-view="ganancias" onclick="cambiarVista('ganancias')"><span class="material-icons">payments</span> Ganancias</div>
                     <div class="admin-nav-item solo-full" data-view="cupones" onclick="cambiarVista('cupones')"><span class="material-icons">sell</span> Cupones</div>
                     <div class="admin-nav-item solo-full" data-view="administradores" onclick="cambiarVista('administradores')"><span class="material-icons">admin_panel_settings</span> Administradores</div>
                 </nav>
@@ -270,6 +294,10 @@
                             <button class="btn-view" onclick="cambiarVista('stock')"><span class="material-icons">inventory_2</span> Agregar stock</button>
                             <button class="btn-complete" onclick="cambiarVista('usuarios')"><span class="material-icons">group</span> Ver usuarios</button>
                             <button class="btn-add" onclick="cambiarVista('historial')"><span class="material-icons">history</span> Historial global</button>
+                            <button class="btn-view" onclick="cambiarVista('catalogo')"><span class="material-icons">storefront</span> Catálogo</button>
+                            <button class="btn-add" onclick="cambiarVista('ganancias')"><span class="material-icons">payments</span> Ganancias</button>
+                            <button class="btn-complete" onclick="cambiarVista('cupones')"><span class="material-icons">sell</span> Cupones</button>
+                            <button class="btn-view" onclick="cambiarVista('administradores')"><span class="material-icons">admin_panel_settings</span> Administradores</button>
                         </div>
                     </div>
                 </div>
@@ -441,7 +469,7 @@
                             </select>
                         </div>
                         <div class="table-scroll">
-                            <table><thead><tr><th>Paquete</th><th>Precio</th><th>Precio anterior</th><th>% Desc</th><th>Etiqueta</th><th>Descripción</th><th>Foto</th><th>Activo</th><th>Acción</th></tr></thead><tbody id="tabla-catalogo-diamantes"></tbody></table>
+                            <table><thead><tr><th>Paquete</th><th>Precio</th><th>Precio anterior</th><th>% Desc</th><th style="color:#ff9800;">Costo (lo que te cuesta)</th><th>Etiqueta</th><th>Descripción</th><th>Foto</th><th>Activo</th><th>Acción</th></tr></thead><tbody id="tabla-catalogo-diamantes"></tbody></table>
                         </div>
                     </div>
 
@@ -490,7 +518,7 @@
                     <div class="card-box" data-rol="streaming">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">live_tv</span> Catálogo de Streaming</h3>
                         <div class="table-scroll">
-                            <table><thead><tr><th>Plataforma</th><th>Tipo</th><th>Precio</th><th>Precio anterior</th><th>% Desc</th><th>Perfiles/cuenta</th><th>Foto</th><th>Activo</th><th>Acción</th></tr></thead><tbody id="tabla-catalogo-streaming"></tbody></table>
+                            <table><thead><tr><th>Plataforma</th><th>Tipo</th><th>Precio</th><th>Precio anterior</th><th>% Desc</th><th style="color:#ff9800;">Costo (lo que te cuesta)</th><th>Perfiles/cuenta</th><th>Foto</th><th>Activo</th><th>Acción</th></tr></thead><tbody id="tabla-catalogo-streaming"></tbody></table>
                         </div>
                     </div>
 
@@ -538,6 +566,78 @@
                     <div class="card-box" data-rol="streaming">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">image</span> Portada de Streaming</h3>
                         <div id="portadas-streaming" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:15px;"></div>
+                    </div>
+                </div>
+
+                <!-- ============ GANANCIAS ============ -->
+                <div class="admin-view" id="view-ganancias">
+                    <h1 class="view-title"><span class="material-icons" style="color:#00e676;">payments</span> Ganancias</h1>
+                    <p class="view-subtitle">Ventas completadas, costos y ganancia neta por rango de fechas. La fecha usada es cuando el cliente pagó (no cuando se entregó).</p>
+                    <p id="ganancias-rango-texto" style="color:#a8a8b3; font-size:13px; margin:-10px 0 20px 0;"></p>
+
+                    <div class="card-box no-imprimir">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">event</span> Rango de fechas</h3>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+                            <button class="btn-view" onclick="fijarRangoGanancias('hoy')">Hoy</button>
+                            <button class="btn-view" onclick="fijarRangoGanancias('semana')">Esta semana</button>
+                            <button class="btn-view" onclick="fijarRangoGanancias('mes')">Este mes</button>
+                            <div>
+                                <label style="color:#a8a8b3; font-size:12px; display:block; margin-bottom:4px;">Desde</label>
+                                <input type="date" id="ganancias-desde" class="bulk-select" onchange="cargarGanancias()">
+                            </div>
+                            <div>
+                                <label style="color:#a8a8b3; font-size:12px; display:block; margin-bottom:4px;">Hasta</label>
+                                <input type="date" id="ganancias-hasta" class="bulk-select" onchange="cargarGanancias()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-box no-imprimir">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ff9800;">visibility_off</span> Cuentas de prueba excluidas</h3>
+                        <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 15px 0;">Las compras hechas con estos nicknames (tu cuenta de admin, cuentas de prueba de otros países, etc.) no cuentan en Ganancias — ni en ventas, ni en ingreso, ni en ganancia.</p>
+                        <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+                            <button class="btn-primary" style="background:#ff9800; color:black; border:none; border-radius:8px; padding:10px 16px; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="abrirBuscadorUsuarioExcluir()"><span class="material-icons" style="font-size:18px;">search</span> Buscar usuario a excluir</button>
+                        </div>
+                        <div id="lista-cuentas-excluidas" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+                    </div>
+
+                    <div class="card-box solo-full">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">payments</span> Resumen del negocio (Diamantes + Streaming)</h3>
+                        <div class="stats-grid" id="stats-ganancias-combinado"></div>
+                    </div>
+
+                    <div class="card-box" data-rol="diamantes">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">diamond</span> Ganancias de Diamantes</h3>
+                        <div class="stats-grid" id="stats-ganancias-diamantes" style="margin-bottom:18px;"></div>
+                        <div class="no-imprimir" style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+                            <button class="btn-view" onclick="exportarCSVGanancias('diamantes')"><span class="material-icons">table_view</span> Exportar CSV (Excel)</button>
+                            <button class="btn-view" onclick="imprimirGanancias('diamantes')"><span class="material-icons">print</span> Imprimir / Guardar como PDF</button>
+                        </div>
+                        <h4 style="color:#a8a8b3; font-size:13px; margin-bottom:8px;">Resumen por producto</h4>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Paquete</th><th>Cantidad</th><th>Ingreso</th><th>Costo</th><th>Ganancia</th></tr></thead><tbody id="tabla-resumen-diamantes"></tbody></table>
+                        </div>
+                        <h4 style="color:#a8a8b3; font-size:13px; margin:18px 0 8px;">Detalle de ventas</h4>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Fecha</th><th>Hora</th><th>Paquete</th><th>Precio</th><th>Costo</th><th>Ganancia</th></tr></thead><tbody id="tabla-detalle-diamantes"></tbody></table>
+                        </div>
+                    </div>
+
+                    <div class="card-box" data-rol="streaming">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">live_tv</span> Ganancias de Streaming</h3>
+                        <div class="stats-grid" id="stats-ganancias-streaming" style="margin-bottom:18px;"></div>
+                        <div class="no-imprimir" style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+                            <button class="btn-view" onclick="exportarCSVGanancias('streaming')"><span class="material-icons">table_view</span> Exportar CSV (Excel)</button>
+                            <button class="btn-view" onclick="imprimirGanancias('streaming')"><span class="material-icons">print</span> Imprimir / Guardar como PDF</button>
+                        </div>
+                        <h4 style="color:#a8a8b3; font-size:13px; margin-bottom:8px;">Resumen por producto</h4>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Paquete</th><th>Cantidad</th><th>Ingreso</th><th>Costo</th><th>Ganancia</th></tr></thead><tbody id="tabla-resumen-streaming"></tbody></table>
+                        </div>
+                        <h4 style="color:#a8a8b3; font-size:13px; margin:18px 0 8px;">Detalle de ventas</h4>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Fecha</th><th>Hora</th><th>Paquete</th><th>Precio</th><th>Costo</th><th>Ganancia</th></tr></thead><tbody id="tabla-detalle-streaming"></tbody></table>
+                        </div>
                     </div>
                 </div>
 
@@ -752,6 +852,8 @@
 
             if (rol === 'full' || rol === 'diamantes') { await cargarProductosDiamantesAdmin(); await cargarPortadasAdmin('diamantes'); }
             if (rol === 'full' || rol === 'streaming') { await cargarProductosStreamingAdmin(); await cargarPortadasAdmin('streaming'); }
+            await cargarCuentasExcluidas();
+            fijarRangoGanancias('hoy');
         }
 
         // ================= ADMINISTRADORES =================
@@ -876,17 +978,27 @@
             document.getElementById('cat-diam-nombre-actual').innerText = selectCat.selectedOptions[0].text;
             const { data } = await supabaseClient.from('productos').select('*').eq('categoria', categoria).order('precio');
             const tbody = document.getElementById('tabla-catalogo-diamantes'); tbody.innerHTML = '';
-            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='9' style='text-align:center; color:#a8a8b3;'>Sin productos en esta categoría.</td></tr>"; return; }
-            data.forEach(p => tbody.insertAdjacentHTML('beforeend', filaProductoDiamante(p)));
+            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='10' style='text-align:center; color:#a8a8b3;'>Sin productos en esta categoría.</td></tr>"; return; }
+            const costos = await cargarCostosDeProductos(data.map(p => p.id));
+            data.forEach(p => tbody.insertAdjacentHTML('beforeend', filaProductoDiamante(p, costos[p.id])));
         }
 
-        function filaProductoDiamante(p) {
+        async function cargarCostosDeProductos(ids) {
+            if (!ids || ids.length === 0) return {};
+            const { data } = await supabaseClient.from('costos_productos').select('producto_id, costo').in('producto_id', ids);
+            const mapa = {};
+            (data || []).forEach(c => { mapa[c.producto_id] = c.costo; });
+            return mapa;
+        }
+
+        function filaProductoDiamante(p, costo) {
             const pct = p.precio_anterior ? Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100) : null;
             return `<tr data-id="${p.id}">
                 <td data-label="Paquete" style="font-weight:bold;">${escHtml(p.paquete)}</td>
                 <td data-label="Precio"><input type="number" step="0.01" class="bulk-select campo-precio" value="${p.precio}" style="width:90px;"></td>
                 <td data-label="Precio anterior"><input type="number" step="0.01" class="bulk-select campo-precio-anterior" value="${p.precio_anterior ?? ''}" placeholder="—" style="width:90px;"></td>
                 <td data-label="% Desc" style="color:#00e676; font-weight:bold;">${pct !== null ? '-' + pct + '%' : '—'}</td>
+                <td data-label="Costo"><input type="number" step="0.01" min="0" class="bulk-select campo-costo" value="${costo ?? ''}" placeholder="sin definir" style="width:90px; border:1px solid #ff9800;"></td>
                 <td data-label="Etiqueta"><input type="text" class="bulk-select campo-etiqueta" value="${escAttr(p.etiqueta)}" placeholder="opcional" style="width:110px;"></td>
                 <td data-label="Descripción"><input type="text" class="bulk-select campo-descripcion" value="${escAttr(p.descripcion)}" placeholder="opcional" style="width:150px;"></td>
                 <td data-label="Foto">
@@ -920,6 +1032,20 @@
 
             const { error } = await supabaseClient.from('productos').update(cambios).eq('id', id);
             if (error) { showToast("Error: " + error.message, "error"); return; }
+
+            const campoCosto = tr.querySelector('.campo-costo');
+            if (campoCosto) {
+                const costoRaw = campoCosto.value;
+                if (costoRaw === '') {
+                    await supabaseClient.from('costos_productos').delete().eq('producto_id', id);
+                } else {
+                    const costo = parseFloat(costoRaw);
+                    if (isNaN(costo) || costo < 0) { showToast("El costo debe ser un número válido.", "warning"); return; }
+                    const { error: errorCosto } = await supabaseClient.from('costos_productos').upsert({ producto_id: id, costo, actualizado_en: new Date().toISOString() }, { onConflict: 'producto_id' });
+                    if (errorCosto) { showToast("Error al guardar el costo: " + errorCosto.message, "error"); return; }
+                }
+            }
+
             showToast("Producto actualizado.");
             if (tr.closest('#tabla-catalogo-streaming')) cargarProductosStreamingAdmin(); else cargarProductosDiamantesAdmin();
         }
@@ -1002,11 +1128,12 @@
         async function cargarProductosStreamingAdmin() {
             const { data } = await supabaseClient.from('productos').select('*').eq('categoria', 'streaming').order('plataforma').order('precio');
             const tbody = document.getElementById('tabla-catalogo-streaming'); tbody.innerHTML = '';
-            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='9' style='text-align:center; color:#a8a8b3;'>Sin productos de streaming todavía.</td></tr>"; return; }
-            data.forEach(p => tbody.insertAdjacentHTML('beforeend', filaProductoStreaming(p)));
+            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='10' style='text-align:center; color:#a8a8b3;'>Sin productos de streaming todavía.</td></tr>"; return; }
+            const costos = await cargarCostosDeProductos(data.map(p => p.id));
+            data.forEach(p => tbody.insertAdjacentHTML('beforeend', filaProductoStreaming(p, costos[p.id])));
         }
 
-        function filaProductoStreaming(p) {
+        function filaProductoStreaming(p, costo) {
             const pct = p.precio_anterior ? Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100) : null;
             return `<tr data-id="${p.id}">
                 <td data-label="Plataforma" style="font-weight:bold;">${escHtml(p.plataforma)}</td>
@@ -1014,6 +1141,7 @@
                 <td data-label="Precio"><input type="number" step="0.01" class="bulk-select campo-precio" value="${p.precio}" style="width:90px;"></td>
                 <td data-label="Precio anterior"><input type="number" step="0.01" class="bulk-select campo-precio-anterior" value="${p.precio_anterior ?? ''}" placeholder="—" style="width:90px;"></td>
                 <td data-label="% Desc" style="color:#00e676; font-weight:bold;">${pct !== null ? '-' + pct + '%' : '—'}</td>
+                <td data-label="Costo"><input type="number" step="0.01" min="0" class="bulk-select campo-costo" value="${costo ?? ''}" placeholder="sin definir" style="width:90px; border:1px solid #ff9800;"></td>
                 <td data-label="Perfiles/cuenta">${p.tipo_plan === 'Perfil' ? `<input type="number" min="1" step="1" class="bulk-select campo-perfiles" value="${p.perfiles_por_cuenta ?? ''}" style="width:70px;">` : '—'}</td>
                 <td data-label="Foto">
                     <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
@@ -1073,21 +1201,56 @@
         }
 
         // ================= CATÁLOGO: PORTADAS =================
+        const SLUG_A_CATEGORIA_MANTENIMIENTO = {
+            'hub-freefire': 'regular',
+            'freefire-directa': 'directa',
+            'freefire-promo': 'promo',
+            'freefire-fragmentos': 'fragmentos',
+            'freefire-cajas': 'cajas',
+            'hub-streaming': 'streaming'
+        };
+
         async function cargarPortadasAdmin(tipo) {
             const cont = document.getElementById(tipo === 'streaming' ? 'portadas-streaming' : 'portadas-diamantes');
             if (!cont) return;
             const { data } = await supabaseClient.from('portadas_catalogo').select('*').eq('tipo', tipo).order('etiqueta');
+            const categoriasRelevantes = tipo === 'streaming' ? ['streaming'] : ['regular', 'directa', 'promo', 'fragmentos', 'cajas'];
+            const { data: mantData } = await supabaseClient.from('categorias_mantenimiento').select('*').in('categoria', categoriasRelevantes);
+            const mantPorCategoria = {};
+            (mantData || []).forEach(m => { mantPorCategoria[m.categoria] = m; });
+
             cont.innerHTML = '';
             (data || []).forEach(p => {
+                const categoria = SLUG_A_CATEGORIA_MANTENIMIENTO[p.slug];
+                const mant = mantPorCategoria[categoria] || { en_mantenimiento: false, mensaje: null };
                 const div = document.createElement('div');
                 div.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:10px; padding:10px; text-align:center;';
                 div.innerHTML = `
                     <img src="${p.imagen_url || ''}" style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px; margin-bottom:8px; background:#1a1a20;">
                     <div style="font-size:12px; color:#a8a8b3; margin-bottom:8px;">${escHtml(p.etiqueta)}</div>
                     <input type="file" accept="image/png,image/jpeg,image/webp" style="width:100%; font-size:11px;" onchange="subirPortada('${p.slug}', this)">
+                    ${categoria ? `
+                    <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08); text-align:left;">
+                        <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#ff9800; cursor:pointer; font-weight:bold;">
+                            <input type="checkbox" ${mant.en_mantenimiento ? 'checked' : ''} onchange="toggleMantenimientoCategoria('${categoria}', this.checked)">
+                            En mantenimiento
+                        </label>
+                        <input type="text" class="bulk-select" value="${escAttr(mant.mensaje)}" placeholder="Mensaje para el cliente (opcional)" style="width:100%; box-sizing:border-box; margin-top:6px; font-size:11px;" onblur="guardarMensajeMantenimiento('${categoria}', this.value)">
+                    </div>` : ''}
                 `;
                 cont.appendChild(div);
             });
+        }
+
+        async function toggleMantenimientoCategoria(categoria, enMantenimiento) {
+            const { error } = await supabaseClient.from('categorias_mantenimiento').update({ en_mantenimiento: enMantenimiento, actualizado_en: new Date().toISOString() }).eq('categoria', categoria);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast(enMantenimiento ? "Catálogo puesto en mantenimiento — los clientes ya no pueden comprar ahí." : "Catálogo reactivado, ya se puede comprar de nuevo.", enMantenimiento ? "warning" : "success");
+        }
+
+        async function guardarMensajeMantenimiento(categoria, mensaje) {
+            const { error } = await supabaseClient.from('categorias_mantenimiento').update({ mensaje: mensaje.trim() || null }).eq('categoria', categoria);
+            if (error) showToast("Error al guardar el mensaje: " + error.message, "error");
         }
 
         async function subirPortada(slug, inputEl) {
@@ -1111,6 +1274,233 @@
             inputEl.value = '';
             cargarPortadasAdmin('diamantes');
             cargarPortadasAdmin('streaming');
+        }
+
+        // ================= GANANCIAS =================
+        let datosGananciasActuales = { diamantes: [], streaming: [] };
+
+        function formatearFechaInput(d) {
+            const y = d.getFullYear(); const m = String(d.getMonth() + 1).padStart(2, '0'); const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function fijarRangoGanancias(tipo) {
+            const hoy = new Date();
+            let desde = new Date(hoy);
+            if (tipo === 'semana') {
+                const diaSemana = (hoy.getDay() + 6) % 7; // 0 = lunes
+                desde.setDate(hoy.getDate() - diaSemana);
+            } else if (tipo === 'mes') {
+                desde = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+            }
+            document.getElementById('ganancias-desde').value = formatearFechaInput(desde);
+            document.getElementById('ganancias-hasta').value = formatearFechaInput(hoy);
+            cargarGanancias();
+        }
+
+        let cuentasExcluidasGanancias = [];
+
+        async function cargarCuentasExcluidas() {
+            const { data } = await supabaseClient.from('cuentas_prueba_excluidas').select('nickname').order('nickname');
+            cuentasExcluidasGanancias = (data || []).map(c => c.nickname);
+            const cont = document.getElementById('lista-cuentas-excluidas');
+            if (!cont) return;
+            cont.innerHTML = cuentasExcluidasGanancias.length === 0
+                ? `<span style="color:#a8a8b3; font-size:13px;">Ninguna cuenta excluida todavía.</span>`
+                : cuentasExcluidasGanancias.map(n => `
+                    <span style="background:rgba(255,152,0,0.12); color:#ff9800; padding:6px 10px; border-radius:20px; font-size:13px; display:inline-flex; align-items:center; gap:6px;">
+                        ${escHtml(n)}
+                        <span class="material-icons" style="font-size:15px; cursor:pointer;" onclick="quitarCuentaExcluida('${n.replace(/'/g, "\\'")}')">close</span>
+                    </span>`).join('');
+        }
+
+        let debounceBusquedaNick = null;
+
+        function abrirBuscadorUsuarioExcluir() {
+            document.getElementById('buscador-nickname-excluir').value = '';
+            document.getElementById('modal-buscar-usuario-overlay').style.display = 'flex';
+            document.getElementById('buscador-nickname-excluir').focus();
+            buscarNicknamesParaExcluir();
+        }
+
+        function buscarNicknamesParaExcluir() {
+            clearTimeout(debounceBusquedaNick);
+            debounceBusquedaNick = setTimeout(async () => {
+                const q = document.getElementById('buscador-nickname-excluir').value.trim();
+                const { data, error } = await supabaseClient.rpc('buscar_nicknames', { p_query: q });
+                const cont = document.getElementById('resultados-busqueda-nickname');
+                if (error) { cont.innerHTML = `<p style="color:#ff4757; font-size:13px;">Error: ${error.message}</p>`; return; }
+                if (!data || data.length === 0) { cont.innerHTML = `<p style="color:#a8a8b3; font-size:13px;">Sin resultados.</p>`; return; }
+                cont.innerHTML = data.map(u => `
+                    <div style="padding:10px 12px; border-radius:8px; cursor:pointer;" onmouseover="this.style.background='rgba(255,152,0,0.1)'" onmouseout="this.style.background='transparent'" onclick="seleccionarNicknameParaExcluir('${u.nickname.replace(/'/g, "\\'")}')">
+                        ${escHtml(u.nickname)}
+                    </div>`).join('');
+            }, 200);
+        }
+
+        async function seleccionarNicknameParaExcluir(nickname) {
+            document.getElementById('modal-buscar-usuario-overlay').style.display = 'none';
+            const { error } = await supabaseClient.from('cuentas_prueba_excluidas').insert([{ nickname }]);
+            if (error) { showToast(error.code === '23505' ? "Ese nickname ya está excluido." : "Error: " + error.message, "error"); return; }
+            showToast("Cuenta excluida de Ganancias.");
+            await cargarCuentasExcluidas();
+            cargarGanancias();
+        }
+
+        async function quitarCuentaExcluida(nickname) {
+            const { error } = await supabaseClient.from('cuentas_prueba_excluidas').delete().eq('nickname', nickname);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast("Cuenta vuelve a contar en Ganancias.", "warning");
+            await cargarCuentasExcluidas();
+            cargarGanancias();
+        }
+
+        async function cargarGanancias() {
+            const desdeStr = document.getElementById('ganancias-desde').value;
+            const hastaStr = document.getElementById('ganancias-hasta').value;
+            if (!desdeStr || !hastaStr) return;
+
+            document.getElementById('ganancias-rango-texto').innerText =
+                `Mostrando ventas completadas del ${new Date(desdeStr + 'T12:00:00').toLocaleDateString('es-PE')} al ${new Date(hastaStr + 'T12:00:00').toLocaleDateString('es-PE')}, sin contar cuentas de prueba excluidas.`;
+
+            const [pedidosRes, productosRes, costosRes] = await Promise.all([
+                supabaseClient.from('pedidos').select('created_at, paquete, precio, meses, nickname').eq('estado', 'Completado').gte('created_at', desdeStr + 'T00:00:00').lte('created_at', hastaStr + 'T23:59:59.999').order('created_at', { ascending: false }),
+                supabaseClient.from('productos').select('id, paquete, categoria'),
+                supabaseClient.from('costos_productos').select('producto_id, costo')
+            ]);
+
+            const porPaquete = {};
+            (productosRes.data || []).forEach(p => { porPaquete[p.paquete] = p; });
+            const costosPorId = {};
+            (costosRes.data || []).forEach(c => { costosPorId[c.producto_id] = c.costo; });
+            const excluidosLower = cuentasExcluidasGanancias.map(n => n.toLowerCase());
+
+            const ventas = (pedidosRes.data || [])
+                .filter(pedido => !excluidosLower.includes((pedido.nickname || '').toLowerCase()))
+                .map(pedido => {
+                    const paqueteBase = pedido.paquete.replace(/ \(Renovación\)$/, '');
+                    const producto = porPaquete[paqueteBase];
+                    const categoria = producto ? producto.categoria : null;
+                    const costoUnitario = producto ? costosPorId[producto.id] : undefined;
+                    const meses = pedido.meses || 1;
+                    const costoTotal = (costoUnitario !== undefined && costoUnitario !== null) ? costoUnitario * meses : null;
+                    const ganancia = costoTotal !== null ? Number(pedido.precio) - costoTotal : null;
+                    return { ...pedido, paqueteBase, categoria, meses, costoTotal, ganancia };
+                });
+
+            datosGananciasActuales.diamantes = ventas.filter(v => v.categoria && v.categoria !== 'streaming');
+            datosGananciasActuales.streaming = ventas.filter(v => v.categoria === 'streaming');
+
+            renderGananciasCategoria('diamantes', datosGananciasActuales.diamantes);
+            renderGananciasCategoria('streaming', datosGananciasActuales.streaming);
+            renderStatsGanancias('stats-ganancias-combinado', ventas);
+        }
+
+        function renderGananciasCategoria(tipo, ventas) {
+            renderStatsGanancias(`stats-ganancias-${tipo}`, ventas);
+            renderResumenGanancias(`tabla-resumen-${tipo}`, ventas);
+            renderDetalleGanancias(`tabla-detalle-${tipo}`, ventas);
+        }
+
+        function renderStatsGanancias(containerId, ventas) {
+            const cont = document.getElementById(containerId);
+            if (!cont) return;
+            const totalIngreso = ventas.reduce((acc, v) => acc + Number(v.precio), 0);
+            const conCosto = ventas.filter(v => v.ganancia !== null);
+            const totalCosto = conCosto.reduce((acc, v) => acc + v.costoTotal, 0);
+            const totalGanancia = conCosto.reduce((acc, v) => acc + v.ganancia, 0);
+            const faltanCosto = ventas.length - conCosto.length;
+            cont.innerHTML = `
+                <div class="stat-card"><div class="stat-icon" style="background:rgba(0,210,255,0.12);"><span class="material-icons" style="color:#00d2ff;">shopping_cart</span></div><div><div class="stat-value">${ventas.length}</div><div class="stat-label">Ventas</div></div></div>
+                <div class="stat-card"><div class="stat-icon" style="background:rgba(0,230,118,0.12);"><span class="material-icons" style="color:#00e676;">payments</span></div><div><div class="stat-value">S/ ${totalIngreso.toFixed(2)}</div><div class="stat-label">Ingreso total</div></div></div>
+                <div class="stat-card"><div class="stat-icon" style="background:rgba(255,152,0,0.12);"><span class="material-icons" style="color:#ff9800;">receipt_long</span></div><div><div class="stat-value">S/ ${totalCosto.toFixed(2)}</div><div class="stat-label">Costo total</div></div></div>
+                <div class="stat-card"><div class="stat-icon" style="background:rgba(161,85,255,0.12);"><span class="material-icons" style="color:#a155ff;">trending_up</span></div><div><div class="stat-value">S/ ${totalGanancia.toFixed(2)}</div><div class="stat-label">Ganancia neta</div></div></div>
+                ${faltanCosto > 0 ? `<p style="grid-column: 1/-1; color:#a8a8b3; font-size:12px; margin:8px 0 0 0;">* ${faltanCosto} venta(s) todavía no tienen costo configurado — ve a <span style="color:#ff9800; font-weight:bold; cursor:pointer; text-decoration:underline;" onclick="cambiarVista('catalogo')">Catálogo</span>, columna <b>"Costo (lo que te cuesta)"</b> resaltada en naranja, ponle el valor a cada producto y dale al botón de guardar (💾) en su fila.</p>` : ''}
+            `;
+        }
+
+        function renderResumenGanancias(tbodyId, ventas) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            if (ventas.length === 0) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#a8a8b3;'>Sin ventas en este rango.</td></tr>"; return; }
+            const grupos = {};
+            ventas.forEach(v => {
+                const key = v.paqueteBase;
+                if (!grupos[key]) grupos[key] = { cantidad: 0, ingreso: 0, costo: 0, tieneCosto: true };
+                grupos[key].cantidad++;
+                grupos[key].ingreso += Number(v.precio);
+                if (v.ganancia !== null) { grupos[key].costo += v.costoTotal; } else { grupos[key].tieneCosto = false; }
+            });
+            tbody.innerHTML = Object.entries(grupos).sort((a, b) => b[1].ingreso - a[1].ingreso).map(([paquete, g]) => `
+                <tr>
+                    <td data-label="Paquete" style="font-weight:bold;">${escHtml(paquete)}</td>
+                    <td data-label="Cantidad">${g.cantidad}</td>
+                    <td data-label="Ingreso">S/ ${g.ingreso.toFixed(2)}</td>
+                    <td data-label="Costo">${g.tieneCosto ? 'S/ ' + g.costo.toFixed(2) : '—'}</td>
+                    <td data-label="Ganancia" style="color:#00e676; font-weight:bold;">${g.tieneCosto ? 'S/ ' + (g.ingreso - g.costo).toFixed(2) : '—'}</td>
+                </tr>`).join('');
+        }
+
+        function renderDetalleGanancias(tbodyId, ventas) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            if (ventas.length === 0) { tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#a8a8b3;'>Sin ventas en este rango.</td></tr>"; return; }
+            tbody.innerHTML = ventas.map(v => {
+                const fecha = new Date(v.created_at);
+                return `<tr>
+                    <td data-label="Fecha">${fecha.toLocaleDateString('es-PE')}</td>
+                    <td data-label="Hora">${fecha.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' })}</td>
+                    <td data-label="Paquete">${escHtml(v.paqueteBase)}${v.meses > 1 ? ' (' + v.meses + ' meses)' : ''}</td>
+                    <td data-label="Precio">S/ ${Number(v.precio).toFixed(2)}</td>
+                    <td data-label="Costo">${v.ganancia !== null ? 'S/ ' + v.costoTotal.toFixed(2) : '—'}</td>
+                    <td data-label="Ganancia" style="color:#00e676;">${v.ganancia !== null ? 'S/ ' + v.ganancia.toFixed(2) : '—'}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function exportarCSVGanancias(tipo) {
+            const ventas = datosGananciasActuales[tipo];
+            if (!ventas || ventas.length === 0) return showToast("No hay ventas en este rango para exportar.", "warning");
+            const desde = document.getElementById('ganancias-desde').value;
+            const hasta = document.getElementById('ganancias-hasta').value;
+
+            const filas = [
+                `Ganancias de ${tipo === 'diamantes' ? 'Diamantes' : 'Streaming'} - CarzaD'Cross`,
+                `Rango: ${desde} a ${hasta}`,
+                `Exportado: ${new Date().toLocaleString('es-PE')}`,
+                '',
+                ['Fecha', 'Hora', 'Paquete', 'Precio', 'Costo', 'Ganancia'].join(',')
+            ];
+            ventas.forEach(v => {
+                const fecha = new Date(v.created_at);
+                filas.push([
+                    fecha.toLocaleDateString('es-PE'),
+                    fecha.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }),
+                    `"${(v.paqueteBase + (v.meses > 1 ? ' (' + v.meses + ' meses)' : '')).replace(/"/g, '""')}"`,
+                    Number(v.precio).toFixed(2),
+                    v.ganancia !== null ? v.costoTotal.toFixed(2) : '',
+                    v.ganancia !== null ? v.ganancia.toFixed(2) : ''
+                ].join(','));
+            });
+            const totalIngreso = ventas.reduce((acc, v) => acc + Number(v.precio), 0);
+            const conCosto = ventas.filter(v => v.ganancia !== null);
+            const totalCosto = conCosto.reduce((acc, v) => acc + v.costoTotal, 0);
+            const totalGanancia = conCosto.reduce((acc, v) => acc + v.ganancia, 0);
+            filas.push('');
+            filas.push(['TOTAL', '', '', totalIngreso.toFixed(2), totalCosto.toFixed(2), totalGanancia.toFixed(2)].join(','));
+
+            const blob = new Blob(['﻿' + filas.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `ganancias-${tipo}-${desde}-a-${hasta}.csv`;
+            document.body.appendChild(a); a.click(); a.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        function imprimirGanancias(tipo) {
+            document.body.setAttribute('data-imprimir', tipo);
+            window.print();
+            setTimeout(() => document.body.removeAttribute('data-imprimir'), 500);
         }
 
         function actualizarResumen() {
