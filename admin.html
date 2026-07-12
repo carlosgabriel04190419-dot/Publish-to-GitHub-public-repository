@@ -440,11 +440,11 @@
             setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(()=>toast.remove(),300); }, 3500);
         }
 
-        async function enviarNotificacionCorreo(correo, nickname, titulo, mensaje, ctaTexto, ctaUrl) {
+        async function enviarNotificacionCorreo(correo, nickname, titulo, mensaje, ctaTexto, ctaUrl, detalleExtra) {
             if (!correo) return;
             try {
                 await supabaseClient.functions.invoke('enviar-notificacion', {
-                    body: { destinatario: correo, nickname, titulo, mensaje, ctaTexto, ctaUrl }
+                    body: { destinatario: correo, nickname, titulo, mensaje, ctaTexto, ctaUrl, detalleExtra }
                 });
             } catch (e) {
                 console.error('No se pudo enviar el correo de notificación:', e);
@@ -806,7 +806,7 @@
         }
 
         async function completarPedido(id, paquete, nick) {
-            const { data: pedidoActual } = await supabaseClient.from('pedidos').select('codigo').eq('id', id).single();
+            const { data: pedidoActual } = await supabaseClient.from('pedidos').select('codigo, id_juego, nickname_juego, nota_cliente').eq('id', id).single();
             if (pedidoActual && pedidoActual.codigo && (pedidoActual.codigo.includes('⚠️') || pedidoActual.codigo.includes('Pendiente —'))) {
                 showToast('Todavía falta stock/invitación para este pedido. Agrégalo antes de marcarlo Listo.', 'error');
                 return;
@@ -831,6 +831,13 @@
             }
 
             if (user) {
+                let detalleExtra = null;
+                if (pedidoActual && pedidoActual.id_juego) {
+                    detalleExtra = `🎮 ID de Juego: <b>${pedidoActual.id_juego}</b><br>👤 Nickname: <b>${pedidoActual.nickname_juego || 'N/A'}</b>`;
+                } else if (pedidoActual && pedidoActual.nota_cliente) {
+                    detalleExtra = pedidoActual.nota_cliente;
+                }
+
                 enviarNotificacionCorreo(
                     user.correo, nick,
                     esStreaming ? '✅ Tu pedido de streaming está listo' : '✅ Tu pedido fue completado',
@@ -838,7 +845,8 @@
                         ? `Tu pedido de <b>${paquete}</b> ya fue procesado. Ya puedes ver tus datos de acceso en tu panel de Mis Plataformas.`
                         : `Tu pedido de <b>${paquete}</b> ya fue procesado. Revisa tu cuenta del juego.`,
                     esStreaming ? 'Ver Mis Plataformas' : 'Ir a la tienda',
-                    esStreaming ? 'https://carzadcross.com/mis-plataformas.html' : 'https://carzadcross.com/'
+                    esStreaming ? 'https://carzadcross.com/mis-plataformas.html' : 'https://carzadcross.com/',
+                    detalleExtra
                 );
             }
 
