@@ -391,9 +391,16 @@
                     </div>
 
                     <div class="card-box">
-                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">inventory</span> Stock disponible por paquete</h3>
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">inventory</span> Stock de Diamantes</h3>
                         <div class="table-scroll">
-                            <table><thead><tr><th>Paquete</th><th>Disponibles</th><th>Usados</th></tr></thead><tbody id="tabla-stock"></tbody></table>
+                            <table><thead><tr><th>Paquete</th><th>Disponibles</th><th>Usados</th><th>Acción</th></tr></thead><tbody id="tabla-stock"></tbody></table>
+                        </div>
+                    </div>
+
+                    <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">live_tv</span> Stock de Plataformas (por cuenta)</h3>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Paquete</th><th>Cuenta</th><th>Disponibles</th><th>Acción</th></tr></thead><tbody id="tabla-stock-plataformas"></tbody></table>
                         </div>
                     </div>
                 </div>
@@ -559,28 +566,101 @@
         function copiarTexto(texto, el) { navigator.clipboard.writeText(texto).then(() => { const t = el.innerHTML; el.innerHTML = '<span class="material-icons" style="font-size:11px;">check</span>'; el.style.background = '#00e676'; el.style.color = 'black'; setTimeout(() => { el.innerHTML = t; el.style.background = ''; el.style.color = ''; }, 2000); }); }
 
         // ================= STOCK (NUEVO: resumen de inventario) =================
+        let inventarioCache = [];
+
+        function esPaqueteStreaming(paquete) {
+            return / - (Perfil|Cuenta Completa)$/.test(paquete);
+        }
+
         async function cargarStock() {
             const { data, error } = await supabaseClient.rpc('admin_ver_inventario');
-            const tbody = document.getElementById('tabla-stock');
-            if (error || !data) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#a8a8b3;'>No se pudo cargar el inventario.</td></tr>"; return; }
+            const tbodyDiamantes = document.getElementById('tabla-stock');
+            const tbodyPlataformas = document.getElementById('tabla-stock-plataformas');
+            if (error || !data) {
+                tbodyDiamantes.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#a8a8b3;'>No se pudo cargar el inventario.</td></tr>";
+                tbodyPlataformas.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#a8a8b3;'>No se pudo cargar el inventario.</td></tr>";
+                return;
+            }
+            inventarioCache = data;
+
+            const diamantes = data.filter(c => !esPaqueteStreaming(c.paquete));
+            const plataformas = data.filter(c => esPaqueteStreaming(c.paquete));
+
+            // --- DIAMANTES ---
             const resumen = {};
-            data.forEach(c => {
+            diamantes.forEach(c => {
                 if (!resumen[c.paquete]) resumen[c.paquete] = { disponibles: 0, usados: 0 };
                 if (c.estado === 'Disponible') resumen[c.paquete].disponibles++; else resumen[c.paquete].usados++;
             });
             const paquetes = Object.keys(resumen);
-            if (paquetes.length === 0) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#a8a8b3;'>Sin códigos cargados todavía.</td></tr>"; return; }
-            tbody.innerHTML = '';
-            paquetes.sort().forEach(p => {
-                const r = resumen[p];
-                const tr = document.createElement('tr');
-                const colorDisp = r.disponibles === 0 ? '#ff4757' : '#00e676';
-                tr.innerHTML = `
-                    <td data-label="Paquete" style="font-weight:bold;">${p}</td>
-                    <td data-label="Disponibles" style="color:${colorDisp}; font-weight:bold;">${r.disponibles}</td>
-                    <td data-label="Usados" style="color:#a8a8b3;">${r.usados}</td>`;
-                tbody.appendChild(tr);
+            if (paquetes.length === 0) {
+                tbodyDiamantes.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#a8a8b3;'>Sin códigos cargados todavía.</td></tr>";
+            } else {
+                tbodyDiamantes.innerHTML = '';
+                paquetes.sort().forEach(p => {
+                    const r = resumen[p];
+                    const tr = document.createElement('tr');
+                    const colorDisp = r.disponibles === 0 ? '#ff4757' : '#00e676';
+                    tr.innerHTML = `
+                        <td data-label="Paquete" style="font-weight:bold;">${p}</td>
+                        <td data-label="Disponibles" style="color:${colorDisp}; font-weight:bold;">${r.disponibles}</td>
+                        <td data-label="Usados" style="color:#a8a8b3;">${r.usados}</td>
+                        <td data-label="Acción">${r.disponibles > 0 ? `<button class="btn-remove" onclick="quitarUnCodigo('${p.replace(/'/g, "\\'")}')"><span class="material-icons">remove</span> Quitar 1</button>` : '<span style="color:#666;">—</span>'}</td>`;
+                    tbodyDiamantes.appendChild(tr);
+                });
+            }
+
+            // --- PLATAFORMAS (agrupadas por cuenta) ---
+            const grupos = {};
+            plataformas.forEach(c => {
+                const m = c.codigo && c.codigo.match(/Correo:\s*([^|]+)/);
+                const correo = m ? m[1].trim() : '(sin correo)';
+                const key = c.paquete + '||' + correo;
+                if (!grupos[key]) grupos[key] = { paquete: c.paquete, correo, disponibles: 0, usados: 0, idsDisponibles: [] };
+                if (c.estado === 'Disponible') { grupos[key].disponibles++; grupos[key].idsDisponibles.push(c.id); }
+                else grupos[key].usados++;
             });
+            const claves = Object.keys(grupos);
+            if (claves.length === 0) {
+                tbodyPlataformas.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#a8a8b3;'>Sin cuentas de plataformas cargadas todavía.</td></tr>";
+            } else {
+                tbodyPlataformas.innerHTML = '';
+                claves.sort().forEach(k => {
+                    const g = grupos[k];
+                    const total = g.disponibles + g.usados;
+                    const colorDisp = g.disponibles === 0 ? '#ff4757' : '#00e676';
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td data-label="Paquete" style="font-weight:bold;">${g.paquete}</td>
+                        <td data-label="Cuenta" style="font-family:monospace; font-size:12.5px;">${g.correo}</td>
+                        <td data-label="Disponibles" style="color:${colorDisp}; font-weight:bold;">${g.disponibles} / ${total}</td>
+                        <td data-label="Acción">${g.disponibles > 0 ? `<button class="btn-remove" onclick='quitarStockCuenta(${JSON.stringify(g.idsDisponibles)}, ${JSON.stringify(g.paquete)}, ${JSON.stringify(g.correo)})'><span class="material-icons">delete</span> Quitar</button>` : '<span style="color:#666;">—</span>'}</td>`;
+                    tbodyPlataformas.appendChild(tr);
+                });
+            }
+        }
+
+        async function quitarUnCodigo(paquete) {
+            const item = inventarioCache.find(c => c.paquete === paquete && c.estado === 'Disponible');
+            if (!item) return showToast('No hay stock disponible para quitar.', 'warning');
+
+            const conf = await openCustomModal({ title: "Quitar Stock", desc: `¿Quitar 1 unidad disponible de <b>${paquete}</b>?`, icon: 'remove_circle', color: '#ff4757', textColor: 'white', type: 'confirm', confirmText: 'Quitar' });
+            if (!conf) return;
+
+            await supabaseClient.rpc('admin_eliminar_codigo_stock', { p_id: item.id });
+            showToast('Stock eliminado.', 'warning');
+            cargarStock();
+        }
+
+        async function quitarStockCuenta(ids, paquete, correo) {
+            const conf = await openCustomModal({ title: "Quitar Stock", desc: `¿Quitar ${ids.length} unidad(es) disponibles de <b>${paquete}</b><br>(${correo})?`, icon: 'delete', color: '#ff4757', textColor: 'white', type: 'confirm', confirmText: 'Quitar' });
+            if (!conf) return;
+
+            for (const id of ids) {
+                await supabaseClient.rpc('admin_eliminar_codigo_stock', { p_id: id });
+            }
+            showToast('Stock eliminado.', 'warning');
+            cargarStock();
         }
 
         // ================= RECARGAS (AHORA OTORGA PUNTOS AUTOMÁTICAMENTE) =================
@@ -835,6 +915,17 @@
         }
 
         // HISTORIAL DE USUARIO ÚNICO (MODAL)
+        function esMovimientoDebito(h) {
+            return h.tipo.startsWith('Compra') || h.tipo.startsWith('Renovación') || h.estado === 'Descontado';
+        }
+
+        function estiloEstadoBadge(estado) {
+            if (estado === 'Completado') return 'background: rgba(0,230,118,0.1); color: #00e676;';
+            if (estado === 'Pendiente') return 'background: rgba(255,193,7,0.1); color: #ffc107;';
+            if (estado === 'Rechazado' || estado === 'Descontado') return 'background: rgba(255,71,87,0.1); color: #ff4757;';
+            return 'background: rgba(168,168,179,0.1); color: #a8a8b3;';
+        }
+
         async function verHistorialUsuario(nick) {
             document.getElementById('uh-name').innerText = nick;
             document.getElementById('user-history-modal').style.display = 'flex';
@@ -845,14 +936,15 @@
 
             tbody.innerHTML = "";
             data.forEach(h => {
-                const colorMonto = h.estado === 'Descontado' ? '#ff4757' : '#00e676';
-                const signo = h.estado === 'Descontado' ? '-' : '+';
+                const debito = esMovimientoDebito(h);
+                const colorMonto = debito ? '#ff4757' : '#00e676';
+                const signo = debito ? '-' : '+';
                 tbody.innerHTML += `
                     <tr style="border-bottom: 1px solid #333;">
                         <td style="color:#a8a8b3; font-size:13px; padding:10px;">${new Date(h.created_at).toLocaleDateString()}</td>
                         <td style="color:white; font-size:13px; padding:10px;">${h.tipo}</td>
                         <td style="color:${colorMonto}; font-weight:bold; padding:10px;">${signo}S/ ${h.monto.toFixed(2)}</td>
-                        <td style="padding:10px;"><span class="status-badge" style="background:${h.estado==='Descontado'?'rgba(255,71,87,0.1)':'rgba(0,230,118,0.1)'}; color:${colorMonto};">${h.estado}</span></td>
+                        <td style="padding:10px;"><span class="status-badge" style="${estiloEstadoBadge(h.estado)}">${h.estado}</span></td>
                     </tr>`;
             });
         }
@@ -863,13 +955,16 @@
             const tbody = document.getElementById('tabla-historial'); tbody.innerHTML = "";
             if(!data || data.length===0){ tbody.innerHTML = "<tr><td colspan='5' style='text-align: center;'>Vacio</td></tr>"; return;}
             data.forEach(h => {
+                const debito = esMovimientoDebito(h);
+                const colorMonto = debito ? '#ff4757' : '#00e676';
+                const signo = debito ? '-' : '+';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td data-label="Fecha" style="color: #a8a8b3; font-size: 13px;">${new Date(h.created_at).toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</td>
                     <td data-label="Usuario" style="font-weight: bold;">${h.nickname}</td>
                     <td data-label="Detalle" style="color: #e0e0e0; font-size: 13px;">${h.tipo}</td>
-                    <td data-label="Monto" style="font-weight: bold; color: ${h.estado==='Descontado'?'#ff4757':'#00e676'};">S/ ${h.monto.toFixed(2)}</td>
-                    <td data-label="Estado"><span class="status-badge" style="${h.estado==='Descontado'?'background: rgba(255,71,87,0.1); color: #ff4757;':'background: rgba(0,230,118,0.1); color: #00e676;'}">${h.estado}</span></td>`;
+                    <td data-label="Monto" style="font-weight: bold; color: ${colorMonto};">${signo}S/ ${h.monto.toFixed(2)}</td>
+                    <td data-label="Estado"><span class="status-badge" style="${estiloEstadoBadge(h.estado)}">${h.estado}</span></td>`;
                 tbody.appendChild(tr);
             });
         }

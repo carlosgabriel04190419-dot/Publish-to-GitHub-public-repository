@@ -33,13 +33,18 @@
         @media (max-width: 768px) { .ticker-label { font-size: 9.5px; padding: 5px 10px; } .ticker-move { padding-left: 110px; } .ticker-item { font-size: 11.5px; padding-right: 2rem; } }
 
         /* --- PESTAÑAS DE PLATAFORMA --- */
-        .plat-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; }
-        .plat-tab { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.3); color: #a8a8b3; font-weight: bold; font-size: 13px; cursor: pointer; transition: all 0.25s ease; }
-        .plat-tab:hover { border-color: rgba(255,255,255,0.25); color: #e0e0e0; }
-        .plat-tab.activa { border-color: var(--plat-color, #a155ff); color: var(--plat-color, #a155ff); background: rgba(255,255,255,0.06); }
-        .plat-badge { width: 24px; height: 24px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; color: white; flex-shrink: 0; }
+        .plat-tabs { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; margin-bottom: 30px; }
+        .plat-tab { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.3); color: #a8a8b3; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.25s ease; }
+        .plat-tab:hover { border-color: rgba(255,255,255,0.25); color: #e0e0e0; transform: translateY(-2px); }
+        .plat-tab.activa { border-color: var(--plat-color, #a155ff); color: var(--plat-color, #a155ff); background: rgba(255,255,255,0.06); box-shadow: 0 0 20px rgba(0,0,0,0.3); }
+        .plat-badge { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; color: white; flex-shrink: 0; }
         .plat-desc { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 18px 20px; margin-bottom: 20px; }
-        .plat-planes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        .plat-planes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; }
+        @media (max-width: 600px) {
+            .plat-tabs { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .plat-tab { padding: 14px 12px; font-size: 14px; gap: 10px; }
+            .plat-badge { width: 40px; height: 40px; }
+        }
 
         .cz-footer { background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 80px 20px 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 50px; }
         .cz-footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; }
@@ -280,6 +285,7 @@
         let saldoActualUsuario = 0;
         let usuarioActualCompleto = null;
         let platSeleccionada = null;
+        let notaModo = null;
 
         function renderTabs() {
             document.getElementById('plat-tabs').innerHTML = PLATAFORMAS.map(p => `
@@ -296,7 +302,7 @@
                     <div class="plat-planes-grid">
                         ${p.planes.map(pl => `
                             <div class="card">
-                                <div class="card-icon" style="display:flex; align-items:center; justify-content:center; height:60px;"><img src="${p.imagen}" alt="${p.nombre}" style="max-width:80px; max-height:56px; object-fit:contain;"></div>
+                                <div class="card-icon" style="display:flex; align-items:center; justify-content:center; height:90px;"><img src="${p.imagen}" alt="${p.nombre}" style="max-width:130px; max-height:84px; object-fit:contain;"></div>
                                 <h3 class="card-title">${pl.tipo}</h3>
                                 <p class="card-stock">${p.requiereNota ? 'Por invitación · Entrega manual' : 'Renovable · Entrega automática'}</p>
                                 <div class="card-prices"><span class="price-current">S/ ${pl.precio.toFixed(2)}</span><span style="font-size:12px;color:#a8a8b3;">&nbsp;/mes</span></div>
@@ -387,20 +393,28 @@
             const notaLabel = document.getElementById('modal-nota-cliente-label');
             const infoTexto = document.getElementById('modal-info-texto');
             notaInput.value = '';
+            notaModo = null;
 
             if (platSeleccionada && platSeleccionada.requiereNota === 'imessage') {
+                notaModo = 'imessage';
                 notaBox.style.display = 'block';
                 notaLabel.innerText = 'Tu número de iMessage (Apple ID)';
                 notaInput.placeholder = 'Ej. +51 987 654 321';
                 infoTexto.innerHTML = 'Esta plataforma se entrega por <b>invitación manual</b>: te la enviaremos a este número apenas confirmemos tu pago, no es instantáneo.';
             } else if (platSeleccionada && platSeleccionada.requiereNota === 'correo') {
+                notaModo = 'correo';
                 notaBox.style.display = 'block';
                 notaLabel.innerText = 'Tu correo Gmail (para la invitación)';
                 notaInput.placeholder = 'tunombre@gmail.com';
                 infoTexto.innerHTML = 'Esta plataforma se entrega por <b>invitación manual</b>: te la enviaremos a este correo apenas confirmemos tu pago, no es instantáneo.';
-            } else if (platSeleccionada && platSeleccionada.requiereFotoTv) {
-                notaBox.style.display = 'none';
-                infoTexto.innerHTML = 'Apenas compres te pediremos por WhatsApp una <b>foto del código que aparece en tu TV</b> para poder activarlo.';
+            } else if (tipoPlan === 'Perfil') {
+                notaModo = 'perfil';
+                notaBox.style.display = 'block';
+                notaLabel.innerText = '¿Cómo quieres que se llame tu perfil? (opcional)';
+                notaInput.placeholder = 'Ej. Carza, Ghost, Mamá...';
+                infoTexto.innerHTML = (platSeleccionada && platSeleccionada.requiereFotoTv)
+                    ? 'Apenas compres te pediremos por WhatsApp una <b>foto del código que aparece en tu TV</b> para poder activarlo.'
+                    : 'Cada mes equivale a 30 días desde tu fecha de compra. Podrás renovar antes de que venza desde tu panel "Mis Plataformas".';
             } else {
                 notaBox.style.display = 'none';
                 infoTexto.innerText = 'Cada mes equivale a 30 días desde tu fecha de compra. Podrás renovar antes de que venza desde tu panel "Mis Plataformas".';
@@ -458,23 +472,26 @@
             const btn = document.getElementById('btn-confirmar-pago');
             const notaCliente = document.getElementById('modal-nota-cliente').value.trim();
 
-            if (platSeleccionada && platSeleccionada.requiereNota === 'imessage' && !notaCliente) {
+            if (notaModo === 'imessage' && !notaCliente) {
                 alert('Ingresa tu número de iMessage (Apple ID) para poder enviarte la invitación.');
                 return;
             }
-            if (platSeleccionada && platSeleccionada.requiereNota === 'correo') {
-                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(notaCliente)) {
-                    alert('Ingresa un correo Gmail válido para poder enviarte la invitación.');
-                    return;
-                }
+            if (notaModo === 'correo' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(notaCliente)) {
+                alert('Ingresa un correo Gmail válido para poder enviarte la invitación.');
+                return;
             }
+
+            let notaParaEnviar = null;
+            if (notaModo === 'imessage') notaParaEnviar = 'Apple ID/iMessage: ' + notaCliente;
+            else if (notaModo === 'correo') notaParaEnviar = 'Correo Gmail: ' + notaCliente;
+            else if (notaModo === 'perfil' && notaCliente) notaParaEnviar = 'Perfil deseado: ' + notaCliente;
 
             btn.disabled = true; btn.innerText = "Procesando...";
 
             const { data: resultadoRpc, error: errorCompra } = await supabaseClient.rpc('procesar_compra_streaming', {
                 p_paquete: paqueteSeleccionado,
                 p_meses: meses,
-                p_nota_cliente: notaCliente || null
+                p_nota_cliente: notaParaEnviar
             });
 
             const resultado = resultadoRpc && resultadoRpc[0];
@@ -531,7 +548,8 @@
             } else if (platSeleccionada && platSeleccionada.requiereFotoTv) {
                 mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar *${paqueteSeleccionado}* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioTotalSeleccionado.toFixed(2)}\n\n📺 Ya te mando la foto de mi TV con el código de activación en pantalla.`;
             } else {
-                mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar una suscripción de *STREAMING* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n📺 *Producto:* ${paqueteSeleccionado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioTotalSeleccionado.toFixed(2)}\n\n¡Gracias!`;
+                const lineaPerfil = notaCliente ? `\n👤 *Nombre de perfil deseado:* ${notaCliente}` : '';
+                mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar una suscripción de *STREAMING* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n📺 *Producto:* ${paqueteSeleccionado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioTotalSeleccionado.toFixed(2)}${lineaPerfil}\n\n¡Gracias!`;
             }
             window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
         }

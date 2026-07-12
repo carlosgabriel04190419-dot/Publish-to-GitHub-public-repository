@@ -149,6 +149,42 @@
         </div>
     </main>
 
+    <div id="modal-renovar-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <div style="width: 100%; max-width: 420px; margin: 20px; padding: 30px; border-radius: 16px; background: #121218; position: relative; border: 1px solid rgba(161, 85, 255, 0.2); box-shadow: 0 0 30px rgba(161, 85, 255, 0.15); box-sizing: border-box;">
+            <span onclick="cerrarModalRenovar()" style="position: absolute; top: 18px; right: 20px; color: #888899; cursor: pointer; font-size: 24px; font-weight: bold;">×</span>
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 22px;">
+                <span class="material-icons" style="color: #a155ff; font-size: 30px; background: rgba(161,85,255,0.1); padding: 10px; border-radius: 50%;">autorenew</span>
+                <div><h2 style="font-size: 19px; color: white; margin: 0;">Confirmar Renovación</h2><p id="rm-plataforma-nombre" style="color: #a8a8b3; font-size: 13px; margin: 3px 0 0 0;">---</p></div>
+            </div>
+            <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.03);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="color: #a8a8b3; font-size: 14px;">Duración:</span>
+                    <select id="rm-meses" onchange="recalcularRenovacionMP()" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 12px; color: white; font-size: 14px; font-weight: bold;">
+                        <option value="1">1 mes</option>
+                        <option value="2">2 meses</option>
+                        <option value="3">3 meses</option>
+                        <option value="6">6 meses</option>
+                        <option value="12">12 meses</option>
+                    </select>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                    <span style="color: #a8a8b3; font-size: 14px;">Costo:</span>
+                    <strong id="rm-costo" style="color: #ff4757; font-size: 15px;">S/ 0.00</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span style="color: #a8a8b3; font-size: 14px;">Tu Saldo Actual:</span>
+                    <strong id="rm-saldo-actual" style="color: white; font-size: 14px;">S/ 0.00</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #a8a8b3; font-size: 14px;">Saldo Restante:</span>
+                    <strong id="rm-saldo-restante" style="color: #00e676; font-size: 16px;">S/ 0.00</strong>
+                </div>
+            </div>
+            <p id="rm-error-saldo" style="display:none; color:#ff4757; font-size:13px; margin: 0 0 15px;">No te alcanza el saldo para esta duración.</p>
+            <button id="rm-btn-confirmar" class="btn-primary" style="width: 100%; padding: 15px; font-size: 15px; font-weight: bold;" onclick="confirmarRenovacionMP()">Confirmar Renovación</button>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="seguridad.js"></script>
     <script>
@@ -164,6 +200,9 @@
         };
 
         let nombreActualGlobal = '';
+        let saldoActualGlobal = 0;
+        let suscripcionesCache = {};
+        let renovacionActual = null;
 
         window.onload = async function() {
             const usuario = await verificarSesion();
@@ -173,6 +212,7 @@
             document.getElementById('nav-logged-in').style.display = 'flex';
             document.getElementById('btn-usuario-nav').innerHTML = avatarPillHTML(usuario);
             document.getElementById('saldo-nav').innerText = usuario.saldo.toFixed(2);
+            saldoActualGlobal = usuario.saldo;
             document.getElementById('puntos-nav').innerText = usuario.puntos || 0;
 
             cargarSistemaComunidadDinamica();
@@ -257,6 +297,8 @@
             }
 
             const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+            suscripcionesCache = {};
+            data.forEach(s => { suscripcionesCache[s.id] = s; });
 
             grid.innerHTML = data.map(s => {
                 const fechaVenc = new Date(s.fecha_vencimiento + 'T00:00:00');
@@ -300,14 +342,7 @@
                         <div class="mp-meta-row"><span>Vence el</span><strong>${fechaTexto}</strong></div>
                         <div class="mp-meta-row"><span>Días restantes</span><strong style="color:${vencida ? '#ff4757' : '#e0e0e0'};">${vencida ? `Venció hace ${Math.abs(diasRestantes)} día(s)` : `${diasRestantes} día(s)`}</strong></div>
                         <div class="mp-renovar-row">
-                            <select id="mp-meses-${s.id}">
-                                <option value="1">1 mes</option>
-                                <option value="2">2 meses</option>
-                                <option value="3">3 meses</option>
-                                <option value="6">6 meses</option>
-                                <option value="12">12 meses</option>
-                            </select>
-                            <button class="btn-buy" style="flex:1;" onclick="renovarMP(${s.id})">Renovar</button>
+                            <button class="btn-buy" style="flex:1;" onclick="abrirConfirmarRenovacion(${s.id})"><span class="material-icons" style="font-size:16px; vertical-align:middle;">autorenew</span> Renovar</button>
                         </div>
                     </div>`;
             }).join('');
@@ -321,10 +356,65 @@
             });
         }
 
-        async function renovarMP(id) {
-            const meses = parseInt(document.getElementById(`mp-meses-${id}`).value);
+        async function abrirConfirmarRenovacion(id) {
+            const s = suscripcionesCache[id];
+            if (!s) return;
+
+            const { data: producto } = await supabaseClient.from('productos').select('precio').eq('paquete', s.paquete).maybeSingle();
+            const precioMensual = producto ? Number(producto.precio) : Number(s.precio_pagado) / (s.meses || 1);
+
+            renovacionActual = { id, precioMensual };
+
+            document.getElementById('rm-plataforma-nombre').innerText = `${s.plataforma} — ${s.plan}`;
+            document.getElementById('rm-meses').value = '1';
+            recalcularRenovacionMP();
+
+            const modal = document.getElementById('modal-renovar-container');
+            modal.style.display = 'flex'; setTimeout(() => { modal.style.opacity = '1'; }, 10);
+        }
+
+        function recalcularRenovacionMP() {
+            if (!renovacionActual) return;
+            const meses = parseInt(document.getElementById('rm-meses').value);
+            const costo = renovacionActual.precioMensual * meses;
+            const saldoRestante = saldoActualGlobal - costo;
+
+            document.getElementById('rm-costo').innerText = `S/ ${costo.toFixed(2)}`;
+            document.getElementById('rm-saldo-actual').innerText = `S/ ${saldoActualGlobal.toFixed(2)}`;
+            document.getElementById('rm-saldo-restante').innerText = `S/ ${saldoRestante.toFixed(2)}`;
+
+            const errorSaldo = document.getElementById('rm-error-saldo');
+            const btnConfirmar = document.getElementById('rm-btn-confirmar');
+            if (saldoRestante < 0) {
+                document.getElementById('rm-saldo-restante').style.color = '#ff4757';
+                errorSaldo.style.display = 'block';
+                btnConfirmar.disabled = true;
+                btnConfirmar.style.opacity = '0.5';
+            } else {
+                document.getElementById('rm-saldo-restante').style.color = '#00e676';
+                errorSaldo.style.display = 'none';
+                btnConfirmar.disabled = false;
+                btnConfirmar.style.opacity = '1';
+            }
+        }
+
+        function cerrarModalRenovar() {
+            const modal = document.getElementById('modal-renovar-container');
+            modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; }, 300);
+            renovacionActual = null;
+        }
+
+        async function confirmarRenovacionMP() {
+            if (!renovacionActual) return;
+            const { id } = renovacionActual;
+            const meses = parseInt(document.getElementById('rm-meses').value);
+            const btn = document.getElementById('rm-btn-confirmar');
+            btn.disabled = true; btn.innerText = "Procesando...";
+
             const { data: resultadoRpc, error } = await supabaseClient.rpc('renovar_suscripcion', { p_suscripcion_id: id, p_meses: meses });
             const resultado = resultadoRpc && resultadoRpc[0];
+
+            btn.disabled = false; btn.innerText = "Confirmar Renovación";
 
             if (error || !resultado || resultado.estado === 'error') {
                 alert("Error: " + (error ? error.message : (resultado ? resultado.mensaje : "No se pudo renovar.")));
@@ -333,7 +423,9 @@
 
             const nuevoSaldo = Number(resultado.saldo_restante);
             document.getElementById('saldo-nav').innerText = nuevoSaldo.toFixed(2);
+            saldoActualGlobal = nuevoSaldo;
 
+            cerrarModalRenovar();
             cargarMisPlataformas(nombreActualGlobal);
             alert(`¡Listo! Tu suscripción quedó renovada hasta el ${new Date(resultado.fecha_vencimiento + 'T00:00:00').toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' })}.`);
         }
