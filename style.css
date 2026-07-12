@@ -99,6 +99,7 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
 
 /* LA MAGIA DEL GUSANILLO */
 .game-card { width: 200px; border-radius: 16px; cursor: pointer; position: relative; padding: 3px; transition: transform 0.3s; background-color: #1a1a1e; overflow: hidden; }
+.game-card.hub-card { width: 280px; }
 .game-card:hover { transform: translateY(-5px); }
 .game-content { background-color: #1a1a1e; border-radius: 14px; height: 100%; position: relative; z-index: 2; overflow: hidden; }
 
@@ -232,7 +233,7 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
     /* Tarjetas de categoría (index): imagen mucho más compacta en celular */
     .games-section { padding: 25px 15px; }
     .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .game-card { width: 100%; max-width: none; }
+    .game-card, .game-card.hub-card { width: 100%; max-width: none; }
     .game-info { padding: 12px; }
     .game-info h3 { font-size: 13px; line-height: 1.25; }
     .game-info p { font-size: 10px; padding: 3px 6px; }

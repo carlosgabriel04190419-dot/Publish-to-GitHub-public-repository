@@ -403,6 +403,26 @@
 
                 <button id="btn-pass" class="btn-primary" style="width: 100%; padding: 16px; font-weight: bold; font-size: 15px; background: rgba(161, 85, 255, 0.1); border: 1px solid #a155ff; color: #d480e6; border-radius: 12px; transition: 0.3s;" onmouseover="this.style.background='#a155ff'; this.style.color='white';" onmouseout="this.style.background='rgba(161, 85, 255, 0.1)'; this.style.color='#d480e6';" onclick="cambiarPassword()">Actualizar Contraseña</button>
             </div>
+
+            <div class="panel-module mod-privacidad">
+                <div class="panel-header">
+                    <div class="panel-icon"><span class="material-icons" style="color: #00d2ff;">privacy_tip</span></div>
+                    <h2>Privacidad y Datos</h2>
+                </div>
+                <p style="color: #a8a8b3; font-size: 13px; margin-bottom: 20px; line-height: 1.5;">Descarga una copia de tu información: perfil, pedidos, recargas, historial y suscripciones.</p>
+                <button id="btn-exportar-datos" class="btn-primary" style="width: 100%; padding: 16px; font-weight: bold; font-size: 15px; background: rgba(0, 210, 255, 0.1); border: 1px solid #00d2ff; color: #7fe0ff; border-radius: 12px; transition: 0.3s;" onmouseover="this.style.background='#00d2ff'; this.style.color='black';" onmouseout="this.style.background='rgba(0, 210, 255, 0.1)'; this.style.color='#7fe0ff';" onclick="exportarMisDatos()"><span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 6px;">download</span>Descargar mis datos</button>
+            </div>
+
+            <div class="panel-module mod-peligro" style="border-color: rgba(255,71,87,0.3);">
+                <div class="panel-header">
+                    <div class="panel-icon"><span class="material-icons" style="color: #ff4757;">warning</span></div>
+                    <h2>Zona de Peligro</h2>
+                </div>
+                <div class="warning-box" style="margin-bottom: 20px;">
+                    <p style="margin:0;">Eliminar tu cuenta es <strong>permanente</strong>: ya no podrás iniciar sesión con este correo. Si tienes saldo pendiente, primero debes gastarlo o escribirnos por WhatsApp para la devolución.</p>
+                </div>
+                <button id="btn-eliminar-cuenta" style="width: 100%; padding: 16px; font-weight: bold; font-size: 15px; background: rgba(255, 71, 87, 0.1); border: 1px solid #ff4757; color: #ff8a94; border-radius: 12px; cursor: pointer; transition: 0.3s;" onmouseover="this.style.background='#ff4757'; this.style.color='white';" onmouseout="this.style.background='rgba(255, 71, 87, 0.1)'; this.style.color='#ff8a94';" onclick="eliminarCuenta()"><span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 6px;">delete_forever</span>Eliminar mi cuenta</button>
+            </div>
         </div>
 
         <div class="right-column">
@@ -580,12 +600,14 @@
     <script src="seguridad.js"></script>
     <script>
         let celularOriginal = null;
-        let todasLasCompras = []; 
+        let todasLasCompras = [];
+        let usuarioActualPerfil = null;
 
         window.onload = async function() {
             const usuario = await verificarSesion();
             if (!usuario) return;
 
+            usuarioActualPerfil = usuario;
             const nombreActual = usuario.nickname;
             document.getElementById('nombre-pantalla').innerText = nombreActual;
             document.getElementById('avatar-letra').innerText = nombreActual.charAt(0).toUpperCase();
@@ -877,6 +899,79 @@
                 await supabaseClient.auth.signOut();
                 window.location.href = 'login.html';
             }
+        }
+
+        // EXPORTAR MIS DATOS
+        async function exportarMisDatos() {
+            if (!usuarioActualPerfil) return;
+            const nick = usuarioActualPerfil.nickname;
+            const btn = document.getElementById('btn-exportar-datos');
+            btn.disabled = true; btn.innerText = "Preparando...";
+
+            const [pedidosRes, recargasRes, historialRes, suscripcionesRes] = await Promise.all([
+                supabaseClient.from('pedidos').select('*').eq('nickname', nick),
+                supabaseClient.from('recargas').select('*').eq('nickname', nick),
+                supabaseClient.from('historial').select('*').eq('nickname', nick),
+                supabaseClient.from('suscripciones').select('*').eq('nickname', nick)
+            ]);
+
+            const datos = {
+                exportado_en: new Date().toISOString(),
+                perfil: {
+                    nickname: nick,
+                    correo: usuarioActualPerfil.correo,
+                    celular: usuarioActualPerfil.celular,
+                    saldo: usuarioActualPerfil.saldo,
+                    puntos: usuarioActualPerfil.puntos
+                },
+                pedidos: pedidosRes.data || [],
+                recargas: recargasRes.data || [],
+                historial: historialRes.data || [],
+                suscripciones: suscripcionesRes.data || []
+            };
+
+            const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `mis-datos-carzadcross-${nick}.json`;
+            document.body.appendChild(a); a.click(); a.remove();
+            URL.revokeObjectURL(url);
+
+            btn.disabled = false; btn.innerHTML = '<span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 6px;">download</span>Descargar mis datos';
+        }
+
+        // ELIMINAR CUENTA
+        async function eliminarCuenta() {
+            if (!usuarioActualPerfil) return;
+
+            if (usuarioActualPerfil.saldo > 0) {
+                alert(`Tienes S/ ${usuarioActualPerfil.saldo.toFixed(2)} de saldo pendiente. Gástalo o escríbenos por WhatsApp para la devolución antes de eliminar tu cuenta.`);
+                return;
+            }
+
+            const conf1 = confirm("¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer: ya no podrás iniciar sesión con este correo.");
+            if (!conf1) return;
+
+            const texto = prompt('Para confirmar, escribe ELIMINAR (en mayúsculas):');
+            if (texto !== 'ELIMINAR') { if (texto !== null) alert('No coincide. Se canceló la eliminación.'); return; }
+
+            const btn = document.getElementById('btn-eliminar-cuenta');
+            btn.disabled = true; btn.innerText = "Eliminando...";
+
+            const { error } = await supabaseClient.functions.invoke('eliminar-cuenta', { method: 'POST' });
+
+            if (error) {
+                let mensaje = error.message;
+                try { if (error.context) { const body = await error.context.json(); if (body && body.error) mensaje = body.error; } } catch (e) {}
+                alert("Error: " + mensaje);
+                btn.disabled = false; btn.innerHTML = '<span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 6px;">delete_forever</span>Eliminar mi cuenta';
+                return;
+            }
+
+            alert("Tu cuenta fue eliminada. Gracias por haber sido parte de CarzaD'Cross.");
+            localStorage.removeItem('nombreUsuario');
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
         }
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }

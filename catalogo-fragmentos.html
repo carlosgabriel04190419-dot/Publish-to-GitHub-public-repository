@@ -356,6 +356,17 @@
                 </div>
 
                 <div style="margin-bottom: 20px;">
+                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Código de cupón (opcional)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="modal-cupon" autocomplete="off" placeholder="Ej. BIENVENIDO10" style="flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 14px; outline: none; box-sizing: border-box; text-transform: uppercase;">
+                        <button type="button" id="btn-aplicar-cupon" onclick="aplicarCupon()" style="background: rgba(0,230,118,0.1); border: 1px solid #00e676; color: #00e676; border-radius: 8px; padding: 0 16px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+                            <span class="material-icons" style="font-size: 16px;">local_offer</span> Aplicar
+                        </button>
+                    </div>
+                    <p id="modal-cupon-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
+                </div>
+
+                <div style="margin-bottom: 20px;">
                     <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador (Máx. 11 números)</label>
                     <div style="display: flex; gap: 10px;">
                         <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('modal-id-mensaje').style.display='none'; desbloquearNickname();" autocomplete="off" placeholder="Ej. 24958302" style="flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
@@ -402,6 +413,8 @@
         let paqueteSeleccionado = "";
         let precioSeleccionado = 0;
         let saldoActualUsuario = 0;
+        let precioFinalConCupon = null;
+        let codigoCuponValidado = '';
         let usuarioActualCompleto = null;
 
         window.onload = async function() {
@@ -529,6 +542,41 @@
             }
         }
 
+        async function aplicarCupon() {
+            const codigo = document.getElementById('modal-cupon').value.trim();
+            const msg = document.getElementById('modal-cupon-mensaje');
+            if (!codigo) return;
+
+            const { data, error } = await supabaseClient.rpc('validar_cupon', { p_codigo: codigo, p_paquete: paqueteSeleccionado });
+            const r = data && data[0];
+
+            if (error || !r || !r.valido) {
+                precioFinalConCupon = null; codigoCuponValidado = '';
+                msg.style.display = 'block'; msg.style.color = '#ff4757';
+                msg.innerText = (r && r.mensaje) ? r.mensaje : 'No se pudo validar el cupón.';
+                recalcularTotalConCupon();
+                return;
+            }
+
+            precioFinalConCupon = Number(r.precio_final);
+            codigoCuponValidado = codigo;
+            msg.style.display = 'block'; msg.style.color = '#00e676';
+            msg.innerText = r.mensaje;
+            recalcularTotalConCupon();
+        }
+
+        function recalcularTotalConCupon() {
+            const precioAUsar = precioFinalConCupon !== null ? precioFinalConCupon : precioSeleccionado;
+            document.getElementById('modal-paquete-precio').innerText = `S/ ${precioAUsar.toFixed(2)}`;
+            actualizarElementoConversion('modal-paquete-precio-alt', precioAUsar, usuarioActualCompleto);
+
+            let saldoRestante = saldoActualUsuario - precioAUsar;
+            let txtRestante = document.getElementById('modal-saldo-restante');
+            txtRestante.innerText = `S/ ${saldoRestante.toFixed(2)}`;
+            actualizarElementoConversion('modal-saldo-restante-alt', saldoRestante, usuarioActualCompleto);
+            txtRestante.style.color = saldoRestante < 0 ? '#ff4757' : '#00e676';
+        }
+
         async function abrirModalCompra(nombrePaquete, precioPaquete) {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             if (!nombreGuardado) { window.location.href = 'login.html'; return; }
@@ -542,6 +590,9 @@
             
             document.getElementById('modal-id-juego').value = "";
             desbloquearNickname();
+            precioFinalConCupon = null; codigoCuponValidado = '';
+            document.getElementById('modal-cupon').value = '';
+            document.getElementById('modal-cupon-mensaje').style.display = 'none';
             
             // CÁLCULO FINANCIERO DEL MODAL
             document.getElementById('modal-paquete-nombre').innerText = nombrePaquete;
@@ -597,7 +648,8 @@
             const { data: resultadoRpc, error: errorCompra } = await supabaseClient.rpc('procesar_compra', {
                 p_paquete: paqueteSeleccionado,
                 p_id_juego: idJuego,
-                p_nickname_juego: nicknameJuego
+                p_nickname_juego: nicknameJuego,
+                p_codigo_cupon: codigoCuponValidado || null
             });
 
             const resultado = resultadoRpc && resultadoRpc[0];
@@ -616,6 +668,7 @@
             }
 
             const nuevoSaldo = Number(resultado.saldo_restante);
+            const precioFinalCobrado = saldoActualUsuario - nuevoSaldo;
             if(document.getElementById('saldo-nav')) document.getElementById('saldo-nav').innerText = nuevoSaldo.toFixed(2);
 
             document.getElementById('compra-pantalla-formulario').style.display = 'none';
@@ -625,7 +678,7 @@
 
             // REDIRECCIÓN A WHATSAPP
             const numeroAdmin = "51943737572";
-            const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de realizar una compra de *FRAGMENTOS UNIVERSALES* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n⚛️ *Paquete:* ${paqueteSeleccionado}\n💰 *Precio:* S/ ${precioSeleccionado.toFixed(2)}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para proceder. ¡Gracias!`;
+            const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de realizar una compra de *FRAGMENTOS UNIVERSALES* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n⚛️ *Paquete:* ${paqueteSeleccionado}\n💰 *Precio:* S/ ${precioFinalCobrado.toFixed(2)}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para proceder. ¡Gracias!`;
             window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
         }
     </script>

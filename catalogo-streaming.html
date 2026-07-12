@@ -195,6 +195,17 @@
                     </div>
                 </div>
 
+                <div style="margin-bottom: 20px;">
+                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Código de cupón (opcional)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="modal-cupon" autocomplete="off" placeholder="Ej. BIENVENIDO10" style="flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 14px; outline: none; box-sizing: border-box; text-transform: uppercase;">
+                        <button type="button" id="btn-aplicar-cupon" onclick="aplicarCupon()" style="background: rgba(0,230,118,0.1); border: 1px solid #00e676; color: #00e676; border-radius: 8px; padding: 0 16px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+                            <span class="material-icons" style="font-size: 16px;">local_offer</span> Aplicar
+                        </button>
+                    </div>
+                    <p id="modal-cupon-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
+                </div>
+
                 <div id="modal-nota-cliente-box" style="display: none; margin-bottom: 20px;">
                     <label id="modal-nota-cliente-label" style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Dato de contacto</label>
                     <input type="text" id="modal-nota-cliente" autocomplete="off" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 15px; outline: none; box-sizing: border-box;">
@@ -283,6 +294,8 @@
         let precioBaseSeleccionado = 0;
         let precioTotalSeleccionado = 0;
         let saldoActualUsuario = 0;
+        let precioFinalConCupon = null;
+        let codigoCuponValidado = '';
         let usuarioActualCompleto = null;
         let platSeleccionada = null;
         let notaModo = null;
@@ -435,13 +448,26 @@
             const meses = parseInt(document.getElementById('modal-meses').value);
             precioTotalSeleccionado = precioBaseSeleccionado * meses;
 
-            document.getElementById('modal-paquete-precio').innerText = `S/ ${precioTotalSeleccionado.toFixed(2)}`;
-            actualizarElementoConversion('modal-paquete-precio-alt', precioTotalSeleccionado, usuarioActualCompleto);
+            // Cambiar la duración invalida cualquier cupón ya aplicado (el descuento se calculó para otro total).
+            precioFinalConCupon = null; codigoCuponValidado = '';
+            const cuponInput = document.getElementById('modal-cupon');
+            const cuponMsg = document.getElementById('modal-cupon-mensaje');
+            if (cuponInput) cuponInput.value = '';
+            if (cuponMsg) cuponMsg.style.display = 'none';
+
+            actualizarTicketStreaming();
+        }
+
+        function actualizarTicketStreaming() {
+            const precioAUsar = precioFinalConCupon !== null ? precioFinalConCupon : precioTotalSeleccionado;
+
+            document.getElementById('modal-paquete-precio').innerText = `S/ ${precioAUsar.toFixed(2)}`;
+            actualizarElementoConversion('modal-paquete-precio-alt', precioAUsar, usuarioActualCompleto);
 
             document.getElementById('modal-saldo-actual').innerText = `S/ ${saldoActualUsuario.toFixed(2)}`;
             actualizarElementoConversion('modal-saldo-actual-alt', saldoActualUsuario, usuarioActualCompleto);
 
-            const saldoRestante = saldoActualUsuario - precioTotalSeleccionado;
+            const saldoRestante = saldoActualUsuario - precioAUsar;
             const txtRestante = document.getElementById('modal-saldo-restante');
             txtRestante.innerText = `S/ ${saldoRestante.toFixed(2)}`;
             actualizarElementoConversion('modal-saldo-restante-alt', saldoRestante, usuarioActualCompleto);
@@ -455,6 +481,30 @@
                 document.getElementById('compra-pantalla-formulario').style.display = 'block';
                 document.getElementById('compra-pantalla-error').style.display = 'none';
             }
+        }
+
+        async function aplicarCupon() {
+            const codigo = document.getElementById('modal-cupon').value.trim();
+            const msg = document.getElementById('modal-cupon-mensaje');
+            if (!codigo) return;
+            const meses = parseInt(document.getElementById('modal-meses').value);
+
+            const { data, error } = await supabaseClient.rpc('validar_cupon', { p_codigo: codigo, p_paquete: paqueteSeleccionado, p_meses: meses });
+            const r = data && data[0];
+
+            if (error || !r || !r.valido) {
+                precioFinalConCupon = null; codigoCuponValidado = '';
+                msg.style.display = 'block'; msg.style.color = '#ff4757';
+                msg.innerText = (r && r.mensaje) ? r.mensaje : 'No se pudo validar el cupón.';
+                actualizarTicketStreaming();
+                return;
+            }
+
+            precioFinalConCupon = Number(r.precio_final);
+            codigoCuponValidado = codigo;
+            msg.style.display = 'block'; msg.style.color = '#00e676';
+            msg.innerText = r.mensaje;
+            actualizarTicketStreaming();
         }
 
         function cerrarModalCompra() { const modal = document.getElementById('modal-compra-container'); modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; }, 300); }
@@ -471,6 +521,7 @@
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             const btn = document.getElementById('btn-confirmar-pago');
             const notaCliente = document.getElementById('modal-nota-cliente').value.trim();
+            const saldoAntes = saldoActualUsuario;
 
             if (notaModo === 'imessage' && !notaCliente) {
                 alert('Ingresa tu número de iMessage (Apple ID) para poder enviarte la invitación.');
@@ -491,7 +542,8 @@
             const { data: resultadoRpc, error: errorCompra } = await supabaseClient.rpc('procesar_compra_streaming', {
                 p_paquete: paqueteSeleccionado,
                 p_meses: meses,
-                p_nota_cliente: notaParaEnviar
+                p_nota_cliente: notaParaEnviar,
+                p_codigo_cupon: codigoCuponValidado || null
             });
 
             const resultado = resultadoRpc && resultadoRpc[0];
@@ -504,6 +556,7 @@
             }
 
             const nuevoSaldo = Number(resultado.saldo_restante);
+            const precioFinalCobrado = saldoAntes - nuevoSaldo;
             if (document.getElementById('saldo-nav')) document.getElementById('saldo-nav').innerText = nuevoSaldo.toFixed(2);
             saldoActualUsuario = nuevoSaldo;
 
@@ -542,14 +595,14 @@
             const numeroAdmin = "51943737572";
             let mensaje;
             if (platSeleccionada && platSeleccionada.requiereNota === 'imessage') {
-                mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar *${paqueteSeleccionado}* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioTotalSeleccionado.toFixed(2)}\n📱 *Mi Apple ID/iMessage:* ${notaCliente}\n\nQuedo atento a la invitación. ¡Gracias!`;
+                mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar *${paqueteSeleccionado}* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioFinalCobrado.toFixed(2)}\n📱 *Mi Apple ID/iMessage:* ${notaCliente}\n\nQuedo atento a la invitación. ¡Gracias!`;
             } else if (platSeleccionada && platSeleccionada.requiereNota === 'correo') {
-                mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar *${paqueteSeleccionado}* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioTotalSeleccionado.toFixed(2)}\n📧 *Mi correo para la invitación:* ${notaCliente}\n\nQuedo atento a la invitación. ¡Gracias!`;
+                mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar *${paqueteSeleccionado}* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioFinalCobrado.toFixed(2)}\n📧 *Mi correo para la invitación:* ${notaCliente}\n\nQuedo atento a la invitación. ¡Gracias!`;
             } else if (platSeleccionada && platSeleccionada.requiereFotoTv) {
-                mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar *${paqueteSeleccionado}* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioTotalSeleccionado.toFixed(2)}\n\n📺 Ya te mando la foto de mi TV con el código de activación en pantalla.`;
+                mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar *${paqueteSeleccionado}* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioFinalCobrado.toFixed(2)}\n\n📺 Ya te mando la foto de mi TV con el código de activación en pantalla.`;
             } else {
                 const lineaPerfil = notaCliente ? `\n👤 *Nombre de perfil deseado:* ${notaCliente}` : '';
-                mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar una suscripción de *STREAMING* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n📺 *Producto:* ${paqueteSeleccionado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioTotalSeleccionado.toFixed(2)}${lineaPerfil}\n\n¡Gracias!`;
+                mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de comprar una suscripción de *STREAMING* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n📺 *Producto:* ${paqueteSeleccionado}\n🗓️ *Duración:* ${meses} mes(es)\n💰 *Precio:* S/ ${precioFinalCobrado.toFixed(2)}${lineaPerfil}\n\n¡Gracias!`;
             }
             window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
         }

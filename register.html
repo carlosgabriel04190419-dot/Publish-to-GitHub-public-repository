@@ -21,6 +21,7 @@
     <meta name="twitter:image" content="https://carzadcross.com/hero-bg.jpg">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body class="login-body">
 
@@ -105,6 +106,8 @@
                        <span class="material-icons eye-icon" onclick="togglePassword('reg-password2', this)" style="cursor: pointer;">visibility_off</span>
                     </div>
                     <p id="pass-match-msg" style="margin: -14px 0 18px 0; font-size: 11px; display:none;"></p>
+
+                    <div class="cf-turnstile" data-sitekey="TU_SITE_KEY_DE_TURNSTILE" data-callback="onTurnstileVerificado" data-expired-callback="onTurnstileExpirado" data-error-callback="onTurnstileExpirado" style="margin-bottom: 15px;"></div>
 
                     <button type="button" id="btn-registrar" class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="registrarUsuario()">Continuar</button>
 
@@ -248,6 +251,11 @@
         // No se toca la tabla "usuarios" hasta que el código sea válido.
         let registroPendiente = null;
 
+        // Token del captcha (Cloudflare Turnstile). Se renueva solo; se limpia si expira o falla.
+        let turnstileToken = null;
+        function onTurnstileVerificado(token) { turnstileToken = token; }
+        function onTurnstileExpirado() { turnstileToken = null; }
+
         async function registrarUsuario() {
             const nickname = document.getElementById('reg-nickname').value.trim();
             const correo = document.getElementById('reg-correo').value.trim().toLowerCase();
@@ -264,6 +272,8 @@
             const nDigitos = digitosEsperados();
             if (!celular || celular.length !== nDigitos) return mostrarMensaje(`Ingresa un número de WhatsApp válido (${nDigitos} dígitos para este país).`);
 
+            if (!turnstileToken) return mostrarMensaje("Completa la verificación anti-bots antes de continuar.");
+
             btn.disabled = true; btn.innerText = "Procesando...";
 
             const { data: correoDeEseNick } = await supabaseClient.rpc('obtener_correo_por_nickname', { p_nickname: nickname });
@@ -272,7 +282,13 @@
                 btn.disabled = false; btn.innerText = "Continuar"; return;
             }
 
-            const { data, error } = await supabaseClient.auth.signUp({ email: correo, password: password });
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: correo, password: password,
+                options: { captchaToken: turnstileToken }
+            });
+
+            if (window.turnstile) turnstile.reset();
+            turnstileToken = null;
 
             if (error) {
                 mostrarMensaje("Error: " + error.message);

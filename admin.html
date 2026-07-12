@@ -70,6 +70,7 @@
         .history-container { border-color: rgba(255, 152, 0, 0.35); }
 
         .card-box-title { margin: 0 0 18px 0; display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 800; }
+        .stock-low-banner { display: none; background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.4); color: #ffc107; padding: 12px 16px; border-radius: 8px; font-size: 13px; margin: -6px 0 18px 0; line-height: 1.6; }
 
         /* -------- DASHBOARD / RESUMEN -------- */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 8px; }
@@ -206,12 +207,14 @@
                 </div>
 
                 <nav class="admin-sidebar-nav">
-                    <div class="admin-nav-item active" data-view="resumen" onclick="cambiarVista('resumen')"><span class="material-icons">dashboard</span> Resumen</div>
-                    <div class="admin-nav-item" data-view="solicitudes" onclick="cambiarVista('solicitudes')"><span class="material-icons">account_balance_wallet</span> Solicitudes <span class="nav-badge zero" id="badge-recargas">0</span></div>
+                    <div class="admin-nav-item active solo-full" data-view="resumen" onclick="cambiarVista('resumen')"><span class="material-icons">dashboard</span> Resumen</div>
+                    <div class="admin-nav-item solo-full" data-view="solicitudes" onclick="cambiarVista('solicitudes')"><span class="material-icons">account_balance_wallet</span> Solicitudes <span class="nav-badge zero" id="badge-recargas">0</span></div>
                     <div class="admin-nav-item" data-view="pedidos" onclick="cambiarVista('pedidos')"><span class="material-icons">shopping_cart</span> Pedidos <span class="nav-badge zero" id="badge-pedidos">0</span></div>
-                    <div class="admin-nav-item" data-view="usuarios" onclick="cambiarVista('usuarios')"><span class="material-icons">group</span> Usuarios</div>
-                    <div class="admin-nav-item" data-view="stock" onclick="cambiarVista('stock')"><span class="material-icons">inventory_2</span> Stock</div>
+                    <div class="admin-nav-item solo-full" data-view="usuarios" onclick="cambiarVista('usuarios')"><span class="material-icons">group</span> Usuarios</div>
+                    <div class="admin-nav-item" data-view="stock" onclick="cambiarVista('stock')"><span class="material-icons">inventory_2</span> Stock <span class="nav-badge zero" id="badge-stock-bajo">0</span></div>
                     <div class="admin-nav-item" data-view="historial" onclick="cambiarVista('historial')"><span class="material-icons">history</span> Historial</div>
+                    <div class="admin-nav-item solo-full" data-view="cupones" onclick="cambiarVista('cupones')"><span class="material-icons">sell</span> Cupones</div>
+                    <div class="admin-nav-item solo-full" data-view="administradores" onclick="cambiarVista('administradores')"><span class="material-icons">admin_panel_settings</span> Administradores</div>
                 </nav>
 
                 <div class="admin-sidebar-footer">
@@ -327,7 +330,7 @@
                     <h1 class="view-title"><span class="material-icons" style="color:#00d2ff;">inventory_2</span> Stock de Códigos</h1>
                     <p class="view-subtitle">Carga nuevos códigos y revisa cuánto stock disponible te queda por paquete.</p>
 
-                    <div class="card-box upload-container">
+                    <div class="card-box upload-container" data-rol="diamantes">
                         <h3 class="card-box-title"><span class="material-icons" style="color: #00d2ff;">cloud_upload</span> Ingreso Rápido de Códigos</h3>
                         <div class="grid-container" style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
                             <div>
@@ -352,7 +355,7 @@
                         </div>
                     </div>
 
-                    <div class="card-box upload-container">
+                    <div class="card-box upload-container" data-rol="streaming">
                         <h3 class="card-box-title"><span class="material-icons" style="color: #a155ff;">live_tv</span> Stock de Plataformas (Streaming)</h3>
                         <p style="color: #a8a8b3; font-size: 13px; margin: -10px 0 15px 0;">Cada cuenta que agregues se reparte automáticamente en perfiles, o se guarda como venta única si eliges Cuenta Completa.</p>
                         <div class="grid-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px;">
@@ -390,15 +393,17 @@
                         </button>
                     </div>
 
-                    <div class="card-box">
+                    <div class="card-box" data-rol="diamantes">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">inventory</span> Stock de Diamantes</h3>
+                        <div id="alerta-stock-bajo-diamantes" class="stock-low-banner"></div>
                         <div class="table-scroll">
                             <table><thead><tr><th>Paquete</th><th>Disponibles</th><th>Usados</th><th>Acción</th></tr></thead><tbody id="tabla-stock"></tbody></table>
                         </div>
                     </div>
 
-                    <div class="card-box">
+                    <div class="card-box" data-rol="streaming">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">live_tv</span> Stock de Plataformas (por cuenta)</h3>
+                        <div id="alerta-stock-bajo-plataformas" class="stock-low-banner"></div>
                         <div class="table-scroll">
                             <table><thead><tr><th>Paquete</th><th>Cuenta</th><th>Disponibles</th><th>Acción</th></tr></thead><tbody id="tabla-stock-plataformas"></tbody></table>
                         </div>
@@ -415,6 +420,103 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- ============ CUPONES ============ -->
+                <div class="admin-view" id="view-cupones">
+                    <h1 class="view-title"><span class="material-icons" style="color:#00e676;">sell</span> Cupones de Descuento</h1>
+                    <p class="view-subtitle">Crea y gestiona códigos de descuento para diamantes y streaming.</p>
+
+                    <div class="card-box upload-container">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#00d2ff;">add_circle</span> Crear Cupón</h3>
+                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Código</label>
+                                <input type="text" id="cupon-codigo" class="bulk-select" placeholder="BIENVENIDO10" style="width:100%; box-sizing:border-box; text-transform:uppercase;">
+                            </div>
+                            <div>
+                                <label style="color: #00e676; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Tipo</label>
+                                <select id="cupon-tipo" class="bulk-select">
+                                    <option value="porcentaje">Porcentaje (%)</option>
+                                    <option value="monto_fijo">Monto fijo (S/)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Valor</label>
+                                <input type="number" id="cupon-valor" class="bulk-select" placeholder="10" min="0.01" step="0.01" style="width:100%; box-sizing:border-box;">
+                            </div>
+                        </div>
+                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Categoría</label>
+                                <select id="cupon-categoria" class="bulk-select">
+                                    <option value="">Todas las categorías</option>
+                                    <option value="regular">Diamantes (Regular)</option>
+                                    <option value="directa">Diamantes (Directa)</option>
+                                    <option value="cajas">Cajas</option>
+                                    <option value="fragmentos">Fragmentos</option>
+                                    <option value="promo">Promo</option>
+                                    <option value="streaming">Streaming</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Usos máximos</label>
+                                <input type="number" id="cupon-usos-max" class="bulk-select" placeholder="Sin límite" min="1" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Monto mínimo (S/)</label>
+                                <input type="number" id="cupon-monto-min" class="bulk-select" placeholder="Sin mínimo" min="0" step="0.01" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Expira</label>
+                                <input type="date" id="cupon-expira" class="bulk-select" style="width:100%; box-sizing:border-box;">
+                            </div>
+                        </div>
+                        <button class="btn-primary" style="width: 100%; padding: 15px; font-weight: bold; background: #00e676; color: black; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-top: 15px;" onclick="crearCupon()">
+                            <span class="material-icons">add_circle</span> Crear Cupón
+                        </button>
+                    </div>
+
+                    <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">sell</span> Cupones existentes</h3>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Código</th><th>Descuento</th><th>Categoría</th><th>Usos</th><th>Expira</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="tabla-cupones"></tbody></table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============ ADMINISTRADORES ============ -->
+                <div class="admin-view" id="view-administradores">
+                    <h1 class="view-title"><span class="material-icons" style="color:#a155ff;">admin_panel_settings</span> Administradores</h1>
+                    <p class="view-subtitle">Gestiona quién tiene acceso al panel y con qué rol.</p>
+
+                    <div class="card-box upload-container">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#00d2ff;">person_add</span> Agregar Administrador</h3>
+                        <div class="grid-container" style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 15px; align-items:end;">
+                            <div>
+                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Correo (debe iniciar sesión con Google)</label>
+                                <input type="email" id="admin-nuevo-correo" class="bulk-select" placeholder="socio@gmail.com" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #00e676; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Rol</label>
+                                <select id="admin-nuevo-rol" class="bulk-select">
+                                    <option value="diamantes">Socio de Diamantes</option>
+                                    <option value="streaming">Socio de Streaming</option>
+                                    <option value="full">Dueño (acceso total)</option>
+                                </select>
+                            </div>
+                            <button class="btn-primary" style="padding: 12px 18px; font-weight:bold; background:#a155ff; color:white; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; gap:6px; height:44px;" onclick="agregarAdmin()">
+                                <span class="material-icons">add</span> Agregar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">group</span> Administradores actuales</h3>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Correo</th><th>Rol</th><th>Desde</th><th>Acción</th></tr></thead><tbody id="tabla-admins"></tbody></table>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
@@ -425,7 +527,9 @@
         const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        const correoAdministrador = "carlosgabriel04190419@gmail.com";
+        let miRol = null;
+        const NOMBRES_ROL = { full: 'Dueño', diamantes: 'Socio de Diamantes', streaming: 'Socio de Streaming' };
+        const UMBRAL_STOCK_BAJO = 2;
         let todosLosUsuarios = [];
         let paginaUsuarioActual = 1;
         const USUARIOS_POR_PAGINA = 12;
@@ -498,7 +602,8 @@
         window.onload = async function() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
-                if (session.user.email === correoAdministrador) { mostrarPanel(); }
+                const { data: filaAdmin } = await supabaseClient.from('admins').select('rol').maybeSingle();
+                if (filaAdmin) { mostrarPanel(filaAdmin.rol); }
                 else { document.getElementById('admin-error-msg').style.display = 'block'; await supabaseClient.auth.signOut(); }
             } else {
                 document.getElementById('admin-login-screen').style.display = 'flex';
@@ -508,10 +613,134 @@
 
         async function iniciarAdminConGoogle() { await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname }}); }
         async function cerrarSesionAdmin() { await supabaseClient.auth.signOut(); window.location.reload(); }
-        async function mostrarPanel() {
+        async function mostrarPanel(rol) {
+            miRol = rol;
             document.getElementById('admin-login-screen').style.display = 'none';
             document.getElementById('admin-dashboard').style.display = 'block';
-            await cargarUsuarios(); await cargarPedidos(); await cargarRecargas(); await cargarHistorial(); await cargarStock();
+
+            document.querySelectorAll('.solo-full').forEach(el => el.style.display = (rol === 'full') ? '' : 'none');
+            document.querySelectorAll('[data-rol]').forEach(el => {
+                el.style.display = (rol === 'full' || el.dataset.rol === rol) ? '' : 'none';
+            });
+
+            if (rol === 'full') {
+                await cargarUsuarios(); await cargarRecargas(); await cargarAdmins(); await cargarCupones();
+            } else {
+                cambiarVista('pedidos');
+            }
+            await cargarPedidos(); await cargarHistorial(); await cargarStock();
+        }
+
+        // ================= ADMINISTRADORES =================
+        async function cargarAdmins() {
+            const { data } = await supabaseClient.from('admins').select('*').order('creado_en', { ascending: true });
+            const tbody = document.getElementById('tabla-admins'); tbody.innerHTML = '';
+            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#a8a8b3;'>Sin administradores.</td></tr>"; return; }
+            data.forEach(a => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Correo" style="font-weight:bold;">${a.email}</td>
+                    <td data-label="Rol">${NOMBRES_ROL[a.rol] || a.rol}</td>
+                    <td data-label="Desde" style="color:#a8a8b3; font-size:13px;">${new Date(a.creado_en).toLocaleDateString('es-PE')}</td>
+                    <td data-label="Acción"><button class="btn-remove" onclick="eliminarAdmin('${a.id}', '${a.email.replace(/'/g, "\\'")}')"><span class="material-icons">delete</span> Quitar</button></td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function agregarAdmin() {
+            const correo = document.getElementById('admin-nuevo-correo').value.trim().toLowerCase();
+            const rol = document.getElementById('admin-nuevo-rol').value;
+            const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!regexEmail.test(correo)) return showToast("Ingresa un correo válido.", "warning");
+
+            const conf = await openCustomModal({ title: "Agregar Administrador", desc: `¿Dar acceso de <b>${NOMBRES_ROL[rol]}</b> a <b>${correo}</b>?`, icon: 'person_add', color: '#00d2ff', type: 'confirm', confirmText: 'Agregar' });
+            if (!conf) return;
+
+            const { error } = await supabaseClient.from('admins').insert([{ email: correo, rol }]);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast("Administrador agregado.");
+            document.getElementById('admin-nuevo-correo').value = '';
+            cargarAdmins();
+        }
+
+        async function eliminarAdmin(id, correo) {
+            const conf = await openCustomModal({ title: "Quitar Administrador", desc: `¿Quitar el acceso de <b>${correo}</b>?`, icon: 'delete', color: '#ff4757', textColor: 'white', type: 'confirm', confirmText: 'Quitar' });
+            if (!conf) return;
+
+            const { error } = await supabaseClient.from('admins').delete().eq('id', id);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast("Administrador eliminado.", "warning");
+            cargarAdmins();
+        }
+
+        // ================= CUPONES =================
+        const NOMBRES_CATEGORIA_CUPON = { regular: 'Diamantes (Regular)', directa: 'Diamantes (Directa)', cajas: 'Cajas', fragmentos: 'Fragmentos', promo: 'Promo', streaming: 'Streaming' };
+
+        async function cargarCupones() {
+            const { data } = await supabaseClient.from('cupones').select('*').order('creado_en', { ascending: false });
+            const tbody = document.getElementById('tabla-cupones'); tbody.innerHTML = '';
+            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; color:#a8a8b3;'>Sin cupones creados todavía.</td></tr>"; return; }
+            const hoy = new Date();
+            data.forEach(c => {
+                const expirado = c.fecha_expiracion && new Date(c.fecha_expiracion) < hoy;
+                const agotado = c.usos_maximos && c.usos_actuales >= c.usos_maximos;
+                let estadoTexto, estadoColor;
+                if (!c.activo) { estadoTexto = 'Desactivado'; estadoColor = '#666'; }
+                else if (expirado) { estadoTexto = 'Expirado'; estadoColor = '#ff4757'; }
+                else if (agotado) { estadoTexto = 'Agotado'; estadoColor = '#ff4757'; }
+                else { estadoTexto = 'Activo'; estadoColor = '#00e676'; }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Código" style="font-weight:bold; font-family:monospace;">${c.codigo}</td>
+                    <td data-label="Descuento" style="color:#00e676; font-weight:bold;">${c.tipo === 'porcentaje' ? c.valor + '%' : 'S/ ' + c.valor}</td>
+                    <td data-label="Categoría">${c.categoria_aplicable ? (NOMBRES_CATEGORIA_CUPON[c.categoria_aplicable] || c.categoria_aplicable) : 'Todas'}</td>
+                    <td data-label="Usos">${c.usos_actuales}${c.usos_maximos ? ' / ' + c.usos_maximos : ''}</td>
+                    <td data-label="Expira" style="color:#a8a8b3; font-size:13px;">${c.fecha_expiracion ? new Date(c.fecha_expiracion).toLocaleDateString('es-PE') : '—'}</td>
+                    <td data-label="Estado" style="color:${estadoColor}; font-weight:bold;">${estadoTexto}</td>
+                    <td data-label="Acción">${c.activo
+                        ? `<button class="btn-remove" onclick="toggleCupon(${c.id}, false)"><span class="material-icons">block</span> Desactivar</button>`
+                        : `<button class="btn-add" onclick="toggleCupon(${c.id}, true)"><span class="material-icons">check</span> Activar</button>`}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function crearCupon() {
+            const codigo = document.getElementById('cupon-codigo').value.trim().toUpperCase();
+            const tipo = document.getElementById('cupon-tipo').value;
+            const valor = parseFloat(document.getElementById('cupon-valor').value);
+            const categoria = document.getElementById('cupon-categoria').value || null;
+            const usosMax = document.getElementById('cupon-usos-max').value ? parseInt(document.getElementById('cupon-usos-max').value) : null;
+            const montoMin = document.getElementById('cupon-monto-min').value ? parseFloat(document.getElementById('cupon-monto-min').value) : null;
+            const expira = document.getElementById('cupon-expira').value || null;
+
+            if (!codigo) return showToast("Ingresa un código.", "warning");
+            if (isNaN(valor) || valor <= 0) return showToast("Ingresa un valor de descuento válido.", "warning");
+            if (tipo === 'porcentaje' && valor > 100) return showToast("El porcentaje no puede ser mayor a 100.", "warning");
+
+            const conf = await openCustomModal({ title: "Crear Cupón", desc: `¿Crear el cupón <b>${codigo}</b> con ${tipo === 'porcentaje' ? valor + '% de descuento' : 'S/ ' + valor + ' de descuento fijo'}?`, icon: 'sell', color: '#00e676', textColor: 'black', type: 'confirm', confirmText: 'Crear' });
+            if (!conf) return;
+
+            const { error } = await supabaseClient.from('cupones').insert([{
+                codigo, tipo, valor, categoria_aplicable: categoria,
+                usos_maximos: usosMax, monto_minimo: montoMin,
+                fecha_expiracion: expira ? new Date(expira + 'T23:59:59').toISOString() : null
+            }]);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast("Cupón creado.");
+            document.getElementById('cupon-codigo').value = '';
+            document.getElementById('cupon-valor').value = '';
+            document.getElementById('cupon-usos-max').value = '';
+            document.getElementById('cupon-monto-min').value = '';
+            document.getElementById('cupon-expira').value = '';
+            cargarCupones();
+        }
+
+        async function toggleCupon(id, nuevoEstado) {
+            const { error } = await supabaseClient.from('cupones').update({ activo: nuevoEstado }).eq('id', id);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast(nuevoEstado ? "Cupón activado." : "Cupón desactivado.", nuevoEstado ? "success" : "warning");
+            cargarCupones();
         }
 
         function actualizarResumen() {
@@ -611,7 +840,7 @@
                 paquetes.sort().forEach(p => {
                     const r = resumen[p];
                     const tr = document.createElement('tr');
-                    const colorDisp = r.disponibles === 0 ? '#ff4757' : '#00e676';
+                    const colorDisp = r.disponibles === 0 ? '#ff4757' : (r.disponibles <= UMBRAL_STOCK_BAJO ? '#ffc107' : '#00e676');
                     tr.innerHTML = `
                         <td data-label="Paquete" style="font-weight:bold;">${p}</td>
                         <td data-label="Disponibles" style="color:${colorDisp}; font-weight:bold;">${r.disponibles}</td>
@@ -639,7 +868,7 @@
                 claves.sort().forEach(k => {
                     const g = grupos[k];
                     const total = g.disponibles + g.usados;
-                    const colorDisp = g.disponibles === 0 ? '#ff4757' : '#00e676';
+                    const colorDisp = g.disponibles === 0 ? '#ff4757' : (g.disponibles <= UMBRAL_STOCK_BAJO ? '#ffc107' : '#00e676');
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td data-label="Paquete" style="font-weight:bold;">${g.paquete}</td>
@@ -649,6 +878,27 @@
                     tbodyPlataformas.appendChild(tr);
                 });
             }
+
+            // --- ALERTAS DE STOCK BAJO ---
+            const bajosDiamantes = paquetes.filter(p => resumen[p].disponibles > 0 && resumen[p].disponibles <= UMBRAL_STOCK_BAJO)
+                .map(p => `${p} (quedan ${resumen[p].disponibles})`);
+            const bajosPlataformas = claves.filter(k => grupos[k].disponibles > 0 && grupos[k].disponibles <= UMBRAL_STOCK_BAJO)
+                .map(k => `${grupos[k].paquete} — ${grupos[k].correo} (quedan ${grupos[k].disponibles})`);
+
+            mostrarAlertaStockBajo('alerta-stock-bajo-diamantes', bajosDiamantes);
+            mostrarAlertaStockBajo('alerta-stock-bajo-plataformas', bajosPlataformas);
+
+            const totalBajos = (miRol !== 'streaming' ? bajosDiamantes.length : 0) + (miRol !== 'diamantes' ? bajosPlataformas.length : 0);
+            const badgeStockBajo = document.getElementById('badge-stock-bajo');
+            if (badgeStockBajo) { badgeStockBajo.innerText = totalBajos; badgeStockBajo.classList.toggle('zero', totalBajos === 0); }
+        }
+
+        function mostrarAlertaStockBajo(id, items) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (items.length === 0) { el.style.display = 'none'; el.innerHTML = ''; return; }
+            el.style.display = 'block';
+            el.innerHTML = `<span class="material-icons" style="vertical-align:middle; font-size:18px; margin-right:6px;">warning</span><b>Stock bajo:</b> ${items.join(' &nbsp;•&nbsp; ')}`;
         }
 
         async function quitarUnCodigo(paquete) {
@@ -799,49 +1049,45 @@
                     <td data-label="Códigos" style="font-family: monospace; color: #00e676; line-height: 1.8;">${codHTML}</td>
                     <td data-label="Acción">
                         <button class="btn-complete" onclick="completarPedido(${p.id}, '${p.paquete}', '${p.nickname}')"><span class="material-icons">check_circle</span> Listo</button>
-                        <button class="btn-remove" onclick="rechazarPedido(${p.id}, '${p.paquete}', '${p.nickname}', ${p.precio}, \`${p.codigo}\`)"><span class="material-icons">cancel</span> Rechazar</button>
+                        <button class="btn-remove" onclick="rechazarPedido(${p.id}, '${p.paquete}', '${p.nickname}', ${p.precio})"><span class="material-icons">cancel</span> Rechazar</button>
                     </td>`;
                 tbody.appendChild(tr);
             });
         }
 
         async function completarPedido(id, paquete, nick) {
-            const { data: pedidoActual } = await supabaseClient.from('pedidos').select('codigo, id_juego, nickname_juego, nota_cliente').eq('id', id).single();
-
             const conf = await openCustomModal({ title: "Completar Pedido", desc: `¿Confirmas envío de <b>${paquete}</b> a <b>${nick}</b>?`, icon: 'task_alt', color: '#a155ff', textColor: 'white', type: 'confirm', confirmText: 'Marcar Listo' });
             if(!conf) return;
 
-            const { data: producto } = await supabaseClient.from('productos').select('categoria').eq('paquete', paquete.replace(' (Renovación)', '')).maybeSingle();
-            const esStreaming = producto && producto.categoria === 'streaming';
+            const { data, error } = await supabaseClient.rpc('admin_completar_pedido', { p_pedido_id: id });
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            const r = data && data[0];
+            if (!r) { showToast("No se pudo completar el pedido.", "error"); return; }
 
-            await supabaseClient.from('pedidos').update({ estado: 'Completado' }).eq('id', id);
-            await supabaseClient.rpc('crear_suscripcion_si_falta', { p_pedido_id: id });
-            const { data: user } = await supabaseClient.from('usuarios').select('celular, correo').eq('nickname', nick).single();
-
-            if(user && user.celular) {
-                let numStr = user.celular.replace(/[^0-9]/g, '');
-                let msg = esStreaming
+            if (r.celular) {
+                let numStr = r.celular.replace(/[^0-9]/g, '');
+                let msg = r.es_streaming
                     ? `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 📺 *${paquete}* 📺 acaba de ser procesado y completado exitosamente.\n\nYa puedes ver tus datos de acceso en tu panel de *Mis Plataformas* dentro de la web. ¡Gracias por preferirnos!`
                     : `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 💎 *${paquete}* 💎 acaba de ser procesado y completado exitosamente.\n\nRevisa tu cuenta del juego y disfruta. ¡Gracias por preferirnos!`;
                 window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
             }
 
-            if (user) {
+            if (r.correo) {
                 let detalleExtra = null;
-                if (pedidoActual && pedidoActual.id_juego) {
-                    detalleExtra = `🎮 ID de Juego: <b>${pedidoActual.id_juego}</b><br>👤 Nickname: <b>${pedidoActual.nickname_juego || 'N/A'}</b>`;
-                } else if (pedidoActual && pedidoActual.nota_cliente) {
-                    detalleExtra = pedidoActual.nota_cliente;
+                if (r.id_juego) {
+                    detalleExtra = `🎮 ID de Juego: <b>${r.id_juego}</b><br>👤 Nickname: <b>${r.nickname_juego || 'N/A'}</b>`;
+                } else if (r.nota_cliente) {
+                    detalleExtra = r.nota_cliente;
                 }
 
                 enviarNotificacionCorreo(
-                    user.correo, nick,
+                    r.correo, nick,
                     `✅ Pedido #${id} completado — ${paquete}`,
-                    esStreaming
+                    r.es_streaming
                         ? `Tu pedido de <b>${paquete}</b> ya fue procesado. Ya puedes ver tus datos de acceso en tu panel de Mis Plataformas.`
                         : `Tu pedido de <b>${paquete}</b> ya fue procesado. Revisa tu cuenta del juego.`,
-                    esStreaming ? 'Ver Mis Plataformas' : 'Ir a la tienda',
-                    esStreaming ? 'https://carzadcross.com/mis-plataformas.html' : 'https://carzadcross.com/',
+                    r.es_streaming ? 'Ver Mis Plataformas' : 'Ir a la tienda',
+                    r.es_streaming ? 'https://carzadcross.com/mis-plataformas.html' : 'https://carzadcross.com/',
                     detalleExtra
                 );
             }
@@ -849,31 +1095,23 @@
             showToast(`Pedido completado.`); cargarPedidos(); cargarHistorial();
         }
 
-        async function rechazarPedido(id, paquete, nick, precio, codigoStr) {
+        async function rechazarPedido(id, paquete, nick, precio) {
             const conf = await openCustomModal({ title: "Rechazar y Reembolsar", desc: `¿Rechazar pedido de <b>${paquete}</b> de <b>${nick}</b>?<br><br>Se le reembolsarán S/ ${precio.toFixed(2)} y los códigos volverán al stock.`, icon: 'settings_backup_restore', color: '#ff4757', textColor: 'white', type: 'confirm', confirmText: 'Rechazar Pedido' });
             if(!conf) return;
 
-            await supabaseClient.from('pedidos').update({ estado: 'Rechazado' }).eq('id', id);
+            const { data, error } = await supabaseClient.rpc('admin_rechazar_pedido', { p_pedido_id: id });
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            const r = data && data[0];
 
-            const { data: user } = await supabaseClient.from('usuarios').select('saldo, celular').eq('nickname', nick).single();
-            if(user) {
-                await supabaseClient.from('usuarios').update({ saldo: user.saldo + precio }).eq('nickname', nick);
-                await supabaseClient.from('historial').insert([{ nickname: nick, monto: precio, tipo: `Reembolso por pedido rechazado: ${paquete}`, estado: 'Completado' }]);
-            }
-
-            if(codigoStr && !codigoStr.includes("Sin stock") && !codigoStr.includes("Pendiente —") && !codigoStr.includes("Pendiente a mandar") && !codigoStr.includes("Activación Promo") && !codigoStr.includes("Activación Directa") && !codigoStr.includes("Envío de")) {
-                let codigos = codigoStr.split(' | ').filter(c => !c.includes('⚠️')).map(c => c.trim()).filter(c => c.length > 0);
-                if (codigos.length > 0) { await supabaseClient.rpc('admin_devolver_codigos', { p_codigos: codigos }); }
-            }
-
-            if(user && user.celular) {
-                let numStr = user.celular.replace(/[^0-9]/g, '');
+            if (r && r.celular) {
+                let numStr = r.celular.replace(/[^0-9]/g, '');
                 let msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n⚠️ Te informamos que tu pedido de 💎 *${paquete}* 💎 tuvo que ser rechazado.\n\nEl monto de *S/ ${precio.toFixed(2)}* ha sido devuelto de manera íntegra a tu saldo web para que puedas volver a utilizarlo.\n\nPor favor, respóndenos a este mensaje para indicarte el motivo exacto.`;
                 window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
             }
 
             showToast("Pedido rechazado. Saldo y códigos devueltos.", "warning");
-            cargarPedidos(); cargarHistorial(); cargarUsuarios(); cargarStock();
+            cargarPedidos(); cargarHistorial(); cargarStock();
+            if (miRol === 'full') cargarUsuarios();
         }
 
         // ================= USUARIOS (CON PUNTOS VIP + PAGINACIÓN) =================
