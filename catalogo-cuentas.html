@@ -3,26 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Free Fire | CarzaD'Cross</title>
+    <title>Cuentas Free Fire | CarzaD'Cross</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <meta name="description" content="Elige tu catálogo de Free Fire: diamantes regulares, recarga directa, promo especial, fragmentos universales y cajitas evolutivas.">
-    <link rel="canonical" href="https://carzadcross.com/catalogo-freefire.html">
+    <meta name="description" content="Cuentas de Free Fire en venta: niveles, skins y rangos. Compra segura en CarzaD'Cross.">
+    <link rel="canonical" href="https://carzadcross.com/catalogo-cuentas.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="CarzaD'Cross">
     <meta property="og:locale" content="es_PE">
-    <meta property="og:title" content="Catálogo Free Fire | CarzaD'Cross">
-    <meta property="og:description" content="Elige tu catálogo de Free Fire: diamantes regulares, recarga directa, promo especial, fragmentos universales y cajitas evolutivas.">
+    <meta property="og:title" content="Cuentas Free Fire | CarzaD'Cross">
+    <meta property="og:description" content="Cuentas de Free Fire en venta: niveles, skins y rangos. Compra segura en CarzaD'Cross.">
     <meta property="og:image" content="https://carzadcross.com/hero-bg.jpg">
-    <meta property="og:url" content="https://carzadcross.com/catalogo-freefire.html">
+    <meta property="og:url" content="https://carzadcross.com/catalogo-cuentas.html">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Catálogo Free Fire | CarzaD'Cross">
-    <meta name="twitter:description" content="Elige tu catálogo de Free Fire: diamantes regulares, recarga directa, promo especial, fragmentos universales y cajitas evolutivas.">
+    <meta name="twitter:title" content="Cuentas Free Fire | CarzaD'Cross">
+    <meta name="twitter:description" content="Cuentas de Free Fire en venta: niveles, skins y rangos. Compra segura en CarzaD'Cross.">
     <meta name="twitter:image" content="https://carzadcross.com/hero-bg.jpg">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <style>
-        /* --- ESTILOS DE LA CINTA DE COMPRAS EN VIVO (LIVE TICKER) --- */
+        .products-grid .card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .products-grid .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(161, 85, 255, 0.25);
+            border-color: #a155ff;
+            z-index: 2;
+        }
+        .products-grid .card::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(161, 85, 255, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .products-grid .card:hover::before { opacity: 1; }
+        .card-badge { position: absolute; top: 12px; left: 12px; z-index: 3; background: #00e676; color: #050508; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 900; }
+
         .live-ticker-wrap {
             width: 100%; background: rgba(20, 20, 26, 0.9);
             border-bottom: 1px solid rgba(161, 85, 255, 0.2);
@@ -34,13 +56,10 @@
             font-size: 11px; letter-spacing: 0.5px; z-index: 12; position: absolute;
             left: 0; border-radius: 0 4px 4px 0; box-shadow: 4px 0 10px rgba(0,0,0,0.5);
         }
-        .ticker-move {
-            display: flex; white-space: nowrap; animation: tickerAnimation 30s linear infinite; padding-left: 150px;
-        }
+        .ticker-move { display: flex; white-space: nowrap; animation: tickerAnimation 30s linear infinite; padding-left: 150px; }
         .ticker-item { display: inline-block; padding-right: 3rem; color: #e0e0e0; font-size: 13.5px; }
         .ticker-item .hl { color: #a155ff; font-weight: bold; }
         .ticker-item .id-text { color: #888899; font-family: monospace; }
-
         @keyframes tickerAnimation {
             0% { transform: translate3d(0, 0, 0); }
             100% { transform: translate3d(var(--loop-dist, -33.3333%), 0, 0); }
@@ -51,11 +70,27 @@
             .ticker-item { font-size: 11.5px; padding-right: 2rem; }
         }
 
+        .cz-faq-wrapper { max-width: 850px; margin: 30px auto 60px; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .cz-faq-header { text-align: center; margin-bottom: 50px; }
+        .cz-faq-subtitle { color: #a155ff; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 12px; }
+        .cz-faq-title { font-size: 32px; color: white; margin: 0; font-weight: 800; letter-spacing: 0.5px; }
+        .cz-faq-grid { display: flex; flex-direction: column; gap: 16px; }
+        .cz-faq-item { background: rgba(20, 20, 26, 0.6); border: 1px solid rgba(255,255,255,0.03); border-left: 3px solid transparent; border-radius: 8px; overflow: hidden; transition: all 0.3s ease; }
+        .cz-faq-item:hover { background: rgba(30, 30, 38, 0.8); border-left: 3px solid #a155ff; }
+        .cz-faq-item.active { border-left: 3px solid #a155ff; background: rgba(30, 30, 38, 0.9); border-color: rgba(161,85,255,0.2); }
+        .cz-faq-q { padding: 22px 25px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: #e0e0e0; font-weight: 600; font-size: 16px; transition: color 0.3s; }
+        .cz-faq-item.active .cz-faq-q { color: white; }
+        .cz-faq-icon { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: #a155ff; font-size: 24px; }
+        .cz-faq-item.active .cz-faq-icon { transform: rotate(180deg); }
+        .cz-faq-a { padding: 0 25px; max-height: 0; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: #888899; font-size: 14.5px; line-height: 1.7; }
+        .cz-faq-item.active .cz-faq-a { padding: 0 25px 25px 25px; max-height: 250px; }
+
         .cz-footer { background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 80px 20px 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 50px; }
         .cz-footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; }
         @media (max-width: 950px) { .cz-footer-content { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 600px) { .cz-footer-content { grid-template-columns: 1fr; gap: 40px; } }
         .cz-f-brand { display: flex; flex-direction: column; gap: 18px; }
+        .cz-f-logo { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 900; color: white; letter-spacing: -0.5px; }
         .cz-f-desc { color: #888899; font-size: 14px; line-height: 1.6; max-width: 320px; }
         .cz-f-trust { display: flex; gap: 15px; margin-top: 5px; flex-wrap: wrap; }
         .cz-f-trust span { display: flex; align-items: center; gap: 6px; color: #b3b3cc; font-size: 12.5px; font-weight: 600; }
@@ -133,99 +168,45 @@
     <div class="live-ticker-wrap">
         <div class="ticker-label">COMPRAS EN VIVO ⚡</div>
         <div class="ticker-move" id="ticker-track">
-            <div class="ticker-item">Sincronizando la bóveda de CarzaD'Cross...</div>
+            <div class="ticker-item">Sincronizando últimas compras con la bóveda digital...</div>
         </div>
     </div>
 
-    <header class="hero-container" id="portada-hero-freefire" style="background: linear-gradient(rgba(18, 18, 20, 0.8), rgba(18, 18, 20, 1)), url('freefire.jpg') center/cover; padding: 60px 20px;">
+    <header class="hero-container" style="background: linear-gradient(135deg, rgba(161,85,255,0.25), rgba(18,18,20,1) 60%), #121218; padding: 60px 20px;">
         <div class="hero-content" style="text-align: center;">
-            <div class="hero-badge" style="border-color: #a155ff; color: #a155ff; background: rgba(161,85,255,0.1); border-radius: 30px; padding: 6px 16px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 20px;">🔥 FREE FIRE</div>
-            <h1 class="hero-title" style="font-size: 38px; font-weight: bold; margin-bottom: 15px;">Elige tu <span style="color: #a155ff;">catálogo</span></h1>
-            <p class="hero-subtitle" style="color: #a8a8b3; font-size: 15px; max-width: 600px; margin: 0 auto;">Diamantes, pases, cajas y fragmentos. Recarga automática con tu saldo, 100% segura.</p>
+            <div class="hero-badge" style="border-color: #a155ff; color: #a155ff; background: rgba(161, 85, 255, 0.1); border-radius: 30px; padding: 6px 16px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 20px;">🎮 CUENTAS FREE FIRE</div>
+            <h1 class="hero-title" style="font-size: 38px; font-weight: bold; margin-bottom: 15px;">Cuentas <span style="color: #a155ff;">Free Fire</span></h1>
+            <p class="hero-subtitle" style="color: #a8a8b3; font-size: 15px; max-width: 600px; margin: 0 auto;">Cuentas verificadas con niveles, skins y rangos ya avanzados. Cada cuenta es única — cuando se vende, se marca como tal para que veas la disponibilidad real.</p>
         </div>
     </header>
 
     <main class="container" style="padding-top: 30px;">
-        <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 30px; font-size: 14px; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a8a8b3'"><span class="material-icons">arrow_back</span> Volver al inicio</a>
+        <a href="catalogo-freefire.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a8a8b3'"><span class="material-icons">arrow_back</span> Volver a Free Fire</a>
 
-        <div class="games-grid">
+        <div class="category-header"><h2>CUENTAS EN VENTA 🎮</h2></div>
 
-            <div class="game-card" onclick="window.location.href='catalogo-regular.html'">
-                <div class="game-content">
-                    <div class="game-image free-fire-bg" id="portada-freefire-regular"></div>
-                    <div class="game-info">
-                        <h3>Recargas Free Fire (Paquete Regular)</h3>
-                        <p>Diamantes con 10% Adicional y Pases</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card" onclick="window.location.href='catalogo-recarga-directa.html'">
-                <div class="game-content">
-                    <div class="game-image" id="portada-freefire-directa" style="background: url('recargadirecta.jpg') center/cover no-repeat;"></div>
-                    <div class="game-info">
-                        <h3>Recargas Directas (Oferta Temporal)</h3>
-                        <p>Diamantes con 20% Adicional</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card" onclick="window.location.href='catalogo-promo.html'">
-                <div class="game-content">
-                    <div class="game-image free-fire-pr-bg" id="portada-freefire-promo"></div>
-                    <div class="game-info">
-                        <h3>Promo Especial</h3>
-                        <p>1ra Recarga</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card" onclick="window.location.href='catalogo-fragmentos.html'">
-                <div class="game-content">
-                    <div class="game-image" id="portada-freefire-fragmentos" style="background: url('fragmentos.png') center/cover no-repeat;"></div>
-                    <div class="game-info">
-                        <h3>Frag. Universales</h3>
-                        <p>Mejora tus armas</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card" onclick="window.location.href='catalogo-cajas.html'">
-                <div class="game-content">
-                    <div class="game-image" id="portada-freefire-cajas" style="background: url('cajas.png') center/cover no-repeat;"></div>
-                    <div class="game-info">
-                        <h3>Cajitas Evolutivas</h3>
-                        <p>Paquetes Especiales</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card" onclick="window.location.href='catalogo-cuentas.html'">
-                <div class="game-content">
-                    <div class="game-image" id="portada-freefire-cuentas" style="background: linear-gradient(135deg, #a155ff, #00d2ff); display: flex; align-items: center; justify-content: center;">
-                        <span class="material-icons" style="font-size: 70px; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">badge</span>
-                    </div>
-                    <div class="game-info">
-                        <h3>Cuentas Free Fire</h3>
-                        <p>Niveles, skins y rangos ya avanzados</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card" onclick="window.location.href='recompensas.html'" style="border: 1px solid rgba(255, 193, 7, 0.4); box-shadow: 0 0 20px rgba(255, 193, 7, 0.1);">
-                <div class="game-content">
-                    <div class="game-image" style="background: linear-gradient(135deg, #a155ff, #ff4757, #ffc107); display: flex; align-items: center; justify-content: center;">
-                        <span class="material-icons" style="font-size: 70px; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">casino</span>
-                    </div>
-                    <div class="game-info">
-                        <h3 style="color: #ffc107;">Caja Misteriosa VIP</h3>
-                        <p>Gana Puntos por recargar y llévate premios gratis.</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+        <section class="products-grid" id="products-grid">
+            <p style="color: #a8a8b3;">Cargando catálogo...</p>
+        </section>
     </main>
+
+    <section class="cz-faq-wrapper">
+        <div class="cz-faq-header"><span class="cz-faq-subtitle">Centro de Ayuda</span><h2 class="cz-faq-title">Preguntas Frecuentes</h2></div>
+        <div class="cz-faq-grid">
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)">
+                <div class="cz-faq-q"><span>¿Cómo recibo los datos de acceso?</span><span class="material-icons cz-faq-icon">expand_more</span></div>
+                <div class="cz-faq-a">Al comprar, tu saldo se descuenta al instante y el pedido queda registrado. Nuestro equipo te pasa manualmente el correo y contraseña de la cuenta por WhatsApp y correo, y también quedan guardados en tu panel de "Mis Cuentas".</div>
+            </div>
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)">
+                <div class="cz-faq-q"><span>¿Qué garantía tienen las cuentas?</span><span class="material-icons cz-faq-icon">expand_more</span></div>
+                <div class="cz-faq-a">Si la cuenta tenía un correo de recuperación vinculado dentro del juego, te damos un periodo de garantía mientras se desvincula. Puedes ver los días restantes en tu panel de "Mis Cuentas". Si la cuenta no tenía correo de recuperación, ya es 100% tuya desde el primer día.</div>
+            </div>
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)">
+                <div class="cz-faq-q"><span>¿Por qué algunas cuentas salen en blanco y negro?</span><span class="material-icons cz-faq-icon">expand_more</span></div>
+                <div class="cz-faq-a">Cuando una cuenta ya se vendió, la dejamos visible pero marcada como "Vendida" para que veas el historial real del catálogo — ya no se puede comprar.</div>
+            </div>
+        </div>
+    </section>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="seguridad.js"></script>
@@ -245,20 +226,69 @@
                 if (elementoPuntos) { elementoPuntos.innerText = usuario.puntos || 0; }
             }
 
+            cargarCatalogoCuentas();
             cargarSistemaComunidadDinamica();
-
-            aplicarPortadas({
-                'portada-hero-freefire': { slug: 'hub-freefire', plantilla: "linear-gradient(rgba(18, 18, 20, 0.8), rgba(18, 18, 20, 1)), url('{url}') center/cover" },
-                'portada-freefire-regular': { slug: 'hub-freefire' },
-                'portada-freefire-directa': { slug: 'freefire-directa' },
-                'portada-freefire-promo': { slug: 'freefire-promo' },
-                'portada-freefire-fragmentos': { slug: 'freefire-fragmentos' },
-                'portada-freefire-cajas': { slug: 'freefire-cajas' },
-                'portada-freefire-cuentas': { slug: 'freefire-cuentas' }
-            });
         };
 
-        function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
+        function crearTarjetaCuenta(p) {
+            const vendida = !p.activo;
+            let badgeHtml = '';
+            if (vendida) {
+                badgeHtml = `<div class="card-badge" style="background:#ff4757;">VENDIDA</div>`;
+            } else if (p.precio_anterior) {
+                const pct = Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100);
+                badgeHtml = `<div class="card-badge">-${pct}%</div>`;
+            }
+
+            const iconoStyle = p.imagen_url
+                ? `background: url('${p.imagen_url}') center/cover no-repeat;`
+                : `background: linear-gradient(135deg, #a155ff, #00d2ff); display:flex; align-items:center; justify-content:center;`;
+            const iconoHtml = `<div class="card-icon" style="height: 140px; border-radius: 10px; margin-bottom: 10px; ${iconoStyle} ${vendida ? 'filter: grayscale(1); opacity: 0.55;' : ''}">${!p.imagen_url ? '<span class="material-icons" style="font-size:48px; color:white;">badge</span>' : ''}</div>`;
+
+            const descHtml = p.descripcion ? `<p class="card-stock">${p.descripcion.length > 90 ? p.descripcion.slice(0, 90) + '…' : p.descripcion}</p>` : '';
+
+            const preciosHtml = p.precio_anterior
+                ? `<span class="price-old">S/ ${Number(p.precio_anterior).toFixed(2)}</span><span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`
+                : `<span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`;
+
+            const paqueteEscapado = encodeURIComponent(p.paquete);
+            const boton = vendida
+                ? `<button class="btn-buy" disabled style="opacity:0.5; cursor:not-allowed; background:#555;">Vendida</button>`
+                : `<button class="btn-buy" onclick="window.location.href='detalle-cuenta.html?paquete=${paqueteEscapado}'">Ver detalle</button>`;
+
+            return `<div class="card"${vendida ? '' : ` onclick="window.location.href='detalle-cuenta.html?paquete=${paqueteEscapado}'" style="cursor:pointer;"`}>${badgeHtml}${iconoHtml}<h3 class="card-title">${p.paquete}</h3>${descHtml}<div class="card-prices">${preciosHtml}</div>${boton}</div>`;
+        }
+
+        async function cargarCatalogoCuentas() {
+            const grid = document.getElementById('products-grid');
+            const { data: mant } = await supabaseClient.from('categorias_mantenimiento').select('en_mantenimiento, mensaje').eq('categoria', 'cuentas').maybeSingle();
+            if (mant && mant.en_mantenimiento) {
+                const msgSafe = (mant.mensaje || 'Estamos actualizando este catálogo. Vuelve a intentarlo en un rato — gracias por tu paciencia.').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                grid.innerHTML = `<div style="grid-column: 1/-1; background: rgba(255,152,0,0.08); border: 1px solid #ff9800; border-radius: 12px; padding: 30px; text-align: center;">
+                    <span class="material-icons" style="font-size: 44px; color: #ff9800;">construction</span>
+                    <h3 style="color: white; margin: 12px 0 8px; font-size: 18px;">Catálogo en mantenimiento</h3>
+                    <p style="color: #a8a8b3; font-size: 14px; margin: 0 auto; max-width: 420px;">${msgSafe}</p>
+                </div>`;
+                return;
+            }
+            const { data, error } = await supabaseClient.from('productos').select('*').eq('categoria', 'cuentas').order('activo', { ascending: false }).order('created_at', { ascending: false });
+            if (error || !data || data.length === 0) {
+                grid.innerHTML = "<p style='color:#a8a8b3;'>No hay cuentas disponibles en este momento.</p>";
+                return;
+            }
+            grid.innerHTML = data.map(crearTarjetaCuenta).join('');
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('menu-desplegable');
+            menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
+        }
+
+        function toggleCzFaq(elemento) {
+            const todos = document.querySelectorAll('.cz-faq-item');
+            todos.forEach(item => { if(item !== elemento) item.classList.remove('active'); });
+            elemento.classList.toggle('active');
+        }
 
         async function cargarSistemaComunidadDinamica() {
             try {
@@ -327,6 +357,7 @@
                     <li><a href="index.html"><span class="material-icons">chevron_right</span> Inicio</a></li>
                     <li><a href="catalogo-freefire.html"><span class="material-icons">chevron_right</span> Catálogo Free Fire</a></li>
                     <li><a href="catalogo-streaming.html"><span class="material-icons">chevron_right</span> Catálogo Streaming</a></li>
+                    <li><a href="catalogo-cuentas.html"><span class="material-icons">chevron_right</span> Cuentas Free Fire</a></li>
                     <li><a href="perfil.html"><span class="material-icons">chevron_right</span> Mi Panel</a></li>
                 </ul>
             </div>

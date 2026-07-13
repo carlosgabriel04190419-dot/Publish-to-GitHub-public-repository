@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Plataformas | CarzaD'Cross</title>
+    <title>Mis Cuentas | CarzaD'Cross</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <meta name="description" content="Consulta tus cuentas de streaming activas, sus credenciales y renueva antes de que venzan.">
+    <meta name="description" content="Consulta tus cuentas de Free Fire compradas, sus credenciales y el estado de garantía.">
     <meta name="robots" content="noindex, nofollow">
-    <link rel="canonical" href="https://carzadcross.com/mis-plataformas.html">
+    <link rel="canonical" href="https://carzadcross.com/mis-cuentas.html">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
@@ -24,7 +24,7 @@
         .mp-card { background: rgba(26, 26, 31, 0.8); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
         .mp-card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .mp-logo { width: 52px; height: 52px; border-radius: 12px; background: #0a0a0d; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
-        .mp-logo img { max-width: 40px; max-height: 40px; object-fit: contain; }
+        .mp-logo img { max-width: 100%; max-height: 100%; object-fit: cover; }
         .mp-plataforma { font-size: 17px; font-weight: bold; color: white; margin: 0; }
         .mp-plan { font-size: 12px; color: #a155ff; font-weight: 600; }
         .mp-estado-badge { margin-left: auto; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; border: 1px solid transparent; white-space: nowrap; }
@@ -39,8 +39,6 @@
         .mp-copy-btn .material-icons { font-size: 14px; }
         .mp-meta-row { display: flex; justify-content: space-between; font-size: 13px; color: #a8a8b3; margin-bottom: 8px; }
         .mp-meta-row strong { color: white; }
-        .mp-renovar-row { display: flex; gap: 8px; margin-top: 16px; }
-        .mp-renovar-row select { background: #121214; border: 1px solid #29292e; color: white; border-radius: 8px; padding: 10px; font-size: 13px; }
         .mp-empty { text-align: center; padding: 60px 20px; max-width: 500px; margin: 0 auto; }
         .mp-pendientes { max-width: 1200px; margin: 0 auto 30px; padding: 0 20px; }
         .mp-pendiente-item { background: rgba(255,193,7,0.06); border: 1px solid rgba(255,193,7,0.2); border-radius: 10px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
@@ -97,7 +95,7 @@
         <div class="nav-user-section" id="nav-logged-in" style="display: none;">
             <div class="balance-pill">
                 <span class="material-icons wallet-icon">account_balance_wallet</span>
-                <div class="balance-info"><span class="balance-label">SALDO</span><span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span><span id="saldo-nav-alt" style="display:none; font-size:10px; color:#8a8a9a; font-weight:600; margin-top:1px;"></span></div>
+                <div class="balance-info"><span class="balance-label">SALDO</span><span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span></div>
             </div>
             <div class="balance-pill" style="border-color: #ffc107; background: rgba(255,193,7,0.1); margin-left: 10px;">
                 <span class="material-icons wallet-icon" style="color: #ffc107;">stars</span>
@@ -127,11 +125,11 @@
         </div>
     </div>
 
-    <header class="hero-container" style="background: linear-gradient(rgba(18, 18, 20, 0.85), rgba(18, 18, 20, 1)), linear-gradient(135deg, #00d2ff, #a155ff, #ff4757); padding: 60px 20px;">
+    <header class="hero-container" style="background: linear-gradient(rgba(18, 18, 20, 0.85), rgba(18, 18, 20, 1)), linear-gradient(135deg, #a155ff, #00d2ff, #ff4757); padding: 60px 20px;">
         <div class="hero-content" style="text-align: center;">
-            <div class="hero-badge" style="border-color: #a155ff; color: #a155ff; background: rgba(161,85,255,0.1); border-radius: 30px; padding: 6px 16px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 20px;">📺 MIS PLATAFORMAS</div>
-            <h1 class="hero-title" style="font-size: 38px; font-weight: bold; margin-bottom: 15px;">Tus cuentas de <span style="color: #a155ff;">streaming</span></h1>
-            <p class="hero-subtitle" style="color: #a8a8b3; font-size: 15px; max-width: 600px; margin: 0 auto;">Aquí siempre vas a poder ver tus correos, contraseñas y cuánto tiempo te queda.</p>
+            <div class="hero-badge" style="border-color: #a155ff; color: #a155ff; background: rgba(161,85,255,0.1); border-radius: 30px; padding: 6px 16px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 20px;">🎮 MIS CUENTAS</div>
+            <h1 class="hero-title" style="font-size: 38px; font-weight: bold; margin-bottom: 15px;">Tus cuentas de <span style="color: #a155ff;">Free Fire</span></h1>
+            <p class="hero-subtitle" style="color: #a8a8b3; font-size: 15px; max-width: 600px; margin: 0 auto;">Aquí siempre vas a poder ver los correos, contraseñas y el estado de garantía de las cuentas que compraste.</p>
         </div>
     </header>
 
@@ -141,95 +139,30 @@
         </div>
 
         <div class="mp-pendientes" id="mp-pendientes-wrap" style="display: none;">
-            <h3 style="color: white; font-size: 16px; margin-bottom: 12px;">⏳ Pedidos en camino</h3>
+            <h3 style="color: white; font-size: 16px; margin-bottom: 12px;">⏳ Compras en camino</h3>
             <div id="mp-pendientes-lista"></div>
         </div>
 
         <div class="mp-grid" id="mp-grid">
-            <div style="grid-column: 1/-1; text-align:center; padding: 40px; color:#a8a8b3;">Cargando tus plataformas...</div>
+            <div style="grid-column: 1/-1; text-align:center; padding: 40px; color:#a8a8b3;">Cargando tus cuentas...</div>
         </div>
     </main>
-
-    <div id="modal-renovar-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
-        <div style="width: 100%; max-width: 420px; margin: 20px; padding: 30px; border-radius: 16px; background: #121218; position: relative; border: 1px solid rgba(161, 85, 255, 0.2); box-shadow: 0 0 30px rgba(161, 85, 255, 0.15); box-sizing: border-box;">
-            <span onclick="cerrarModalRenovar()" style="position: absolute; top: 18px; right: 20px; color: #888899; cursor: pointer; font-size: 24px; font-weight: bold;">×</span>
-            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 22px;">
-                <span class="material-icons" style="color: #a155ff; font-size: 30px; background: rgba(161,85,255,0.1); padding: 10px; border-radius: 50%;">autorenew</span>
-                <div><h2 style="font-size: 19px; color: white; margin: 0;">Confirmar Renovación</h2><p id="rm-plataforma-nombre" style="color: #a8a8b3; font-size: 13px; margin: 3px 0 0 0;">---</p></div>
-            </div>
-            <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.03);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span style="color: #a8a8b3; font-size: 14px;">Duración:</span>
-                    <select id="rm-meses" onchange="recalcularRenovacionMP()" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 12px; color: white; font-size: 14px; font-weight: bold;">
-                        <option value="1">1 mes</option>
-                        <option value="2">2 meses</option>
-                        <option value="3">3 meses</option>
-                        <option value="6">6 meses</option>
-                        <option value="12">12 meses</option>
-                    </select>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-                    <span style="color: #a8a8b3; font-size: 14px; padding-top: 2px;">Costo:</span>
-                    <div style="text-align: right;">
-                        <strong id="rm-costo" style="color: #ff4757; font-size: 15px; display: block;">S/ 0.00</strong>
-                        <span id="rm-costo-alt" style="display:none; font-size: 10px; color: #8a8a9a; font-weight: 600;"></span>
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
-                    <span style="color: #a8a8b3; font-size: 14px; padding-top: 2px;">Tu Saldo Actual:</span>
-                    <div style="text-align: right;">
-                        <strong id="rm-saldo-actual" style="color: white; font-size: 14px; display: block;">S/ 0.00</strong>
-                        <span id="rm-saldo-actual-alt" style="display:none; font-size: 10px; color: #8a8a9a; font-weight: 600;"></span>
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <span style="color: #a8a8b3; font-size: 14px; padding-top: 2px;">Saldo Restante:</span>
-                    <div style="text-align: right;">
-                        <strong id="rm-saldo-restante" style="color: #00e676; font-size: 16px; display: block;">S/ 0.00</strong>
-                        <span id="rm-saldo-restante-alt" style="display:none; font-size: 10px; color: #8a8a9a; font-weight: 600;"></span>
-                    </div>
-                </div>
-            </div>
-            <p id="rm-error-saldo" style="display:none; color:#ff4757; font-size:13px; margin: 0 0 15px;">No te alcanza el saldo para esta duración.</p>
-            <button id="rm-btn-confirmar" class="btn-primary" style="width: 100%; padding: 15px; font-size: 15px; font-weight: bold;" onclick="confirmarRenovacionMP()">Confirmar Renovación</button>
-        </div>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="seguridad.js"></script>
     <script>
-        const IMAGENES_PLATAFORMA = {
-            'Netflix 4K': 'netflix.png',
-            'Disney+ (incluye ESPN)': 'Disney-plus.png',
-            'HBO Max': 'HBO-MAX.png',
-            'Prime Video': 'prime-video.png',
-            'YouTube Premium + Music': 'yt-music.png',
-            'Apple One 2TB': 'apple-one.png',
-            'DirecTV Go': 'dgo.png',
-            'Paramount+': 'paramount+.png'
-        };
-
-        let nombreActualGlobal = '';
-        let saldoActualGlobal = 0;
-        let suscripcionesCache = {};
-        let renovacionActual = null;
-        let usuarioActualCompleto = null;
-
         window.onload = async function() {
             const usuario = await verificarSesion();
             if (!usuario) return;
 
-            nombreActualGlobal = usuario.nickname;
-            usuarioActualCompleto = usuario;
             document.getElementById('nav-logged-in').style.display = 'flex';
             document.getElementById('btn-usuario-nav').innerHTML = avatarPillHTML(usuario);
             document.getElementById('saldo-nav').innerText = usuario.saldo.toFixed(2);
-            saldoActualGlobal = usuario.saldo;
             document.getElementById('puntos-nav').innerText = usuario.puntos || 0;
 
             cargarSistemaComunidadDinamica();
-            cargarPendientes(usuario.nickname);
-            cargarMisPlataformas(usuario.nickname);
+            cargarPendientesCuentas(usuario.nickname);
+            cargarMisCuentas(usuario.nickname);
         };
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
@@ -254,108 +187,85 @@
             } catch (e) { console.error(e); }
         }
 
-        async function cargarPendientes(nickname) {
-            const { data } = await supabaseClient.from('pedidos').select('*')
-                .eq('nickname', nickname).eq('estado', 'Pendiente')
-                .order('created_at', { ascending: false });
+        async function cargarPendientesCuentas(nickname) {
+            const { data: pedidos } = await supabaseClient.from('pedidos').select('*').eq('nickname', nickname).eq('estado', 'Pendiente').order('created_at', { ascending: false });
+            if (!pedidos || pedidos.length === 0) return;
 
-            const streamingPendientes = (data || []).filter(p => Object.keys(IMAGENES_PLATAFORMA).some(plat => p.paquete.startsWith(plat)));
-            if (streamingPendientes.length === 0) return;
+            const { data: productosCuentas } = await supabaseClient.from('productos').select('paquete').eq('categoria', 'cuentas');
+            const paquetesCuentas = new Set((productosCuentas || []).map(p => p.paquete));
+            const pendientes = pedidos.filter(p => paquetesCuentas.has(p.paquete));
+            if (pendientes.length === 0) return;
 
             document.getElementById('mp-pendientes-wrap').style.display = 'block';
-            document.getElementById('mp-pendientes-lista').innerHTML = streamingPendientes.map(p => `
+            document.getElementById('mp-pendientes-lista').innerHTML = pendientes.map(p => `
                 <div class="mp-pendiente-item">
-                    <div><strong style="color:white;">${p.paquete}</strong><br><span style="color:#a8a8b3; font-size:12px;">Pedido el ${new Date(p.created_at).toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'numeric' })}</span></div>
-                    <span style="color:#ffc107; font-size:13px;">Te avisaremos por WhatsApp cuando esté listo.</span>
+                    <div><strong style="color:white;">${p.paquete}</strong><br><span style="color:#a8a8b3; font-size:12px;">Comprado el ${new Date(p.created_at).toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'numeric' })}</span></div>
+                    <span style="color:#ffc107; font-size:13px;">Te pasaremos los datos de acceso por WhatsApp.</span>
                 </div>
             `).join('');
         }
 
-        function parsearCredenciales(credenciales) {
-            if (!credenciales) return { tipo: 'desconocido' };
-            if (credenciales.startsWith('Invitación enviada a:')) {
-                return { tipo: 'invitacion', dato: credenciales.replace('Invitación enviada a:', '').trim() };
-            }
-            const partes = credenciales.split(' | ');
-            const correoParte = partes.find(p => p.trim().startsWith('Correo:'));
-            const claveParte = partes.find(p => p.trim().startsWith('Contraseña:'));
-            const perfilParte = partes.find(p => p.trim().startsWith('Perfil '));
-            if (correoParte && claveParte) {
-                return {
-                    tipo: 'cuenta',
-                    correo: correoParte.replace('Correo:', '').trim(),
-                    contrasena: claveParte.replace('Contraseña:', '').trim(),
-                    perfil: perfilParte ? perfilParte.trim() : null
-                };
-            }
-            return { tipo: 'desconocido', crudo: credenciales };
-        }
-
-        async function cargarMisPlataformas(nickname) {
-            const { data } = await supabaseClient.from('suscripciones').select('*')
-                .eq('nickname', nickname).order('fecha_vencimiento', { ascending: true });
-
+        async function cargarMisCuentas(nickname) {
+            const { data } = await supabaseClient.from('cuentas_vendidas').select('*, productos(paquete, imagen_url)').eq('nickname_comprador', nickname).order('fecha_venta', { ascending: false });
             const grid = document.getElementById('mp-grid');
 
             if (!data || data.length === 0) {
                 grid.innerHTML = `
                     <div class="mp-empty" style="grid-column: 1/-1;">
-                        <span class="material-icons" style="font-size:50px; color:#a155ff; background:rgba(161,85,255,0.1); padding:18px; border-radius:50%;">live_tv</span>
-                        <h2 style="color:white; margin: 20px 0 10px;">Aún no tienes plataformas activas</h2>
-                        <p style="color:#a8a8b3; margin-bottom: 25px;">Cuando compres Netflix, Disney+, HBO Max u otra plataforma, la vas a ver aquí con tu correo y contraseña.</p>
-                        <a href="catalogo-streaming.html" class="btn-primary" style="text-decoration:none; display:inline-flex; padding: 14px 30px;">Ver Catálogo de Streaming</a>
+                        <span class="material-icons" style="font-size:50px; color:#a155ff; background:rgba(161,85,255,0.1); padding:18px; border-radius:50%;">badge</span>
+                        <h2 style="color:white; margin: 20px 0 10px;">Aún no tienes cuentas compradas</h2>
+                        <p style="color:#a8a8b3; margin-bottom: 25px;">Cuando compres una cuenta de Free Fire, la vas a ver aquí con su correo y contraseña.</p>
+                        <a href="catalogo-cuentas.html" class="btn-primary" style="text-decoration:none; display:inline-flex; padding: 14px 30px;">Ver Cuentas en Venta</a>
                     </div>`;
                 return;
             }
 
-            const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-            suscripcionesCache = {};
-            data.forEach(s => { suscripcionesCache[s.id] = s; });
+            grid.innerHTML = data.map(cv => {
+                const titulo = (cv.productos && cv.productos.paquete) || 'Cuenta Free Fire';
+                const img = (cv.productos && cv.productos.imagen_url) || '';
+                const fechaVenta = new Date(cv.fecha_venta);
+                const fechaTexto = fechaVenta.toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' });
 
-            grid.innerHTML = data.map(s => {
-                const fechaVenc = new Date(s.fecha_vencimiento + 'T00:00:00');
-                const diasRestantes = Math.round((fechaVenc - hoy) / 86400000);
-                const vencida = diasRestantes < 0;
-                const fechaTexto = fechaVenc.toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' });
-                const cred = parsearCredenciales(s.credenciales);
-                const img = IMAGENES_PLATAFORMA[s.plataforma] || '';
-
-                let credHTML;
-                if (cred.tipo === 'cuenta') {
-                    credHTML = `
-                        <div class="mp-cred-box">
-                            <div class="mp-cred-row">
-                                <div><div class="mp-cred-label">Correo</div><div class="mp-cred-valor">${cred.correo}</div></div>
-                                <button class="mp-copy-btn" onclick="copiarMP('${cred.correo.replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>
-                            </div>
-                            <div class="mp-cred-row">
-                                <div><div class="mp-cred-label">Contraseña</div><div class="mp-cred-valor">${cred.contrasena}</div></div>
-                                <button class="mp-copy-btn" onclick="copiarMP('${cred.contrasena.replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>
-                            </div>
-                            ${cred.perfil ? `<div class="mp-cred-row"><div class="mp-cred-label">Usa el</div><div class="mp-cred-valor" style="color:#ffc107;">${cred.perfil}</div></div>` : ''}
-                        </div>`;
-                } else if (cred.tipo === 'invitacion') {
-                    credHTML = `<div class="mp-cred-box"><div class="mp-cred-label" style="margin-bottom:6px;">Invitación enviada a</div><div class="mp-cred-valor" style="color:#00e676; text-align:left;">${cred.dato}</div></div>`;
-                } else {
-                    credHTML = `<div class="mp-cred-box"><div class="mp-cred-valor" style="text-align:left;">${cred.crudo || 'Consulta con soporte.'}</div></div>`;
+                let garantiaHTML = '';
+                if (cv.garantia_dias !== null && cv.garantia_dias !== undefined) {
+                    const diasTranscurridos = Math.floor((Date.now() - fechaVenta.getTime()) / 86400000);
+                    const diasRestantes = cv.garantia_dias - diasTranscurridos;
+                    const vencida = diasRestantes <= 0;
+                    garantiaHTML = `<div class="mp-meta-row"><span>Garantía</span><strong style="color:${vencida ? '#ff4757' : '#00e676'};">${vencida ? 'Garantía finalizada' : diasRestantes + ' día(s) restantes'}</strong></div>`;
                 }
 
                 return `
                     <div class="mp-card">
                         <div class="mp-card-header">
-                            <div class="mp-logo">${img ? `<img src="${img}" alt="${s.plataforma}">` : ''}</div>
+                            <div class="mp-logo">${img ? `<img src="${img}" alt="${titulo}">` : '<span class="material-icons" style="color:#a155ff;">badge</span>'}</div>
                             <div>
-                                <p class="mp-plataforma">${s.plataforma}</p>
-                                <span class="mp-plan">${s.plan}</span>
+                                <p class="mp-plataforma">${titulo}</p>
+                                <span class="mp-plan">Cuenta Free Fire</span>
                             </div>
-                            <span class="mp-estado-badge ${vencida ? 'mp-estado-vencida' : 'mp-estado-activa'}">${vencida ? 'Vencida' : 'Activa'}</span>
+                            <span class="mp-estado-badge mp-estado-activa">Tuya</span>
                         </div>
-                        ${credHTML}
-                        <div class="mp-meta-row"><span>Vence el</span><strong>${fechaTexto}</strong></div>
-                        <div class="mp-meta-row"><span>Días restantes</span><strong style="color:${vencida ? '#ff4757' : '#e0e0e0'};">${vencida ? `Venció hace ${Math.abs(diasRestantes)} día(s)` : `${diasRestantes} día(s)`}</strong></div>
-                        <div class="mp-renovar-row">
-                            <button class="btn-buy" style="flex:1;" onclick="abrirConfirmarRenovacion(${s.id})"><span class="material-icons" style="font-size:16px; vertical-align:middle;">autorenew</span> Renovar</button>
+                        <div class="mp-cred-box">
+                            <div class="mp-cred-row">
+                                <div><div class="mp-cred-label">Correo</div><div class="mp-cred-valor">${cv.correo_acceso}</div></div>
+                                <button class="mp-copy-btn" onclick="copiarMP('${cv.correo_acceso.replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>
+                            </div>
+                            <div class="mp-cred-row">
+                                <div><div class="mp-cred-label">Contraseña</div><div class="mp-cred-valor">${cv.contrasena_acceso}</div></div>
+                                <button class="mp-copy-btn" onclick="copiarMP('${cv.contrasena_acceso.replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>
+                            </div>
+                            ${cv.correo_recuperacion ? `
+                            <div class="mp-cred-row">
+                                <div><div class="mp-cred-label">Correo de recuperación</div><div class="mp-cred-valor">${cv.correo_recuperacion}</div></div>
+                                <button class="mp-copy-btn" onclick="copiarMP('${cv.correo_recuperacion.replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>
+                            </div>` : ''}
+                            ${cv.contrasena_recuperacion ? `
+                            <div class="mp-cred-row">
+                                <div><div class="mp-cred-label">Contraseña de recuperación</div><div class="mp-cred-valor">${cv.contrasena_recuperacion}</div></div>
+                                <button class="mp-copy-btn" onclick="copiarMP('${cv.contrasena_recuperacion.replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>
+                            </div>` : ''}
                         </div>
+                        <div class="mp-meta-row"><span>Fecha de compra</span><strong>${fechaTexto}</strong></div>
+                        ${garantiaHTML}
                     </div>`;
             }).join('');
         }
@@ -366,84 +276,6 @@
                 el.innerHTML = '<span class="material-icons" style="font-size:14px;">check</span>';
                 setTimeout(() => { el.innerHTML = original; }, 1500);
             });
-        }
-
-        async function abrirConfirmarRenovacion(id) {
-            const s = suscripcionesCache[id];
-            if (!s) return;
-
-            const { data: producto } = await supabaseClient.from('productos').select('precio').eq('paquete', s.paquete).maybeSingle();
-            const precioMensual = producto ? Number(producto.precio) : Number(s.precio_pagado) / (s.meses || 1);
-
-            renovacionActual = { id, precioMensual };
-
-            document.getElementById('rm-plataforma-nombre').innerText = `${s.plataforma} — ${s.plan}`;
-            document.getElementById('rm-meses').value = '1';
-            recalcularRenovacionMP();
-
-            const modal = document.getElementById('modal-renovar-container');
-            modal.style.display = 'flex'; setTimeout(() => { modal.style.opacity = '1'; }, 10);
-        }
-
-        function recalcularRenovacionMP() {
-            if (!renovacionActual) return;
-            const meses = parseInt(document.getElementById('rm-meses').value);
-            const costo = renovacionActual.precioMensual * meses;
-            const saldoRestante = saldoActualGlobal - costo;
-
-            document.getElementById('rm-costo').innerText = `S/ ${costo.toFixed(2)}`;
-            document.getElementById('rm-saldo-actual').innerText = `S/ ${saldoActualGlobal.toFixed(2)}`;
-            document.getElementById('rm-saldo-restante').innerText = `S/ ${saldoRestante.toFixed(2)}`;
-
-            actualizarElementoConversion('rm-costo-alt', costo, usuarioActualCompleto);
-            actualizarElementoConversion('rm-saldo-actual-alt', saldoActualGlobal, usuarioActualCompleto);
-            actualizarElementoConversion('rm-saldo-restante-alt', saldoRestante, usuarioActualCompleto);
-
-            const errorSaldo = document.getElementById('rm-error-saldo');
-            const btnConfirmar = document.getElementById('rm-btn-confirmar');
-            if (saldoRestante < 0) {
-                document.getElementById('rm-saldo-restante').style.color = '#ff4757';
-                errorSaldo.style.display = 'block';
-                btnConfirmar.disabled = true;
-                btnConfirmar.style.opacity = '0.5';
-            } else {
-                document.getElementById('rm-saldo-restante').style.color = '#00e676';
-                errorSaldo.style.display = 'none';
-                btnConfirmar.disabled = false;
-                btnConfirmar.style.opacity = '1';
-            }
-        }
-
-        function cerrarModalRenovar() {
-            const modal = document.getElementById('modal-renovar-container');
-            modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; }, 300);
-            renovacionActual = null;
-        }
-
-        async function confirmarRenovacionMP() {
-            if (!renovacionActual) return;
-            const { id } = renovacionActual;
-            const meses = parseInt(document.getElementById('rm-meses').value);
-            const btn = document.getElementById('rm-btn-confirmar');
-            btn.disabled = true; btn.innerText = "Procesando...";
-
-            const { data: resultadoRpc, error } = await supabaseClient.rpc('renovar_suscripcion', { p_suscripcion_id: id, p_meses: meses });
-            const resultado = resultadoRpc && resultadoRpc[0];
-
-            btn.disabled = false; btn.innerText = "Confirmar Renovación";
-
-            if (error || !resultado || resultado.estado === 'error') {
-                alert("Error: " + (error ? error.message : (resultado ? resultado.mensaje : "No se pudo renovar.")));
-                return;
-            }
-
-            const nuevoSaldo = Number(resultado.saldo_restante);
-            document.getElementById('saldo-nav').innerText = nuevoSaldo.toFixed(2);
-            saldoActualGlobal = nuevoSaldo;
-
-            cerrarModalRenovar();
-            cargarMisPlataformas(nombreActualGlobal);
-            alert(`¡Listo! Tu suscripción quedó renovada hasta el ${new Date(resultado.fecha_vencimiento + 'T00:00:00').toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' })}.`);
         }
     </script>
 
@@ -481,7 +313,7 @@
                 <ul>
                     <li><a href="index.html"><span class="material-icons">chevron_right</span> Inicio</a></li>
                     <li><a href="catalogo-freefire.html"><span class="material-icons">chevron_right</span> Catálogo Free Fire</a></li>
-                    <li><a href="catalogo-streaming.html"><span class="material-icons">chevron_right</span> Catálogo Streaming</a></li>
+                    <li><a href="catalogo-cuentas.html"><span class="material-icons">chevron_right</span> Cuentas Free Fire</a></li>
                     <li><a href="perfil.html"><span class="material-icons">chevron_right</span> Mi Panel</a></li>
                 </ul>
             </div>

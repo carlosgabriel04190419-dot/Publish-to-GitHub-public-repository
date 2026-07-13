@@ -133,8 +133,10 @@
             .admin-main { margin: 0 !important; padding: 0 !important; }
             .admin-view { display: none !important; }
             .admin-view.active { display: block !important; }
-            body[data-imprimir="diamantes"] [data-rol="streaming"] { display: none !important; }
-            body[data-imprimir="streaming"] [data-rol="diamantes"] { display: none !important; }
+            body[data-imprimir] [data-rol] { display: none !important; }
+            body[data-imprimir="diamantes"] [data-rol="diamantes"] { display: block !important; }
+            body[data-imprimir="streaming"] [data-rol="streaming"] { display: block !important; }
+            body[data-imprimir="cuentas"] [data-rol="cuentas"] { display: block !important; }
             body[data-imprimir] .card-box.solo-full { display: none !important; }
             body { background: white !important; color: black !important; }
             .card-box { background: white !important; border: 1px solid #ccc !important; color: black !important; box-shadow: none !important; }
@@ -165,6 +167,40 @@
             <input type="text" id="buscador-nickname-excluir" class="bulk-select" placeholder="Escribe un nickname..." style="width:100%; box-sizing:border-box; margin-bottom:12px;" oninput="buscarNicknamesParaExcluir()">
             <div id="resultados-busqueda-nickname" style="overflow-y:auto; flex:1; min-height:80px;"></div>
             <button class="btn-outline" style="width:100%; margin-top:15px; padding:10px;" onclick="document.getElementById('modal-buscar-usuario-overlay').style.display='none';">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL GALERÍA DE FOTOS DE CUENTA -->
+    <div id="modal-galeria-cuenta-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:20px; box-sizing:border-box;">
+        <div style="background:#121218; width:100%; max-width:600px; max-height:80vh; padding:24px; border:1px solid #a155ff; border-radius:16px; box-shadow:0 0 30px rgba(161,85,255,0.15); display:flex; flex-direction:column;">
+            <h3 style="margin:0 0 15px 0; font-size:18px; display:flex; align-items:center; gap:8px;"><span class="material-icons" style="color:#a155ff;">photo_library</span> Fotos de <span id="galeria-cuenta-titulo" style="color:#a155ff;"></span></h3>
+            <input type="file" id="galeria-cuenta-input" accept="image/png,image/jpeg,image/webp" multiple style="width:100%; margin-bottom:15px;" onchange="subirFotosGaleriaCuenta(this)">
+            <div id="galeria-cuenta-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap:10px; overflow-y:auto; flex:1;"></div>
+            <button class="btn-outline" style="width:100%; margin-top:15px; padding:10px;" onclick="document.getElementById('modal-galeria-cuenta-overlay').style.display='none'; cargarCatalogoCuentasVenta();">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- MODAL COMPLETAR VENTA DE CUENTA -->
+    <div id="modal-completar-cuenta-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:20px; box-sizing:border-box;">
+        <div style="background:#121218; width:100%; max-width:460px; max-height:90vh; overflow-y:auto; padding:24px; border:1px solid #a155ff; border-radius:16px; box-shadow:0 0 30px rgba(161,85,255,0.15);">
+            <h3 style="margin:0 0 6px 0; font-size:18px; display:flex; align-items:center; gap:8px;"><span class="material-icons" style="color:#a155ff;">badge</span> Completar venta de cuenta</h3>
+            <p style="color:#a8a8b3; font-size:13px; margin:0 0 15px 0;">Cuenta: <b id="completar-cuenta-titulo" style="color:white;"></b></p>
+            <label style="color:#a155ff; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Correo de acceso</label>
+            <input type="email" id="completar-cuenta-correo" class="bulk-select" style="width:100%; box-sizing:border-box; margin-bottom:12px;">
+            <label style="color:#a155ff; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Contraseña de acceso</label>
+            <input type="text" id="completar-cuenta-contrasena" class="bulk-select" style="width:100%; box-sizing:border-box; margin-bottom:12px;">
+            <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Correo de recuperación (opcional)</label>
+            <input type="email" id="completar-cuenta-correo-recuperacion" class="bulk-select" style="width:100%; box-sizing:border-box; margin-bottom:12px;" oninput="document.getElementById('completar-cuenta-garantia-wrap').style.display = this.value.trim() ? 'block' : 'none';">
+            <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Contraseña de recuperación (opcional)</label>
+            <input type="text" id="completar-cuenta-contrasena-recuperacion" class="bulk-select" style="width:100%; box-sizing:border-box; margin-bottom:12px;">
+            <div id="completar-cuenta-garantia-wrap" style="display:none;">
+                <label style="color:#ff9800; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Días de garantía (por desvinculación de recuperación)</label>
+                <input type="number" id="completar-cuenta-garantia" class="bulk-select" min="1" step="1" placeholder="Ej. 15" style="width:100%; box-sizing:border-box; margin-bottom:12px;">
+            </div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="document.getElementById('modal-completar-cuenta-overlay').style.display='none';">Cancelar</button>
+                <button class="btn-complete" style="flex:1; padding:12px; font-weight:bold; color:black;" onclick="confirmarCompletarCuenta()">Marcar Listo</button>
+            </div>
         </div>
     </div>
 
@@ -238,6 +274,7 @@
                     <div class="admin-nav-item" data-view="historial" onclick="cambiarVista('historial')"><span class="material-icons">history</span> Historial</div>
                     <div class="admin-nav-item" data-view="catalogo" onclick="cambiarVista('catalogo')"><span class="material-icons">storefront</span> Catálogo</div>
                     <div class="admin-nav-item" data-view="ganancias" onclick="cambiarVista('ganancias')"><span class="material-icons">payments</span> Ganancias</div>
+                    <div class="admin-nav-item" id="nav-item-cuentas" data-view="cuentas" onclick="cambiarVista('cuentas')" style="display:none;"><span class="material-icons">badge</span> Cuentas</div>
                     <div class="admin-nav-item solo-full" data-view="cupones" onclick="cambiarVista('cupones')"><span class="material-icons">sell</span> Cupones</div>
                     <div class="admin-nav-item solo-full" data-view="administradores" onclick="cambiarVista('administradores')"><span class="material-icons">admin_panel_settings</span> Administradores</div>
                 </nav>
@@ -602,7 +639,7 @@
                     </div>
 
                     <div class="card-box solo-full">
-                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">payments</span> Resumen del negocio (Diamantes + Streaming)</h3>
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">payments</span> Resumen del negocio (Diamantes + Streaming + Cuentas)</h3>
                         <div class="stats-grid" id="stats-ganancias-combinado"></div>
                     </div>
 
@@ -637,6 +674,82 @@
                         <h4 style="color:#a8a8b3; font-size:13px; margin:18px 0 8px;">Detalle de ventas</h4>
                         <div class="table-scroll">
                             <table><thead><tr><th>Fecha</th><th>Hora</th><th>Paquete</th><th>Precio</th><th>Costo</th><th>Ganancia</th></tr></thead><tbody id="tabla-detalle-streaming"></tbody></table>
+                        </div>
+                    </div>
+
+                    <div class="card-box" data-rol="cuentas">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">badge</span> Ganancias de Cuentas</h3>
+                        <div class="stats-grid" id="stats-ganancias-cuentas" style="margin-bottom:18px;"></div>
+                        <div class="no-imprimir" style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+                            <button class="btn-view" onclick="exportarCSVGanancias('cuentas')"><span class="material-icons">table_view</span> Exportar CSV (Excel)</button>
+                            <button class="btn-view" onclick="imprimirGanancias('cuentas')"><span class="material-icons">print</span> Imprimir / Guardar como PDF</button>
+                        </div>
+                        <h4 style="color:#a8a8b3; font-size:13px; margin-bottom:8px;">Resumen por producto</h4>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Paquete</th><th>Cantidad</th><th>Ingreso</th><th>Costo</th><th>Ganancia</th></tr></thead><tbody id="tabla-resumen-cuentas"></tbody></table>
+                        </div>
+                        <h4 style="color:#a8a8b3; font-size:13px; margin:18px 0 8px;">Detalle de ventas</h4>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Fecha</th><th>Hora</th><th>Paquete</th><th>Precio</th><th>Costo</th><th>Ganancia</th></tr></thead><tbody id="tabla-detalle-cuentas"></tbody></table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============ CUENTAS ============ -->
+                <div class="admin-view" id="view-cuentas">
+                    <h1 class="view-title"><span class="material-icons" style="color:#a155ff;">badge</span> Cuentas Free Fire</h1>
+                    <p class="view-subtitle">Catálogo de cuentas en venta, fotos, y seguimiento de garantía de las ya vendidas.</p>
+
+                    <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#00e676;">chat</span> Mi WhatsApp para avisos de venta</h3>
+                        <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 15px 0;">Cuando un cliente compre una cuenta que TÚ subiste, el mensaje de WhatsApp de la compra te llegará a este número (no al del dueño). Si lo dejas vacío, el aviso cae de respaldo al número del dueño.</p>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <input type="text" id="mi-whatsapp-input" class="bulk-select" placeholder="Ej. 51999888777 (con código de país, sin + ni espacios)" style="max-width:320px;">
+                            <button class="btn-primary" style="background:#00e676; color:black; border:none; border-radius:8px; padding:10px 16px; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="guardarMiWhatsapp()"><span class="material-icons" style="font-size:18px;">save</span> Guardar</button>
+                        </div>
+                    </div>
+
+                    <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">badge</span> Catálogo de Cuentas</h3>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Título</th><th>Precio</th><th>Precio anterior</th><th>Descripción</th><th>Estado</th><th>Fotos</th><th>Acción</th></tr></thead><tbody id="tabla-catalogo-cuentas"></tbody></table>
+                        </div>
+                    </div>
+
+                    <div class="card-box upload-container">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#00d2ff;">add_circle</span> Agregar Cuenta Nueva</h3>
+                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Título</label>
+                                <input type="text" id="nueva-cuenta-titulo" class="bulk-select" placeholder="Ej. Cuenta Heroic - Nivel 65" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #00e676; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Precio (S/)</label>
+                                <input type="number" id="nueva-cuenta-precio" class="bulk-select" placeholder="150.00" min="0.01" step="0.01" style="width:100%; box-sizing:border-box;">
+                            </div>
+                        </div>
+                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Precio anterior (opcional)</label>
+                                <input type="number" id="nueva-cuenta-precio-anterior" class="bulk-select" placeholder="Sin descuento" min="0.01" step="0.01" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Portada (miniatura del catálogo)</label>
+                                <input type="file" id="nueva-cuenta-portada" accept="image/png,image/jpeg,image/webp" class="bulk-select" style="width:100%; box-sizing:border-box;">
+                            </div>
+                        </div>
+                        <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Descripción</label>
+                        <textarea id="nueva-cuenta-descripcion" class="bulk-select" placeholder="Detalles de la cuenta: nivel, skins, pases, rango, etc." style="width:100%; box-sizing:border-box; min-height:70px; font-family:inherit;"></textarea>
+                        <button class="btn-primary" style="width: 100%; padding: 15px; font-weight: bold; background: #00d2ff; color: black; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-top: 15px;" onclick="agregarCuentaVenta()">
+                            <span class="material-icons">add_circle</span> Agregar Cuenta
+                        </button>
+                    </div>
+
+                    <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ff9800;">event_busy</span> Garantías de Cuentas Vendidas</h3>
+                        <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 15px 0;">Solo aparecen acá las cuentas vendidas que tenían correo de recuperación (con garantía). Cuando la garantía vence, puedes avisarle al cliente que ya se desvinculó el correo.</p>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Cuenta</th><th>Comprador</th><th>Fecha de venta</th><th>Garantía</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="tabla-garantias-cuentas"></tbody></table>
                         </div>
                     </div>
                 </div>
@@ -721,6 +834,7 @@
                                 <select id="admin-nuevo-rol" class="bulk-select">
                                     <option value="diamantes">Socio de Diamantes</option>
                                     <option value="streaming">Socio de Streaming</option>
+                                    <option value="cuentas">Socio de Cuentas</option>
                                     <option value="full">Dueño (acceso total)</option>
                                 </select>
                             </div>
@@ -748,7 +862,7 @@
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         let miRol = null;
-        const NOMBRES_ROL = { full: 'Dueño', diamantes: 'Socio de Diamantes', streaming: 'Socio de Streaming' };
+        const NOMBRES_ROL = { full: 'Dueño', diamantes: 'Socio de Diamantes', streaming: 'Socio de Streaming', cuentas: 'Socio de Cuentas' };
         const UMBRAL_STOCK_BAJO = 2;
         let todosLosUsuarios = [];
         let paginaUsuarioActual = 1;
@@ -854,6 +968,9 @@
             if (rol === 'full' || rol === 'streaming') { await cargarProductosStreamingAdmin(); await cargarPortadasAdmin('streaming'); }
             await cargarCuentasExcluidas();
             fijarRangoGanancias('hoy');
+
+            document.getElementById('nav-item-cuentas').style.display = (rol === 'full' || rol === 'cuentas') ? '' : 'none';
+            if (rol === 'full' || rol === 'cuentas') { await cargarCatalogoCuentasVenta(); await cargarGarantiasCuentas(); await cargarMiWhatsapp(); }
         }
 
         // ================= ADMINISTRADORES =================
@@ -1207,6 +1324,7 @@
             'freefire-promo': 'promo',
             'freefire-fragmentos': 'fragmentos',
             'freefire-cajas': 'cajas',
+            'freefire-cuentas': 'cuentas',
             'hub-streaming': 'streaming'
         };
 
@@ -1214,7 +1332,7 @@
             const cont = document.getElementById(tipo === 'streaming' ? 'portadas-streaming' : 'portadas-diamantes');
             if (!cont) return;
             const { data } = await supabaseClient.from('portadas_catalogo').select('*').eq('tipo', tipo).order('etiqueta');
-            const categoriasRelevantes = tipo === 'streaming' ? ['streaming'] : ['regular', 'directa', 'promo', 'fragmentos', 'cajas'];
+            const categoriasRelevantes = tipo === 'streaming' ? ['streaming'] : ['regular', 'directa', 'promo', 'fragmentos', 'cajas', 'cuentas'];
             const { data: mantData } = await supabaseClient.from('categorias_mantenimiento').select('*').in('categoria', categoriasRelevantes);
             const mantPorCategoria = {};
             (mantData || []).forEach(m => { mantPorCategoria[m.categoria] = m; });
@@ -1277,7 +1395,7 @@
         }
 
         // ================= GANANCIAS =================
-        let datosGananciasActuales = { diamantes: [], streaming: [] };
+        let datosGananciasActuales = { diamantes: [], streaming: [], cuentas: [] };
 
         function formatearFechaInput(d) {
             const y = d.getFullYear(); const m = String(d.getMonth() + 1).padStart(2, '0'); const day = String(d.getDate()).padStart(2, '0');
@@ -1388,12 +1506,21 @@
                     return { ...pedido, paqueteBase, categoria, meses, costoTotal, ganancia };
                 });
 
-            datosGananciasActuales.diamantes = ventas.filter(v => v.categoria && v.categoria !== 'streaming');
-            datosGananciasActuales.streaming = ventas.filter(v => v.categoria === 'streaming');
+            datosGananciasActuales.diamantes = ventas.filter(v => bucketDeCategoria(v.categoria) === 'diamantes');
+            datosGananciasActuales.streaming = ventas.filter(v => bucketDeCategoria(v.categoria) === 'streaming');
+            datosGananciasActuales.cuentas = ventas.filter(v => bucketDeCategoria(v.categoria) === 'cuentas');
 
             renderGananciasCategoria('diamantes', datosGananciasActuales.diamantes);
             renderGananciasCategoria('streaming', datosGananciasActuales.streaming);
+            renderGananciasCategoria('cuentas', datosGananciasActuales.cuentas);
             renderStatsGanancias('stats-ganancias-combinado', ventas);
+        }
+
+        function bucketDeCategoria(categoria) {
+            if (categoria === 'streaming') return 'streaming';
+            if (categoria === 'cuentas') return 'cuentas';
+            if (['regular', 'directa', 'promo', 'fragmentos', 'cajas'].includes(categoria)) return 'diamantes';
+            return null;
         }
 
         function renderGananciasCategoria(tipo, ventas) {
@@ -1464,8 +1591,9 @@
             const desde = document.getElementById('ganancias-desde').value;
             const hasta = document.getElementById('ganancias-hasta').value;
 
+            const NOMBRES_TIPO_GANANCIAS = { diamantes: 'Diamantes', streaming: 'Streaming', cuentas: 'Cuentas' };
             const filas = [
-                `Ganancias de ${tipo === 'diamantes' ? 'Diamantes' : 'Streaming'} - CarzaD'Cross`,
+                `Ganancias de ${NOMBRES_TIPO_GANANCIAS[tipo] || tipo} - CarzaD'Cross`,
                 `Rango: ${desde} a ${hasta}`,
                 `Exportado: ${new Date().toLocaleString('es-PE')}`,
                 '',
@@ -1501,6 +1629,197 @@
             document.body.setAttribute('data-imprimir', tipo);
             window.print();
             setTimeout(() => document.body.removeAttribute('data-imprimir'), 500);
+        }
+
+        // ================= CUENTAS: CATÁLOGO =================
+        async function cargarMiWhatsapp() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) return;
+            const { data } = await supabaseClient.from('admins').select('whatsapp').eq('email', session.user.email).maybeSingle();
+            const input = document.getElementById('mi-whatsapp-input');
+            if (input) input.value = (data && data.whatsapp) || '';
+        }
+
+        async function guardarMiWhatsapp() {
+            const valor = document.getElementById('mi-whatsapp-input').value.trim();
+            const { error } = await supabaseClient.rpc('actualizar_mi_whatsapp', { p_whatsapp: valor });
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast(valor ? "WhatsApp guardado. Ahí te llegarán los avisos de venta de tus cuentas." : "WhatsApp borrado — los avisos caerán de respaldo al número del dueño.");
+        }
+
+        async function cargarCatalogoCuentasVenta() {
+            const { data } = await supabaseClient.from('productos').select('*').eq('categoria', 'cuentas').order('created_at', { ascending: false });
+            const tbody = document.getElementById('tabla-catalogo-cuentas'); tbody.innerHTML = '';
+            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; color:#a8a8b3;'>Sin cuentas cargadas todavía.</td></tr>"; return; }
+            const conteosFotos = {};
+            const { data: fotos } = await supabaseClient.from('fotos_cuenta').select('producto_id').in('producto_id', data.map(p => p.id));
+            (fotos || []).forEach(f => { conteosFotos[f.producto_id] = (conteosFotos[f.producto_id] || 0) + 1; });
+            data.forEach(p => tbody.insertAdjacentHTML('beforeend', filaCuentaVenta(p, conteosFotos[p.id] || 0)));
+        }
+
+        function filaCuentaVenta(p, numFotos) {
+            return `<tr data-id="${p.id}">
+                <td data-label="Título"><input type="text" class="bulk-select campo-titulo-cuenta" value="${escAttr(p.paquete)}" style="width:180px;">${p.subido_por ? `<div style="color:#a8a8b3; font-size:10px; margin-top:4px;">Subido por: ${escHtml(p.subido_por)}</div>` : ''}</td>
+                <td data-label="Precio"><input type="number" step="0.01" class="bulk-select campo-precio" value="${p.precio}" style="width:90px;"></td>
+                <td data-label="Precio anterior"><input type="number" step="0.01" class="bulk-select campo-precio-anterior" value="${p.precio_anterior ?? ''}" placeholder="—" style="width:90px;"></td>
+                <td data-label="Descripción"><input type="text" class="bulk-select campo-descripcion" value="${escAttr(p.descripcion)}" placeholder="opcional" style="width:180px;"></td>
+                <td data-label="Estado"><label style="display:flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap;"><input type="checkbox" ${p.activo ? 'checked' : ''} onchange="toggleActivoProducto(${p.id}, this.checked)"> ${p.activo ? 'Disponible' : 'Vendida'}</label></td>
+                <td data-label="Fotos"><button class="btn-view" onclick="abrirGaleriaCuenta(${p.id}, '${escAttr(p.paquete).replace(/'/g, "\\'")}')"><span class="material-icons" style="font-size:16px;">photo_library</span> ${numFotos} foto(s)</button></td>
+                <td data-label="Acción"><button class="btn-primary" style="background:#00e676; color:black; border:none; border-radius:6px; padding:8px 12px; cursor:pointer;" onclick="guardarCuentaVenta(${p.id})"><span class="material-icons" style="font-size:16px;">save</span></button></td>
+            </tr>`;
+        }
+
+        async function guardarCuentaVenta(id) {
+            const tr = document.querySelector(`#tabla-catalogo-cuentas tr[data-id="${id}"]`);
+            if (!tr) return;
+            const paquete = tr.querySelector('.campo-titulo-cuenta').value.trim();
+            const precio = parseFloat(tr.querySelector('.campo-precio').value);
+            const precioAnteriorRaw = tr.querySelector('.campo-precio-anterior').value;
+            const precioAnterior = precioAnteriorRaw ? parseFloat(precioAnteriorRaw) : null;
+            const descripcion = tr.querySelector('.campo-descripcion').value.trim() || null;
+
+            if (!paquete) return showToast("El título no puede quedar vacío.", "warning");
+            if (isNaN(precio) || precio <= 0) return showToast("Ingresa un precio válido.", "warning");
+            if (precioAnterior !== null && precioAnterior <= precio) return showToast("El precio anterior debe ser mayor al precio actual.", "warning");
+
+            const { error } = await supabaseClient.from('productos').update({ paquete, precio, precio_anterior: precioAnterior, descripcion }).eq('id', id);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast("Cuenta actualizada.");
+            cargarCatalogoCuentasVenta();
+        }
+
+        async function agregarCuentaVenta() {
+            const titulo = document.getElementById('nueva-cuenta-titulo').value.trim();
+            const precio = parseFloat(document.getElementById('nueva-cuenta-precio').value);
+            const precioAnteriorRaw = document.getElementById('nueva-cuenta-precio-anterior').value;
+            const precioAnterior = precioAnteriorRaw ? parseFloat(precioAnteriorRaw) : null;
+            const descripcion = document.getElementById('nueva-cuenta-descripcion').value.trim() || null;
+            const fotoInput = document.getElementById('nueva-cuenta-portada');
+            const file = fotoInput.files[0];
+
+            if (!titulo) return showToast("Ingresa el título de la cuenta.", "warning");
+            if (isNaN(precio) || precio <= 0) return showToast("Ingresa un precio válido.", "warning");
+            if (precioAnterior !== null && precioAnterior <= precio) return showToast("El precio anterior debe ser mayor al precio actual.", "warning");
+            if (file) {
+                if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) return showToast("Solo se aceptan imágenes PNG, JPG o WEBP.", "warning");
+                if (file.size > 3 * 1024 * 1024) return showToast("La imagen no debe pesar más de 3 MB.", "warning");
+            }
+
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const { data, error } = await supabaseClient.from('productos').insert([{ paquete: titulo, categoria: 'cuentas', precio, precio_anterior: precioAnterior, descripcion, activo: true, subido_por_correo: session ? session.user.email : null }]).select().single();
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+
+            if (file) {
+                const ext = file.name.split('.').pop();
+                const ruta = `producto-${data.id}.${ext}`;
+                const { error: errorSubida } = await supabaseClient.storage.from('productos').upload(ruta, file, { upsert: true });
+                if (!errorSubida) {
+                    const { data: urlData } = supabaseClient.storage.from('productos').getPublicUrl(ruta);
+                    await supabaseClient.from('productos').update({ imagen_url: urlData.publicUrl + '?t=' + Date.now() }).eq('id', data.id);
+                }
+            }
+
+            showToast("Cuenta agregada. Ahora súbele las fotos de la galería.");
+            document.getElementById('nueva-cuenta-titulo').value = '';
+            document.getElementById('nueva-cuenta-precio').value = '';
+            document.getElementById('nueva-cuenta-precio-anterior').value = '';
+            document.getElementById('nueva-cuenta-descripcion').value = '';
+            fotoInput.value = '';
+            cargarCatalogoCuentasVenta();
+        }
+
+        // ================= CUENTAS: GALERÍA DE FOTOS =================
+        let galeriaCuentaProductoIdActual = null;
+
+        async function abrirGaleriaCuenta(productoId, titulo) {
+            galeriaCuentaProductoIdActual = productoId;
+            document.getElementById('galeria-cuenta-titulo').innerText = titulo;
+            document.getElementById('galeria-cuenta-input').value = '';
+            document.getElementById('modal-galeria-cuenta-overlay').style.display = 'flex';
+            await renderGaleriaCuenta();
+        }
+
+        async function renderGaleriaCuenta() {
+            const { data } = await supabaseClient.from('fotos_cuenta').select('*').eq('producto_id', galeriaCuentaProductoIdActual).order('orden');
+            const cont = document.getElementById('galeria-cuenta-grid');
+            cont.innerHTML = (data && data.length > 0) ? data.map(f => `
+                <div style="position:relative;">
+                    <img src="${f.url}" style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px;">
+                    <span class="material-icons" style="position:absolute; top:4px; right:4px; background:rgba(255,71,87,0.9); color:white; border-radius:50%; padding:3px; font-size:16px; cursor:pointer;" onclick="eliminarFotoCuenta(${f.id})">close</span>
+                </div>`).join('') : `<p style="color:#a8a8b3; font-size:13px; grid-column:1/-1;">Sin fotos todavía.</p>`;
+        }
+
+        async function subirFotosGaleriaCuenta(inputEl) {
+            const files = Array.from(inputEl.files);
+            if (files.length === 0) return;
+            for (const file of files) {
+                if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) { showToast(`"${file.name}" no es PNG/JPG/WEBP, se omitió.`, "warning"); continue; }
+                if (file.size > 3 * 1024 * 1024) { showToast(`"${file.name}" pesa más de 3MB, se omitió.`, "warning"); continue; }
+                const ext = file.name.split('.').pop();
+                const ruta = `cuentas/${galeriaCuentaProductoIdActual}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+                const { error: errorSubida } = await supabaseClient.storage.from('productos').upload(ruta, file);
+                if (errorSubida) { showToast("Error al subir " + file.name + ": " + errorSubida.message, "error"); continue; }
+                const { data: urlData } = supabaseClient.storage.from('productos').getPublicUrl(ruta);
+                await supabaseClient.from('fotos_cuenta').insert([{ producto_id: galeriaCuentaProductoIdActual, url: urlData.publicUrl, orden: Date.now() }]);
+            }
+            inputEl.value = '';
+            showToast("Fotos actualizadas.");
+            await renderGaleriaCuenta();
+        }
+
+        async function eliminarFotoCuenta(fotoId) {
+            const { error } = await supabaseClient.from('fotos_cuenta').delete().eq('id', fotoId);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            await renderGaleriaCuenta();
+        }
+
+        // ================= CUENTAS: GARANTÍAS =================
+        async function cargarGarantiasCuentas() {
+            const { data } = await supabaseClient.from('cuentas_vendidas').select('*, productos(paquete)').not('garantia_dias', 'is', null).order('fecha_venta', { ascending: false });
+            const tbody = document.getElementById('tabla-garantias-cuentas'); tbody.innerHTML = '';
+            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#a8a8b3;'>Sin cuentas con garantía activa.</td></tr>"; return; }
+            data.forEach(cv => tbody.insertAdjacentHTML('beforeend', filaGarantiaCuenta(cv)));
+        }
+
+        function filaGarantiaCuenta(cv) {
+            const fechaVenta = new Date(cv.fecha_venta);
+            const diasTranscurridos = Math.floor((Date.now() - fechaVenta.getTime()) / 86400000);
+            const diasRestantes = cv.garantia_dias - diasTranscurridos;
+            const vencida = diasRestantes <= 0;
+            const yaAvisado = !!cv.fecha_aviso_garantia_enviado;
+            const tituloCuenta = (cv.productos && cv.productos.paquete) || '—';
+            return `<tr data-id="${cv.id}">
+                <td data-label="Cuenta">${escHtml(tituloCuenta)}</td>
+                <td data-label="Comprador">${escHtml(cv.nickname_comprador)}</td>
+                <td data-label="Fecha de venta">${fechaVenta.toLocaleDateString('es-PE')}</td>
+                <td data-label="Garantía">${cv.garantia_dias} días</td>
+                <td data-label="Estado" style="color:${vencida ? '#ff4757' : '#00e676'}; font-weight:bold;">${vencida ? 'Vencida' : diasRestantes + ' día(s) restantes'}</td>
+                <td data-label="Acción">${yaAvisado
+                    ? `<span style="color:#a8a8b3; font-size:12px;">Aviso enviado el ${new Date(cv.fecha_aviso_garantia_enviado).toLocaleDateString('es-PE')}</span>`
+                    : (vencida ? `<button class="btn-remove" onclick="enviarAvisoGarantia(${cv.id}, '${escAttr(tituloCuenta).replace(/'/g, "\\'")}', '${escAttr(cv.correo_recuperacion).replace(/'/g, "\\'")}')"><span class="material-icons" style="font-size:16px;">notifications_active</span> Enviar aviso</button>` : '—')}</td>
+            </tr>`;
+        }
+
+        async function enviarAvisoGarantia(cuentaVendidaId, tituloCuenta, correoRecuperacion) {
+            const conf = await openCustomModal({ title: "Enviar aviso de garantía vencida", desc: `¿Confirmas avisarle al cliente que la garantía de <b>${tituloCuenta}</b> terminó y se desvinculó el correo <b>${correoRecuperacion}</b>?`, icon: 'notifications_active', color: '#ff9800', textColor: 'black', type: 'confirm', confirmText: 'Enviar aviso' });
+            if (!conf) return;
+
+            const { data, error } = await supabaseClient.rpc('admin_enviar_aviso_garantia', { p_cuenta_vendida_id: cuentaVendidaId });
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            const r = data && data[0];
+            if (!r) { showToast("No se pudo enviar el aviso.", "error"); return; }
+
+            if (r.celular) {
+                const numStr = r.celular.replace(/[^0-9]/g, '');
+                const msg = `¡Hola ${r.nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\nTu cuenta *${tituloCuenta}* ha finalizado su periodo de garantía. El correo de recuperación ${correoRecuperacion} ya fue desvinculado, así que la cuenta queda 100% segura bajo tu control. ¡Gracias por tu compra!`;
+                window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+            if (r.correo) {
+                enviarNotificacionCorreo(r.correo, r.nickname, `✅ Garantía finalizada — ${tituloCuenta}`, `Tu cuenta ${tituloCuenta} ha finalizado su periodo de garantía. El correo de recuperación ${correoRecuperacion} ya fue desvinculado.`, 'Ir a Mis Cuentas', 'https://carzadcross.com/mis-cuentas.html', null);
+            }
+
+            showToast("Aviso enviado.");
+            cargarGarantiasCuentas();
         }
 
         function actualizarResumen() {
@@ -1816,6 +2135,9 @@
         }
 
         async function completarPedido(id, paquete, nick) {
+            const { data: prod } = await supabaseClient.from('productos').select('categoria').eq('paquete', paquete).maybeSingle();
+            if (prod && prod.categoria === 'cuentas') { completarPedidoCuenta(id, paquete, nick); return; }
+
             const conf = await openCustomModal({ title: "Completar Pedido", desc: `¿Confirmas envío de <b>${paquete}</b> a <b>${nick}</b>?`, icon: 'task_alt', color: '#a155ff', textColor: 'white', type: 'confirm', confirmText: 'Marcar Listo' });
             if(!conf) return;
 
@@ -1853,6 +2175,54 @@
             }
 
             showToast(`Pedido completado.`); cargarPedidos(); cargarHistorial();
+        }
+
+        let completarCuentaContexto = null;
+
+        function completarPedidoCuenta(id, paquete, nick) {
+            completarCuentaContexto = { id, paquete, nick };
+            document.getElementById('completar-cuenta-titulo').innerText = `${paquete} — ${nick}`;
+            document.getElementById('completar-cuenta-correo').value = '';
+            document.getElementById('completar-cuenta-contrasena').value = '';
+            document.getElementById('completar-cuenta-correo-recuperacion').value = '';
+            document.getElementById('completar-cuenta-contrasena-recuperacion').value = '';
+            document.getElementById('completar-cuenta-garantia').value = '';
+            document.getElementById('completar-cuenta-garantia-wrap').style.display = 'none';
+            document.getElementById('modal-completar-cuenta-overlay').style.display = 'flex';
+        }
+
+        async function confirmarCompletarCuenta() {
+            const { id, paquete, nick } = completarCuentaContexto;
+            const correoAcceso = document.getElementById('completar-cuenta-correo').value.trim();
+            const contrasenaAcceso = document.getElementById('completar-cuenta-contrasena').value.trim();
+            const correoRecuperacion = document.getElementById('completar-cuenta-correo-recuperacion').value.trim();
+            const contrasenaRecuperacion = document.getElementById('completar-cuenta-contrasena-recuperacion').value.trim();
+            const garantiaDiasRaw = document.getElementById('completar-cuenta-garantia').value;
+
+            if (!correoAcceso || !contrasenaAcceso) return showToast("El correo y la contraseña de acceso son obligatorios.", "warning");
+            const garantiaDias = (correoRecuperacion && garantiaDiasRaw) ? parseInt(garantiaDiasRaw) : null;
+
+            document.getElementById('modal-completar-cuenta-overlay').style.display = 'none';
+
+            const { data, error } = await supabaseClient.rpc('admin_completar_pedido_cuenta', {
+                p_pedido_id: id, p_correo_acceso: correoAcceso, p_contrasena_acceso: contrasenaAcceso,
+                p_correo_recuperacion: correoRecuperacion || null, p_contrasena_recuperacion: contrasenaRecuperacion || null,
+                p_garantia_dias: garantiaDias
+            });
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            const r = data && data[0];
+            if (!r) { showToast("No se pudo completar el pedido.", "error"); return; }
+
+            if (r.celular) {
+                const numStr = r.celular.replace(/[^0-9]/g, '');
+                const msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu compra de la cuenta *${paquete}* ha sido procesada. Ya puedes ver tus datos de acceso en tu panel de *Mis Cuentas* dentro de la web. ¡Gracias por preferirnos!`;
+                window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+            if (r.correo) {
+                enviarNotificacionCorreo(r.correo, nick, `✅ Pedido #${id} completado — ${paquete}`, `Tu compra de la cuenta <b>${paquete}</b> ya fue procesada. Ya puedes ver tus datos de acceso en tu panel de Mis Cuentas.`, 'Ver Mis Cuentas', 'https://carzadcross.com/mis-cuentas.html', null);
+            }
+
+            showToast("Pedido completado."); cargarPedidos(); cargarHistorial(); cargarGarantiasCuentas();
         }
 
         async function rechazarPedido(id, paquete, nick, precio) {

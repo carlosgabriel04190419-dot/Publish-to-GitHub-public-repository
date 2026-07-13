@@ -172,6 +172,7 @@
             <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 8px; min-width: 160px; z-index: 1000; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
                  <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">person</span> Mis Datos</a>
                  <a href="mis-plataformas.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">live_tv</span> Mis Plataformas</a>
+                 <a href="mis-cuentas.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">badge</span> Mis Cuentas</a>
                  <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #00e676; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
                  <!-- ENLACE CAJA VIP -->
                  <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">casino</span> Caja Misteriosa VIP</a>
@@ -452,16 +453,6 @@
 
         async function cargarProductosCatalogo(categoria) {
             const grid = document.getElementById('products-grid');
-            const { data: mant } = await supabaseClient.from('categorias_mantenimiento').select('en_mantenimiento, mensaje').eq('categoria', categoria).maybeSingle();
-            if (mant && mant.en_mantenimiento) {
-                const msgSafe = (mant.mensaje || 'Estamos actualizando este catálogo. Vuelve a intentarlo en un rato — gracias por tu paciencia.').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                grid.innerHTML = `<div style="grid-column: 1/-1; background: rgba(255,152,0,0.08); border: 1px solid #ff9800; border-radius: 12px; padding: 30px; text-align: center;">
-                    <span class="material-icons" style="font-size: 44px; color: #ff9800;">construction</span>
-                    <h3 style="color: white; margin: 12px 0 8px; font-size: 18px;">Catálogo en mantenimiento</h3>
-                    <p style="color: #a8a8b3; font-size: 14px; margin: 0 auto; max-width: 420px;">${msgSafe}</p>
-                </div>`;
-                return;
-            }
             const { data, error } = await supabaseClient.from('productos').select('*').eq('categoria', categoria).eq('activo', true).order('precio');
             if (error || !data || data.length === 0) {
                 grid.innerHTML = "<p style='color:#a8a8b3;'>No hay productos disponibles en este momento.</p>";
