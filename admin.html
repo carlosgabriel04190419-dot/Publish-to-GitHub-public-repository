@@ -1659,13 +1659,16 @@
 
         function filaCuentaVenta(p, numFotos) {
             return `<tr data-id="${p.id}">
-                <td data-label="Título"><input type="text" class="bulk-select campo-titulo-cuenta" value="${escAttr(p.paquete)}" style="width:180px;">${p.subido_por ? `<div style="color:#a8a8b3; font-size:10px; margin-top:4px;">Subido por: ${escHtml(p.subido_por)}</div>` : ''}</td>
+                <td data-label="Título"><input type="text" class="bulk-select campo-titulo-cuenta" value="${escAttr(p.paquete)}" style="width:180px;">${p.subido_por_correo ? `<div style="color:#a8a8b3; font-size:10px; margin-top:4px;">Subido por: ${escHtml(p.subido_por_correo)}</div>` : ''}</td>
                 <td data-label="Precio"><input type="number" step="0.01" class="bulk-select campo-precio" value="${p.precio}" style="width:90px;"></td>
                 <td data-label="Precio anterior"><input type="number" step="0.01" class="bulk-select campo-precio-anterior" value="${p.precio_anterior ?? ''}" placeholder="—" style="width:90px;"></td>
                 <td data-label="Descripción"><input type="text" class="bulk-select campo-descripcion" value="${escAttr(p.descripcion)}" placeholder="opcional" style="width:180px;"></td>
                 <td data-label="Estado"><label style="display:flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap;"><input type="checkbox" ${p.activo ? 'checked' : ''} onchange="toggleActivoProducto(${p.id}, this.checked)"> ${p.activo ? 'Disponible' : 'Vendida'}</label></td>
                 <td data-label="Fotos"><button class="btn-view" onclick="abrirGaleriaCuenta(${p.id}, '${escAttr(p.paquete).replace(/'/g, "\\'")}')"><span class="material-icons" style="font-size:16px;">photo_library</span> ${numFotos} foto(s)</button></td>
-                <td data-label="Acción"><button class="btn-primary" style="background:#00e676; color:black; border:none; border-radius:6px; padding:8px 12px; cursor:pointer;" onclick="guardarCuentaVenta(${p.id})"><span class="material-icons" style="font-size:16px;">save</span></button></td>
+                <td data-label="Acción" style="display:flex; gap:6px;">
+                    <button class="btn-primary" style="background:#00e676; color:black; border:none; border-radius:6px; padding:8px 12px; cursor:pointer;" onclick="guardarCuentaVenta(${p.id})"><span class="material-icons" style="font-size:16px;">save</span></button>
+                    <button class="btn-remove" style="padding:8px 12px;" onclick="eliminarCuentaVenta(${p.id}, '${escAttr(p.paquete).replace(/'/g, "\\'")}')"><span class="material-icons" style="font-size:16px;">delete</span></button>
+                </td>
             </tr>`;
         }
 
@@ -1685,6 +1688,22 @@
             const { error } = await supabaseClient.from('productos').update({ paquete, precio, precio_anterior: precioAnterior, descripcion }).eq('id', id);
             if (error) { showToast("Error: " + error.message, "error"); return; }
             showToast("Cuenta actualizada.");
+            cargarCatalogoCuentasVenta();
+        }
+
+        async function eliminarCuentaVenta(id, titulo) {
+            const { count } = await supabaseClient.from('cuentas_vendidas').select('id', { count: 'exact', head: true }).eq('producto_id', id);
+            if (count && count > 0) {
+                showToast("No se puede eliminar: esta cuenta ya fue vendida y tiene datos de un cliente guardados.", "warning");
+                return;
+            }
+
+            const conf = await openCustomModal({ title: "Eliminar Cuenta", desc: `¿Eliminar <b>${titulo}</b> del catálogo? Se borran también sus fotos. Esta acción no se puede deshacer.`, icon: 'delete_forever', color: '#ff4757', textColor: 'white', type: 'confirm', confirmText: 'Eliminar' });
+            if (!conf) return;
+
+            const { error } = await supabaseClient.from('productos').delete().eq('id', id);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast("Cuenta eliminada.");
             cargarCatalogoCuentasVenta();
         }
 
