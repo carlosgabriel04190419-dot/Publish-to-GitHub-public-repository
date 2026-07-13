@@ -936,7 +936,7 @@
         window.onload = async function() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
-                const { data: filaAdmin } = await supabaseClient.from('admins').select('rol').maybeSingle();
+                const { data: filaAdmin } = await supabaseClient.from('admins').select('rol').ilike('email', session.user.email).maybeSingle();
                 if (filaAdmin) { mostrarPanel(filaAdmin.rol); }
                 else { document.getElementById('admin-error-msg').style.display = 'block'; await supabaseClient.auth.signOut(); }
             } else {
