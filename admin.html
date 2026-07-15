@@ -1821,7 +1821,7 @@
 
             for (const file of files) {
                 if (!TIPOS_VALIDOS.includes(file.type)) { errores.push(`"${file.name}" no es PNG/JPG/WEBP (formato detectado: ${file.type || 'desconocido'}, ej. HEIC de iPhone no sirve — conviértela a JPG primero).`); continue; }
-                if (file.size > 3 * 1024 * 1024) { errores.push(`"${file.name}" pesa más de 3MB.`); continue; }
+                if (file.size > 8 * 1024 * 1024) { errores.push(`"${file.name}" pesa más de 8MB.`); continue; }
 
                 const extOriginal = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
                 const ruta = `cuentas/${galeriaCuentaProductoIdActual}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${extOriginal}`;
