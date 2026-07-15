@@ -174,7 +174,8 @@
     <div id="modal-galeria-cuenta-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:20px; box-sizing:border-box;">
         <div style="background:#121218; width:100%; max-width:600px; max-height:80vh; padding:24px; border:1px solid #a155ff; border-radius:16px; box-shadow:0 0 30px rgba(161,85,255,0.15); display:flex; flex-direction:column;">
             <h3 style="margin:0 0 15px 0; font-size:18px; display:flex; align-items:center; gap:8px;"><span class="material-icons" style="color:#a155ff;">photo_library</span> Fotos de <span id="galeria-cuenta-titulo" style="color:#a155ff;"></span></h3>
-            <input type="file" id="galeria-cuenta-input" accept="image/png,image/jpeg,image/webp" multiple style="width:100%; margin-bottom:15px;" onchange="subirFotosGaleriaCuenta(this)">
+            <input type="file" id="galeria-cuenta-input" accept="image/png,image/jpeg,image/webp" multiple style="width:100%; margin-bottom:12px;" onchange="subirFotosGaleriaCuenta(this)">
+            <div id="galeria-cuenta-errores"></div>
             <div id="galeria-cuenta-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap:10px; overflow-y:auto; flex:1;"></div>
             <button class="btn-outline" style="width:100%; margin-top:15px; padding:10px;" onclick="document.getElementById('modal-galeria-cuenta-overlay').style.display='none'; cargarCatalogoCuentasVenta();">Cerrar</button>
         </div>
@@ -700,7 +701,7 @@
                     <h1 class="view-title"><span class="material-icons" style="color:#a155ff;">badge</span> Cuentas Free Fire</h1>
                     <p class="view-subtitle">Catálogo de cuentas en venta, fotos, y seguimiento de garantía de las ya vendidas.</p>
 
-                    <div class="card-box">
+                    <div class="card-box" id="card-mi-whatsapp">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#00e676;">chat</span> Mi WhatsApp para avisos de venta</h3>
                         <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 15px 0;">Cuando un cliente compre una cuenta que TÚ subiste, el mensaje de WhatsApp de la compra te llegará a este número (no al del dueño). Si lo dejas vacío, el aviso cae de respaldo al número del dueño.</p>
                         <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -970,7 +971,9 @@
             fijarRangoGanancias('hoy');
 
             document.getElementById('nav-item-cuentas').style.display = (rol === 'full' || rol === 'cuentas') ? '' : 'none';
-            if (rol === 'full' || rol === 'cuentas') { await cargarCatalogoCuentasVenta(); await cargarGarantiasCuentas(); await cargarMiWhatsapp(); }
+            document.getElementById('card-mi-whatsapp').style.display = (rol === 'cuentas') ? '' : 'none';
+            if (rol === 'full' || rol === 'cuentas') { await cargarCatalogoCuentasVenta(); await cargarGarantiasCuentas(); }
+            if (rol === 'cuentas') { await cargarMiWhatsapp(); }
         }
 
         // ================= ADMINISTRADORES =================
@@ -1754,6 +1757,7 @@
             galeriaCuentaProductoIdActual = productoId;
             document.getElementById('galeria-cuenta-titulo').innerText = titulo;
             document.getElementById('galeria-cuenta-input').value = '';
+            document.getElementById('galeria-cuenta-errores').innerHTML = '';
             document.getElementById('modal-galeria-cuenta-overlay').style.display = 'flex';
             await renderGaleriaCuenta();
         }
@@ -1771,19 +1775,41 @@
         async function subirFotosGaleriaCuenta(inputEl) {
             const files = Array.from(inputEl.files);
             if (files.length === 0) return;
+            const cont = document.getElementById('galeria-cuenta-grid');
+            cont.innerHTML = `<p style="color:#a8a8b3; font-size:13px; grid-column:1/-1;">Subiendo ${files.length} foto(s)...</p>`;
+
+            let subidas = 0;
+            const errores = [];
+            const TIPOS_VALIDOS = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+
             for (const file of files) {
-                if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) { showToast(`"${file.name}" no es PNG/JPG/WEBP, se omitió.`, "warning"); continue; }
-                if (file.size > 3 * 1024 * 1024) { showToast(`"${file.name}" pesa más de 3MB, se omitió.`, "warning"); continue; }
-                const ext = file.name.split('.').pop();
-                const ruta = `cuentas/${galeriaCuentaProductoIdActual}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+                if (!TIPOS_VALIDOS.includes(file.type)) { errores.push(`"${file.name}" no es PNG/JPG/WEBP (formato detectado: ${file.type || 'desconocido'}, ej. HEIC de iPhone no sirve — conviértela a JPG primero).`); continue; }
+                if (file.size > 3 * 1024 * 1024) { errores.push(`"${file.name}" pesa más de 3MB.`); continue; }
+
+                const extOriginal = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+                const ruta = `cuentas/${galeriaCuentaProductoIdActual}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${extOriginal}`;
+
                 const { error: errorSubida } = await supabaseClient.storage.from('productos').upload(ruta, file);
-                if (errorSubida) { showToast("Error al subir " + file.name + ": " + errorSubida.message, "error"); continue; }
+                if (errorSubida) { errores.push(`"${file.name}": error al subir — ${errorSubida.message}`); continue; }
+
                 const { data: urlData } = supabaseClient.storage.from('productos').getPublicUrl(ruta);
-                await supabaseClient.from('fotos_cuenta').insert([{ producto_id: galeriaCuentaProductoIdActual, url: urlData.publicUrl, orden: Date.now() }]);
+                const { error: errorInsert } = await supabaseClient.from('fotos_cuenta').insert([{ producto_id: galeriaCuentaProductoIdActual, url: urlData.publicUrl, orden: Date.now() }]);
+                if (errorInsert) { errores.push(`"${file.name}": se subió la imagen pero no se pudo guardar en la galería — ${errorInsert.message}`); continue; }
+
+                subidas++;
             }
+
             inputEl.value = '';
-            showToast("Fotos actualizadas.");
+            if (subidas > 0) showToast(`${subidas} foto(s) agregada(s).`, "success");
+            if (errores.length > 0) showToast(`${errores.length} foto(s) no se pudieron subir — revisa el detalle debajo del selector.`, "error");
+            if (subidas === 0 && errores.length === 0) showToast("No se subió ninguna foto.", "warning");
+
             await renderGaleriaCuenta();
+
+            const errorBox = document.getElementById('galeria-cuenta-errores');
+            if (errorBox) errorBox.innerHTML = errores.length > 0
+                ? `<div style="background:rgba(255,71,87,0.1); border:1px solid #ff4757; border-radius:8px; padding:10px 12px; margin-bottom:12px; color:#ff4757; font-size:12px; line-height:1.6;">${errores.map(e => `⚠️ ${e}`).join('<br>')}</div>`
+                : '';
         }
 
         async function eliminarFotoCuenta(fotoId) {
