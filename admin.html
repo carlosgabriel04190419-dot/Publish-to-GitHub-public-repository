@@ -1782,6 +1782,9 @@
             const errores = [];
             const TIPOS_VALIDOS = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
 
+            const { count: fotosExistentes } = await supabaseClient.from('fotos_cuenta').select('id', { count: 'exact', head: true }).eq('producto_id', galeriaCuentaProductoIdActual);
+            let siguienteOrden = fotosExistentes || 0;
+
             for (const file of files) {
                 if (!TIPOS_VALIDOS.includes(file.type)) { errores.push(`"${file.name}" no es PNG/JPG/WEBP (formato detectado: ${file.type || 'desconocido'}, ej. HEIC de iPhone no sirve — conviértela a JPG primero).`); continue; }
                 if (file.size > 3 * 1024 * 1024) { errores.push(`"${file.name}" pesa más de 3MB.`); continue; }
@@ -1806,9 +1809,10 @@
                 if (errorSubida) { errores.push(`"${file.name}": error al subir — ${errorSubida.message}`); continue; }
 
                 const { data: urlData } = supabaseClient.storage.from('productos').getPublicUrl(ruta);
-                const { error: errorInsert } = await supabaseClient.from('fotos_cuenta').insert([{ producto_id: galeriaCuentaProductoIdActual, url: urlData.publicUrl, orden: Date.now() }]);
+                const { error: errorInsert } = await supabaseClient.from('fotos_cuenta').insert([{ producto_id: galeriaCuentaProductoIdActual, url: urlData.publicUrl, orden: siguienteOrden }]);
                 if (errorInsert) { errores.push(`"${file.name}": se subió la imagen pero no se pudo guardar en la galería — ${errorInsert.message}`); continue; }
 
+                siguienteOrden++;
                 subidas++;
             }
 
