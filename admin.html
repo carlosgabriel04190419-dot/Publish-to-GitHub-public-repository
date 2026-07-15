@@ -1789,7 +1789,20 @@
                 const extOriginal = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
                 const ruta = `cuentas/${galeriaCuentaProductoIdActual}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${extOriginal}`;
 
-                const { error: errorSubida } = await supabaseClient.storage.from('productos').upload(ruta, file);
+                let contenido;
+                try {
+                    contenido = await new Promise((resolve, reject) => {
+                        const lector = new FileReader();
+                        lector.onload = () => resolve(lector.result);
+                        lector.onerror = () => reject(lector.error);
+                        lector.readAsArrayBuffer(file);
+                    });
+                } catch (e) {
+                    errores.push(`"${file.name}": no se pudo leer el archivo — ${e && e.message ? e.message : e}.`);
+                    continue;
+                }
+
+                const { error: errorSubida } = await supabaseClient.storage.from('productos').upload(ruta, contenido, { contentType: file.type || 'image/jpeg' });
                 if (errorSubida) { errores.push(`"${file.name}": error al subir — ${errorSubida.message}`); continue; }
 
                 const { data: urlData } = supabaseClient.storage.from('productos').getPublicUrl(ruta);
