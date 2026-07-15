@@ -107,13 +107,15 @@
         .pagination-bar span { color: #a8a8b3; font-size: 13px; font-weight: 600; }
 
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes girarActualizar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        #icono-actualizar-panel.girando { animation: girarActualizar 0.7s linear infinite; }
 
         /* ===================== MOBILE ===================== */
         @media (max-width: 980px) {
             .admin-sidebar { position: fixed; left: 0; top: 0; height: 100%; transform: translateX(-100%); transition: transform 0.25s ease; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
             .admin-sidebar.open { transform: translateX(0); }
             .sidebar-overlay.open { display: block; }
-            .admin-topbar { display: flex; }
+            .admin-topbar { display: flex; position: sticky; top: 0; z-index: 500; background: #0a0a0f; padding: 14px 16px; margin: -16px -16px 18px -16px; border-bottom: 1px solid #232330; }
             .admin-main { padding: 16px; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .stat-card { padding: 14px; gap: 10px; }
@@ -301,7 +303,7 @@
                             </svg>
                         </div>
                     </div>
-                    <div style="width:42px;"></div>
+                    <button class="mobile-menu-btn" id="btn-actualizar-panel" onclick="actualizarPanel()"><span class="material-icons" id="icono-actualizar-panel">refresh</span></button>
                 </div>
 
                 <!-- ============ RESUMEN ============ -->
@@ -976,6 +978,36 @@
             document.getElementById('card-mi-whatsapp').style.display = (rol === 'cuentas') ? '' : 'none';
             if (rol === 'full' || rol === 'cuentas') { await cargarCatalogoCuentasVenta(); await cargarGarantiasCuentas(); }
             if (rol === 'cuentas') { await cargarMiWhatsapp(); }
+
+            iniciarActualizacionAutomatica();
+        }
+
+        let intervaloActualizacionIniciado = false;
+
+        function iniciarActualizacionAutomatica() {
+            if (intervaloActualizacionIniciado) return;
+            intervaloActualizacionIniciado = true;
+            setInterval(async () => {
+                await cargarPedidos();
+                if (miRol === 'full') await cargarRecargas();
+            }, 30000);
+        }
+
+        async function actualizarPanel() {
+            const icono = document.getElementById('icono-actualizar-panel');
+            if (icono) icono.classList.add('girando');
+            try {
+                await cargarPedidos();
+                await cargarHistorial();
+                await cargarStock();
+                if (miRol === 'full') { await cargarRecargas(); }
+                if (miRol === 'full' || miRol === 'cuentas') { await cargarGarantiasCuentas(); }
+                showToast('Panel actualizado.');
+            } catch (e) {
+                showToast('No se pudo actualizar. Revisa tu conexión.', 'error');
+            } finally {
+                if (icono) setTimeout(() => icono.classList.remove('girando'), 400);
+            }
         }
 
         // ================= ADMINISTRADORES =================
