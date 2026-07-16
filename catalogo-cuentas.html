@@ -22,6 +22,10 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <style>
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 320px));
+            justify-content: center;
+        }
         .products-grid .card {
             position: relative;
             overflow: hidden;
@@ -241,9 +245,9 @@
             }
 
             const iconoStyle = p.imagen_url
-                ? `background: url('${p.imagen_url}') center/cover no-repeat;`
+                ? `background: #0d0d12 url('${p.imagen_url}') center/contain no-repeat;`
                 : `background: linear-gradient(135deg, #a155ff, #00d2ff); display:flex; align-items:center; justify-content:center;`;
-            const iconoHtml = `<div class="card-icon" style="height: 140px; border-radius: 10px; margin-bottom: 10px; ${iconoStyle} ${vendida ? 'filter: grayscale(1); opacity: 0.55;' : ''}">${!p.imagen_url ? '<span class="material-icons" style="font-size:48px; color:white;">badge</span>' : ''}</div>`;
+            const iconoHtml = `<div class="card-icon" style="height: 190px; border-radius: 10px; margin-bottom: 10px; ${iconoStyle} ${vendida ? 'filter: grayscale(1); opacity: 0.55;' : ''}">${!p.imagen_url ? '<span class="material-icons" style="font-size:48px; color:white;">badge</span>' : ''}</div>`;
 
             const descHtml = p.descripcion ? `<p class="card-stock">${p.descripcion.length > 90 ? p.descripcion.slice(0, 90) + '…' : p.descripcion}</p>` : '';
 
