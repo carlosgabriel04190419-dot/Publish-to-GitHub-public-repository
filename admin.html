@@ -95,6 +95,22 @@
         .btn-complete { background: #a155ff; color: white; border: none; padding: 8px 14px; border-radius: 7px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; font-size: 12px; }
         .btn-copy { background: #23232f; color: #a8a8b3; border: 1px solid #383848; padding: 4px 8px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; margin-left: 5px; }
 
+        /* -------- TARJETAS DE CUENTAS (CATÁLOGO) -------- */
+        .cuentas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+        .cuenta-card { background: #1a1a24; border: 1px solid #232330; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+        .cuenta-card-img { width: 100%; aspect-ratio: 16/9; border-radius: 10px; background-color: #0d0d12; background-size: contain; background-position: center; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; }
+        .cuenta-card-titulo { font-weight: 800; font-size: 14.5px; line-height: 1.3; }
+        .cuenta-card-subido { color: #6a6a78; font-size: 10.5px; margin-top: -6px; }
+        .cuenta-card-precios { display: flex; align-items: baseline; gap: 8px; }
+        .cuenta-card-precio { font-size: 17px; font-weight: 900; color: #00e676; }
+        .cuenta-card-precio-ant { font-size: 12.5px; color: #6a6a78; text-decoration: line-through; }
+        .cuenta-estado-toggle { display: flex; border-radius: 8px; overflow: hidden; border: 1px solid #333340; }
+        .cuenta-estado-btn { flex: 1; text-align: center; padding: 9px 6px; font-size: 11.5px; font-weight: 800; cursor: pointer; background: #1c1c26; color: #6a6a78; transition: 0.15s; border: none; font-family: inherit; }
+        .cuenta-estado-btn.activo-disponible { background: rgba(0,230,118,0.18); color: #00e676; }
+        .cuenta-estado-btn.activo-vendida { background: rgba(255,71,87,0.18); color: #ff4757; }
+        .cuenta-card-acciones { display: flex; gap: 8px; margin-top: 2px; }
+        .cuenta-card-acciones button { flex: 1; justify-content: center; }
+
         .search-bar { background: #1c1c26; border: 1px solid #333340; color: white; padding: 10px 15px; border-radius: 8px; width: 100%; max-width: 300px; outline: none; box-sizing: border-box; }
         .status-badge { padding: 4px 9px; border-radius: 6px; font-size: 11px; font-weight: 700; }
 
@@ -182,6 +198,37 @@
             <div id="galeria-cuenta-errores"></div>
             <div id="galeria-cuenta-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap:10px; overflow-y:auto; flex:1;"></div>
             <button class="btn-outline" style="width:100%; margin-top:15px; padding:10px;" onclick="document.getElementById('modal-galeria-cuenta-overlay').style.display='none'; cargarCatalogoCuentasVenta();">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR CUENTA -->
+    <div id="modal-editar-cuenta-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:20px; box-sizing:border-box;">
+        <div style="background:#121218; width:100%; max-width:520px; max-height:90vh; overflow-y:auto; padding:24px; border:1px solid #a155ff; border-radius:16px; box-shadow:0 0 30px rgba(161,85,255,0.15);">
+            <h3 style="margin:0 0 18px 0; font-size:18px; display:flex; align-items:center; gap:8px;"><span class="material-icons" style="color:#a155ff;">edit</span> Editar Cuenta</h3>
+
+            <label style="color:#a155ff; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Título</label>
+            <input type="text" id="editar-cuenta-titulo" class="bulk-select" style="width:100%; box-sizing:border-box;">
+
+            <div class="grid-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                <div>
+                    <label style="color:#00e676; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Precio (S/)</label>
+                    <input type="number" id="editar-cuenta-precio" class="bulk-select" step="0.01" min="0.01" style="width:100%; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Precio anterior</label>
+                    <input type="number" id="editar-cuenta-precio-anterior" class="bulk-select" step="0.01" min="0.01" placeholder="Sin descuento" style="width:100%; box-sizing:border-box;">
+                </div>
+            </div>
+
+            <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Descripción completa</label>
+            <textarea id="editar-cuenta-descripcion" class="bulk-select" style="width:100%; box-sizing:border-box; min-height:160px; font-family:inherit; resize:vertical;"></textarea>
+
+            <button class="btn-outline" type="button" style="width:100%; padding:12px; margin:6px 0 16px;" onclick="cerrarModalEditarCuenta(); abrirGaleriaCuenta(editarCuentaIdActual, editarCuentaTituloActual);"><span class="material-icons" style="font-size:16px; vertical-align:middle;">photo_library</span> Gestionar fotos de la galería</button>
+
+            <div style="display:flex; gap:10px;">
+                <button class="btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="cerrarModalEditarCuenta()">Cancelar</button>
+                <button class="btn-complete" style="flex:1; padding:12px; font-weight:bold; color:black;" onclick="guardarEdicionCuenta()">Guardar Cambios</button>
+            </div>
         </div>
     </div>
 
@@ -716,9 +763,7 @@
 
                     <div class="card-box">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">badge</span> Catálogo de Cuentas</h3>
-                        <div class="table-scroll">
-                            <table><thead><tr><th>Título</th><th>Precio</th><th>Precio anterior</th><th>Descripción</th><th>Estado</th><th>Fotos</th><th>Acción</th></tr></thead><tbody id="tabla-catalogo-cuentas"></tbody></table>
-                        </div>
+                        <div class="cuentas-grid" id="grid-catalogo-cuentas"></div>
                     </div>
 
                     <div class="card-box upload-container">
@@ -1684,39 +1729,81 @@
             showToast(valor ? "WhatsApp guardado. Ahí te llegarán los avisos de venta de tus cuentas." : "WhatsApp borrado — los avisos caerán de respaldo al número del dueño.");
         }
 
+        let catalogoCuentasCache = [];
+        let editarCuentaIdActual = null;
+        let editarCuentaTituloActual = '';
+
         async function cargarCatalogoCuentasVenta() {
             const { data } = await supabaseClient.from('productos').select('*').eq('categoria', 'cuentas').order('created_at', { ascending: false });
-            const tbody = document.getElementById('tabla-catalogo-cuentas'); tbody.innerHTML = '';
-            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; color:#a8a8b3;'>Sin cuentas cargadas todavía.</td></tr>"; return; }
+            catalogoCuentasCache = data || [];
+            const cont = document.getElementById('grid-catalogo-cuentas');
+            if (!data || data.length === 0) { cont.innerHTML = "<p style='color:#a8a8b3; grid-column:1/-1;'>Sin cuentas cargadas todavía.</p>"; return; }
             const conteosFotos = {};
             const { data: fotos } = await supabaseClient.from('fotos_cuenta').select('producto_id').in('producto_id', data.map(p => p.id));
             (fotos || []).forEach(f => { conteosFotos[f.producto_id] = (conteosFotos[f.producto_id] || 0) + 1; });
-            data.forEach(p => tbody.insertAdjacentHTML('beforeend', filaCuentaVenta(p, conteosFotos[p.id] || 0)));
+            cont.innerHTML = data.map(p => tarjetaCuentaVenta(p, conteosFotos[p.id] || 0)).join('');
         }
 
-        function filaCuentaVenta(p, numFotos) {
-            return `<tr data-id="${p.id}">
-                <td data-label="Título"><input type="text" class="bulk-select campo-titulo-cuenta" value="${escAttr(p.paquete)}" style="width:180px;">${p.subido_por_correo ? `<div style="color:#a8a8b3; font-size:10px; margin-top:4px;">Subido por: ${escHtml(p.subido_por_correo)}</div>` : ''}</td>
-                <td data-label="Precio"><input type="number" step="0.01" class="bulk-select campo-precio" value="${p.precio}" style="width:90px;"></td>
-                <td data-label="Precio anterior"><input type="number" step="0.01" class="bulk-select campo-precio-anterior" value="${p.precio_anterior ?? ''}" placeholder="—" style="width:90px;"></td>
-                <td data-label="Descripción"><input type="text" class="bulk-select campo-descripcion" value="${escAttr(p.descripcion)}" placeholder="opcional" style="width:180px;"></td>
-                <td data-label="Estado"><label style="display:flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap;"><input type="checkbox" ${p.activo ? 'checked' : ''} onchange="toggleActivoProducto(${p.id}, this.checked)"> ${p.activo ? 'Disponible' : 'Vendida'}</label></td>
-                <td data-label="Fotos"><button class="btn-view" onclick="abrirGaleriaCuenta(${p.id}, '${escAttr(p.paquete).replace(/'/g, "\\'")}')"><span class="material-icons" style="font-size:16px;">photo_library</span> ${numFotos} foto(s)</button></td>
-                <td data-label="Acción" style="display:flex; gap:6px;">
-                    <button class="btn-primary" style="background:#00e676; color:black; border:none; border-radius:6px; padding:8px 12px; cursor:pointer;" onclick="guardarCuentaVenta(${p.id})"><span class="material-icons" style="font-size:16px;">save</span></button>
-                    <button class="btn-remove" style="padding:8px 12px;" onclick="eliminarCuentaVenta(${p.id}, '${escAttr(p.paquete).replace(/'/g, "\\'")}')"><span class="material-icons" style="font-size:16px;">delete</span></button>
-                </td>
-            </tr>`;
+        function tarjetaCuentaVenta(p, numFotos) {
+            const tituloEsc = escAttr(p.paquete).replace(/'/g, "\\'");
+            const imgStyle = p.imagen_url ? `background-image:url('${p.imagen_url}');` : `background:linear-gradient(135deg,#a155ff,#00d2ff);`;
+            return `<div class="cuenta-card" data-id="${p.id}">
+                <div class="cuenta-card-img" style="${imgStyle}">${!p.imagen_url ? '<span class="material-icons" style="font-size:36px;color:white;">badge</span>' : ''}</div>
+                <div class="cuenta-card-titulo">${escHtml(p.paquete)}</div>
+                ${p.subido_por_correo ? `<div class="cuenta-card-subido">Subido por: ${escHtml(p.subido_por_correo)}</div>` : ''}
+                <div class="cuenta-card-precios">
+                    <span class="cuenta-card-precio">S/ ${Number(p.precio).toFixed(2)}</span>
+                    ${p.precio_anterior ? `<span class="cuenta-card-precio-ant">S/ ${Number(p.precio_anterior).toFixed(2)}</span>` : ''}
+                </div>
+                <div class="cuenta-estado-toggle" data-id="${p.id}">
+                    <button type="button" class="cuenta-estado-btn btn-marcar-disponible ${p.activo ? 'activo-disponible' : ''}" onclick="marcarEstadoCuentaVenta(${p.id}, true)">Disponible</button>
+                    <button type="button" class="cuenta-estado-btn btn-marcar-vendida ${!p.activo ? 'activo-vendida' : ''}" onclick="marcarEstadoCuentaVenta(${p.id}, false)">Vendida</button>
+                </div>
+                <button class="btn-view" style="width:100%; justify-content:center;" onclick="abrirGaleriaCuenta(${p.id}, '${tituloEsc}')"><span class="material-icons" style="font-size:16px;">photo_library</span> ${numFotos} foto(s)</button>
+                <div class="cuenta-card-acciones">
+                    <button class="btn-complete" onclick="abrirEditarCuenta(${p.id})"><span class="material-icons" style="font-size:16px;">edit</span> Editar</button>
+                    <button class="btn-remove" onclick="eliminarCuentaVenta(${p.id}, '${tituloEsc}')"><span class="material-icons" style="font-size:16px;">delete</span> Eliminar</button>
+                </div>
+            </div>`;
         }
 
-        async function guardarCuentaVenta(id) {
-            const tr = document.querySelector(`#tabla-catalogo-cuentas tr[data-id="${id}"]`);
-            if (!tr) return;
-            const paquete = tr.querySelector('.campo-titulo-cuenta').value.trim();
-            const precio = parseFloat(tr.querySelector('.campo-precio').value);
-            const precioAnteriorRaw = tr.querySelector('.campo-precio-anterior').value;
+        async function marcarEstadoCuentaVenta(id, activo) {
+            const { error } = await supabaseClient.from('productos').update({ activo }).eq('id', id);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            const grupo = document.querySelector(`.cuenta-estado-toggle[data-id="${id}"]`);
+            if (grupo) {
+                grupo.querySelector('.btn-marcar-disponible').classList.toggle('activo-disponible', activo);
+                grupo.querySelector('.btn-marcar-vendida').classList.toggle('activo-vendida', !activo);
+            }
+            const cacheItem = catalogoCuentasCache.find(c => c.id === id);
+            if (cacheItem) cacheItem.activo = activo;
+            showToast(activo ? "Marcada como disponible." : "Marcada como vendida.", activo ? "success" : "warning");
+        }
+
+        function abrirEditarCuenta(id) {
+            const p = catalogoCuentasCache.find(c => c.id === id);
+            if (!p) return;
+            editarCuentaIdActual = id;
+            editarCuentaTituloActual = p.paquete;
+            document.getElementById('editar-cuenta-titulo').value = p.paquete;
+            document.getElementById('editar-cuenta-precio').value = p.precio;
+            document.getElementById('editar-cuenta-precio-anterior').value = p.precio_anterior ?? '';
+            document.getElementById('editar-cuenta-descripcion').value = p.descripcion || '';
+            document.getElementById('modal-editar-cuenta-overlay').style.display = 'flex';
+        }
+
+        function cerrarModalEditarCuenta() {
+            document.getElementById('modal-editar-cuenta-overlay').style.display = 'none';
+        }
+
+        async function guardarEdicionCuenta() {
+            const id = editarCuentaIdActual;
+            if (!id) return;
+            const paquete = document.getElementById('editar-cuenta-titulo').value.trim();
+            const precio = parseFloat(document.getElementById('editar-cuenta-precio').value);
+            const precioAnteriorRaw = document.getElementById('editar-cuenta-precio-anterior').value;
             const precioAnterior = precioAnteriorRaw ? parseFloat(precioAnteriorRaw) : null;
-            const descripcion = tr.querySelector('.campo-descripcion').value.trim() || null;
+            const descripcion = document.getElementById('editar-cuenta-descripcion').value.trim() || null;
 
             if (!paquete) return showToast("El título no puede quedar vacío.", "warning");
             if (isNaN(precio) || precio <= 0) return showToast("Ingresa un precio válido.", "warning");
@@ -1725,6 +1812,7 @@
             const { error } = await supabaseClient.from('productos').update({ paquete, precio, precio_anterior: precioAnterior, descripcion }).eq('id', id);
             if (error) { showToast("Error: " + error.message, "error"); return; }
             showToast("Cuenta actualizada.");
+            cerrarModalEditarCuenta();
             cargarCatalogoCuentasVenta();
         }
 
