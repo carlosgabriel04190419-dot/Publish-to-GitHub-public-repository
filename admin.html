@@ -2147,34 +2147,54 @@
                 if (!conf) return;
             }
 
-            await supabaseClient.from('recargas').update({ estado: 'Completado' }).eq('id', id);
-
-            const { data: user } = await supabaseClient.from('usuarios').select('saldo, celular, correo, puntos').eq('nickname', nickname).single();
-
-            if(user) {
-                const puntosGanados = Math.floor(montoFinal * 10);
-                const nuevosPuntos = (user.puntos || 0) + puntosGanados;
-
-                await supabaseClient.from('usuarios')
-                    .update({ saldo: user.saldo + montoFinal, puntos: nuevosPuntos })
-                    .eq('nickname', nickname);
-
-                await supabaseClient.from('historial').insert([{ nickname, monto: montoFinal, tipo: 'Recarga Aprobada', estado: 'Completado' }]);
-
-                if(user.celular) {
-                    let numStr = user.celular.replace(/[^0-9]/g, '');
-                    let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga por *S/ ${montoFinal.toFixed(2)}* 💵💵 ha sido aprobada exitosamente.\n🎁 Además, acabas de ganar *${puntosGanados} CarzaPuntos* para la Ruleta VIP.\n\nTu saldo ya está actualizado en tu billetera web.\n\n🌐 carzadcross.com`;
-                    window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
-                }
-
-                enviarNotificacionCorreo(
-                    user.correo, nickname,
-                    `✅ Tu recarga de S/ ${montoFinal.toFixed(2)} fue aprobada (#${id})`,
-                    `Tu recarga por <b>S/ ${montoFinal.toFixed(2)}</b> ya fue aprobada y tu saldo está actualizado. Además ganaste <b>${puntosGanados} CarzaPuntos</b> para la Ruleta VIP.`,
-                    'Ver mi saldo', 'https://carzadcross.com/perfil.html'
-                );
+            // Refresca la sesión antes de escribir — en el celular (app guardada en pantalla de inicio)
+            // el token puede quedar vencido tras un rato en segundo plano, y eso hacía fallar todo en silencio.
+            const { data: sesionData, error: errorSesion } = await supabaseClient.auth.getSession();
+            if (errorSesion || !sesionData || !sesionData.session) {
+                showToast('Tu sesión venció. Cierra sesión y vuelve a entrar, luego intenta de nuevo.', 'error');
+                return;
             }
-            showToast(`Saldo aprobado. Se sumaron ${Math.floor(montoFinal * 10)} pts a ${nickname}`);
+
+            const { error: errorRecarga } = await supabaseClient.from('recargas').update({ estado: 'Completado' }).eq('id', id);
+            if (errorRecarga) { showToast('No se pudo aprobar la recarga: ' + errorRecarga.message, 'error'); return; }
+
+            const { data: user, error: errorUsuario } = await supabaseClient.from('usuarios').select('saldo, celular, correo, puntos').eq('nickname', nickname).single();
+
+            if (errorUsuario || !user) {
+                showToast(`La solicitud se marcó como completada pero NO se pudo sumar el saldo a ${nickname} (usuario no encontrado). Revisa manualmente.`, 'error');
+                cargarRecargas(); cargarUsuarios(); cargarHistorial();
+                return;
+            }
+
+            const puntosGanados = Math.floor(montoFinal * 10);
+            const nuevosPuntos = (user.puntos || 0) + puntosGanados;
+
+            const { error: errorUpdateSaldo } = await supabaseClient.from('usuarios')
+                .update({ saldo: user.saldo + montoFinal, puntos: nuevosPuntos })
+                .eq('nickname', nickname);
+
+            if (errorUpdateSaldo) {
+                showToast(`Error al sumar el saldo a ${nickname}: ${errorUpdateSaldo.message}`, 'error');
+                cargarRecargas(); cargarUsuarios(); cargarHistorial();
+                return;
+            }
+
+            await supabaseClient.from('historial').insert([{ nickname, monto: montoFinal, tipo: 'Recarga Aprobada', estado: 'Completado' }]);
+
+            if(user.celular) {
+                let numStr = user.celular.replace(/[^0-9]/g, '');
+                let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga por *S/ ${montoFinal.toFixed(2)}* 💵💵 ha sido aprobada exitosamente.\n🎁 Además, acabas de ganar *${puntosGanados} CarzaPuntos* para la Ruleta VIP.\n\nTu saldo ya está actualizado en tu billetera web.\n\n🌐 carzadcross.com`;
+                window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+
+            enviarNotificacionCorreo(
+                user.correo, nickname,
+                `✅ Tu recarga de S/ ${montoFinal.toFixed(2)} fue aprobada (#${id})`,
+                `Tu recarga por <b>S/ ${montoFinal.toFixed(2)}</b> ya fue aprobada y tu saldo está actualizado. Además ganaste <b>${puntosGanados} CarzaPuntos</b> para la Ruleta VIP.`,
+                'Ver mi saldo', 'https://carzadcross.com/perfil.html'
+            );
+
+            showToast(`Saldo aprobado. Se sumaron ${puntosGanados} pts a ${nickname}`);
             cargarRecargas(); cargarUsuarios(); cargarHistorial();
         }
 
