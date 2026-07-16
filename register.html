@@ -309,7 +309,12 @@
 
             if (data.session) {
                 // La confirmación de correo está desactivada en Supabase: la cuenta ya quedó activa.
-                await crearFilaUsuario();
+                const { error: errorFila } = await crearFilaUsuario();
+                if (errorFila) {
+                    mostrarMensaje("Ese nickname se acaba de registrar con otra cuenta. Vuelve a intentar con otro nickname; si el problema sigue, escríbenos por WhatsApp.");
+                    btn.disabled = false; btn.innerText = "Continuar";
+                    return;
+                }
                 mostrarMensaje("¡Cuenta creada con éxito!<br>Redirigiendo al acceso...", "exito");
                 btn.innerText = "Ingresando...";
                 setTimeout(() => { window.location.href = 'login.html'; }, 2000);
@@ -322,13 +327,14 @@
         }
 
         async function crearFilaUsuario() {
-            if (!registroPendiente) return;
-            await supabaseClient.from('usuarios').insert([{
+            if (!registroPendiente) return { error: null };
+            const { error } = await supabaseClient.from('usuarios').insert([{
                 nickname: registroPendiente.nickname,
                 correo: registroPendiente.correo,
                 saldo: 0,
                 celular: registroPendiente.celular
             }]);
+            return { error };
         }
 
         // ================= PASO 2: CÓDIGO DE VERIFICACIÓN =================
@@ -394,7 +400,12 @@
                 return;
             }
 
-            await crearFilaUsuario();
+            const { error: errorFila } = await crearFilaUsuario();
+            if (errorFila) {
+                mostrarMensaje("Tu correo quedó verificado, pero ese nickname se acaba de registrar con otra cuenta. Escríbenos por WhatsApp para activar tu cuenta con otro nickname.");
+                btn.disabled = false; btn.innerText = "Verificar y Activar Cuenta";
+                return;
+            }
             mostrarMensaje("¡Cuenta verificada con éxito!<br>Redirigiendo al acceso...", "exito");
             btn.innerText = "Ingresando...";
             setTimeout(() => { window.location.href = 'login.html'; }, 2000);
