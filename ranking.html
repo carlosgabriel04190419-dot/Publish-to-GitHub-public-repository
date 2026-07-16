@@ -315,16 +315,10 @@
         async function cargarSistemaComunidadDinamica() {
             try {
                 const usuariosExcluidos = ['carzaadmin', 'carzadcrosito'];
-                const hoy = new Date();
-                const primerDiaDelMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1).toISOString();
 
                 // TICKER
                 const { data: pedidosTicker, error: errTicker } = await supabaseClient
-                    .from('pedidos')
-                    .select('nickname, paquete, id_juego')
-                    .eq('estado', 'Completado')
-                    .order('created_at', { ascending: false })
-                    .limit(50);
+                    .rpc('feed_compras_recientes', { p_limite: 50 });
 
                 if (!errTicker && pedidosTicker && pedidosTicker.length > 0) {
                     const ultimas10 = pedidosTicker.filter(p => !usuariosExcluidos.includes(p.nickname.toLowerCase())).slice(0, 10);
@@ -346,29 +340,9 @@
                 }
 
                 // RANKING MENSUAL
-                const { data: pedidosMes, error: errMes } = await supabaseClient
-                    .from('pedidos')
-                    .select('nickname, paquete')
-                    .eq('estado', 'Completado')
-                    .gte('created_at', primerDiaDelMes);
+                const { data: rankingData, error: errMes } = await supabaseClient.rpc('ranking_mensual');
 
-                let rankingArray = [];
-                if (!errMes && pedidosMes && pedidosMes.length > 0) {
-                    let rankingMap = {};
-                    pedidosMes.forEach(p => {
-                        if (usuariosExcluidos.includes(p.nickname.toLowerCase())) return;
-                        let diamantes = parseInt(p.paquete.replace(/\D/g, ''));
-                        if (p.paquete.toLowerCase().includes("pase")) diamantes = 500;
-                        if (!isNaN(diamantes) && p.nickname) {
-                            if (!rankingMap[p.nickname]) rankingMap[p.nickname] = 0;
-                            rankingMap[p.nickname] += diamantes;
-                        }
-                    });
-                    rankingArray = Object.keys(rankingMap).map(nick => ({
-                        nickname: nick,
-                        diamantes: rankingMap[nick]
-                    })).sort((a, b) => b.diamantes - a.diamantes);
-                }
+                let rankingArray = (!errMes && rankingData) ? rankingData : [];
 
                 pintarPodio(rankingArray);
                 pintarTablaRanking(rankingArray);

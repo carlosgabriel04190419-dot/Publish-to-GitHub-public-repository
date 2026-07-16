@@ -492,7 +492,7 @@
         async function cargarSistemaComunidadDinamica() {
             try {
                 const usuariosExcluidos = ['carzaadmin', 'carzadcrosito'];
-                const { data: pedidosTicker } = await supabaseClient.from('pedidos').select('nickname, paquete, id_juego').eq('estado', 'Completado').order('created_at', { ascending: false }).limit(20);
+                const { data: pedidosTicker } = await supabaseClient.rpc('feed_compras_recientes', { p_limite: 20 });
                 if (pedidosTicker && pedidosTicker.length > 0) {
                     const ultimas10 = pedidosTicker.filter(p => !usuariosExcluidos.includes(p.nickname.toLowerCase())).slice(0, 10);
                     let tickerHtml = '';
