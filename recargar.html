@@ -672,7 +672,8 @@
                             mensaje: `<b>${usuario}</b> reportó una recarga por <b>${metodoTexto}</b> (S/ ${montoSolesEstimado.toFixed(2)}). Revisa el comprobante y apruébala en el panel admin.`,
                             ctaTexto: 'Ir al panel admin',
                             ctaUrl: 'https://carzadcross.com/admin.html',
-                            detalleExtra: null
+                            detalleExtra: null,
+                            avisoVentaCuenta: true
                         }
                     });
                 } catch (e) { console.error('No se pudo enviar el aviso de recarga al admin:', e); }
