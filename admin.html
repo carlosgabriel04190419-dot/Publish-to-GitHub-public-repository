@@ -2369,11 +2369,20 @@
             const r = data && data[0];
             if (!r) { showToast("No se pudo completar el pedido.", "error"); return; }
 
+            const esJackpot = r.es_premio_caja && paquete.toLowerCase().includes('jackpot');
+
             if (r.celular) {
                 let numStr = r.celular.replace(/[^0-9]/g, '');
-                let msg = r.es_streaming
-                    ? `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 📺 *${paquete}* 📺 acaba de ser procesado y completado exitosamente.\n\nYa puedes ver tus datos de acceso en tu panel de *Mis Plataformas* dentro de la web. ¡Gracias por preferirnos!`
-                    : `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 💎 *${paquete}* 💎 acaba de ser procesado y completado exitosamente.\n\nRevisa tu cuenta del juego y disfruta. ¡Gracias por preferirnos!`;
+                let msg;
+                if (esJackpot) {
+                    msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n👑💎 ¡FELICIDADES POR EL PREMIO MAYOR! 💎👑\n\nGanaste *${paquete}* en la Caja Misteriosa, el mejor premio posible, y ya fue enviado a tu cuenta. ¡Eres una leyenda! 🏆\n\n¡Sigue jugando y mucha suerte la próxima!`;
+                } else if (r.es_premio_caja) {
+                    msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n🎉 ¡Felicidades! Tu premio *${paquete}* ganado en la Caja Misteriosa ya fue enviado a tu cuenta. ¡Disfrútalo! 🎁\n\nSigue intentando en la Caja Misteriosa por mejores premios. ¡Gracias por jugar con nosotros!`;
+                } else {
+                    msg = r.es_streaming
+                        ? `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 📺 *${paquete}* 📺 acaba de ser procesado y completado exitosamente.\n\nYa puedes ver tus datos de acceso en tu panel de *Mis Plataformas* dentro de la web. ¡Gracias por preferirnos!`
+                        : `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 💎 *${paquete}* 💎 acaba de ser procesado y completado exitosamente.\n\nRevisa tu cuenta del juego y disfruta. ¡Gracias por preferirnos!`;
+                }
                 window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
             }
 
@@ -2387,10 +2396,14 @@
 
                 enviarNotificacionCorreo(
                     r.correo, nick,
-                    `✅ Pedido #${id} completado — ${paquete}`,
-                    r.es_streaming
-                        ? `Tu pedido de <b>${paquete}</b> ya fue procesado. Ya puedes ver tus datos de acceso en tu panel de Mis Plataformas.`
-                        : `Tu pedido de <b>${paquete}</b> ya fue procesado. Revisa tu cuenta del juego.`,
+                    esJackpot ? `👑 ¡Ganaste el premio mayor! — ${paquete}` : (r.es_premio_caja ? `🎉 Tu premio de la Caja Misteriosa — ${paquete}` : `✅ Pedido #${id} completado — ${paquete}`),
+                    esJackpot
+                        ? `¡Felicidades por el premio mayor! Ganaste <b>${paquete}</b> en la Caja Misteriosa y ya fue enviado a tu cuenta.`
+                        : r.es_premio_caja
+                            ? `¡Felicidades! Tu premio <b>${paquete}</b> ganado en la Caja Misteriosa ya fue enviado a tu cuenta. Sigue intentando por mejores premios.`
+                            : r.es_streaming
+                                ? `Tu pedido de <b>${paquete}</b> ya fue procesado. Ya puedes ver tus datos de acceso en tu panel de Mis Plataformas.`
+                                : `Tu pedido de <b>${paquete}</b> ya fue procesado. Revisa tu cuenta del juego.`,
                     r.es_streaming ? 'Ver Mis Plataformas' : 'Ir a la tienda',
                     r.es_streaming ? 'https://carzadcross.com/mis-plataformas.html' : 'https://carzadcross.com/',
                     detalleExtra
