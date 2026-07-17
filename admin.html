@@ -428,6 +428,7 @@
                                     <tr>
                                         <th>Nickname</th>
                                         <th>Correo</th>
+                                        <th>Registro</th>
                                         <th>Saldo Actual</th>
                                         <th style="color: #ff9800;">Puntos VIP</th>
                                         <th>Acciones</th>
@@ -2486,6 +2487,27 @@
         }
 
         // ================= USUARIOS (CON PUNTOS VIP + PAGINACIÓN) =================
+        function formatearFechaRegistro(fechaStr) {
+            const fecha = new Date(fechaStr);
+            const ahora = new Date();
+            const inicioHoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+            const inicioFecha = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+            const diffDias = Math.round((inicioHoy - inicioFecha) / 86400000);
+            const horaTexto = fecha.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+            const fechaCorta = fecha.toLocaleDateString('es-PE', { day: '2-digit', month: 'short' });
+
+            if (diffDias === 0) {
+                return `<span style="background:rgba(0,230,118,0.15); color:#00e676; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:800; white-space:nowrap;">🆕 Hoy, ${horaTexto}</span>`;
+            }
+            if (diffDias === 1) {
+                return `<span style="color:#a8a8b3; font-size:12.5px; white-space:nowrap;">Ayer, ${horaTexto}</span>`;
+            }
+            if (diffDias >= 2 && diffDias <= 6) {
+                return `<span style="color:#a8a8b3; font-size:12.5px; white-space:nowrap;">Hace ${diffDias} días</span>`;
+            }
+            return `<span style="color:#a8a8b3; font-size:12.5px; white-space:nowrap;">${fechaCorta}</span>`;
+        }
+
         async function cargarUsuarios() {
             const { data } = await supabaseClient.from('usuarios').select('*').order('created_at', { ascending: false });
             todosLosUsuarios = data || [];
@@ -2501,12 +2523,13 @@
             const paginaActual = lista.slice(inicio, inicio + USUARIOS_POR_PAGINA);
 
             const tbody = document.getElementById('tabla-usuarios'); tbody.innerHTML = "";
-            if (lista.length === 0) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#a8a8b3;'>Sin resultados.</td></tr>"; }
+            if (lista.length === 0) { tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#a8a8b3;'>Sin resultados.</td></tr>"; }
             paginaActual.forEach(u => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td data-label="Nickname" style="font-weight: bold;">${u.nickname}</td>
                     <td data-label="Correo" style="color: #a8a8b3; font-size:13px;">${u.correo}</td>
+                    <td data-label="Registro">${formatearFechaRegistro(u.created_at)}</td>
                     <td data-label="Saldo" style="font-size: 16px; color: #a155ff; font-weight: bold;">S/ ${u.saldo.toFixed(2)}</td>
                     <td data-label="Puntos VIP" style="color: #ff9800; font-weight: bold; font-size: 15px;">⭐ ${u.puntos || 0}</td>
                     <td data-label="Acciones">
