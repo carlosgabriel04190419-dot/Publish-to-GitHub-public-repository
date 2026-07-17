@@ -763,6 +763,12 @@
                     </div>
 
                     <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">image</span> Portada del Catálogo de Cuentas</h3>
+                        <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 15px 0;">Es la foto de fondo que aparece arriba del catálogo público de Cuentas Free Fire.</p>
+                        <div id="portada-cuentas-freefire" style="max-width:220px;"></div>
+                    </div>
+
+                    <div class="card-box">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">badge</span> Catálogo de Cuentas</h3>
                         <div class="cuentas-grid" id="grid-catalogo-cuentas"></div>
                     </div>
@@ -1022,7 +1028,7 @@
 
             document.getElementById('nav-item-cuentas').style.display = (rol === 'full' || rol === 'cuentas') ? '' : 'none';
             document.getElementById('card-mi-whatsapp').style.display = (rol === 'cuentas') ? '' : 'none';
-            if (rol === 'full' || rol === 'cuentas') { await cargarCatalogoCuentasVenta(); await cargarGarantiasCuentas(); }
+            if (rol === 'full' || rol === 'cuentas') { await cargarCatalogoCuentasVenta(); await cargarGarantiasCuentas(); await cargarPortadaCuentas(); }
             if (rol === 'cuentas') { await cargarMiWhatsapp(); }
 
             iniciarActualizacionAutomatica();
@@ -1443,6 +1449,17 @@
             });
         }
 
+        async function cargarPortadaCuentas() {
+            const cont = document.getElementById('portada-cuentas-freefire');
+            if (!cont) return;
+            const { data: p } = await supabaseClient.from('portadas_catalogo').select('*').eq('slug', 'freefire-cuentas').maybeSingle();
+            if (!p) { cont.innerHTML = ''; return; }
+            cont.innerHTML = `
+                <img src="${p.imagen_url || ''}" style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px; margin-bottom:8px; background:#1a1a20;">
+                <input type="file" accept="image/png,image/jpeg,image/webp" style="width:100%; font-size:11px;" onchange="subirPortada('freefire-cuentas', this)">
+            `;
+        }
+
         async function toggleMantenimientoCategoria(categoria, enMantenimiento) {
             const { error } = await supabaseClient.from('categorias_mantenimiento').update({ en_mantenimiento: enMantenimiento, actualizado_en: new Date().toISOString() }).eq('categoria', categoria);
             if (error) { showToast("Error: " + error.message, "error"); return; }
@@ -1475,6 +1492,7 @@
             inputEl.value = '';
             cargarPortadasAdmin('diamantes');
             cargarPortadasAdmin('streaming');
+            cargarPortadaCuentas();
         }
 
         // ================= GANANCIAS =================
