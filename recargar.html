@@ -663,6 +663,20 @@
 
                 if (error) throw error;
 
+                try {
+                    await supabaseClient.functions.invoke('enviar-notificacion', {
+                        body: {
+                            destinatario: 'carlosgabriel04190419@gmail.com',
+                            nickname: usuario,
+                            titulo: `💰 Nueva recarga reportada: S/ ${montoSolesEstimado.toFixed(2)}`,
+                            mensaje: `<b>${usuario}</b> reportó una recarga por <b>${metodoTexto}</b> (S/ ${montoSolesEstimado.toFixed(2)}). Revisa el comprobante y apruébala en el panel admin.`,
+                            ctaTexto: 'Ir al panel admin',
+                            ctaUrl: 'https://carzadcross.com/admin.html',
+                            detalleExtra: null
+                        }
+                    });
+                } catch (e) { console.error('No se pudo enviar el aviso de recarga al admin:', e); }
+
                 const numeroAdmin = "51943737572";
                 const mensaje = esBinance
                     ? `Hola CarzaD'Cross 👾\n\n📌 *SOLICITUD DE RECARGA DE SALDO (BINANCE):*\n👤 Usuario: *${usuario}*\n📧 Correo: *${correoUsuarioGlobal}*\n💰 Monto Enviado: *$${monto.toFixed(2)} USD (USDT)*\n💱 Equivalente estimado: *S/ ${montoSolesEstimado.toFixed(2)}* (tasa referencial, confirmar al momento de aprobar)\n\nAcabo de realizar la transferencia a su ID de Binance Pay y mi solicitud ya se registró en el sistema.\n\n*Adjunto la imagen de mi comprobante para que apruebes el saldo:*`
