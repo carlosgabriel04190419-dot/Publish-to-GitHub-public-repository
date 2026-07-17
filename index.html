@@ -337,6 +337,11 @@
 
                 const elementoPuntos = document.getElementById('puntos-nav');
                 if (elementoPuntos) { elementoPuntos.innerText = usuario.puntos || 0; }
+
+                usuarioIdActual = usuario.id;
+                if (!usuario.unido_grupo_whatsapp) {
+                    setTimeout(mostrarInvitacionWhatsapp, 1800);
+                }
             }
 
             // LANZAMOS EL MOTOR DEL TICKER Y RANKING REALES
@@ -347,6 +352,29 @@
                 'portada-hub-streaming': { slug: 'hub-streaming' }
             });
         };
+
+        const LINK_GRUPO_WHATSAPP = 'https://chat.whatsapp.com/GcRlYjfVQCjF4VuShTVA7G?s=cl&p=i&mlu=0&ilr=0';
+        let usuarioIdActual = null;
+
+        function mostrarInvitacionWhatsapp() {
+            const modal = document.getElementById('modal-whatsapp-grupo');
+            modal.style.display = 'flex';
+            setTimeout(() => { modal.style.opacity = '1'; }, 10);
+        }
+
+        function cerrarInvitacionWhatsapp() {
+            const modal = document.getElementById('modal-whatsapp-grupo');
+            modal.style.opacity = '0';
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+
+        async function unirseGrupoWhatsapp() {
+            if (usuarioIdActual) {
+                await supabaseClient.from('usuarios').update({ unido_grupo_whatsapp: true }).eq('id', usuarioIdActual);
+            }
+            window.open(LINK_GRUPO_WHATSAPP, '_blank');
+            cerrarInvitacionWhatsapp();
+        }
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none') ? 'block' : 'none'; }
         function showNormal() { document.getElementById('catalogo-normal').style.display = 'block'; }
@@ -452,5 +480,21 @@
             <p class="made-with">Hecho con <span class="material-icons heart">favorite</span> en Perú para la comunidad gaming.</p>
         </div>
     </footer>
+
+    <!-- INVITACIÓN AL GRUPO DE WHATSAPP -->
+    <div id="modal-whatsapp-grupo" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.75); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:5000; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; padding:20px; box-sizing:border-box;">
+        <div style="background:#121218; width:100%; max-width:380px; border-radius:18px; border:1px solid rgba(37,211,102,0.3); box-shadow:0 0 40px rgba(37,211,102,0.15); padding:32px 28px; text-align:center; position:relative;">
+            <span class="material-icons" onclick="cerrarInvitacionWhatsapp()" style="position:absolute; top:14px; right:14px; color:#6a6a78; cursor:pointer; font-size:22px;">close</span>
+            <div style="width:64px; height:64px; border-radius:50%; background:rgba(37,211,102,0.12); display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+                <span class="material-icons" style="font-size:34px; color:#25D366;">forum</span>
+            </div>
+            <h3 style="color:white; font-size:19px; margin:0 0 8px;">¡Únete a la comunidad!</h3>
+            <p style="color:#a8a8b3; font-size:13.5px; line-height:1.6; margin:0 0 22px;">Entérate primero de promos, sorteos y avisos exclusivos en nuestro grupo de WhatsApp.</p>
+            <button onclick="unirseGrupoWhatsapp()" style="width:100%; background:#25D366; color:#0a0a0f; border:none; padding:13px; border-radius:10px; font-weight:800; font-size:14.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <span class="material-icons" style="font-size:19px;">chat</span> Unirme al grupo
+            </button>
+            <p onclick="cerrarInvitacionWhatsapp()" style="color:#6a6a78; font-size:12px; margin:14px 0 0; cursor:pointer;">Ahora no</p>
+        </div>
+    </div>
 </body>
 </html>

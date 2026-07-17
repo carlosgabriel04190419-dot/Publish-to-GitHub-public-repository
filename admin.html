@@ -919,6 +919,7 @@
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         let miRol = null;
+        const LINK_GRUPO_WHATSAPP = 'https://chat.whatsapp.com/GcRlYjfVQCjF4VuShTVA7G?s=cl&p=i&mlu=0&ilr=0';
         const NOMBRES_ROL = { full: 'Dueño', diamantes: 'Socio de Diamantes', streaming: 'Socio de Streaming', cuentas: 'Socio de Cuentas' };
         const UMBRAL_STOCK_BAJO = 2;
         let todosLosUsuarios = [];
@@ -2290,14 +2291,14 @@
 
             if(user.celular) {
                 let numStr = user.celular.replace(/[^0-9]/g, '');
-                let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga por *S/ ${montoFinal.toFixed(2)}* 💵💵 ha sido aprobada exitosamente.\n🎁 Además, acabas de ganar *${puntosGanados} CarzaPuntos* para la Ruleta VIP.\n\nTu saldo ya está actualizado en tu billetera web.\n\n🌐 carzadcross.com`;
+                let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga por *S/ ${montoFinal.toFixed(2)}* 💵💵 ha sido aprobada exitosamente.\n🎁 Además, acabas de ganar *${puntosGanados} CarzaPuntos* para la Ruleta VIP.\n\nTu saldo ya está actualizado en tu billetera web.\n\n📲 Únete a nuestro grupo de WhatsApp para promos y sorteos exclusivos: ${LINK_GRUPO_WHATSAPP}\n\n🌐 carzadcross.com`;
                 window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
             }
 
             enviarNotificacionCorreo(
                 user.correo, nickname,
                 `✅ Tu recarga de S/ ${montoFinal.toFixed(2)} fue aprobada (#${id})`,
-                `Tu recarga por <b>S/ ${montoFinal.toFixed(2)}</b> ya fue aprobada y tu saldo está actualizado. Además ganaste <b>${puntosGanados} CarzaPuntos</b> para la Ruleta VIP.`,
+                `Tu recarga por <b>S/ ${montoFinal.toFixed(2)}</b> ya fue aprobada y tu saldo está actualizado. Además ganaste <b>${puntosGanados} CarzaPuntos</b> para la Ruleta VIP.<br><br>📲 Únete a nuestro <a href="${LINK_GRUPO_WHATSAPP}" style="color:#25D366; font-weight:bold;">grupo de WhatsApp</a> para promos y sorteos exclusivos.`,
                 'Ver mi saldo', 'https://carzadcross.com/perfil.html'
             );
 
@@ -2383,6 +2384,7 @@
                         ? `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 📺 *${paquete}* 📺 acaba de ser procesado y completado exitosamente.\n\nYa puedes ver tus datos de acceso en tu panel de *Mis Plataformas* dentro de la web. ¡Gracias por preferirnos!`
                         : `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 💎 *${paquete}* 💎 acaba de ser procesado y completado exitosamente.\n\nRevisa tu cuenta del juego y disfruta. ¡Gracias por preferirnos!`;
                 }
+                msg += `\n\n📲 Únete a nuestro grupo de WhatsApp para promos y sorteos exclusivos: ${LINK_GRUPO_WHATSAPP}`;
                 window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
             }
 
@@ -2394,16 +2396,19 @@
                     detalleExtra = r.nota_cliente;
                 }
 
+                let mensajeCorreo = esJackpot
+                    ? `¡Felicidades por el premio mayor! Ganaste <b>${paquete}</b> en la Caja Misteriosa y ya fue enviado a tu cuenta.`
+                    : r.es_premio_caja
+                        ? `¡Felicidades! Tu premio <b>${paquete}</b> ganado en la Caja Misteriosa ya fue enviado a tu cuenta. Sigue intentando por mejores premios.`
+                        : r.es_streaming
+                            ? `Tu pedido de <b>${paquete}</b> ya fue procesado. Ya puedes ver tus datos de acceso en tu panel de Mis Plataformas.`
+                            : `Tu pedido de <b>${paquete}</b> ya fue procesado. Revisa tu cuenta del juego.`;
+                mensajeCorreo += `<br><br>📲 Únete a nuestro <a href="${LINK_GRUPO_WHATSAPP}" style="color:#25D366; font-weight:bold;">grupo de WhatsApp</a> para promos y sorteos exclusivos.`;
+
                 enviarNotificacionCorreo(
                     r.correo, nick,
                     esJackpot ? `👑 ¡Ganaste el premio mayor! — ${paquete}` : (r.es_premio_caja ? `🎉 Tu premio de la Caja Misteriosa — ${paquete}` : `✅ Pedido #${id} completado — ${paquete}`),
-                    esJackpot
-                        ? `¡Felicidades por el premio mayor! Ganaste <b>${paquete}</b> en la Caja Misteriosa y ya fue enviado a tu cuenta.`
-                        : r.es_premio_caja
-                            ? `¡Felicidades! Tu premio <b>${paquete}</b> ganado en la Caja Misteriosa ya fue enviado a tu cuenta. Sigue intentando por mejores premios.`
-                            : r.es_streaming
-                                ? `Tu pedido de <b>${paquete}</b> ya fue procesado. Ya puedes ver tus datos de acceso en tu panel de Mis Plataformas.`
-                                : `Tu pedido de <b>${paquete}</b> ya fue procesado. Revisa tu cuenta del juego.`,
+                    mensajeCorreo,
                     r.es_streaming ? 'Ver Mis Plataformas' : 'Ir a la tienda',
                     r.es_streaming ? 'https://carzadcross.com/mis-plataformas.html' : 'https://carzadcross.com/',
                     detalleExtra
