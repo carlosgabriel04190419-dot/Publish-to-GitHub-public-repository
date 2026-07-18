@@ -2390,14 +2390,14 @@
                     <td data-label="Juego" style="font-family: monospace; font-size:13px;">${colDetalle}</td>
                     <td data-label="Códigos" style="font-family: monospace; color: #00e676; line-height: 1.8;">${codHTML}</td>
                     <td data-label="Acción">
-                        <button class="btn-complete" onclick="completarPedido(${p.id}, '${p.paquete}', '${p.nickname}')"><span class="material-icons">check_circle</span> Listo</button>
+                        <button class="btn-complete" onclick="completarPedido(${p.id}, '${p.paquete}', '${p.nickname}', ${p.precio})"><span class="material-icons">check_circle</span> Listo</button>
                         <button class="btn-remove" onclick="rechazarPedido(${p.id}, '${p.paquete}', '${p.nickname}', ${p.precio})"><span class="material-icons">cancel</span> Rechazar</button>
                     </td>`;
                 tbody.appendChild(tr);
             });
         }
 
-        async function completarPedido(id, paquete, nick) {
+        async function completarPedido(id, paquete, nick, precio) {
             const { data: prod } = await supabaseClient.from('productos').select('categoria').eq('paquete', paquete).maybeSingle();
             if (prod && prod.categoria === 'cuentas') { completarPedidoCuenta(id, paquete, nick); return; }
 
@@ -2411,6 +2411,23 @@
 
             const esJackpot = r.es_premio_caja && paquete.toLowerCase().includes('jackpot');
 
+            // El saldo se descuenta al momento de la compra, no al marcar "Listo", así que se
+            // reconstruye cuánto tenía antes sumando de vuelta lo que pagó por este pedido.
+            let saldoActualComprador = null, saldoAntesComprador = null;
+            if (!r.es_premio_caja) {
+                const { data: usuarioComprador } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nick).maybeSingle();
+                if (usuarioComprador) {
+                    saldoActualComprador = usuarioComprador.saldo;
+                    saldoAntesComprador = saldoActualComprador + Number(precio || 0);
+                }
+            }
+            const desgloseSaldoTexto = saldoActualComprador !== null
+                ? `\n\n💰 Saldo anterior: S/ ${saldoAntesComprador.toFixed(2)}\n➖ Costo del pedido: S/ ${Number(precio || 0).toFixed(2)}\n💳 Saldo actual: S/ ${saldoActualComprador.toFixed(2)}`
+                : '';
+            const desgloseSaldoHtml = saldoActualComprador !== null
+                ? `💰 Saldo anterior: S/ ${saldoAntesComprador.toFixed(2)}<br>➖ Costo: S/ ${Number(precio || 0).toFixed(2)}<br>💳 Saldo actual: S/ ${saldoActualComprador.toFixed(2)}`
+                : '';
+
             if (r.celular) {
                 let numStr = r.celular.replace(/[^0-9]/g, '');
                 let msg;
@@ -2422,6 +2439,7 @@
                     msg = r.es_streaming
                         ? `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 📺 *${paquete}* 📺 acaba de ser procesado y completado exitosamente.\n\nYa puedes ver tus datos de acceso en tu panel de *Mis Plataformas* dentro de la web. ¡Gracias por preferirnos!`
                         : `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 💎 *${paquete}* 💎 acaba de ser procesado y completado exitosamente.\n\nRevisa tu cuenta del juego y disfruta. ¡Gracias por preferirnos!`;
+                    msg += desgloseSaldoTexto;
                 }
                 msg += `\n\n📲 Únete a nuestro grupo de WhatsApp para promos y sorteos exclusivos: ${LINK_GRUPO_WHATSAPP}`;
                 window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
@@ -2433,6 +2451,9 @@
                     detalleExtra = `🎮 ID de Juego: <b>${r.id_juego}</b><br>👤 Nickname: <b>${r.nickname_juego || 'N/A'}</b>`;
                 } else if (r.nota_cliente) {
                     detalleExtra = r.nota_cliente;
+                }
+                if (desgloseSaldoHtml) {
+                    detalleExtra = detalleExtra ? `${detalleExtra}<br><br>${desgloseSaldoHtml}` : desgloseSaldoHtml;
                 }
 
                 let mensajeCorreo = esJackpot
