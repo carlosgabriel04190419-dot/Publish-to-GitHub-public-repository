@@ -398,7 +398,7 @@
                     <p class="view-subtitle">Recargas Yape/Plin reportadas por los clientes, esperando aprobación.</p>
                     <div class="card-box success-container">
                         <div class="table-scroll">
-                            <table><thead><tr><th>Fecha</th><th>Usuario</th><th>Monto</th><th>Método</th><th>Acción</th></tr></thead><tbody id="tabla-recargas"></tbody></table>
+                            <table><thead><tr><th>Fecha</th><th>Usuario</th><th>Monto</th><th>Método</th><th>Saldo Actual</th><th style="color:#00e676;">Saldo Después</th><th>Acción</th></tr></thead><tbody id="tabla-recargas"></tbody></table>
                         </div>
                     </div>
                 </div>
@@ -409,7 +409,7 @@
                     <p class="view-subtitle">Compras de diamantes, pases y cajas esperando ser entregadas.</p>
                     <div class="card-box highlight-container">
                         <div class="table-scroll">
-                            <table><thead><tr><th>Fecha</th><th>Comprador</th><th>Paquete</th><th>Juego (Nick / ID)</th><th>Código Asignado</th><th>Acción</th></tr></thead><tbody id="tabla-pedidos"></tbody></table>
+                            <table><thead><tr><th>Fecha</th><th>Comprador</th><th>Paquete</th><th>Precio</th><th>Saldo Actual</th><th>Juego (Nick / ID)</th><th>Código Asignado</th><th>Acción</th></tr></thead><tbody id="tabla-pedidos"></tbody></table>
                         </div>
                     </div>
                 </div>
@@ -1045,6 +1045,16 @@
                 await cargarPedidos();
                 if (miRol === 'full') await cargarRecargas();
             }, 30000);
+
+            // En el celular, cuando la app queda en segundo plano, el temporizador de arriba se
+            // pausa o se atrasa. Esto refresca de una vez apenas vuelves a mirar la pantalla, para
+            // no quedarte viendo una solicitud/pedido que en realidad ya se procesó.
+            document.addEventListener('visibilitychange', async () => {
+                if (document.visibilityState === 'visible' && miRol) {
+                    await cargarPedidos();
+                    if (miRol === 'full') await cargarRecargas();
+                }
+            });
         }
 
         async function actualizarPanel() {
@@ -2216,14 +2226,24 @@
             const cantidad = data ? data.length : 0;
             badge.innerText = cantidad; badge.classList.toggle('zero', cantidad === 0);
             document.getElementById('stat-recargas').innerText = cantidad;
-            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='5' style='text-align: center; color: #a8a8b3;'>✅ Sin solicitudes pendientes.</td></tr>"; return; }
+            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='7' style='text-align: center; color: #a8a8b3;'>✅ Sin solicitudes pendientes.</td></tr>"; return; }
+
+            const nicknames = [...new Set(data.map(r => r.nickname))];
+            const { data: usuarios } = await supabaseClient.from('usuarios').select('nickname, saldo').in('nickname', nicknames);
+            const saldoPorNick = {};
+            (usuarios || []).forEach(u => { saldoPorNick[u.nickname] = u.saldo; });
+
             data.forEach(r => {
+                const saldoActual = saldoPorNick[r.nickname] ?? 0;
+                const saldoDespues = saldoActual + r.monto;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td data-label="Fecha" style="color: #a8a8b3; font-size: 13px;">${new Date(r.created_at).toLocaleString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}</td>
                     <td data-label="Usuario" style="font-weight: bold;">${r.nickname}</td>
                     <td data-label="Monto" style="font-size: 16px; color: #00e676; font-weight: bold;">S/ ${r.monto.toFixed(2)}</td>
                     <td data-label="Método">${r.metodo}</td>
+                    <td data-label="Saldo Actual" style="color:#a8a8b3;">S/ ${saldoActual.toFixed(2)}</td>
+                    <td data-label="Saldo Después" style="color:#00e676; font-weight:bold;">S/ ${saldoDespues.toFixed(2)}</td>
                     <td data-label="Acción">
                         <button class="btn-add" onclick="aprobarRecarga(${r.id}, '${r.nickname}', ${r.monto}, '${(r.metodo || '').replace(/'/g, "\\'")}')"><span class="material-icons">check</span> Aprobar</button>
                         <button class="btn-remove" onclick="rechazarRecarga(${r.id})"><span class="material-icons">close</span> Rechazar</button>
@@ -2264,8 +2284,16 @@
                 return;
             }
 
-            const { error: errorRecarga } = await supabaseClient.from('recargas').update({ estado: 'Completado' }).eq('id', id);
+            // Solo aprueba si la recarga SIGUE pendiente en este preciso momento — evita sumar saldo
+            // dos veces si la lista quedó desactualizada (ej. celular en segundo plano) y se le da
+            // "Aprobar" a algo que ya se había procesado antes.
+            const { data: filasRecarga, error: errorRecarga } = await supabaseClient.from('recargas').update({ estado: 'Completado' }).eq('id', id).eq('estado', 'Pendiente').select();
             if (errorRecarga) { showToast('No se pudo aprobar la recarga: ' + errorRecarga.message, 'error'); return; }
+            if (!filasRecarga || filasRecarga.length === 0) {
+                showToast('Esta solicitud ya había sido procesada antes (aprobada o rechazada) — no se volvió a sumar saldo.', 'warning');
+                cargarRecargas();
+                return;
+            }
 
             const { data: user, error: errorUsuario } = await supabaseClient.from('usuarios').select('saldo, celular, correo, puntos').eq('nickname', nickname).single();
 
@@ -2275,11 +2303,13 @@
                 return;
             }
 
+            const saldoAnterior = user.saldo;
+            const nuevoSaldo = saldoAnterior + montoFinal;
             const puntosGanados = Math.floor(montoFinal * 10);
             const nuevosPuntos = (user.puntos || 0) + puntosGanados;
 
             const { error: errorUpdateSaldo } = await supabaseClient.from('usuarios')
-                .update({ saldo: user.saldo + montoFinal, puntos: nuevosPuntos })
+                .update({ saldo: nuevoSaldo, puntos: nuevosPuntos })
                 .eq('nickname', nickname);
 
             if (errorUpdateSaldo) {
@@ -2292,7 +2322,7 @@
 
             if(user.celular) {
                 let numStr = user.celular.replace(/[^0-9]/g, '');
-                let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga por *S/ ${montoFinal.toFixed(2)}* 💵💵 ha sido aprobada exitosamente.\n🎁 Además, acabas de ganar *${puntosGanados} CarzaPuntos* para la Ruleta VIP.\n\nTu saldo ya está actualizado en tu billetera web.\n\n📲 Únete a nuestro grupo de WhatsApp para promos y sorteos exclusivos: ${LINK_GRUPO_WHATSAPP}\n\n🌐 carzadcross.com`;
+                let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga ha sido aprobada exitosamente.\n\n💰 Saldo anterior: S/ ${saldoAnterior.toFixed(2)}\n➕ Recarga acreditada: S/ ${montoFinal.toFixed(2)}\n💳 Saldo actual: S/ ${nuevoSaldo.toFixed(2)}\n\n🎁 Además, acabas de ganar *${puntosGanados} CarzaPuntos* para la Ruleta VIP.\n\n📲 Únete a nuestro grupo de WhatsApp para promos y sorteos exclusivos: ${LINK_GRUPO_WHATSAPP}\n\n🌐 carzadcross.com`;
                 window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
             }
 
@@ -2300,7 +2330,8 @@
                 user.correo, nickname,
                 `✅ Tu recarga de S/ ${montoFinal.toFixed(2)} fue aprobada (#${id})`,
                 `Tu recarga por <b>S/ ${montoFinal.toFixed(2)}</b> ya fue aprobada y tu saldo está actualizado. Además ganaste <b>${puntosGanados} CarzaPuntos</b> para la Ruleta VIP.<br><br>📲 Únete a nuestro <a href="${LINK_GRUPO_WHATSAPP}" style="color:#25D366; font-weight:bold;">grupo de WhatsApp</a> para promos y sorteos exclusivos.`,
-                'Ver mi saldo', 'https://carzadcross.com/perfil.html'
+                'Ver mi saldo', 'https://carzadcross.com/perfil.html',
+                `💰 Saldo anterior: S/ ${saldoAnterior.toFixed(2)}<br>➕ Recarga: S/ ${montoFinal.toFixed(2)}<br>💳 Saldo actual: S/ ${nuevoSaldo.toFixed(2)}`
             );
 
             showToast(`Saldo aprobado. Se sumaron ${puntosGanados} pts a ${nickname}`);
@@ -2320,7 +2351,7 @@
             const cantidad = data ? data.length : 0;
             badge.innerText = cantidad; badge.classList.toggle('zero', cantidad === 0);
             document.getElementById('stat-pedidos').innerText = cantidad;
-            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='6' style='text-align: center; color: #a8a8b3;'>✅ Sin pedidos pendientes.</td></tr>"; return; }
+            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='8' style='text-align: center; color: #a8a8b3;'>✅ Sin pedidos pendientes.</td></tr>"; return; }
 
             for (let p of data) {
                 if (p.codigo && p.codigo.includes("⚠️ Falta")) {
@@ -2330,6 +2361,11 @@
                     }
                 }
             }
+
+            const nicknamesPedidos = [...new Set(data.map(p => p.nickname))];
+            const { data: usuariosPedidos } = await supabaseClient.from('usuarios').select('nickname, saldo').in('nickname', nicknamesPedidos);
+            const saldoPorNickPedido = {};
+            (usuariosPedidos || []).forEach(u => { saldoPorNickPedido[u.nickname] = u.saldo; });
 
             data.forEach(p => {
                 let codHTML = '<span style="color:#666;">Activación directa</span>';
@@ -2349,6 +2385,8 @@
                     <td data-label="Fecha" style="color: #a8a8b3; font-size: 13px;">${new Date(p.created_at).toLocaleString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}</td>
                     <td data-label="Comprador" style="font-weight: bold;">${p.nickname}</td>
                     <td data-label="Paquete" style="color: #a155ff; font-weight: bold;">${p.paquete}</td>
+                    <td data-label="Precio" style="color: #00e676; font-weight: bold;">S/ ${Number(p.precio).toFixed(2)}</td>
+                    <td data-label="Saldo Actual" style="color: #a8a8b3;">S/ ${(saldoPorNickPedido[p.nickname] ?? 0).toFixed(2)}</td>
                     <td data-label="Juego" style="font-family: monospace; font-size:13px;">${colDetalle}</td>
                     <td data-label="Códigos" style="font-family: monospace; color: #00e676; line-height: 1.8;">${codHTML}</td>
                     <td data-label="Acción">
