@@ -2419,8 +2419,9 @@
                     </div>
                     <div class="pc-paquete">${escHtml(p.paquete)}</div>
                     <div class="pc-datos">
-                        <div class="pc-dato"><span class="pc-dato-label">Precio</span><span class="pc-dato-valor" style="color:#00e676;">S/ ${Number(p.precio).toFixed(2)}</span></div>
-                        <div class="pc-dato"><span class="pc-dato-label">Saldo actual</span><span class="pc-dato-valor" style="color:#a8a8b3;">S/ ${(saldoPorNickPedido[p.nickname] ?? 0).toFixed(2)}</span></div>
+                        <div class="pc-dato"><span class="pc-dato-label">Saldo antes de comprar</span><span class="pc-dato-valor" style="color:#a8a8b3;">S/ ${((saldoPorNickPedido[p.nickname] ?? 0) + Number(p.precio)).toFixed(2)}</span></div>
+                        <div class="pc-dato"><span class="pc-dato-label">Precio (costo)</span><span class="pc-dato-valor" style="color:#ff4757;">- S/ ${Number(p.precio).toFixed(2)}</span></div>
+                        <div class="pc-dato"><span class="pc-dato-label">Saldo actual</span><span class="pc-dato-valor" style="color:#00e676;">S/ ${(saldoPorNickPedido[p.nickname] ?? 0).toFixed(2)}</span></div>
                     </div>
                     <div class="pc-seccion">
                         <span class="pc-seccion-label">Juego</span>
