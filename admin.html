@@ -111,6 +111,24 @@
         .cuenta-card-acciones { display: flex; gap: 8px; margin-top: 2px; }
         .cuenta-card-acciones button { flex: 1; justify-content: center; }
 
+        /* -------- TARJETAS DE PEDIDOS Y SOLICITUDES -------- */
+        .pedidos-grid, .recargas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+        .pedido-card, .recarga-card { background: #1a1a24; border: 1px solid #232330; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+        .pc-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+        .pc-comprador { font-weight: 800; font-size: 15px; }
+        .pc-fecha { color: #6a6a78; font-size: 11px; white-space: nowrap; }
+        .pc-paquete { color: #a155ff; font-weight: 800; font-size: 15px; line-height: 1.3; }
+        .pc-metodo { color: #a8a8b3; font-size: 12.5px; }
+        .pc-datos { display: flex; gap: 22px; flex-wrap: wrap; }
+        .pc-dato { display: flex; flex-direction: column; gap: 3px; }
+        .pc-dato-label { color: #6a6a78; font-size: 10px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
+        .pc-dato-valor { font-weight: 800; font-size: 15px; }
+        .pc-seccion { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 10px 12px; }
+        .pc-seccion-label { display: block; color: #a8a8b3; text-transform: uppercase; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .pc-seccion-cuerpo { font-family: monospace; font-size: 12.5px; color: #e0e0e0; line-height: 1.7; }
+        .pc-acciones { display: flex; gap: 8px; margin-top: 2px; }
+        .pc-acciones button { flex: 1; justify-content: center; }
+
         .search-bar { background: #1c1c26; border: 1px solid #333340; color: white; padding: 10px 15px; border-radius: 8px; width: 100%; max-width: 300px; outline: none; box-sizing: border-box; }
         .status-badge { padding: 4px 9px; border-radius: 6px; font-size: 11px; font-weight: 700; }
 
@@ -397,9 +415,7 @@
                     <h1 class="view-title"><span class="material-icons" style="color:#00e676;">account_balance_wallet</span> Solicitudes de Saldo</h1>
                     <p class="view-subtitle">Recargas Yape/Plin reportadas por los clientes, esperando aprobación.</p>
                     <div class="card-box success-container">
-                        <div class="table-scroll">
-                            <table><thead><tr><th>Fecha</th><th>Usuario</th><th>Monto</th><th>Método</th><th>Saldo Actual</th><th style="color:#00e676;">Saldo Después</th><th>Acción</th></tr></thead><tbody id="tabla-recargas"></tbody></table>
-                        </div>
+                        <div class="recargas-grid" id="tabla-recargas"></div>
                     </div>
                 </div>
 
@@ -408,9 +424,7 @@
                     <h1 class="view-title"><span class="material-icons" style="color:#a155ff;">shopping_cart</span> Pedidos de Juegos</h1>
                     <p class="view-subtitle">Compras de diamantes, pases y cajas esperando ser entregadas.</p>
                     <div class="card-box highlight-container">
-                        <div class="table-scroll">
-                            <table><thead><tr><th>Fecha</th><th>Comprador</th><th>Paquete</th><th>Precio</th><th>Saldo Actual</th><th>Juego (Nick / ID)</th><th>Código Asignado</th><th>Acción</th></tr></thead><tbody id="tabla-pedidos"></tbody></table>
-                        </div>
+                        <div class="pedidos-grid" id="tabla-pedidos"></div>
                     </div>
                 </div>
 
@@ -2228,12 +2242,12 @@
         // ================= RECARGAS (AHORA OTORGA PUNTOS AUTOMÁTICAMENTE) =================
         async function cargarRecargas() {
             const { data } = await supabaseClient.from('recargas').select('*').eq('estado', 'Pendiente').order('created_at', { ascending: true });
-            const tbody = document.getElementById('tabla-recargas'); tbody.innerHTML = "";
+            const cont = document.getElementById('tabla-recargas'); cont.innerHTML = "";
             const badge = document.getElementById('badge-recargas');
             const cantidad = data ? data.length : 0;
             badge.innerText = cantidad; badge.classList.toggle('zero', cantidad === 0);
             document.getElementById('stat-recargas').innerText = cantidad;
-            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='7' style='text-align: center; color: #a8a8b3;'>✅ Sin solicitudes pendientes.</td></tr>"; return; }
+            if (!data || data.length === 0) { cont.innerHTML = "<p style='text-align: center; color: #a8a8b3; grid-column:1/-1;'>✅ Sin solicitudes pendientes.</p>"; return; }
 
             const nicknames = [...new Set(data.map(r => r.nickname))];
             const { data: usuarios } = await supabaseClient.from('usuarios').select('nickname, saldo').in('nickname', nicknames);
@@ -2243,19 +2257,26 @@
             data.forEach(r => {
                 const saldoActual = saldoPorNick[r.nickname] ?? 0;
                 const saldoDespues = saldoActual + r.monto;
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td data-label="Fecha" style="color: #a8a8b3; font-size: 13px;">${new Date(r.created_at).toLocaleString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}</td>
-                    <td data-label="Usuario" style="font-weight: bold;">${r.nickname}</td>
-                    <td data-label="Monto" style="font-size: 16px; color: #00e676; font-weight: bold;">S/ ${r.monto.toFixed(2)}</td>
-                    <td data-label="Método">${r.metodo}</td>
-                    <td data-label="Saldo Actual" style="color:#a8a8b3;">S/ ${saldoActual.toFixed(2)}</td>
-                    <td data-label="Saldo Después" style="color:#00e676; font-weight:bold;">S/ ${saldoDespues.toFixed(2)}</td>
-                    <td data-label="Acción">
-                        <button class="btn-add" onclick="aprobarRecarga(${r.id}, '${r.nickname}', ${r.monto}, '${(r.metodo || '').replace(/'/g, "\\'")}')"><span class="material-icons">check</span> Aprobar</button>
+                const nickEsc = escAttr(r.nickname).replace(/'/g, "\\'");
+                const metodoEsc = escAttr(r.metodo || '').replace(/'/g, "\\'");
+                const div = document.createElement('div');
+                div.className = 'recarga-card';
+                div.innerHTML = `
+                    <div class="pc-header">
+                        <div class="pc-comprador">${escHtml(r.nickname)}</div>
+                        <div class="pc-fecha">${new Date(r.created_at).toLocaleString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}</div>
+                    </div>
+                    <div class="pc-metodo">${escHtml(r.metodo)}</div>
+                    <div class="pc-datos">
+                        <div class="pc-dato"><span class="pc-dato-label">Monto solicitado</span><span class="pc-dato-valor" style="color:#00e676;">S/ ${r.monto.toFixed(2)}</span></div>
+                        <div class="pc-dato"><span class="pc-dato-label">Saldo actual</span><span class="pc-dato-valor" style="color:#a8a8b3;">S/ ${saldoActual.toFixed(2)}</span></div>
+                        <div class="pc-dato"><span class="pc-dato-label">Saldo después</span><span class="pc-dato-valor" style="color:#00e676;">S/ ${saldoDespues.toFixed(2)}</span></div>
+                    </div>
+                    <div class="pc-acciones">
+                        <button class="btn-add" onclick="aprobarRecarga(${r.id}, '${nickEsc}', ${r.monto}, '${metodoEsc}')"><span class="material-icons">check</span> Aprobar</button>
                         <button class="btn-remove" onclick="rechazarRecarga(${r.id})"><span class="material-icons">close</span> Rechazar</button>
-                    </td>`;
-                tbody.appendChild(tr);
+                    </div>`;
+                cont.appendChild(div);
             });
         }
 
@@ -2353,12 +2374,12 @@
         // ================= PEDIDOS =================
         async function cargarPedidos() {
             const { data } = await supabaseClient.from('pedidos').select('*').eq('estado', 'Pendiente').order('created_at', { ascending: true });
-            const tbody = document.getElementById('tabla-pedidos'); tbody.innerHTML = "";
+            const cont = document.getElementById('tabla-pedidos'); cont.innerHTML = "";
             const badge = document.getElementById('badge-pedidos');
             const cantidad = data ? data.length : 0;
             badge.innerText = cantidad; badge.classList.toggle('zero', cantidad === 0);
             document.getElementById('stat-pedidos').innerText = cantidad;
-            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='8' style='text-align: center; color: #a8a8b3;'>✅ Sin pedidos pendientes.</td></tr>"; return; }
+            if (!data || data.length === 0) { cont.innerHTML = "<p style='text-align: center; color: #a8a8b3; grid-column:1/-1;'>✅ Sin pedidos pendientes.</p>"; return; }
 
             for (let p of data) {
                 if (p.codigo && p.codigo.includes("⚠️ Falta")) {
@@ -2377,30 +2398,43 @@
             data.forEach(p => {
                 let codHTML = '<span style="color:#666;">Activación directa</span>';
                 if (p.codigo) {
-                    codHTML = p.codigo.split(' | ').map(l => (l.includes("⚠️") || l.includes("Pendiente —")) ? `<span style="color:#ff4757; font-size:12px; font-weight:bold;">${l}</span>` : `${l} <button class="btn-copy" onclick="copiarTexto('${l}', this)"><span class="material-icons">content_copy</span></button>`).join('<br>');
+                    codHTML = p.codigo.split(' | ').map(l => (l.includes("⚠️") || l.includes("Pendiente —")) ? `<span style="color:#ff4757; font-weight:bold;">${escHtml(l)}</span>` : `${escHtml(l)} <button class="btn-copy" onclick="copiarTexto('${escAttr(l).replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>`).join('<br>');
                 }
                 let colDetalle;
                 if (p.nota_cliente) {
-                    colDetalle = `<span style="color:#ffc107;">📩 Contacto:</span><br>${p.nota_cliente} <button class="btn-copy" onclick="copiarTexto('${p.nota_cliente}', this)"><span class="material-icons">content_copy</span></button>`;
+                    colDetalle = `<span style="color:#ffc107;">📩 Contacto:</span><br>${escHtml(p.nota_cliente)} <button class="btn-copy" onclick="copiarTexto('${escAttr(p.nota_cliente).replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>`;
                 } else if (!p.id_juego && !p.nickname_juego) {
                     colDetalle = `<span style="color:#666;">— (Entrega automática)</span>`;
                 } else {
-                    colDetalle = `Nick: ${p.nickname_juego||'N/A'}<br>ID: ${p.id_juego} <button class="btn-copy" onclick="copiarTexto('${p.id_juego}', this)"><span class="material-icons">content_copy</span></button>`;
+                    colDetalle = `Nick: ${escHtml(p.nickname_juego||'N/A')}<br>ID: ${escHtml(p.id_juego)} <button class="btn-copy" onclick="copiarTexto('${escAttr(p.id_juego).replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>`;
                 }
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td data-label="Fecha" style="color: #a8a8b3; font-size: 13px;">${new Date(p.created_at).toLocaleString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}</td>
-                    <td data-label="Comprador" style="font-weight: bold;">${p.nickname}</td>
-                    <td data-label="Paquete" style="color: #a155ff; font-weight: bold;">${p.paquete}</td>
-                    <td data-label="Precio" style="color: #00e676; font-weight: bold;">S/ ${Number(p.precio).toFixed(2)}</td>
-                    <td data-label="Saldo Actual" style="color: #a8a8b3;">S/ ${(saldoPorNickPedido[p.nickname] ?? 0).toFixed(2)}</td>
-                    <td data-label="Juego" style="font-family: monospace; font-size:13px;">${colDetalle}</td>
-                    <td data-label="Códigos" style="font-family: monospace; color: #00e676; line-height: 1.8;">${codHTML}</td>
-                    <td data-label="Acción">
-                        <button class="btn-complete" onclick="completarPedido(${p.id}, '${p.paquete}', '${p.nickname}', ${p.precio})"><span class="material-icons">check_circle</span> Listo</button>
-                        <button class="btn-remove" onclick="rechazarPedido(${p.id}, '${p.paquete}', '${p.nickname}', ${p.precio})"><span class="material-icons">cancel</span> Rechazar</button>
-                    </td>`;
-                tbody.appendChild(tr);
+                const paqueteEsc = escAttr(p.paquete).replace(/'/g, "\\'");
+                const nickEsc = escAttr(p.nickname).replace(/'/g, "\\'");
+                const div = document.createElement('div');
+                div.className = 'pedido-card';
+                div.innerHTML = `
+                    <div class="pc-header">
+                        <div class="pc-comprador">${escHtml(p.nickname)}</div>
+                        <div class="pc-fecha">${new Date(p.created_at).toLocaleString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}</div>
+                    </div>
+                    <div class="pc-paquete">${escHtml(p.paquete)}</div>
+                    <div class="pc-datos">
+                        <div class="pc-dato"><span class="pc-dato-label">Precio</span><span class="pc-dato-valor" style="color:#00e676;">S/ ${Number(p.precio).toFixed(2)}</span></div>
+                        <div class="pc-dato"><span class="pc-dato-label">Saldo actual</span><span class="pc-dato-valor" style="color:#a8a8b3;">S/ ${(saldoPorNickPedido[p.nickname] ?? 0).toFixed(2)}</span></div>
+                    </div>
+                    <div class="pc-seccion">
+                        <span class="pc-seccion-label">Juego</span>
+                        <div class="pc-seccion-cuerpo">${colDetalle}</div>
+                    </div>
+                    <div class="pc-seccion">
+                        <span class="pc-seccion-label">Código Asignado</span>
+                        <div class="pc-seccion-cuerpo" style="color:#00e676;">${codHTML}</div>
+                    </div>
+                    <div class="pc-acciones">
+                        <button class="btn-complete" onclick="completarPedido(${p.id}, '${paqueteEsc}', '${nickEsc}', ${p.precio})"><span class="material-icons">check_circle</span> Listo</button>
+                        <button class="btn-remove" onclick="rechazarPedido(${p.id}, '${paqueteEsc}', '${nickEsc}', ${p.precio})"><span class="material-icons">cancel</span> Rechazar</button>
+                    </div>`;
+                cont.appendChild(div);
             });
         }
 
