@@ -129,6 +129,13 @@
         .pc-acciones { display: flex; gap: 8px; margin-top: 2px; }
         .pc-acciones button { flex: 1; justify-content: center; }
 
+        /* -------- TARJETAS DE MIS CLIENTES (STREAMING) -------- */
+        .clientes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+        .cliente-card { background: #1a1a24; border: 1px solid #232330; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+        .cliente-card.vence-pronto { border-color: rgba(255,152,0,0.5); }
+        .cliente-card.vencido { border-color: rgba(255,71,87,0.5); }
+        .cliente-card-venc-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10.5px; font-weight: 800; white-space: nowrap; }
+
         .search-bar { background: #1c1c26; border: 1px solid #333340; color: white; padding: 10px 15px; border-radius: 8px; width: 100%; max-width: 300px; outline: none; box-sizing: border-box; }
         .status-badge { padding: 4px 9px; border-radius: 6px; font-size: 11px; font-weight: 700; }
 
@@ -345,6 +352,7 @@
                     <div class="admin-nav-item" data-view="catalogo" onclick="cambiarVista('catalogo')"><span class="material-icons">storefront</span> Catálogo</div>
                     <div class="admin-nav-item" data-view="ganancias" onclick="cambiarVista('ganancias')"><span class="material-icons">payments</span> Ganancias</div>
                     <div class="admin-nav-item" id="nav-item-cuentas" data-view="cuentas" onclick="cambiarVista('cuentas')" style="display:none;"><span class="material-icons">badge</span> Cuentas</div>
+                    <div class="admin-nav-item solo-full" data-view="mis-clientes" onclick="cambiarVista('mis-clientes')"><span class="material-icons">subscriptions</span> Mis Clientes <span class="nav-badge zero" id="badge-clientes-venciendo">0</span></div>
                     <div class="admin-nav-item solo-full" data-view="cupones" onclick="cambiarVista('cupones')"><span class="material-icons">sell</span> Cupones</div>
                     <div class="admin-nav-item solo-full" data-view="administradores" onclick="cambiarVista('administradores')"><span class="material-icons">admin_panel_settings</span> Administradores</div>
                 </nav>
@@ -833,6 +841,85 @@
                     </div>
                 </div>
 
+                <!-- ============ MIS CLIENTES STREAMING ============ -->
+                <div class="admin-view" id="view-mis-clientes">
+                    <h1 class="view-title"><span class="material-icons" style="color:#a155ff;">subscriptions</span> Mis Clientes de Streaming</h1>
+                    <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 20px 0;">Tu lista personal de clientes de streaming (Netflix, Disney+, etc.) que manejas por WhatsApp. Solo tú la ves — tu socio de streaming no tiene acceso a esto.</p>
+
+                    <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#00d2ff;">person_add</span> <span id="mc-titulo-form">Agregar Cliente</span></h3>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:15px; margin-bottom:15px;">
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Nombre del cliente</label>
+                                <input type="text" id="mc-nombre" class="search-bar" style="max-width:none;" placeholder="Ej. Juliana Pérez">
+                            </div>
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">WhatsApp del cliente</label>
+                                <input type="text" id="mc-whatsapp" class="search-bar" style="max-width:none;" placeholder="Ej. 51987654321">
+                            </div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:15px; margin-bottom:15px;">
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Plataforma</label>
+                                <input type="text" id="mc-plataforma" class="search-bar" style="max-width:none;" placeholder="Ej. Netflix, Disney+, HBO Max...">
+                            </div>
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Tipo</label>
+                                <select id="mc-tipo-perfil" class="search-bar" style="max-width:none;">
+                                    <option value="Perfil">Perfil</option>
+                                    <option value="Cuenta Completa">Cuenta Completa</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="margin-bottom:15px;">
+                            <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Cómo se entrega el acceso</label>
+                            <select id="mc-metodo-entrega" class="search-bar" style="max-width:none;" onchange="actualizarCamposMetodoEntrega()">
+                                <option value="correo_y_contrasena">Correo y contraseña</option>
+                                <option value="qr_tv">Cliente manda foto del QR de su TV (sin contraseña)</option>
+                                <option value="codigo_acceso">Cliente inicia sesión y me pasa el código de verificación</option>
+                            </select>
+                        </div>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:15px; margin-bottom:15px;">
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Correo</label>
+                                <input type="email" id="mc-correo" class="search-bar" style="max-width:none;" placeholder="correo@ejemplo.com">
+                            </div>
+                            <div id="mc-wrap-contrasena">
+                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Contraseña</label>
+                                <input type="text" id="mc-contrasena" class="search-bar" style="max-width:none;" placeholder="Contraseña">
+                            </div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:15px; margin-bottom:15px;">
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">PIN (opcional)</label>
+                                <input type="text" id="mc-pin" class="search-bar" style="max-width:none;" placeholder="Ej. 1234">
+                            </div>
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Precio (S/)</label>
+                                <input type="number" id="mc-precio" class="search-bar" style="max-width:none;" step="0.01" min="0" placeholder="15.00">
+                            </div>
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Días de servicio</label>
+                                <input type="number" id="mc-dias" class="search-bar" style="max-width:none;" min="1" step="1" value="30">
+                            </div>
+                        </div>
+                        <div style="margin-bottom:15px;">
+                            <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Notas (opcional)</label>
+                            <textarea id="mc-notas" class="search-bar" style="max-width:none; min-height:55px; font-family:inherit; resize:vertical;"></textarea>
+                        </div>
+                        <input type="hidden" id="mc-editando-id" value="">
+                        <button class="btn-add" style="width:100%; padding:14px; justify-content:center; font-size:14px;" onclick="guardarClienteStreaming()">
+                            <span class="material-icons" id="mc-btn-icono">person_add</span> <span id="mc-btn-texto">Agregar Cliente</span>
+                        </button>
+                        <button class="btn-copy" id="mc-btn-cancelar-edicion" style="display:none; width:100%; justify-content:center; padding:10px; margin-top:8px;" onclick="cancelarEdicionCliente()">Cancelar edición</button>
+                    </div>
+
+                    <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">subscriptions</span> Clientes Activos</h3>
+                        <div class="clientes-grid" id="lista-mis-clientes"></div>
+                    </div>
+                </div>
+
                 <!-- ============ CUPONES ============ -->
                 <div class="admin-view" id="view-cupones">
                     <h1 class="view-title"><span class="material-icons" style="color:#00e676;">sell</span> Cupones de Descuento</h1>
@@ -1038,7 +1125,7 @@
             });
 
             if (rol === 'full') {
-                await cargarUsuarios(); await cargarRecargas(); await cargarAdmins(); await cargarCupones();
+                await cargarUsuarios(); await cargarRecargas(); await cargarAdmins(); await cargarCupones(); await cargarMisClientesStreaming();
             } else {
                 cambiarVista('pedidos');
             }
@@ -1064,7 +1151,7 @@
             intervaloActualizacionIniciado = true;
             setInterval(async () => {
                 await cargarPedidos();
-                if (miRol === 'full') await cargarRecargas();
+                if (miRol === 'full') { await cargarRecargas(); await cargarMisClientesStreaming(); }
             }, 30000);
 
             // En el celular, cuando la app queda en segundo plano, el temporizador de arriba se
@@ -1073,7 +1160,7 @@
             document.addEventListener('visibilitychange', async () => {
                 if (document.visibilityState === 'visible' && miRol) {
                     await cargarPedidos();
-                    if (miRol === 'full') await cargarRecargas();
+                    if (miRol === 'full') { await cargarRecargas(); await cargarMisClientesStreaming(); }
                 }
             });
         }
@@ -1135,6 +1222,289 @@
             if (error) { showToast("Error: " + error.message, "error"); return; }
             showToast("Administrador eliminado.", "warning");
             cargarAdmins();
+        }
+
+        // ================= MIS CLIENTES STREAMING =================
+        let clientesStreamingCache = [];
+        let clienteStreamingEditandoOriginal = null;
+
+        function formatearFechaLarga(fechaStr) {
+            const d = new Date(fechaStr + 'T00:00:00');
+            return d.toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function formatearFechaCorta(fechaStr) {
+            return new Date(fechaStr + 'T00:00:00').toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        function abrirWhatsappCliente(whatsapp, mensaje) {
+            if (!whatsapp) { showToast('Este cliente no tiene WhatsApp guardado.', 'warning'); return; }
+            const numStr = whatsapp.replace(/[^0-9]/g, '');
+            window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(mensaje)}`, '_blank');
+        }
+
+        function mensajeNuevoServicio(c) {
+            const fechaTxt = formatearFechaLarga(c.fecha_vencimiento);
+            let accesoTxt;
+            if (c.metodo_entrega === 'qr_tv') {
+                accesoTxt = `📺 *Para activarlo en tu TV:* mándame una foto del código QR que te sale en pantalla apenas quieras entrar y te lo activo al toque.`;
+            } else if (c.metodo_entrega === 'codigo_acceso') {
+                accesoTxt = `📧 *Correo:* ${c.correo || '—'}\n🔐 *Para entrar:* dale a "Iniciar sesión" con ese correo desde tu celular, tablet o laptop, y el código que te pida la plataforma me lo pasas para confirmarte el acceso.`;
+            } else {
+                accesoTxt = `📧 *Correo:* ${c.correo || '—'}\n🔑 *Contraseña:* ${c.contrasena || '—'}`;
+            }
+            const pinTxt = c.pin ? `\n🔢 *PIN:* ${c.pin}` : '';
+            return `¡Hola *${c.nombre_cliente}*! 👋\n\nAsí quedó activado tu servicio con *CarzaD'Cross* 🎬\n\n🎬 *Plataforma:* ${c.plataforma}\n👤 *Tipo:* ${c.tipo_perfil}\n${accesoTxt}${pinTxt}\n💰 *Monto pagado:* S/ ${Number(c.precio).toFixed(2)}\n📅 *Vence el:* ${fechaTxt}\n🔁 *Renovable:* Sí, solo avísame antes de esa fecha.\n\n¡Gracias por elegir *CarzaD'Cross*! 🙌 Cualquier duda, aquí estoy.`;
+        }
+
+        function mensajeRenovacion(c) {
+            const fechaTxt = formatearFechaLarga(c.fecha_vencimiento);
+            return `¡Hola *${c.nombre_cliente}*! 👋\n\n✅ Renovación confirmada — tu servicio de *${c.plataforma}* (${c.tipo_perfil}) sigue activo hasta el *${fechaTxt}*.\n\n💰 Monto: S/ ${Number(c.precio).toFixed(2)}\n\n¡Gracias por seguir confiando en *CarzaD'Cross*! 🙌`;
+        }
+
+        function mensajeRecordatorio(c) {
+            const fechaTxt = formatearFechaLarga(c.fecha_vencimiento);
+            return `¡Hola *${c.nombre_cliente}*! 👋\n\n⏰ Tu servicio de *${c.plataforma}* (${c.tipo_perfil}) está por vencer el *${fechaTxt}*.\n\nSi quieres seguir disfrutándolo sin cortes, mándame la captura de tu pago de *S/ ${Number(c.precio).toFixed(2)}* al Yape y te renuevo al toque. 📲\n\n¡Gracias por preferir *CarzaD'Cross*! 🙌`;
+        }
+
+        function mensajeCorte(c) {
+            return `¡Hola *${c.nombre_cliente}*! 👋\n\nTu servicio de *${c.plataforma}* (${c.tipo_perfil}) fue suspendido por falta de renovación.\n\nCuando quieras reactivarlo, aquí estoy para ayudarte. 🙌`;
+        }
+
+        function mensajeActualizacion(c, cambios) {
+            const detalle = cambios.join('\n');
+            return `¡Hola *${c.nombre_cliente}*! 👋\n\n🔄 Se actualizaron los datos de acceso de tu servicio *${c.plataforma}*:\n\n${detalle}\n\nCualquier duda, aquí estoy. ¡Gracias por confiar en *CarzaD'Cross*! 🙌`;
+        }
+
+        async function cargarMisClientesStreaming() {
+            const { data } = await supabaseClient.from('mis_clientes_streaming').select('*').order('fecha_vencimiento', { ascending: true });
+            clientesStreamingCache = data || [];
+
+            const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+            const limite = new Date(hoy); limite.setDate(limite.getDate() + 2);
+            const venciendo = clientesStreamingCache.filter(c => new Date(c.fecha_vencimiento + 'T00:00:00') <= limite).length;
+            const badge = document.getElementById('badge-clientes-venciendo');
+            if (badge) { badge.innerText = venciendo; badge.classList.toggle('zero', venciendo === 0); }
+
+            const cont = document.getElementById('lista-mis-clientes');
+            if (!cont) return;
+            if (clientesStreamingCache.length === 0) { cont.innerHTML = "<p style='text-align:center; color:#a8a8b3; grid-column:1/-1;'>Todavía no agregaste ningún cliente.</p>"; return; }
+            cont.innerHTML = clientesStreamingCache.map(c => tarjetaClienteStreaming(c)).join('');
+        }
+
+        function tarjetaClienteStreaming(c) {
+            const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+            const fechaVenc = new Date(c.fecha_vencimiento + 'T00:00:00');
+            const diffDias = Math.round((fechaVenc - hoy) / 86400000);
+            let claseEstado = '', badgeEstado = '';
+            if (diffDias < 0) {
+                claseEstado = 'vencido';
+                badgeEstado = `<span class="cliente-card-venc-badge" style="background:rgba(255,71,87,0.18); color:#ff4757;">Vencido hace ${Math.abs(diffDias)} día(s)</span>`;
+            } else if (diffDias <= 2) {
+                claseEstado = 'vence-pronto';
+                badgeEstado = `<span class="cliente-card-venc-badge" style="background:rgba(255,152,0,0.18); color:#ff9800;">Vence en ${diffDias} día(s)</span>`;
+            } else {
+                badgeEstado = `<span class="cliente-card-venc-badge" style="background:rgba(0,230,118,0.15); color:#00e676;">Activo</span>`;
+            }
+            const nombreEsc = escAttr(c.nombre_cliente).replace(/'/g, "\\'");
+            let accesoHtml;
+            if (c.metodo_entrega === 'qr_tv') accesoHtml = `${escHtml(c.correo || '—')}<br>📺 Entrega por QR de TV`;
+            else if (c.metodo_entrega === 'codigo_acceso') accesoHtml = `${escHtml(c.correo || '—')}<br>🔐 Entrega por código de acceso`;
+            else accesoHtml = `${escHtml(c.correo || '—')}<br>🔑 ${escHtml(c.contrasena || '—')}`;
+
+            return `<div class="cliente-card ${claseEstado}">
+                <div class="pc-header">
+                    <div class="pc-comprador">${escHtml(c.nombre_cliente)}</div>
+                    ${badgeEstado}
+                </div>
+                <div class="pc-paquete">${escHtml(c.plataforma)} — ${escHtml(c.tipo_perfil)}</div>
+                <div class="pc-datos">
+                    <div class="pc-dato"><span class="pc-dato-label">Precio</span><span class="pc-dato-valor" style="color:#00e676;">S/ ${Number(c.precio).toFixed(2)}</span></div>
+                    <div class="pc-dato"><span class="pc-dato-label">Vence</span><span class="pc-dato-valor" style="color:#a8a8b3; font-size:13px;">${formatearFechaCorta(c.fecha_vencimiento)}</span></div>
+                </div>
+                <div class="pc-seccion">
+                    <span class="pc-seccion-label">Acceso</span>
+                    <div class="pc-seccion-cuerpo">${accesoHtml}</div>
+                </div>
+                <div class="pc-acciones">
+                    <button class="btn-add" onclick="renovarClienteStreaming(${c.id})"><span class="material-icons">autorenew</span> Renovar</button>
+                    <button class="btn-view" onclick="editarClienteStreaming(${c.id})"><span class="material-icons">edit</span> Editar</button>
+                </div>
+                <div class="pc-acciones">
+                    <button class="btn-complete" onclick="enviarRecordatorioVencimiento(${c.id})"><span class="material-icons">notifications_active</span> Recordatorio</button>
+                    <button class="btn-remove" onclick="eliminarClienteStreaming(${c.id}, '${nombreEsc}')"><span class="material-icons">delete</span> Eliminar</button>
+                </div>
+            </div>`;
+        }
+
+        function actualizarCamposMetodoEntrega() {
+            const metodo = document.getElementById('mc-metodo-entrega').value;
+            document.getElementById('mc-wrap-contrasena').style.display = metodo === 'correo_y_contrasena' ? 'block' : 'none';
+        }
+
+        function limpiarFormularioCliente() {
+            document.getElementById('mc-editando-id').value = '';
+            document.getElementById('mc-nombre').value = '';
+            document.getElementById('mc-whatsapp').value = '';
+            document.getElementById('mc-plataforma').value = '';
+            document.getElementById('mc-tipo-perfil').value = 'Perfil';
+            document.getElementById('mc-metodo-entrega').value = 'correo_y_contrasena';
+            document.getElementById('mc-correo').value = '';
+            document.getElementById('mc-contrasena').value = '';
+            document.getElementById('mc-pin').value = '';
+            document.getElementById('mc-precio').value = '';
+            document.getElementById('mc-dias').value = '30';
+            document.getElementById('mc-notas').value = '';
+            actualizarCamposMetodoEntrega();
+            document.getElementById('mc-titulo-form').innerText = 'Agregar Cliente';
+            document.getElementById('mc-btn-texto').innerText = 'Agregar Cliente';
+            document.getElementById('mc-btn-icono').innerText = 'person_add';
+            document.getElementById('mc-btn-cancelar-edicion').style.display = 'none';
+            clienteStreamingEditandoOriginal = null;
+        }
+
+        function editarClienteStreaming(id) {
+            const c = clientesStreamingCache.find(x => x.id === id);
+            if (!c) return;
+            clienteStreamingEditandoOriginal = { ...c };
+            document.getElementById('mc-editando-id').value = c.id;
+            document.getElementById('mc-nombre').value = c.nombre_cliente;
+            document.getElementById('mc-whatsapp').value = c.whatsapp_cliente || '';
+            document.getElementById('mc-plataforma').value = c.plataforma;
+            document.getElementById('mc-tipo-perfil').value = c.tipo_perfil;
+            document.getElementById('mc-metodo-entrega').value = c.metodo_entrega;
+            document.getElementById('mc-correo').value = c.correo || '';
+            document.getElementById('mc-contrasena').value = c.contrasena || '';
+            document.getElementById('mc-pin').value = c.pin || '';
+            document.getElementById('mc-precio').value = c.precio;
+            document.getElementById('mc-dias').value = c.dias_servicio;
+            document.getElementById('mc-notas').value = c.notas || '';
+            actualizarCamposMetodoEntrega();
+            document.getElementById('mc-titulo-form').innerText = 'Editar Cliente';
+            document.getElementById('mc-btn-texto').innerText = 'Guardar Cambios';
+            document.getElementById('mc-btn-icono').innerText = 'save';
+            document.getElementById('mc-btn-cancelar-edicion').style.display = 'block';
+            document.getElementById('view-mis-clientes').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelarEdicionCliente() { limpiarFormularioCliente(); }
+
+        async function guardarClienteStreaming() {
+            const editandoId = document.getElementById('mc-editando-id').value;
+            const nombre = document.getElementById('mc-nombre').value.trim();
+            const whatsapp = document.getElementById('mc-whatsapp').value.trim();
+            const plataforma = document.getElementById('mc-plataforma').value.trim();
+            const tipoPerfil = document.getElementById('mc-tipo-perfil').value;
+            const metodoEntrega = document.getElementById('mc-metodo-entrega').value;
+            const correo = document.getElementById('mc-correo').value.trim();
+            const contrasena = document.getElementById('mc-contrasena').value.trim();
+            const pin = document.getElementById('mc-pin').value.trim();
+            const precio = parseFloat(document.getElementById('mc-precio').value);
+            const dias = parseInt(document.getElementById('mc-dias').value);
+            const notas = document.getElementById('mc-notas').value.trim();
+
+            if (!nombre) return showToast('Ingresa el nombre del cliente.', 'warning');
+            if (!plataforma) return showToast('Ingresa la plataforma.', 'warning');
+            if (isNaN(precio) || precio < 0) return showToast('Ingresa un precio válido.', 'warning');
+            if (isNaN(dias) || dias < 1) return showToast('Ingresa los días de servicio.', 'warning');
+
+            if (editandoId) {
+                const payload = {
+                    nombre_cliente: nombre, whatsapp_cliente: whatsapp || null, plataforma, tipo_perfil: tipoPerfil,
+                    metodo_entrega: metodoEntrega, correo: correo || null, contrasena: contrasena || null, pin: pin || null,
+                    precio, dias_servicio: dias, notas: notas || null, updated_at: new Date().toISOString()
+                };
+                const { error } = await supabaseClient.from('mis_clientes_streaming').update(payload).eq('id', editandoId);
+                if (error) { showToast('Error: ' + error.message, 'error'); return; }
+
+                const original = clienteStreamingEditandoOriginal;
+                const cambios = [];
+                if (original) {
+                    if ((original.correo || '') !== correo) cambios.push(`📧 *Nuevo correo:* ${correo || '—'}`);
+                    if (metodoEntrega === 'correo_y_contrasena' && (original.contrasena || '') !== contrasena) cambios.push(`🔑 *Nueva contraseña:* ${contrasena || '—'}`);
+                    if ((original.pin || '') !== pin) cambios.push(`🔢 *Nuevo PIN:* ${pin || '—'}`);
+                }
+
+                showToast('Cliente actualizado.');
+                limpiarFormularioCliente();
+                cargarMisClientesStreaming();
+
+                if (cambios.length > 0 && whatsapp) {
+                    const conf = await openCustomModal({ title: 'Avisar al cliente', desc: `¿Enviarle un WhatsApp a <b>${escHtml(nombre)}</b> avisando qué se le actualizó?`, icon: 'campaign', color: '#00d2ff', type: 'confirm', confirmText: 'Enviar aviso' });
+                    if (conf) abrirWhatsappCliente(whatsapp, mensajeActualizacion({ nombre_cliente: nombre, plataforma }, cambios));
+                }
+            } else {
+                const hoy = new Date();
+                const fechaInicio = hoy.toISOString().slice(0, 10);
+                const fechaVenc = new Date(hoy); fechaVenc.setDate(fechaVenc.getDate() + dias);
+                const payload = {
+                    nombre_cliente: nombre, whatsapp_cliente: whatsapp || null, plataforma, tipo_perfil: tipoPerfil,
+                    metodo_entrega: metodoEntrega, correo: correo || null, contrasena: contrasena || null, pin: pin || null,
+                    precio, dias_servicio: dias, notas: notas || null,
+                    fecha_inicio: fechaInicio, fecha_vencimiento: fechaVenc.toISOString().slice(0, 10)
+                };
+                const { data, error } = await supabaseClient.from('mis_clientes_streaming').insert([payload]).select().single();
+                if (error) { showToast('Error: ' + error.message, 'error'); return; }
+
+                showToast('Cliente agregado.');
+                limpiarFormularioCliente();
+                cargarMisClientesStreaming();
+
+                if (whatsapp) {
+                    const conf = await openCustomModal({ title: 'Enviar datos al cliente', desc: `¿Mandarle a <b>${escHtml(nombre)}</b> el mensaje de WhatsApp con los datos de su servicio?`, icon: 'send', color: '#00d2ff', type: 'confirm', confirmText: 'Enviar' });
+                    if (conf) abrirWhatsappCliente(whatsapp, mensajeNuevoServicio(data));
+                }
+            }
+        }
+
+        async function renovarClienteStreaming(id) {
+            const c = clientesStreamingCache.find(x => x.id === id);
+            if (!c) return;
+            const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+            const fechaVencActual = new Date(c.fecha_vencimiento + 'T00:00:00');
+            const base = fechaVencActual > hoy ? fechaVencActual : hoy;
+            const nuevaFecha = new Date(base); nuevaFecha.setDate(nuevaFecha.getDate() + c.dias_servicio);
+            const nuevaFechaStr = nuevaFecha.toISOString().slice(0, 10);
+
+            const conf = await openCustomModal({ title: 'Renovar Servicio', desc: `¿Confirmas renovar a <b>${escHtml(c.nombre_cliente)}</b> por ${c.dias_servicio} días más?<br>Nueva fecha de vencimiento: <b>${formatearFechaLarga(nuevaFechaStr)}</b>`, icon: 'autorenew', color: '#00e676', type: 'confirm', confirmText: 'Renovar' });
+            if (!conf) return;
+
+            const { error } = await supabaseClient.from('mis_clientes_streaming').update({ fecha_vencimiento: nuevaFechaStr, updated_at: new Date().toISOString() }).eq('id', id);
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
+
+            showToast('Servicio renovado.');
+            cargarMisClientesStreaming();
+
+            if (c.whatsapp_cliente) {
+                const confMsg = await openCustomModal({ title: 'Avisar renovación', desc: `¿Enviarle a <b>${escHtml(c.nombre_cliente)}</b> la confirmación de renovación por WhatsApp?`, icon: 'send', color: '#00d2ff', type: 'confirm', confirmText: 'Enviar' });
+                if (confMsg) abrirWhatsappCliente(c.whatsapp_cliente, mensajeRenovacion({ ...c, fecha_vencimiento: nuevaFechaStr }));
+            }
+        }
+
+        async function eliminarClienteStreaming(id, nombre) {
+            const c = clientesStreamingCache.find(x => x.id === id);
+            const conf = await openCustomModal({ title: 'Eliminar Cliente', desc: `¿Eliminar a <b>${escHtml(nombre)}</b> de tu lista? Esta acción no se puede deshacer.`, icon: 'delete_forever', color: '#ff4757', textColor: 'white', type: 'confirm', confirmText: 'Eliminar' });
+            if (!conf) return;
+
+            let avisar = false;
+            if (c && c.whatsapp_cliente) {
+                avisar = await openCustomModal({ title: 'Avisar al cliente', desc: `¿Enviarle a <b>${escHtml(nombre)}</b> un aviso de que su servicio fue cortado?`, icon: 'campaign', color: '#ff9800', type: 'confirm', confirmText: 'Sí, avisar' });
+            }
+
+            const { error } = await supabaseClient.from('mis_clientes_streaming').delete().eq('id', id);
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
+
+            if (avisar && c) abrirWhatsappCliente(c.whatsapp_cliente, mensajeCorte(c));
+
+            showToast('Cliente eliminado.', 'warning');
+            cargarMisClientesStreaming();
+        }
+
+        function enviarRecordatorioVencimiento(id) {
+            const c = clientesStreamingCache.find(x => x.id === id);
+            if (!c) return;
+            if (!c.whatsapp_cliente) { showToast('Este cliente no tiene WhatsApp guardado.', 'warning'); return; }
+            abrirWhatsappCliente(c.whatsapp_cliente, mensajeRecordatorio(c));
         }
 
         // ================= CUPONES =================
