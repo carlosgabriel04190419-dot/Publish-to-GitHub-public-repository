@@ -421,6 +421,13 @@
                     <div class="card-box">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
                             <input type="text" id="buscador" class="search-bar" placeholder="🔍 Buscar por Nickname..." onkeyup="filtrarUsuarios()">
+                            <select id="orden-usuarios" class="bulk-select" style="max-width:260px; margin-bottom:0; width:auto;" onchange="filtrarUsuarios()">
+                                <option value="registro">Registro: más nuevos primero</option>
+                                <option value="registro_asc">Registro: más antiguos primero</option>
+                                <option value="alfabetico">Nickname (A-Z)</option>
+                                <option value="saldo">Mayor saldo primero</option>
+                                <option value="recarga">Última recarga más reciente</option>
+                            </select>
                         </div>
                         <div class="table-scroll">
                             <table>
@@ -2567,12 +2574,19 @@
             return `<span style="color:#a8a8b3; font-size:12.5px; white-space:nowrap;">${fechaCorta}</span>`;
         }
 
+        let ultimaRecargaPorNick = {};
+
         async function cargarUsuarios() {
             const { data } = await supabaseClient.from('usuarios').select('*').order('created_at', { ascending: false });
             todosLosUsuarios = data || [];
+
+            const { data: recargasCompletadas } = await supabaseClient.from('recargas').select('nickname, created_at').eq('estado', 'Completado').order('created_at', { ascending: false });
+            ultimaRecargaPorNick = {};
+            (recargasCompletadas || []).forEach(r => { if (!ultimaRecargaPorNick[r.nickname]) ultimaRecargaPorNick[r.nickname] = r.created_at; });
+
             actualizarResumen();
             paginaUsuarioActual = 1;
-            mostrarUsuarios(todosLosUsuarios);
+            filtrarUsuarios();
         }
 
         function mostrarUsuarios(lista) {
@@ -2604,14 +2618,41 @@
             document.getElementById('btn-pag-next').disabled = paginaUsuarioActual >= totalPaginas;
         }
 
-        function cambiarPagina(delta) {
-            paginaUsuarioActual += delta;
+        function obtenerListaUsuariosFiltrada() {
             const filtro = document.getElementById('buscador').value.toLowerCase();
-            const lista = filtro ? todosLosUsuarios.filter(u => u.nickname.toLowerCase().includes(filtro)) : todosLosUsuarios;
-            mostrarUsuarios(lista);
+            let lista = filtro ? todosLosUsuarios.filter(u => u.nickname.toLowerCase().includes(filtro)) : [...todosLosUsuarios];
+
+            const orden = document.getElementById('orden-usuarios').value;
+            if (orden === 'alfabetico') {
+                lista.sort((a, b) => a.nickname.localeCompare(b.nickname));
+            } else if (orden === 'saldo') {
+                lista.sort((a, b) => b.saldo - a.saldo);
+            } else if (orden === 'recarga') {
+                lista.sort((a, b) => {
+                    const fa = ultimaRecargaPorNick[a.nickname];
+                    const fb = ultimaRecargaPorNick[b.nickname];
+                    if (!fa && !fb) return 0;
+                    if (!fa) return 1; // sin recargas al final
+                    if (!fb) return -1;
+                    return new Date(fb) - new Date(fa);
+                });
+            } else if (orden === 'registro_asc') {
+                lista.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            } else {
+                lista.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            }
+            return lista;
         }
 
-        function filtrarUsuarios() { paginaUsuarioActual = 1; mostrarUsuarios(todosLosUsuarios.filter(u => u.nickname.toLowerCase().includes(document.getElementById('buscador').value.toLowerCase()))); }
+        function cambiarPagina(delta) {
+            paginaUsuarioActual += delta;
+            mostrarUsuarios(obtenerListaUsuariosFiltrada());
+        }
+
+        function filtrarUsuarios() {
+            paginaUsuarioActual = 1;
+            mostrarUsuarios(obtenerListaUsuariosFiltrada());
+        }
 
         async function añadirSaldo(nick, saldo, puntosActuales) {
             const result = await openCustomModal({ title: "Añadir Saldo Manual", desc: `Saldo actual: <b>S/ ${saldo.toFixed(2)}</b><br>Monto a recargar a <b>${nick}</b>:`, icon: 'add_circle', color: '#00e676', type: 'prompt', confirmText: 'Añadir' });
