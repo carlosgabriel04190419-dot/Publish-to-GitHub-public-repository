@@ -2395,7 +2395,26 @@
             const saldoPorNickPedido = {};
             (usuariosPedidos || []).forEach(u => { saldoPorNickPedido[u.nickname] = u.saldo; });
 
+            // Si el mismo cliente tiene más de un pedido pendiente a la vez, el saldo ya
+            // refleja el descuento de TODOS ellos. Para que "saldo antes de comprar" de cada
+            // tarjeta sea el correcto (y no solo le sume de vuelta su propio precio), hay que
+            // sumar también el precio de cualquier otro pedido pendiente más reciente de ese
+            // mismo cliente — van del más viejo al más nuevo porque la consulta ya viene así.
+            const pedidosPorNick = {};
+            data.forEach(p => { (pedidosPorNick[p.nickname] = pedidosPorNick[p.nickname] || []).push(p); });
+            const saldoAntesPorPedidoId = {};
+            Object.keys(pedidosPorNick).forEach(nick => {
+                const pedidosCliente = pedidosPorNick[nick];
+                const saldoBase = saldoPorNickPedido[nick] ?? 0;
+                let acumulado = 0;
+                for (let i = pedidosCliente.length - 1; i >= 0; i--) {
+                    acumulado += Number(pedidosCliente[i].precio);
+                    saldoAntesPorPedidoId[pedidosCliente[i].id] = saldoBase + acumulado;
+                }
+            });
+
             data.forEach(p => {
+                const otrosPendientesMismoCliente = pedidosPorNick[p.nickname].length > 1;
                 let codHTML = '<span style="color:#666;">Activación directa</span>';
                 if (p.codigo) {
                     codHTML = p.codigo.split(' | ').map(l => (l.includes("⚠️") || l.includes("Pendiente —")) ? `<span style="color:#ff4757; font-weight:bold;">${escHtml(l)}</span>` : `${escHtml(l)} <button class="btn-copy" onclick="copiarTexto('${escAttr(l).replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>`).join('<br>');
@@ -2418,8 +2437,9 @@
                         <div class="pc-fecha">${new Date(p.created_at).toLocaleString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}</div>
                     </div>
                     <div class="pc-paquete">${escHtml(p.paquete)}</div>
+                    ${otrosPendientesMismoCliente ? `<div style="color:#ffc107; font-size:11.5px; margin-top:-6px;">⚠️ Este cliente tiene ${pedidosPorNick[p.nickname].length} pedidos pendientes — el saldo ya considera todos.</div>` : ''}
                     <div class="pc-datos">
-                        <div class="pc-dato"><span class="pc-dato-label">Saldo antes de comprar</span><span class="pc-dato-valor" style="color:#a8a8b3;">S/ ${((saldoPorNickPedido[p.nickname] ?? 0) + Number(p.precio)).toFixed(2)}</span></div>
+                        <div class="pc-dato"><span class="pc-dato-label">Saldo antes de comprar</span><span class="pc-dato-valor" style="color:#a8a8b3;">S/ ${(saldoAntesPorPedidoId[p.id]).toFixed(2)}</span></div>
                         <div class="pc-dato"><span class="pc-dato-label">Precio (costo)</span><span class="pc-dato-valor" style="color:#ff4757;">- S/ ${Number(p.precio).toFixed(2)}</span></div>
                         <div class="pc-dato"><span class="pc-dato-label">Saldo actual</span><span class="pc-dato-valor" style="color:#00e676;">S/ ${(saldoPorNickPedido[p.nickname] ?? 0).toFixed(2)}</span></div>
                     </div>
@@ -2454,13 +2474,26 @@
             const esJackpot = r.es_premio_caja && paquete.toLowerCase().includes('jackpot');
 
             // El saldo se descuenta al momento de la compra, no al marcar "Listo", así que se
-            // reconstruye cuánto tenía antes sumando de vuelta lo que pagó por este pedido.
+            // reconstruye cuánto tenía antes sumando de vuelta lo que pagó por este pedido — Y
+            // lo que haya pagado por cualquier OTRO pedido suyo más reciente que siga pendiente,
+            // porque ese también ya se descontó del saldo actual y hay que contarlo para que el
+            // número cuadre si el cliente tiene varios pedidos pendientes a la vez.
             let saldoActualComprador = null, saldoAntesComprador = null;
             if (!r.es_premio_caja) {
                 const { data: usuarioComprador } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nick).maybeSingle();
                 if (usuarioComprador) {
                     saldoActualComprador = usuarioComprador.saldo;
-                    saldoAntesComprador = saldoActualComprador + Number(precio || 0);
+                    let extraPosteriores = 0;
+                    const { data: esteRegistro } = await supabaseClient.from('pedidos').select('created_at').eq('id', id).maybeSingle();
+                    if (esteRegistro) {
+                        const { data: otrosPendientes } = await supabaseClient.from('pedidos').select('precio, created_at').eq('nickname', nick).eq('estado', 'Pendiente');
+                        if (otrosPendientes) {
+                            extraPosteriores = otrosPendientes
+                                .filter(op => new Date(op.created_at) > new Date(esteRegistro.created_at))
+                                .reduce((sum, op) => sum + Number(op.precio), 0);
+                        }
+                    }
+                    saldoAntesComprador = saldoActualComprador + Number(precio || 0) + extraPosteriores;
                 }
             }
             const desgloseSaldoTexto = saldoActualComprador !== null
