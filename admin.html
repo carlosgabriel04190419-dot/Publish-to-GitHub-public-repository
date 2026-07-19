@@ -1020,6 +1020,25 @@
 
                     <div class="card-box">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">subscriptions</span> Clientes Activos</h3>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;">
+                            <select id="orden-clientes" class="bulk-select" style="max-width:260px; margin-bottom:0; width:auto;" onchange="filtrarClientesStreaming()">
+                                <option value="vencimiento">Fecha de vencimiento (más próxima primero)</option>
+                                <option value="adquirida">Fecha adquirida (más reciente primero)</option>
+                                <option value="adquirida_asc">Fecha adquirida (más antigua primero)</option>
+                                <option value="monto">Mayor monto primero</option>
+                            </select>
+                            <select id="filtro-plataforma-clientes" class="bulk-select" style="max-width:220px; margin-bottom:0; width:auto;" onchange="filtrarClientesStreaming()">
+                                <option value="">Todas las plataformas</option>
+                                <option value="Netflix">Netflix</option>
+                                <option value="Disney">Disney+</option>
+                                <option value="Paramount">Paramount Plus</option>
+                                <option value="Spotify">Spotify</option>
+                                <option value="Crunchyroll">Crunchyroll</option>
+                                <option value="DirecTV">DirecTV Go</option>
+                                <option value="HBO">HBO Max</option>
+                                <option value="Apple One">Apple One</option>
+                            </select>
+                        </div>
                         <div class="clientes-grid" id="lista-mis-clientes"></div>
                     </div>
                 </div>
@@ -1426,10 +1445,39 @@
             const badge = document.getElementById('badge-clientes-venciendo');
             if (badge) { badge.innerText = venciendo; badge.classList.toggle('zero', venciendo === 0); }
 
+            renderizarListaClientesStreaming();
+        }
+
+        function obtenerListaClientesFiltrada() {
+            const filtroPlataforma = document.getElementById('filtro-plataforma-clientes')?.value || '';
+            let lista = filtroPlataforma
+                ? clientesStreamingCache.filter(c => (c.plataforma || '').toLowerCase().includes(filtroPlataforma.toLowerCase()))
+                : [...clientesStreamingCache];
+
+            const orden = document.getElementById('orden-clientes')?.value || 'vencimiento';
+            if (orden === 'adquirida') {
+                lista.sort((a, b) => new Date(b.fecha_inicio) - new Date(a.fecha_inicio));
+            } else if (orden === 'adquirida_asc') {
+                lista.sort((a, b) => new Date(a.fecha_inicio) - new Date(b.fecha_inicio));
+            } else if (orden === 'monto') {
+                lista.sort((a, b) => b.precio - a.precio);
+            } else {
+                lista.sort((a, b) => new Date(a.fecha_vencimiento) - new Date(b.fecha_vencimiento));
+            }
+            return lista;
+        }
+
+        function filtrarClientesStreaming() {
+            renderizarListaClientesStreaming();
+        }
+
+        function renderizarListaClientesStreaming() {
             const cont = document.getElementById('lista-mis-clientes');
             if (!cont) return;
             if (clientesStreamingCache.length === 0) { cont.innerHTML = "<p style='text-align:center; color:#a8a8b3; grid-column:1/-1;'>Todavía no agregaste ningún cliente.</p>"; return; }
-            cont.innerHTML = clientesStreamingCache.map(c => tarjetaClienteStreaming(c)).join('');
+            const lista = obtenerListaClientesFiltrada();
+            if (lista.length === 0) { cont.innerHTML = "<p style='text-align:center; color:#a8a8b3; grid-column:1/-1;'>Ningún cliente coincide con ese filtro.</p>"; return; }
+            cont.innerHTML = lista.map(c => tarjetaClienteStreaming(c)).join('');
         }
 
         function tarjetaClienteStreaming(c) {
@@ -1446,6 +1494,10 @@
             } else {
                 badgeEstado = `<span class="cliente-card-venc-badge" style="background:rgba(0,230,118,0.15); color:#00e676;">Activo</span>`;
             }
+            let diasRestantesTxt, diasRestantesColor;
+            if (diffDias < 0) { diasRestantesTxt = `Vencido (${Math.abs(diffDias)}d)`; diasRestantesColor = '#ff4757'; }
+            else if (diffDias === 0) { diasRestantesTxt = 'Vence hoy'; diasRestantesColor = '#ff9800'; }
+            else { diasRestantesTxt = `${diffDias} día(s)`; diasRestantesColor = diffDias <= 2 ? '#ff9800' : '#00e676'; }
             const nombreEsc = escAttr(c.nombre_cliente).replace(/'/g, "\\'");
             const correoEsc = escAttr(c.correo || '').replace(/'/g, "\\'");
             const contrasenaEsc = escAttr(c.contrasena || '').replace(/'/g, "\\'");
@@ -1467,6 +1519,7 @@
                 <div class="pc-datos">
                     <div class="pc-dato"><span class="pc-dato-label">Precio</span><span class="pc-dato-valor" style="color:#00e676;">S/ ${Number(c.precio).toFixed(2)}</span></div>
                     <div class="pc-dato"><span class="pc-dato-label">Vence</span><span class="pc-dato-valor" style="color:#a8a8b3; font-size:13px;">${formatearFechaCorta(c.fecha_vencimiento)}</span></div>
+                    <div class="pc-dato"><span class="pc-dato-label">Días restantes</span><span class="pc-dato-valor" style="color:${diasRestantesColor}; font-size:13px;">${diasRestantesTxt}</span></div>
                 </div>
                 <div class="pc-seccion">
                     <span class="pc-seccion-label">Acceso</span>
