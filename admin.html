@@ -281,6 +281,108 @@
         </div>
     </div>
 
+    <!-- MODAL ASIGNAR PERFIL (CUENTA MADRE) -->
+    <div id="modal-asignar-perfil-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:20px; box-sizing:border-box;">
+        <div style="background:#121218; width:100%; max-width:560px; max-height:90vh; overflow-y:auto; padding:24px; border:1px solid #ff9800; border-radius:16px; box-shadow:0 0 30px rgba(255,152,0,0.15);">
+            <h3 style="margin:0 0 6px 0; font-size:18px; display:flex; align-items:center; gap:8px;"><span class="material-icons" style="color:#ff9800;">person_add</span> Asignar Perfil</h3>
+            <p id="map-titulo-perfil" style="color:#a8a8b3; font-size:13px; margin:0 0 15px 0;"></p>
+
+            <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">¿Para qué es este perfil?</label>
+            <select id="map-uso" class="bulk-select" onchange="actualizarCamposAsignarPerfil()">
+                <option value="cliente_manual">Cliente manual (le cobras a alguien)</option>
+                <option value="personal">Uso personal (tuyo, no se vende)</option>
+            </select>
+
+            <div id="map-wrap-cliente">
+                <label style="color:#a155ff; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Nombre del cliente</label>
+                <input type="text" id="map-nombre" class="bulk-select">
+
+                <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">WhatsApp del cliente</label>
+                <div style="display:flex; gap:8px; margin-bottom:4px;">
+                    <select id="map-codigo-pais" class="bulk-select" style="max-width:105px; flex-shrink:0; margin-bottom:0;" onchange="alCambiarPaisCliente('map')">
+                        <option value="51" data-digitos="9" selected>🇵🇪 +51</option>
+                        <option value="52" data-digitos="10">🇲🇽 +52</option>
+                        <option value="57" data-digitos="10">🇨🇴 +57</option>
+                        <option value="54" data-digitos="10">🇦🇷 +54</option>
+                        <option value="56" data-digitos="9">🇨🇱 +56</option>
+                        <option value="58" data-digitos="10">🇻🇪 +58</option>
+                        <option value="593" data-digitos="9">🇪🇨 +593</option>
+                        <option value="591" data-digitos="8">🇧🇴 +591</option>
+                    </select>
+                    <input type="tel" inputmode="numeric" id="map-celular" class="bulk-select" style="flex:1; margin-bottom:0;" placeholder="987 654 321" oninput="formatearCelularCliente('map')">
+                </div>
+                <p id="map-celular-hint" style="margin:0 0 12px 0; font-size:11px; color:#6a6a78;">Perú: 9 dígitos</p>
+
+                <div class="grid-container" style="display:grid; grid-template-columns:repeat(2,1fr); gap:15px;">
+                    <div>
+                        <label style="color:#00e676; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Precio (S/)</label>
+                        <input type="number" id="map-precio" class="bulk-select" step="0.01" min="0">
+                    </div>
+                    <div>
+                        <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Días de servicio</label>
+                        <input type="number" id="map-dias" class="bulk-select" min="1" step="1" value="30" oninput="document.getElementById('map-fecha-exacta').value='';">
+                    </div>
+                </div>
+                <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">O elige la fecha exacta de vencimiento (opcional)</label>
+                <input type="date" id="map-fecha-exacta" class="bulk-select">
+            </div>
+
+            <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">PIN del perfil (opcional)</label>
+            <input type="text" id="map-pin" class="bulk-select" placeholder="Ej. 1111">
+
+            <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Notas (opcional)</label>
+            <textarea id="map-notas" class="bulk-select" style="min-height:50px; font-family:inherit; resize:vertical;"></textarea>
+
+            <input type="hidden" id="map-perfil-id" value="">
+            <div style="display:flex; gap:10px; margin-top:6px;">
+                <button class="btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="cerrarModalAsignarPerfil()">Cancelar</button>
+                <button class="btn-complete" style="flex:1; padding:12px; font-weight:bold; color:black;" onclick="guardarAsignacionPerfil()">Asignar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR CUENTA MADRE -->
+    <div id="modal-editar-cuenta-madre-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:20px; box-sizing:border-box;">
+        <div style="background:#121218; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; padding:24px; border:1px solid #ff9800; border-radius:16px; box-shadow:0 0 30px rgba(255,152,0,0.15);">
+            <h3 style="margin:0 0 18px 0; font-size:18px; display:flex; align-items:center; gap:8px;"><span class="material-icons" style="color:#ff9800;">edit</span> Editar Cuenta Madre</h3>
+
+            <label style="color:#a155ff; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Correo</label>
+            <input type="email" id="ecm-correo" class="bulk-select">
+
+            <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Contraseña</label>
+            <input type="text" id="ecm-contrasena" class="bulk-select">
+
+            <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Cómo se entrega el acceso</label>
+            <select id="ecm-metodo-entrega" class="bulk-select">
+                <option value="correo_y_contrasena">Correo y contraseña</option>
+                <option value="qr_o_codigo">Sin contraseña (QR de TV o código al iniciar sesión)</option>
+            </select>
+
+            <div class="grid-container" style="display:grid; grid-template-columns:repeat(2,1fr); gap:15px;">
+                <div>
+                    <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Estado de la cuenta</label>
+                    <select id="ecm-estado-cuenta" class="bulk-select">
+                        <option value="activa">Activa</option>
+                        <option value="suspendida">Suspendida</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="color:#ff9800; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Vence la cuenta</label>
+                    <input type="date" id="ecm-fecha-vencimiento-cuenta" class="bulk-select">
+                </div>
+            </div>
+
+            <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Notas</label>
+            <textarea id="ecm-notas" class="bulk-select" style="min-height:50px; font-family:inherit; resize:vertical;"></textarea>
+
+            <input type="hidden" id="ecm-id" value="">
+            <div style="display:flex; gap:10px; margin-top:6px;">
+                <button class="btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="cerrarModalEditarCuentaMadre()">Cancelar</button>
+                <button class="btn-complete" style="flex:1; padding:12px; font-weight:bold; color:black;" onclick="guardarEdicionCuentaMadre()">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL EDITAR CLIENTE STREAMING -->
     <div id="modal-editar-cliente-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:20px; box-sizing:border-box;">
         <div style="background:#121218; width:100%; max-width:560px; max-height:90vh; overflow-y:auto; padding:24px; border:1px solid #a155ff; border-radius:16px; box-shadow:0 0 30px rgba(161,85,255,0.15);">
@@ -935,6 +1037,73 @@
                     <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 20px 0;">Tu lista personal de clientes de streaming (Netflix, Disney+, etc.) que manejas por WhatsApp. Solo tú la ves — tu socio de streaming no tiene acceso a esto.</p>
 
                     <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ff9800;">key</span> Agregar Cuenta Madre</h3>
+                        <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 15px 0;">Una cuenta madre es tu cuenta real (Netflix, Disney+, etc.) con todos sus perfiles. Los perfiles que dejes "Disponibles" se ofrecen también en tu catálogo automático.</p>
+
+                        <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">¿La plataforma está en tu catálogo?</label>
+                        <select id="cm-tipo-plataforma" class="search-bar" style="max-width:none; margin-bottom:15px;" onchange="actualizarTipoPlataformaCuentaMadre()">
+                            <option value="catalogo">Sí, elegir de mi catálogo (se conecta a la venta automática)</option>
+                            <option value="personalizada">No, es una plataforma personalizada (ej. Crunchyroll)</option>
+                        </select>
+
+                        <div id="cm-wrap-plataforma-catalogo" style="margin-bottom:15px;">
+                            <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Producto del catálogo</label>
+                            <select id="cm-producto-id" class="search-bar" style="max-width:none;" onchange="autocompletarPerfilesCuentaMadre()"></select>
+                        </div>
+                        <div id="cm-wrap-plataforma-personalizada" style="display:none; margin-bottom:15px;">
+                            <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Nombre de la plataforma</label>
+                            <input type="text" id="cm-plataforma-custom" class="search-bar" style="max-width:none;" placeholder="Ej. Crunchyroll">
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:15px; margin-bottom:15px;">
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Correo</label>
+                                <input type="email" id="cm-correo" class="search-bar" style="max-width:none;" placeholder="correo@ejemplo.com">
+                            </div>
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Contraseña</label>
+                                <input type="text" id="cm-contrasena" class="search-bar" style="max-width:none;" placeholder="Contraseña">
+                            </div>
+                        </div>
+                        <div style="margin-bottom:15px;">
+                            <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Cómo se entrega el acceso</label>
+                            <select id="cm-metodo-entrega" class="search-bar" style="max-width:none;">
+                                <option value="correo_y_contrasena">Correo y contraseña</option>
+                                <option value="qr_o_codigo">Sin contraseña (QR de TV o código al iniciar sesión)</option>
+                            </select>
+                        </div>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:15px; margin-bottom:15px;">
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Perfiles totales</label>
+                                <input type="number" id="cm-perfiles-totales" class="search-bar" style="max-width:none;" min="1" step="1" value="5">
+                            </div>
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Estado de la cuenta</label>
+                                <select id="cm-estado-cuenta" class="search-bar" style="max-width:none;">
+                                    <option value="activa">Activa</option>
+                                    <option value="suspendida">Suspendida</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Vence la cuenta (opcional)</label>
+                                <input type="date" id="cm-fecha-vencimiento-cuenta" class="search-bar" style="max-width:none;">
+                            </div>
+                        </div>
+                        <div style="margin-bottom:15px;">
+                            <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Notas (opcional)</label>
+                            <textarea id="cm-notas" class="search-bar" style="max-width:none; min-height:50px; font-family:inherit; resize:vertical;" placeholder="Ej. de proveedor de Spotify, de Sebas..."></textarea>
+                        </div>
+                        <button class="btn-add" style="width:100%; padding:14px; justify-content:center; font-size:14px;" onclick="guardarCuentaMadre()">
+                            <span class="material-icons">key</span> Crear Cuenta Madre
+                        </button>
+                    </div>
+
+                    <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ff9800;">key</span> Mis Cuentas Madre</h3>
+                        <div id="lista-cuentas-madre"></div>
+                    </div>
+
+                    <div class="card-box">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#00d2ff;">person_add</span> Agregar Cliente</h3>
                         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:15px; margin-bottom:15px;">
                             <div>
@@ -1248,7 +1417,8 @@
             });
 
             if (rol === 'full') {
-                await cargarUsuarios(); await cargarRecargas(); await cargarAdmins(); await cargarCupones(); await cargarMisClientesStreaming();
+                await cargarUsuarios(); await cargarRecargas(); await cargarAdmins(); await cargarCupones();
+                await cargarProductosCatalogoParaCuentaMadre(); await cargarCuentasMadre(); await cargarMisClientesStreaming();
             } else {
                 cambiarVista('pedidos');
             }
@@ -1433,6 +1603,289 @@
         function mensajeActualizacion(c, cambios) {
             const detalle = cambios.length === 1 ? cambios[0] : 'Se realizaron actualizaciones en los datos de tu cuenta.';
             return `¡Hola *${c.nombre_cliente}*! 👋\n\n🔄 Actualizamos algo en tu servicio *${c.plataforma}*:\n\n${detalle}\n\nCualquier duda, aquí estoy. ¡Gracias por confiar en *CarzaD'Cross*! 🙌`;
+        }
+
+        // ================= CUENTAS MADRE STREAMING =================
+        let cuentasMadreCache = [];
+
+        async function cargarProductosCatalogoParaCuentaMadre() {
+            const { data } = await supabaseClient.from('productos').select('id, plataforma, perfiles_por_cuenta')
+                .eq('categoria', 'streaming').eq('tipo_plan', 'Perfil').eq('activo', true).order('plataforma');
+            const sel = document.getElementById('cm-producto-id');
+            if (!sel) return;
+            if (!data || data.length === 0) { sel.innerHTML = '<option value="">Sin productos de streaming en el catálogo</option>'; return; }
+            sel.innerHTML = data.map(p => `<option value="${p.id}" data-perfiles="${p.perfiles_por_cuenta || 5}">${escHtml(p.plataforma)}</option>`).join('');
+            autocompletarPerfilesCuentaMadre();
+        }
+
+        function actualizarTipoPlataformaCuentaMadre() {
+            const esCatalogo = document.getElementById('cm-tipo-plataforma').value === 'catalogo';
+            document.getElementById('cm-wrap-plataforma-catalogo').style.display = esCatalogo ? 'block' : 'none';
+            document.getElementById('cm-wrap-plataforma-personalizada').style.display = esCatalogo ? 'none' : 'block';
+        }
+
+        function autocompletarPerfilesCuentaMadre() {
+            const sel = document.getElementById('cm-producto-id');
+            const opt = sel.options[sel.selectedIndex];
+            if (opt) document.getElementById('cm-perfiles-totales').value = opt.getAttribute('data-perfiles') || 5;
+        }
+
+        function limpiarFormularioCuentaMadre() {
+            document.getElementById('cm-tipo-plataforma').value = 'catalogo';
+            document.getElementById('cm-plataforma-custom').value = '';
+            document.getElementById('cm-correo').value = '';
+            document.getElementById('cm-contrasena').value = '';
+            document.getElementById('cm-metodo-entrega').value = 'correo_y_contrasena';
+            document.getElementById('cm-perfiles-totales').value = '5';
+            document.getElementById('cm-estado-cuenta').value = 'activa';
+            document.getElementById('cm-fecha-vencimiento-cuenta').value = '';
+            document.getElementById('cm-notas').value = '';
+            actualizarTipoPlataformaCuentaMadre();
+        }
+
+        async function guardarCuentaMadre() {
+            const esCatalogo = document.getElementById('cm-tipo-plataforma').value === 'catalogo';
+            const productoId = esCatalogo ? (document.getElementById('cm-producto-id').value || null) : null;
+            const selProducto = document.getElementById('cm-producto-id');
+            const plataforma = esCatalogo
+                ? (selProducto.options[selProducto.selectedIndex] ? selProducto.options[selProducto.selectedIndex].textContent : '')
+                : document.getElementById('cm-plataforma-custom').value.trim();
+            const correo = document.getElementById('cm-correo').value.trim();
+            const contrasena = document.getElementById('cm-contrasena').value.trim();
+            const metodoEntrega = document.getElementById('cm-metodo-entrega').value;
+            const perfilesTotales = parseInt(document.getElementById('cm-perfiles-totales').value);
+            const estadoCuenta = document.getElementById('cm-estado-cuenta').value;
+            const fechaVencCuenta = document.getElementById('cm-fecha-vencimiento-cuenta').value || null;
+            const notas = document.getElementById('cm-notas').value.trim() || null;
+
+            if (!plataforma) return showToast(esCatalogo ? 'Elige un producto del catálogo.' : 'Escribe el nombre de la plataforma.', 'warning');
+            if (!correo || !contrasena) return showToast('Ingresa correo y contraseña.', 'warning');
+            if (isNaN(perfilesTotales) || perfilesTotales < 1) return showToast('Ingresa cuántos perfiles tiene la cuenta.', 'warning');
+
+            const { data, error } = await supabaseClient.rpc('admin_crear_cuenta_madre_streaming', {
+                p_plataforma: plataforma, p_correo: correo, p_contrasena: contrasena, p_perfiles_totales: perfilesTotales,
+                p_producto_id: productoId, p_metodo_entrega: metodoEntrega, p_estado_cuenta: estadoCuenta,
+                p_fecha_vencimiento_cuenta: fechaVencCuenta, p_notas: notas
+            });
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
+
+            const pedidosCompletados = data && data[0] ? data[0].pedidos_completados : 0;
+            showToast(`Cuenta madre creada${pedidosCompletados > 0 ? ` — se completaron ${pedidosCompletados} pedido(s) que esperaban stock.` : '.'}`);
+            limpiarFormularioCuentaMadre();
+            cargarCuentasMadre();
+        }
+
+        async function cargarCuentasMadre() {
+            const { data } = await supabaseClient.from('v_cuentas_madre_streaming_detalle').select('*').order('cuenta_madre_id').order('numero_perfil');
+            const grupos = {};
+            (data || []).forEach(fila => {
+                if (!grupos[fila.cuenta_madre_id]) {
+                    grupos[fila.cuenta_madre_id] = {
+                        id: fila.cuenta_madre_id, plataforma: fila.plataforma, correo: fila.correo, contrasena: fila.contrasena,
+                        metodo_entrega: fila.metodo_entrega, perfiles_totales: fila.perfiles_totales, estado_cuenta: fila.estado_cuenta,
+                        fecha_vencimiento_cuenta: fila.fecha_vencimiento_cuenta, notas: fila.notas_cuenta, perfiles: []
+                    };
+                }
+                grupos[fila.cuenta_madre_id].perfiles.push(fila);
+            });
+            cuentasMadreCache = Object.values(grupos);
+            renderizarListaCuentasMadre();
+        }
+
+        function renderizarListaCuentasMadre() {
+            const cont = document.getElementById('lista-cuentas-madre');
+            if (!cont) return;
+            if (cuentasMadreCache.length === 0) { cont.innerHTML = "<p style='text-align:center; color:#a8a8b3;'>Todavía no agregaste ninguna cuenta madre.</p>"; return; }
+            cont.innerHTML = cuentasMadreCache.map(cm => tarjetaCuentaMadre(cm)).join('');
+        }
+
+        function badgeDiasRestantes(fechaStr) {
+            if (!fechaStr) return '';
+            const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+            const fecha = new Date(fechaStr + 'T00:00:00');
+            const diff = Math.round((fecha - hoy) / 86400000);
+            let color = '#00e676', texto = `${diff} día(s)`;
+            if (diff < 0) { color = '#ff4757'; texto = `Vencido (${Math.abs(diff)}d)`; }
+            else if (diff <= 2) { color = '#ff9800'; }
+            return `<span style="color:${color}; font-size:12px; font-weight:700;">${texto}</span>`;
+        }
+
+        function tarjetaCuentaMadre(cm) {
+            const libres = cm.perfiles.filter(p => p.estado_perfil === 'disponible').length;
+            const correoEsc = escAttr(cm.correo).replace(/'/g, "\\'");
+            const estadoColor = cm.estado_cuenta === 'activa' ? '#00e676' : '#ff4757';
+            const filasPerfiles = cm.perfiles.map(p => filaPerfilCuentaMadre(cm, p)).join('');
+            return `<div class="card-box" style="background:#15151d; margin-bottom:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+                    <div>
+                        <div style="font-weight:800; font-size:16px;">${escHtml(cm.plataforma)} <span style="color:${estadoColor}; font-size:11px; font-weight:800; text-transform:uppercase;">● ${cm.estado_cuenta}</span></div>
+                        <div style="color:#a8a8b3; font-size:13px; font-family:monospace;">${escHtml(cm.correo)} <button class="btn-copy" onclick="copiarTexto('${correoEsc}', this)"><span class="material-icons" style="font-size:11px;">content_copy</span></button></div>
+                        <div style="color:#6a6a78; font-size:12px; margin-top:4px;">${libres}/${cm.perfiles_totales} perfiles libres ${cm.fecha_vencimiento_cuenta ? `· Cuenta vence: ${formatearFechaCorta(cm.fecha_vencimiento_cuenta)} (${badgeDiasRestantes(cm.fecha_vencimiento_cuenta)})` : ''}</div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-view" onclick="abrirModalEditarCuentaMadre(${cm.id})"><span class="material-icons">edit</span> Editar</button>
+                        <button class="btn-remove" onclick="eliminarCuentaMadreUI(${cm.id}, '${escAttr(cm.plataforma).replace(/'/g, "\\'")}')"><span class="material-icons">delete</span> Eliminar</button>
+                    </div>
+                </div>
+                <div class="table-scroll">
+                    <table><thead><tr><th>Perfil</th><th>Estado</th><th>Cliente</th><th>Vence</th><th>Acción</th></tr></thead><tbody>${filasPerfiles}</tbody></table>
+                </div>
+            </div>`;
+        }
+
+        function filaPerfilCuentaMadre(cm, p) {
+            let estadoTxt, accion;
+            if (p.estado_perfil === 'disponible') {
+                estadoTxt = `<span style="color:#00e676; font-weight:700;">Disponible</span>`;
+                accion = `<button class="btn-add" onclick="abrirModalAsignarPerfil(${p.perfil_id}, '${escAttr(cm.plataforma).replace(/'/g, "\\'")}', ${p.numero_perfil})"><span class="material-icons">person_add</span> Asignar</button>`;
+            } else if (p.estado_perfil === 'personal') {
+                estadoTxt = `<span style="color:#00d2ff; font-weight:700;">Uso personal</span>`;
+                accion = `<button class="btn-remove" onclick="liberarPerfilUI(${p.perfil_id}, 'este perfil')"><span class="material-icons">lock_open</span> Liberar</button>`;
+            } else if (p.estado_perfil === 'cliente_manual') {
+                estadoTxt = `<span style="color:#a155ff; font-weight:700;">Cliente manual</span>`;
+                accion = `<button class="btn-remove" onclick="liberarPerfilUI(${p.perfil_id}, '${escAttr(p.nombre_cliente || '').replace(/'/g, "\\'")}')"><span class="material-icons">lock_open</span> Liberar</button>`;
+            } else {
+                estadoTxt = `<span style="color:#ff9800; font-weight:700;">Vendido (catálogo)</span>`;
+                accion = `<span style="color:#6a6a78; font-size:11px;">Se gestiona desde Pedidos</span>`;
+            }
+            const cliente = p.nombre_cliente ? `${escHtml(p.nombre_cliente)}${p.whatsapp_cliente ? ` (${escHtml(p.whatsapp_cliente)})` : ''}` : '—';
+            const vence = p.fecha_vencimiento_perfil ? `${formatearFechaCorta(p.fecha_vencimiento_perfil)} ${badgeDiasRestantes(p.fecha_vencimiento_perfil)}` : '—';
+            return `<tr>
+                <td data-label="Perfil">Perfil ${p.numero_perfil}${p.pin ? ` <span style="color:#6a6a78; font-size:11px;">(PIN ${escHtml(p.pin)})</span>` : ''}</td>
+                <td data-label="Estado">${estadoTxt}</td>
+                <td data-label="Cliente">${cliente}</td>
+                <td data-label="Vence">${vence}</td>
+                <td data-label="Acción">${accion}</td>
+            </tr>`;
+        }
+
+        let perfilAsignandoInfo = null;
+
+        function abrirModalAsignarPerfil(perfilId, plataforma, numeroPerfil) {
+            perfilAsignandoInfo = { plataforma };
+            document.getElementById('map-perfil-id').value = perfilId;
+            document.getElementById('map-titulo-perfil').innerText = `${plataforma} — Perfil ${numeroPerfil}`;
+            document.getElementById('map-uso').value = 'cliente_manual';
+            document.getElementById('map-nombre').value = '';
+            document.getElementById('map-codigo-pais').value = '51';
+            document.getElementById('map-celular').value = '';
+            document.getElementById('map-celular-hint').innerText = 'Perú: 9 dígitos';
+            document.getElementById('map-precio').value = '';
+            document.getElementById('map-dias').value = '30';
+            document.getElementById('map-fecha-exacta').value = '';
+            document.getElementById('map-pin').value = '';
+            document.getElementById('map-notas').value = '';
+            actualizarCamposAsignarPerfil();
+            document.getElementById('modal-asignar-perfil-overlay').style.display = 'flex';
+        }
+
+        function cerrarModalAsignarPerfil() {
+            document.getElementById('modal-asignar-perfil-overlay').style.display = 'none';
+        }
+
+        function actualizarCamposAsignarPerfil() {
+            document.getElementById('map-wrap-cliente').style.display = document.getElementById('map-uso').value === 'cliente_manual' ? 'block' : 'none';
+        }
+
+        async function guardarAsignacionPerfil() {
+            const perfilId = document.getElementById('map-perfil-id').value;
+            const uso = document.getElementById('map-uso').value;
+            const pin = document.getElementById('map-pin').value.trim() || null;
+            const notas = document.getElementById('map-notas').value.trim() || null;
+
+            let nombre = null, whatsapp = null, precio = null, dias = 30, fechaExacta = null;
+            if (uso === 'cliente_manual') {
+                nombre = document.getElementById('map-nombre').value.trim();
+                if (!nombre) return showToast('Ingresa el nombre del cliente.', 'warning');
+                const celular = document.getElementById('map-celular').value.replace(/\D/g, '');
+                const codigoPais = document.getElementById('map-codigo-pais').value;
+                const digitosEsperados = digitosEsperadosCliente('map');
+                if (celular && celular.length !== digitosEsperados) return showToast(`El número de WhatsApp debe tener ${digitosEsperados} dígitos para este país.`, 'warning');
+                whatsapp = celular ? (codigoPais + celular) : null;
+                precio = parseFloat(document.getElementById('map-precio').value);
+                if (isNaN(precio) || precio < 0) return showToast('Ingresa un precio válido.', 'warning');
+                dias = parseInt(document.getElementById('map-dias').value) || 30;
+                fechaExacta = document.getElementById('map-fecha-exacta').value || null;
+            }
+
+            const { data, error } = await supabaseClient.rpc('admin_asignar_perfil_cliente', {
+                p_perfil_id: perfilId, p_uso: uso, p_nombre_cliente: nombre, p_whatsapp_cliente: whatsapp,
+                p_precio: precio, p_dias_servicio: dias, p_fecha_exacta: fechaExacta, p_pin: pin, p_notas: notas
+            });
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
+
+            showToast(uso === 'cliente_manual' ? 'Cliente asignado.' : 'Perfil marcado como uso personal.');
+            const fechaVenc = data && data[0] ? data[0].fecha_vencimiento : null;
+            cerrarModalAsignarPerfil();
+            cargarCuentasMadre();
+
+            if (uso === 'cliente_manual' && whatsapp) {
+                const conf = await openCustomModal({ title: 'Enviar datos al cliente', desc: `¿Mandarle a <b>${escHtml(nombre)}</b> el mensaje de WhatsApp con los datos de su servicio?`, icon: 'send', color: '#00d2ff', type: 'confirm', confirmText: 'Enviar' });
+                if (conf) {
+                    const cm = cuentasMadreCache.find(c => c.perfiles.some(p => p.perfil_id == perfilId));
+                    abrirWhatsappCliente(whatsapp, mensajeNuevoServicio({
+                        nombre_cliente: nombre, plataforma: perfilAsignandoInfo ? perfilAsignandoInfo.plataforma : (cm ? cm.plataforma : ''),
+                        tipo_perfil: 'Perfil', metodo_entrega: cm ? cm.metodo_entrega : 'correo_y_contrasena',
+                        correo: cm ? cm.correo : '', contrasena: cm ? cm.contrasena : '', pin, precio, fecha_vencimiento: fechaVenc
+                    }));
+                }
+            }
+        }
+
+        async function liberarPerfilUI(perfilId, nombre) {
+            const conf = await openCustomModal({ title: 'Liberar Perfil', desc: `¿Liberar el perfil de <b>${escHtml(nombre)}</b>? Vuelve a quedar disponible para asignar a otra persona o para tu catálogo automático.`, icon: 'lock_open', color: '#ff9800', type: 'confirm', confirmText: 'Liberar' });
+            if (!conf) return;
+            const { error } = await supabaseClient.rpc('admin_liberar_perfil', { p_perfil_id: perfilId });
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
+            showToast('Perfil liberado.');
+            cargarCuentasMadre();
+        }
+
+        function abrirModalEditarCuentaMadre(cuentaMadreId) {
+            const cm = cuentasMadreCache.find(c => c.id === cuentaMadreId);
+            if (!cm) return;
+            document.getElementById('ecm-id').value = cm.id;
+            document.getElementById('ecm-correo').value = cm.correo;
+            document.getElementById('ecm-contrasena').value = cm.contrasena;
+            document.getElementById('ecm-metodo-entrega').value = cm.metodo_entrega;
+            document.getElementById('ecm-estado-cuenta').value = cm.estado_cuenta;
+            document.getElementById('ecm-fecha-vencimiento-cuenta').value = cm.fecha_vencimiento_cuenta || '';
+            document.getElementById('ecm-notas').value = cm.notas || '';
+            document.getElementById('modal-editar-cuenta-madre-overlay').style.display = 'flex';
+        }
+
+        function cerrarModalEditarCuentaMadre() {
+            document.getElementById('modal-editar-cuenta-madre-overlay').style.display = 'none';
+        }
+
+        async function guardarEdicionCuentaMadre() {
+            const id = document.getElementById('ecm-id').value;
+            const correo = document.getElementById('ecm-correo').value.trim();
+            const contrasena = document.getElementById('ecm-contrasena').value.trim();
+            const metodoEntrega = document.getElementById('ecm-metodo-entrega').value;
+            const estadoCuenta = document.getElementById('ecm-estado-cuenta').value;
+            const fechaVencCuenta = document.getElementById('ecm-fecha-vencimiento-cuenta').value || null;
+            const notas = document.getElementById('ecm-notas').value.trim() || null;
+
+            if (!correo || !contrasena) return showToast('Ingresa correo y contraseña.', 'warning');
+
+            const { error } = await supabaseClient.rpc('admin_editar_cuenta_madre', {
+                p_cuenta_madre_id: id, p_correo: correo, p_contrasena: contrasena, p_metodo_entrega: metodoEntrega,
+                p_estado_cuenta: estadoCuenta, p_fecha_vencimiento_cuenta: fechaVencCuenta, p_notas: notas
+            });
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
+            showToast('Cuenta madre actualizada.');
+            cerrarModalEditarCuentaMadre();
+            cargarCuentasMadre();
+        }
+
+        async function eliminarCuentaMadreUI(cuentaMadreId, nombre) {
+            const conf = await openCustomModal({ title: 'Eliminar Cuenta Madre', desc: `¿Eliminar <b>${escHtml(nombre)}</b>? Solo se puede borrar si todos sus perfiles están disponibles (sin clientes ni ventas activas).`, icon: 'delete_forever', color: '#ff4757', textColor: 'white', type: 'confirm', confirmText: 'Eliminar' });
+            if (!conf) return;
+            const { error } = await supabaseClient.rpc('admin_eliminar_cuenta_madre', { p_cuenta_madre_id: cuentaMadreId });
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
+            showToast('Cuenta madre eliminada.', 'warning');
+            cargarCuentasMadre();
         }
 
         async function cargarMisClientesStreaming() {
