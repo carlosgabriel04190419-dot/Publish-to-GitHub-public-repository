@@ -338,18 +338,23 @@
                 </div>
 
                 <div style="margin-bottom: 20px;">
-                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Código de cupón (opcional)</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="modal-cupon" autocomplete="off" placeholder="Ej. BIENVENIDO10" style="flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 14px; outline: none; box-sizing: border-box; text-transform: uppercase;">
-                        <button type="button" id="btn-aplicar-cupon" onclick="aplicarCupon()" style="background: rgba(0,230,118,0.1); border: 1px solid #00e676; color: #00e676; border-radius: 8px; padding: 0 16px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
-                            <span class="material-icons" style="font-size: 16px;">local_offer</span> Aplicar
-                        </button>
+                    <a href="javascript:void(0)" id="toggle-cupon-link" onclick="mostrarCampoCupon()" style="color: #a8a8b3; font-size: 12px; text-decoration: underline; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                        <span class="material-icons" style="font-size: 14px;">local_offer</span> ¿Tienes un código de descuento? (opcional)
+                    </a>
+                    <div id="modal-cupon-wrap" style="display: none; margin-top: 10px;">
+                        <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Código de cupón</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="modal-cupon" autocomplete="off" placeholder="Ej. BIENVENIDO10" style="flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 14px; outline: none; box-sizing: border-box; text-transform: uppercase;">
+                            <button type="button" id="btn-aplicar-cupon" onclick="aplicarCupon()" style="background: rgba(0,230,118,0.1); border: 1px solid #00e676; color: #00e676; border-radius: 8px; padding: 0 16px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+                                <span class="material-icons" style="font-size: 16px;">local_offer</span> Aplicar
+                            </button>
+                        </div>
+                        <p id="modal-cupon-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
                     </div>
-                    <p id="modal-cupon-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
                 </div>
 
                 <div style="margin-bottom: 20px;">
-                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador (Máx. 11 números)</label>
+                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador</label>
                     <div style="display: flex; gap: 10px;">
                         <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('modal-id-mensaje').style.display='none'; desbloquearNickname();" autocomplete="off" placeholder="Ej. 24958302" style="flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
                         <button type="button" id="btn-validar-id" onclick="validarIdEnModal()" style="background: rgba(0,230,118,0.1); border: 1px solid #00e676; color: #00e676; border-radius: 8px; padding: 0 16px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
@@ -359,7 +364,7 @@
                     <p id="modal-id-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
                 </div>
 
-                <div style="margin-bottom: 25px;">
+                <div id="modal-nickname-wrap" style="display: none; margin-bottom: 25px;">
                     <label id="modal-nickname-label" style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Nombre de Usuario</label>
                     <input type="text" id="modal-nickname-juego" autocomplete="off" placeholder="Ej. Carlos_Pro" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; text-align: center; transition: all 0.3s;">
                 </div>
@@ -503,6 +508,7 @@
             campo.style.color = '#00e676';
             campo.style.fontWeight = 'bold';
             campo.style.cursor = 'not-allowed';
+            document.getElementById('modal-nickname-wrap').style.display = 'none';
         }
 
         function desbloquearNickname() {
@@ -514,6 +520,21 @@
             campo.style.color = 'white';
             campo.style.fontWeight = 'normal';
             campo.style.cursor = 'text';
+            document.getElementById('modal-nickname-wrap').style.display = 'none';
+        }
+
+        // Se usa cuando la validación automática del ID falla: revela el campo para que
+        // el cliente escriba su nombre de usuario manualmente (antes salía siempre visible,
+        // y eso hacía que muchos lo llenaran a mano sin usar "Validar").
+        function mostrarNicknameManual() {
+            desbloquearNickname();
+            document.getElementById('modal-nickname-wrap').style.display = 'block';
+        }
+
+        function mostrarCampoCupon() {
+            document.getElementById('modal-cupon-wrap').style.display = 'block';
+            document.getElementById('toggle-cupon-link').style.display = 'none';
+            document.getElementById('modal-cupon').focus();
         }
 
         async function validarIdEnModal() {
@@ -544,10 +565,10 @@
                 msg.style.color = '#00e676';
                 msg.innerText = `✓ Cuenta encontrada: ${resultado.nickname} (Nivel ${resultado.nivel})`;
             } else {
-                desbloquearNickname();
+                mostrarNicknameManual();
                 msg.style.display = 'block';
                 msg.style.color = '#ff4757';
-                msg.innerText = resultado.error + ' Puedes escribir tu nombre de usuario manualmente.';
+                msg.innerText = resultado.error + ' Escribe tu nombre de usuario manualmente abajo.';
             }
         }
 
@@ -595,11 +616,13 @@
             document.getElementById('compra-pantalla-formulario').style.display = 'block';
             document.getElementById('compra-pantalla-error').style.display = 'none';
             document.getElementById('compra-pantalla-exito').style.display = 'none';
-            document.getElementById('modal-id-juego').value = ""; 
+            document.getElementById('modal-id-juego').value = "";
             desbloquearNickname();
             precioFinalConCupon = null; codigoCuponValidado = '';
             document.getElementById('modal-cupon').value = '';
             document.getElementById('modal-cupon-mensaje').style.display = 'none';
+            document.getElementById('modal-cupon-wrap').style.display = 'none';
+            document.getElementById('toggle-cupon-link').style.display = 'inline-flex';
             
             // CÁLCULO FINANCIERO DEL MODAL
             document.getElementById('modal-paquete-nombre').innerText = nombrePaquete;
