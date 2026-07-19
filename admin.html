@@ -284,14 +284,16 @@
     <!-- MODAL ASIGNAR PERFIL (CUENTA MADRE) -->
     <div id="modal-asignar-perfil-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:20px; box-sizing:border-box;">
         <div style="background:#121218; width:100%; max-width:560px; max-height:90vh; overflow-y:auto; padding:24px; border:1px solid #ff9800; border-radius:16px; box-shadow:0 0 30px rgba(255,152,0,0.15);">
-            <h3 style="margin:0 0 6px 0; font-size:18px; display:flex; align-items:center; gap:8px;"><span class="material-icons" style="color:#ff9800;">person_add</span> Asignar Perfil</h3>
+            <h3 style="margin:0 0 6px 0; font-size:18px; display:flex; align-items:center; gap:8px;"><span class="material-icons" id="map-icono-titulo" style="color:#ff9800;">person_add</span> <span id="map-titulo-modal">Asignar Perfil</span></h3>
             <p id="map-titulo-perfil" style="color:#a8a8b3; font-size:13px; margin:0 0 15px 0;"></p>
 
-            <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">¿Para qué es este perfil?</label>
-            <select id="map-uso" class="bulk-select" onchange="actualizarCamposAsignarPerfil()">
-                <option value="cliente_manual">Cliente manual (le cobras a alguien)</option>
-                <option value="personal">Uso personal (tuyo, no se vende)</option>
-            </select>
+            <div id="map-wrap-uso">
+                <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">¿Para qué es este perfil?</label>
+                <select id="map-uso" class="bulk-select" onchange="actualizarCamposAsignarPerfil()">
+                    <option value="cliente_manual">Cliente manual (le cobras a alguien)</option>
+                    <option value="personal">Uso personal (tuyo, no se vende)</option>
+                </select>
+            </div>
 
             <div id="map-wrap-cliente">
                 <label style="color:#a155ff; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Nombre del cliente</label>
@@ -318,13 +320,19 @@
                         <label style="color:#00e676; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Precio (S/)</label>
                         <input type="number" id="map-precio" class="bulk-select" step="0.01" min="0">
                     </div>
-                    <div>
+                    <div id="map-wrap-dias">
                         <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Días de servicio</label>
                         <input type="number" id="map-dias" class="bulk-select" min="1" step="1" value="30" oninput="document.getElementById('map-fecha-exacta').value='';">
                     </div>
                 </div>
-                <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">O elige la fecha exacta de vencimiento (opcional)</label>
-                <input type="date" id="map-fecha-exacta" class="bulk-select">
+                <div id="map-wrap-fecha-exacta">
+                    <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">O elige la fecha exacta de vencimiento (opcional)</label>
+                    <input type="date" id="map-fecha-exacta" class="bulk-select">
+                </div>
+                <div id="map-wrap-fecha-directa" style="display:none;">
+                    <label style="color:#ff9800; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Fecha de vencimiento</label>
+                    <input type="date" id="map-fecha-directa" class="bulk-select">
+                </div>
             </div>
 
             <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">PIN del perfil (opcional)</label>
@@ -334,9 +342,10 @@
             <textarea id="map-notas" class="bulk-select" style="min-height:50px; font-family:inherit; resize:vertical;"></textarea>
 
             <input type="hidden" id="map-perfil-id" value="">
+            <input type="hidden" id="map-modo" value="asignar">
             <div style="display:flex; gap:10px; margin-top:6px;">
                 <button class="btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="cerrarModalAsignarPerfil()">Cancelar</button>
-                <button class="btn-complete" style="flex:1; padding:12px; font-weight:bold; color:black;" onclick="guardarAsignacionPerfil()">Asignar</button>
+                <button class="btn-complete" style="flex:1; padding:12px; font-weight:bold; color:black;" id="map-btn-guardar" onclick="guardarAsignacionPerfil()">Asignar</button>
             </div>
         </div>
     </div>
@@ -1100,6 +1109,19 @@
 
                     <div class="card-box">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#ff9800;">key</span> Mis Cuentas Madre</h3>
+                        <div style="margin-bottom:18px;">
+                            <select id="filtro-plataforma-cuentas-madre" class="bulk-select" style="max-width:260px; margin-bottom:0; width:auto;" onchange="filtrarCuentasMadre()">
+                                <option value="">Todas las plataformas</option>
+                                <option value="Netflix">Netflix</option>
+                                <option value="Disney">Disney+</option>
+                                <option value="Paramount">Paramount Plus</option>
+                                <option value="Spotify">Spotify</option>
+                                <option value="Crunchyroll">Crunchyroll</option>
+                                <option value="DirecTV">DirecTV Go</option>
+                                <option value="HBO">HBO Max</option>
+                                <option value="Apple One">Apple One</option>
+                            </select>
+                        </div>
                         <div id="lista-cuentas-madre"></div>
                     </div>
 
@@ -1692,11 +1714,18 @@
             renderizarListaCuentasMadre();
         }
 
+        function filtrarCuentasMadre() {
+            renderizarListaCuentasMadre();
+        }
+
         function renderizarListaCuentasMadre() {
             const cont = document.getElementById('lista-cuentas-madre');
             if (!cont) return;
             if (cuentasMadreCache.length === 0) { cont.innerHTML = "<p style='text-align:center; color:#a8a8b3;'>Todavía no agregaste ninguna cuenta madre.</p>"; return; }
-            cont.innerHTML = cuentasMadreCache.map(cm => tarjetaCuentaMadre(cm)).join('');
+            const filtro = document.getElementById('filtro-plataforma-cuentas-madre')?.value || '';
+            const lista = filtro ? cuentasMadreCache.filter(cm => (cm.plataforma || '').toLowerCase().includes(filtro.toLowerCase())) : cuentasMadreCache;
+            if (lista.length === 0) { cont.innerHTML = "<p style='text-align:center; color:#a8a8b3;'>Ninguna cuenta coincide con ese filtro.</p>"; return; }
+            cont.innerHTML = lista.map(cm => tarjetaCuentaMadre(cm)).join('');
         }
 
         function badgeDiasRestantes(fechaStr) {
@@ -1714,9 +1743,12 @@
             const libres = cm.perfiles.filter(p => p.estado_perfil === 'disponible').length;
             const correoEsc = escAttr(cm.correo).replace(/'/g, "\\'");
             const estadoColor = cm.estado_cuenta === 'activa' ? '#00e676' : '#ff4757';
-            const filasPerfiles = cm.perfiles.map(p => filaPerfilCuentaMadre(cm, p)).join('');
+            const perfilesClientes = cm.perfiles.filter(p => p.estado_perfil === 'cliente_manual');
+            const perfilesOtros = cm.perfiles.filter(p => p.estado_perfil !== 'cliente_manual');
+            const tarjetasClientes = perfilesClientes.map(p => tarjetaPerfilCliente(cm, p)).join('');
+            const filasOtros = perfilesOtros.map(p => filaPerfilCuentaMadre(cm, p)).join('');
             return `<div class="card-box" style="background:#15151d; margin-bottom:16px;">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
                     <div>
                         <div style="font-weight:800; font-size:16px;">${escHtml(cm.plataforma)} <span style="color:${estadoColor}; font-size:11px; font-weight:800; text-transform:uppercase;">● ${cm.estado_cuenta}</span></div>
                         <div style="color:#a8a8b3; font-size:13px; font-family:monospace;">${escHtml(cm.correo)} <button class="btn-copy" onclick="copiarTexto('${correoEsc}', this)"><span class="material-icons" style="font-size:11px;">content_copy</span></button></div>
@@ -1727,8 +1759,52 @@
                         <button class="btn-remove" onclick="eliminarCuentaMadreUI(${cm.id}, '${escAttr(cm.plataforma).replace(/'/g, "\\'")}')"><span class="material-icons">delete</span> Eliminar</button>
                     </div>
                 </div>
-                <div class="table-scroll">
-                    <table><thead><tr><th>Perfil</th><th>Estado</th><th>Cliente</th><th>Vence</th><th>Acción</th></tr></thead><tbody>${filasPerfiles}</tbody></table>
+                ${tarjetasClientes ? `<div class="clientes-grid" style="margin-bottom:16px;">${tarjetasClientes}</div>` : ''}
+                ${filasOtros ? `<div class="table-scroll">
+                    <table><thead><tr><th>Perfil</th><th>Estado</th><th>Vence</th><th>Acción</th></tr></thead><tbody>${filasOtros}</tbody></table>
+                </div>` : ''}
+            </div>`;
+        }
+
+        function tarjetaPerfilCliente(cm, p) {
+            const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+            const fechaVenc = new Date(p.fecha_vencimiento_perfil + 'T00:00:00');
+            const diffDias = Math.round((fechaVenc - hoy) / 86400000);
+            let claseEstado = '', badgeEstado = '';
+            if (diffDias < 0) {
+                claseEstado = 'vencido';
+                badgeEstado = `<span class="cliente-card-venc-badge" style="background:rgba(255,71,87,0.18); color:#ff4757;">Vencido hace ${Math.abs(diffDias)} día(s)</span>`;
+            } else if (diffDias <= 2) {
+                claseEstado = 'vence-pronto';
+                badgeEstado = `<span class="cliente-card-venc-badge" style="background:rgba(255,152,0,0.18); color:#ff9800;">Vence en ${diffDias} día(s)</span>`;
+            } else {
+                badgeEstado = `<span class="cliente-card-venc-badge" style="background:rgba(0,230,118,0.15); color:#00e676;">Activo</span>`;
+            }
+            const nombreEsc = escAttr(p.nombre_cliente).replace(/'/g, "\\'");
+            return `<div class="cliente-card ${claseEstado}">
+                <div class="pc-header">
+                    <div class="pc-comprador">${escHtml(p.nombre_cliente)}</div>
+                    ${badgeEstado}
+                </div>
+                <div class="pc-paquete">${escHtml(cm.plataforma)} — Perfil ${p.numero_perfil}${p.pin ? ` <span style="color:#a8a8b3; font-weight:400; font-size:13px;">(PIN ${escHtml(p.pin)})</span>` : ''}</div>
+                <div class="pc-datos">
+                    <div class="pc-dato"><span class="pc-dato-label">Precio</span><span class="pc-dato-valor" style="color:#00e676;">S/ ${Number(p.precio || 0).toFixed(2)}</span></div>
+                    <div class="pc-dato"><span class="pc-dato-label">Vence</span><span class="pc-dato-valor" style="color:#a8a8b3; font-size:13px;">${formatearFechaCorta(p.fecha_vencimiento_perfil)}</span></div>
+                </div>
+                <div class="pc-seccion">
+                    <span class="pc-seccion-label">WhatsApp</span>
+                    <div class="pc-seccion-cuerpo">${p.whatsapp_cliente ? escHtml(p.whatsapp_cliente) : 'Sin número guardado'}</div>
+                </div>
+                <div class="pc-acciones">
+                    <button class="btn-add" onclick="renovarPerfilClienteUI(${p.perfil_id})"><span class="material-icons">autorenew</span> Renovar</button>
+                    <button class="btn-view" onclick="abrirModalEditarPerfilCliente(${p.perfil_id})"><span class="material-icons">edit</span> Editar</button>
+                </div>
+                <div class="pc-acciones">
+                    <button class="btn-complete" onclick="enviarRecordatorioPerfilCliente(${p.perfil_id})"><span class="material-icons">notifications_active</span> Recordatorio</button>
+                    <button class="btn-remove" onclick="liberarPerfilUI(${p.perfil_id}, '${nombreEsc}')"><span class="material-icons">lock_open</span> Liberar</button>
+                </div>
+                <div class="pc-acciones">
+                    <button class="btn-outline" onclick="compartirPerfilClienteRecordatorio(${p.perfil_id})"><span class="material-icons">ios_share</span> Enviar a Recordatorios (iPhone)</button>
                 </div>
             </div>`;
         }
@@ -1741,28 +1817,47 @@
             } else if (p.estado_perfil === 'personal') {
                 estadoTxt = `<span style="color:#00d2ff; font-weight:700;">Uso personal</span>`;
                 accion = `<button class="btn-remove" onclick="liberarPerfilUI(${p.perfil_id}, 'este perfil')"><span class="material-icons">lock_open</span> Liberar</button>`;
-            } else if (p.estado_perfil === 'cliente_manual') {
-                estadoTxt = `<span style="color:#a155ff; font-weight:700;">Cliente manual</span>`;
-                accion = `<button class="btn-remove" onclick="liberarPerfilUI(${p.perfil_id}, '${escAttr(p.nombre_cliente || '').replace(/'/g, "\\'")}')"><span class="material-icons">lock_open</span> Liberar</button>`;
             } else {
                 estadoTxt = `<span style="color:#ff9800; font-weight:700;">Vendido (catálogo)</span>`;
                 accion = `<span style="color:#6a6a78; font-size:11px;">Se gestiona desde Pedidos</span>`;
             }
-            const cliente = p.nombre_cliente ? `${escHtml(p.nombre_cliente)}${p.whatsapp_cliente ? ` (${escHtml(p.whatsapp_cliente)})` : ''}` : '—';
             const vence = p.fecha_vencimiento_perfil ? `${formatearFechaCorta(p.fecha_vencimiento_perfil)} ${badgeDiasRestantes(p.fecha_vencimiento_perfil)}` : '—';
             return `<tr>
                 <td data-label="Perfil">Perfil ${p.numero_perfil}${p.pin ? ` <span style="color:#6a6a78; font-size:11px;">(PIN ${escHtml(p.pin)})</span>` : ''}</td>
                 <td data-label="Estado">${estadoTxt}</td>
-                <td data-label="Cliente">${cliente}</td>
                 <td data-label="Vence">${vence}</td>
                 <td data-label="Acción">${accion}</td>
             </tr>`;
+        }
+
+        function objetoClienteDesdePerfil(cm, p) {
+            return {
+                nombre_cliente: p.nombre_cliente, plataforma: cm.plataforma, tipo_perfil: 'Perfil',
+                metodo_entrega: cm.metodo_entrega, correo: cm.correo, contrasena: cm.contrasena,
+                pin: p.pin, precio: p.precio, fecha_vencimiento: p.fecha_vencimiento_perfil
+            };
+        }
+
+        function buscarPerfilYCuenta(perfilId) {
+            for (const cm of cuentasMadreCache) {
+                const p = cm.perfiles.find(x => x.perfil_id == perfilId);
+                if (p) return { cm, p };
+            }
+            return null;
         }
 
         let perfilAsignandoInfo = null;
 
         function abrirModalAsignarPerfil(perfilId, plataforma, numeroPerfil) {
             perfilAsignandoInfo = { plataforma };
+            document.getElementById('map-modo').value = 'asignar';
+            document.getElementById('map-icono-titulo').innerText = 'person_add';
+            document.getElementById('map-titulo-modal').innerText = 'Asignar Perfil';
+            document.getElementById('map-btn-guardar').innerText = 'Asignar';
+            document.getElementById('map-wrap-uso').style.display = 'block';
+            document.getElementById('map-wrap-dias').style.display = 'block';
+            document.getElementById('map-wrap-fecha-exacta').style.display = 'block';
+            document.getElementById('map-wrap-fecha-directa').style.display = 'none';
             document.getElementById('map-perfil-id').value = perfilId;
             document.getElementById('map-titulo-perfil').innerText = `${plataforma} — Perfil ${numeroPerfil}`;
             document.getElementById('map-uso').value = 'cliente_manual';
@@ -1779,20 +1874,83 @@
             document.getElementById('modal-asignar-perfil-overlay').style.display = 'flex';
         }
 
+        function abrirModalEditarPerfilCliente(perfilId) {
+            const encontrado = buscarPerfilYCuenta(perfilId);
+            if (!encontrado) return;
+            const { cm, p } = encontrado;
+            document.getElementById('map-modo').value = 'editar';
+            document.getElementById('map-icono-titulo').innerText = 'edit';
+            document.getElementById('map-titulo-modal').innerText = 'Editar Cliente';
+            document.getElementById('map-btn-guardar').innerText = 'Guardar Cambios';
+            document.getElementById('map-wrap-uso').style.display = 'none';
+            document.getElementById('map-wrap-dias').style.display = 'none';
+            document.getElementById('map-wrap-fecha-exacta').style.display = 'none';
+            document.getElementById('map-wrap-fecha-directa').style.display = 'block';
+            document.getElementById('map-wrap-cliente').style.display = 'block';
+            document.getElementById('map-perfil-id').value = perfilId;
+            document.getElementById('map-titulo-perfil').innerText = `${cm.plataforma} — Perfil ${p.numero_perfil}`;
+            document.getElementById('map-nombre').value = p.nombre_cliente || '';
+            const { codigo, celular } = dividirWhatsapp(p.whatsapp_cliente || '');
+            document.getElementById('map-codigo-pais').value = codigo;
+            document.getElementById('map-celular').value = celular;
+            formatearCelularCliente('map');
+            document.getElementById('map-celular-hint').innerText = `${digitosEsperadosCliente('map')} dígitos esperados para este país`;
+            document.getElementById('map-precio').value = p.precio || 0;
+            document.getElementById('map-fecha-directa').value = p.fecha_vencimiento_perfil || '';
+            document.getElementById('map-pin').value = p.pin || '';
+            document.getElementById('map-notas').value = p.notas_cliente || '';
+            document.getElementById('modal-asignar-perfil-overlay').style.display = 'flex';
+        }
+
         function cerrarModalAsignarPerfil() {
             document.getElementById('modal-asignar-perfil-overlay').style.display = 'none';
         }
 
         function actualizarCamposAsignarPerfil() {
+            if (document.getElementById('map-modo').value === 'editar') return;
             document.getElementById('map-wrap-cliente').style.display = document.getElementById('map-uso').value === 'cliente_manual' ? 'block' : 'none';
         }
 
         async function guardarAsignacionPerfil() {
+            const modo = document.getElementById('map-modo').value;
             const perfilId = document.getElementById('map-perfil-id').value;
-            const uso = document.getElementById('map-uso').value;
             const pin = document.getElementById('map-pin').value.trim() || null;
             const notas = document.getElementById('map-notas').value.trim() || null;
 
+            if (modo === 'editar') {
+                const nombre = document.getElementById('map-nombre').value.trim();
+                if (!nombre) return showToast('Ingresa el nombre del cliente.', 'warning');
+                const celular = document.getElementById('map-celular').value.replace(/\D/g, '');
+                const codigoPais = document.getElementById('map-codigo-pais').value;
+                const digitosEsperados = digitosEsperadosCliente('map');
+                if (celular && celular.length !== digitosEsperados) return showToast(`El número de WhatsApp debe tener ${digitosEsperados} dígitos para este país.`, 'warning');
+                const whatsapp = celular ? (codigoPais + celular) : null;
+                const precio = parseFloat(document.getElementById('map-precio').value);
+                if (isNaN(precio) || precio < 0) return showToast('Ingresa un precio válido.', 'warning');
+                const fechaVenc = document.getElementById('map-fecha-directa').value || null;
+
+                const { error } = await supabaseClient.rpc('admin_editar_perfil_cliente', {
+                    p_perfil_id: perfilId, p_nombre_cliente: nombre, p_whatsapp_cliente: whatsapp,
+                    p_precio: precio, p_fecha_vencimiento: fechaVenc, p_pin: pin, p_notas: notas
+                });
+                if (error) { showToast('Error: ' + error.message, 'error'); return; }
+
+                showToast('Cliente actualizado.');
+                cerrarModalAsignarPerfil();
+                cargarCuentasMadre();
+
+                if (whatsapp) {
+                    const conf = await openCustomModal({ title: 'Avisar al cliente', desc: `¿Enviarle un WhatsApp a <b>${escHtml(nombre)}</b> avisando que se actualizaron sus datos?`, icon: 'campaign', color: '#00d2ff', type: 'confirm', confirmText: 'Enviar aviso' });
+                    if (conf) {
+                        const encontrado = buscarPerfilYCuenta(perfilId);
+                        const cm = encontrado ? encontrado.cm : null;
+                        abrirWhatsappCliente(whatsapp, mensajeActualizacion({ nombre_cliente: nombre, plataforma: cm ? cm.plataforma : '' }, ['Se actualizaron los datos de tu servicio.']));
+                    }
+                }
+                return;
+            }
+
+            const uso = document.getElementById('map-uso').value;
             let nombre = null, whatsapp = null, precio = null, dias = 30, fechaExacta = null;
             if (uso === 'cliente_manual') {
                 nombre = document.getElementById('map-nombre').value.trim();
@@ -1839,6 +1997,49 @@
             if (error) { showToast('Error: ' + error.message, 'error'); return; }
             showToast('Perfil liberado.');
             cargarCuentasMadre();
+        }
+
+        async function renovarPerfilClienteUI(perfilId) {
+            const encontrado = buscarPerfilYCuenta(perfilId);
+            if (!encontrado) return;
+            const { cm, p } = encontrado;
+            const conf = await openCustomModal({ title: 'Renovar Servicio', desc: `¿Confirmas renovar a <b>${escHtml(p.nombre_cliente)}</b>?`, icon: 'autorenew', color: '#00e676', type: 'confirm', confirmText: 'Renovar' });
+            if (!conf) return;
+
+            const { data, error } = await supabaseClient.rpc('admin_renovar_perfil_cliente', { p_perfil_id: perfilId });
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
+
+            const nuevaFecha = data && data[0] ? data[0].fecha_vencimiento : null;
+            showToast('Servicio renovado.');
+            cargarCuentasMadre();
+
+            if (p.whatsapp_cliente && nuevaFecha) {
+                const confMsg = await openCustomModal({ title: 'Avisar renovación', desc: `¿Enviarle a <b>${escHtml(p.nombre_cliente)}</b> la confirmación de renovación por WhatsApp?`, icon: 'send', color: '#00d2ff', type: 'confirm', confirmText: 'Enviar' });
+                if (confMsg) abrirWhatsappCliente(p.whatsapp_cliente, mensajeRenovacion({ ...objetoClienteDesdePerfil(cm, p), fecha_vencimiento: nuevaFecha }));
+            }
+        }
+
+        function enviarRecordatorioPerfilCliente(perfilId) {
+            const encontrado = buscarPerfilYCuenta(perfilId);
+            if (!encontrado) return;
+            const { cm, p } = encontrado;
+            if (!p.whatsapp_cliente) { showToast('Este cliente no tiene WhatsApp guardado.', 'warning'); return; }
+            abrirWhatsappCliente(p.whatsapp_cliente, mensajeRecordatorio(objetoClienteDesdePerfil(cm, p)));
+        }
+
+        function compartirPerfilClienteRecordatorio(perfilId) {
+            const encontrado = buscarPerfilYCuenta(perfilId);
+            if (!encontrado) return;
+            const { cm, p } = encontrado;
+            const titulo = `${p.nombre_cliente} - ${cm.plataforma} (Perfil)`;
+            const accesoTxt = normalizarMetodoEntrega(cm.metodo_entrega) === 'qr_o_codigo'
+                ? `Correo: ${cm.correo || '—'} (sin contraseña, QR o código)`
+                : `Correo: ${cm.correo || '—'} / Contraseña: ${cm.contrasena || '—'}`;
+            const pinTxt = p.pin ? ` / PIN: ${p.pin}` : '';
+            const notas = `${accesoTxt}${pinTxt} / Precio: S/ ${Number(p.precio || 0).toFixed(2)} / WhatsApp: ${p.whatsapp_cliente || '—'}`;
+            const texto = `${titulo}|||${notas}|||${p.fecha_vencimiento_perfil}`;
+            const url = `shortcuts://run-shortcut?name=${encodeURIComponent(NOMBRE_ATAJO_RECORDATORIOS)}&input=text&text=${encodeURIComponent(texto)}`;
+            window.location.href = url;
         }
 
         function abrirModalEditarCuentaMadre(cuentaMadreId) {
