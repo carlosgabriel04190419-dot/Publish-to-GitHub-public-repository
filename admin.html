@@ -299,6 +299,13 @@
                 <label style="color:#a155ff; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Nombre del cliente</label>
                 <input type="text" id="map-nombre" class="bulk-select">
 
+                <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Cómo se le entrega el acceso a este cliente</label>
+                <select id="map-metodo-entrega" class="bulk-select">
+                    <option value="correo_y_contrasena">Correo y contraseña</option>
+                    <option value="qr_o_codigo">Sin contraseña (QR de TV o código al iniciar sesión)</option>
+                    <option value="invitacion">Link de invitación (ej. Spotify Family/Dúo)</option>
+                </select>
+
                 <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">WhatsApp del cliente</label>
                 <div style="display:flex; gap:8px; margin-bottom:4px;">
                     <select id="map-codigo-pais" class="bulk-select" style="max-width:105px; flex-shrink:0; margin-bottom:0;" onchange="alCambiarPaisCliente('map')">
@@ -365,6 +372,7 @@
             <select id="ecm-metodo-entrega" class="bulk-select">
                 <option value="correo_y_contrasena">Correo y contraseña</option>
                 <option value="qr_o_codigo">Sin contraseña (QR de TV o código al iniciar sesión)</option>
+                <option value="invitacion">Link de invitación (ej. Spotify Family/Dúo)</option>
             </select>
 
             <div class="grid-container" style="display:grid; grid-template-columns:repeat(2,1fr); gap:15px;">
@@ -1079,6 +1087,7 @@
                             <select id="cm-metodo-entrega" class="search-bar" style="max-width:none;">
                                 <option value="correo_y_contrasena">Correo y contraseña</option>
                                 <option value="qr_o_codigo">Sin contraseña (QR de TV o código al iniciar sesión)</option>
+                                <option value="invitacion">Link de invitación (ej. Spotify Family/Dúo)</option>
                             </select>
                         </div>
                         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:15px; margin-bottom:15px;">
@@ -1607,8 +1616,11 @@
         function mensajeNuevoServicio(c) {
             const fechaTxt = formatearFechaLarga(c.fecha_vencimiento);
             let accesoTxt;
-            if (normalizarMetodoEntrega(c.metodo_entrega) === 'qr_o_codigo') {
+            const metodo = normalizarMetodoEntrega(c.metodo_entrega);
+            if (metodo === 'qr_o_codigo') {
                 accesoTxt = `📧 *Correo:* ${c.correo || '—'}\n📺 *Si es para tu TV:* mándame una foto del código QR que te sale en pantalla apenas quieras entrar.\n📱 *Si es para celular, tablet o laptop:* entra con ese correo y dale a "Iniciar sesión"; el código que te pida la plataforma me lo pasas para confirmarte el acceso.`;
+            } else if (metodo === 'invitacion') {
+                accesoTxt = `📧 *Correo para la invitación:* ${c.correo || '—'}\n✉️ En breve te llega una invitación a ese correo para unirte al plan — solo acéptala y listo.`;
             } else {
                 accesoTxt = `📧 *Correo:* ${c.correo || '—'}\n🔑 *Contraseña:* ${c.contrasena || '—'}`;
             }
@@ -1864,7 +1876,7 @@
         function objetoClienteDesdePerfil(cm, p) {
             return {
                 nombre_cliente: p.nombre_cliente, plataforma: cm.plataforma, tipo_perfil: 'Perfil',
-                metodo_entrega: cm.metodo_entrega, correo: cm.correo, contrasena: cm.contrasena,
+                metodo_entrega: p.metodo_entrega_cliente || cm.metodo_entrega, correo: cm.correo, contrasena: cm.contrasena,
                 pin: p.pin, precio: p.precio, fecha_vencimiento: p.fecha_vencimiento_perfil
             };
         }
@@ -1881,6 +1893,7 @@
 
         function abrirModalAsignarPerfil(perfilId, plataforma, numeroPerfil) {
             perfilAsignandoInfo = { plataforma };
+            const encontrado = buscarPerfilYCuenta(perfilId);
             document.getElementById('map-modo').value = 'asignar';
             document.getElementById('map-icono-titulo').innerText = 'person_add';
             document.getElementById('map-titulo-modal').innerText = 'Asignar Perfil';
@@ -1893,6 +1906,7 @@
             document.getElementById('map-titulo-perfil').innerText = `${plataforma} — Perfil ${numeroPerfil}`;
             document.getElementById('map-uso').value = 'cliente_manual';
             document.getElementById('map-nombre').value = '';
+            document.getElementById('map-metodo-entrega').value = encontrado ? encontrado.cm.metodo_entrega : 'correo_y_contrasena';
             document.getElementById('map-codigo-pais').value = '51';
             document.getElementById('map-celular').value = '';
             document.getElementById('map-celular-hint').innerText = 'Perú: 9 dígitos';
@@ -1921,6 +1935,7 @@
             document.getElementById('map-perfil-id').value = perfilId;
             document.getElementById('map-titulo-perfil').innerText = `${cm.plataforma} — Perfil ${p.numero_perfil}`;
             document.getElementById('map-nombre').value = p.nombre_cliente || '';
+            document.getElementById('map-metodo-entrega').value = p.metodo_entrega_cliente || cm.metodo_entrega;
             const { codigo, celular } = dividirWhatsapp(p.whatsapp_cliente || '');
             document.getElementById('map-codigo-pais').value = codigo;
             document.getElementById('map-celular').value = celular;
@@ -1948,6 +1963,8 @@
             const pin = document.getElementById('map-pin').value.trim() || null;
             const notas = document.getElementById('map-notas').value.trim() || null;
 
+            const metodoEntrega = document.getElementById('map-metodo-entrega').value;
+
             if (modo === 'editar') {
                 const nombre = document.getElementById('map-nombre').value.trim();
                 if (!nombre) return showToast('Ingresa el nombre del cliente.', 'warning');
@@ -1962,7 +1979,7 @@
 
                 const { error } = await supabaseClient.rpc('admin_editar_perfil_cliente', {
                     p_perfil_id: perfilId, p_nombre_cliente: nombre, p_whatsapp_cliente: whatsapp,
-                    p_precio: precio, p_fecha_vencimiento: fechaVenc, p_pin: pin, p_notas: notas
+                    p_precio: precio, p_fecha_vencimiento: fechaVenc, p_pin: pin, p_notas: notas, p_metodo_entrega: metodoEntrega
                 });
                 if (error) { showToast('Error: ' + error.message, 'error'); return; }
 
@@ -1999,7 +2016,8 @@
 
             const { data, error } = await supabaseClient.rpc('admin_asignar_perfil_cliente', {
                 p_perfil_id: perfilId, p_uso: uso, p_nombre_cliente: nombre, p_whatsapp_cliente: whatsapp,
-                p_precio: precio, p_dias_servicio: dias, p_fecha_exacta: fechaExacta, p_pin: pin, p_notas: notas
+                p_precio: precio, p_dias_servicio: dias, p_fecha_exacta: fechaExacta, p_pin: pin, p_notas: notas,
+                p_metodo_entrega: uso === 'cliente_manual' ? metodoEntrega : null
             });
             if (error) { showToast('Error: ' + error.message, 'error'); return; }
 
@@ -2014,7 +2032,7 @@
                     const cm = cuentasMadreCache.find(c => c.perfiles.some(p => p.perfil_id == perfilId));
                     abrirWhatsappCliente(whatsapp, mensajeNuevoServicio({
                         nombre_cliente: nombre, plataforma: perfilAsignandoInfo ? perfilAsignandoInfo.plataforma : (cm ? cm.plataforma : ''),
-                        tipo_perfil: 'Perfil', metodo_entrega: cm ? cm.metodo_entrega : 'correo_y_contrasena',
+                        tipo_perfil: 'Perfil', metodo_entrega: metodoEntrega,
                         correo: cm ? cm.correo : '', contrasena: cm ? cm.contrasena : '', pin, precio, fecha_vencimiento: fechaVenc
                     }));
                 }
