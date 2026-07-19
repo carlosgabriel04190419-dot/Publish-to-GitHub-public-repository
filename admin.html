@@ -1109,8 +1109,8 @@
 
                     <div class="card-box">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#ff9800;">key</span> Mis Cuentas Madre</h3>
-                        <div style="margin-bottom:18px;">
-                            <select id="filtro-plataforma-cuentas-madre" class="bulk-select" style="max-width:260px; margin-bottom:0; width:auto;" onchange="filtrarCuentasMadre()">
+                        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:18px;">
+                            <select id="filtro-plataforma-cuentas-madre" class="bulk-select" style="max-width:220px; margin-bottom:0; width:auto;" onchange="filtrarCuentasMadre()">
                                 <option value="">Todas las plataformas</option>
                                 <option value="Netflix">Netflix</option>
                                 <option value="Disney">Disney+</option>
@@ -1120,6 +1120,14 @@
                                 <option value="DirecTV">DirecTV Go</option>
                                 <option value="HBO">HBO Max</option>
                                 <option value="Apple One">Apple One</option>
+                            </select>
+                            <select id="filtro-estado-cuentas-madre" class="bulk-select" style="max-width:180px; margin-bottom:0; width:auto;" onchange="filtrarCuentasMadre()">
+                                <option value="">Activas y suspendidas</option>
+                                <option value="activa">Solo activas</option>
+                                <option value="suspendida">Solo suspendidas</option>
+                            </select>
+                            <select id="filtro-cuenta-especifica" class="bulk-select" style="max-width:280px; margin-bottom:0; width:auto;" onchange="filtrarCuentasMadre()">
+                                <option value="">Todas las cuentas</option>
                             </select>
                         </div>
                         <div id="lista-cuentas-madre"></div>
@@ -1711,7 +1719,20 @@
                 grupos[fila.cuenta_madre_id].perfiles.push(fila);
             });
             cuentasMadreCache = Object.values(grupos);
+            poblarFiltroCuentaEspecifica();
             renderizarListaCuentasMadre();
+        }
+
+        function poblarFiltroCuentaEspecifica() {
+            const sel = document.getElementById('filtro-cuenta-especifica');
+            if (!sel) return;
+            const valorActual = sel.value;
+            const opciones = cuentasMadreCache
+                .slice()
+                .sort((a, b) => a.plataforma.localeCompare(b.plataforma) || a.correo.localeCompare(b.correo))
+                .map(cm => `<option value="${cm.id}">${escHtml(cm.plataforma)} — ${escHtml(cm.correo)}</option>`).join('');
+            sel.innerHTML = '<option value="">Todas las cuentas</option>' + opciones;
+            if (cuentasMadreCache.some(cm => String(cm.id) === valorActual)) sel.value = valorActual;
         }
 
         function filtrarCuentasMadre() {
@@ -1722,8 +1743,13 @@
             const cont = document.getElementById('lista-cuentas-madre');
             if (!cont) return;
             if (cuentasMadreCache.length === 0) { cont.innerHTML = "<p style='text-align:center; color:#a8a8b3;'>Todavía no agregaste ninguna cuenta madre.</p>"; return; }
-            const filtro = document.getElementById('filtro-plataforma-cuentas-madre')?.value || '';
-            const lista = filtro ? cuentasMadreCache.filter(cm => (cm.plataforma || '').toLowerCase().includes(filtro.toLowerCase())) : cuentasMadreCache;
+            const filtroPlataforma = document.getElementById('filtro-plataforma-cuentas-madre')?.value || '';
+            const filtroEstado = document.getElementById('filtro-estado-cuentas-madre')?.value || '';
+            const filtroCuenta = document.getElementById('filtro-cuenta-especifica')?.value || '';
+            let lista = cuentasMadreCache;
+            if (filtroCuenta) lista = lista.filter(cm => String(cm.id) === filtroCuenta);
+            if (filtroPlataforma) lista = lista.filter(cm => (cm.plataforma || '').toLowerCase().includes(filtroPlataforma.toLowerCase()));
+            if (filtroEstado) lista = lista.filter(cm => cm.estado_cuenta === filtroEstado);
             if (lista.length === 0) { cont.innerHTML = "<p style='text-align:center; color:#a8a8b3;'>Ninguna cuenta coincide con ese filtro.</p>"; return; }
             cont.innerHTML = lista.map(cm => tarjetaCuentaMadre(cm)).join('');
         }
@@ -1781,6 +1807,10 @@
                 badgeEstado = `<span class="cliente-card-venc-badge" style="background:rgba(0,230,118,0.15); color:#00e676;">Activo</span>`;
             }
             const nombreEsc = escAttr(p.nombre_cliente).replace(/'/g, "\\'");
+            let diasRestantesTxt, diasRestantesColor;
+            if (diffDias < 0) { diasRestantesTxt = `Vencido (${Math.abs(diffDias)}d)`; diasRestantesColor = '#ff4757'; }
+            else if (diffDias === 0) { diasRestantesTxt = 'Vence hoy'; diasRestantesColor = '#ff9800'; }
+            else { diasRestantesTxt = `${diffDias} día(s)`; diasRestantesColor = diffDias <= 2 ? '#ff9800' : '#00e676'; }
             return `<div class="cliente-card ${claseEstado}">
                 <div class="pc-header">
                     <div class="pc-comprador">${escHtml(p.nombre_cliente)}</div>
@@ -1790,6 +1820,7 @@
                 <div class="pc-datos">
                     <div class="pc-dato"><span class="pc-dato-label">Precio</span><span class="pc-dato-valor" style="color:#00e676;">S/ ${Number(p.precio || 0).toFixed(2)}</span></div>
                     <div class="pc-dato"><span class="pc-dato-label">Vence</span><span class="pc-dato-valor" style="color:#a8a8b3; font-size:13px;">${formatearFechaCorta(p.fecha_vencimiento_perfil)}</span></div>
+                    <div class="pc-dato"><span class="pc-dato-label">Días restantes</span><span class="pc-dato-valor" style="color:${diasRestantesColor}; font-size:13px;">${diasRestantesTxt}</span></div>
                 </div>
                 <div class="pc-seccion">
                     <span class="pc-seccion-label">WhatsApp</span>
