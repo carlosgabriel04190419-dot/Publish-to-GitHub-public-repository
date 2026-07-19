@@ -1480,6 +1480,9 @@
                     <button class="btn-complete" onclick="enviarRecordatorioVencimiento(${c.id})"><span class="material-icons">notifications_active</span> Recordatorio</button>
                     <button class="btn-remove" onclick="eliminarClienteStreaming(${c.id}, '${nombreEsc}')"><span class="material-icons">delete</span> Eliminar</button>
                 </div>
+                <div class="pc-acciones">
+                    <button class="btn-outline" onclick="compartirClienteRecordatorio(${c.id})"><span class="material-icons">ios_share</span> Enviar a Recordatorios (iPhone)</button>
+                </div>
             </div>`;
         }
 
@@ -1689,6 +1692,23 @@
             if (!c) return;
             if (!c.whatsapp_cliente) { showToast('Este cliente no tiene WhatsApp guardado.', 'warning'); return; }
             abrirWhatsappCliente(c.whatsapp_cliente, mensajeRecordatorio(c));
+        }
+
+        // El nombre debe coincidir EXACTO con el del Atajo que crees en la app Atajos de iPhone.
+        const NOMBRE_ATAJO_RECORDATORIOS = 'Agregar Cliente a Recordatorios';
+
+        function compartirClienteRecordatorio(id) {
+            const c = clientesStreamingCache.find(x => x.id === id);
+            if (!c) return;
+            const titulo = `${c.nombre_cliente} - ${c.plataforma} (${c.tipo_perfil})`;
+            const accesoTxt = normalizarMetodoEntrega(c.metodo_entrega) === 'qr_o_codigo'
+                ? `Correo: ${c.correo || '—'} (sin contraseña, QR o código)`
+                : `Correo: ${c.correo || '—'} / Contraseña: ${c.contrasena || '—'}`;
+            const pinTxt = c.pin ? ` / PIN: ${c.pin}` : '';
+            const notas = `${accesoTxt}${pinTxt} / Precio: S/ ${Number(c.precio).toFixed(2)} / WhatsApp: ${c.whatsapp_cliente || '—'}`;
+            const texto = `${titulo}|||${notas}|||${c.fecha_vencimiento}`;
+            const url = `shortcuts://run-shortcut?name=${encodeURIComponent(NOMBRE_ATAJO_RECORDATORIOS)}&input=text&text=${encodeURIComponent(texto)}`;
+            window.location.href = url;
         }
 
         // ================= CUPONES =================
