@@ -1412,8 +1412,8 @@
         }
 
         function mensajeActualizacion(c, cambios) {
-            const detalle = cambios.join('\n');
-            return `¡Hola *${c.nombre_cliente}*! 👋\n\n🔄 Se actualizaron los datos de acceso de tu servicio *${c.plataforma}*:\n\n${detalle}\n\nCualquier duda, aquí estoy. ¡Gracias por confiar en *CarzaD'Cross*! 🙌`;
+            const detalle = cambios.length === 1 ? cambios[0] : 'Se realizaron actualizaciones en los datos de tu cuenta.';
+            return `¡Hola *${c.nombre_cliente}*! 👋\n\n🔄 Actualizamos algo en tu servicio *${c.plataforma}*:\n\n${detalle}\n\nCualquier duda, aquí estoy. ¡Gracias por confiar en *CarzaD'Cross*! 🙌`;
         }
 
         async function cargarMisClientesStreaming() {
@@ -1573,6 +1573,7 @@
             const original = clienteStreamingEditandoOriginal;
             const cambios = [];
             if (original) {
+                if ((original.nombre_cliente || '') !== nombre) cambios.push(`📝 *Nombre actualizado:* ${nombre}`);
                 if ((original.correo || '') !== correo) cambios.push(`📧 *Nuevo correo:* ${correo || '—'}`);
                 if (metodoEntrega === 'correo_y_contrasena' && (original.contrasena || '') !== contrasena) cambios.push(`🔑 *Nueva contraseña:* ${contrasena || '—'}`);
                 if ((original.pin || '') !== pin) cambios.push(`🔢 *Nuevo PIN:* ${pin || '—'}`);
