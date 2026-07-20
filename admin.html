@@ -795,6 +795,9 @@
                                 <option value="cajas">Cajitas Evolutivas</option>
                             </select>
                         </div>
+                        <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+                            <button class="btn-primary" style="background:#00e676; color:black; border:none; border-radius:8px; padding:10px 18px; cursor:pointer; display:flex; align-items:center; gap:6px; font-weight:bold;" onclick="guardarTodoCatalogo('tabla-catalogo-diamantes')"><span class="material-icons" style="font-size:18px;">save</span> Guardar todo</button>
+                        </div>
                         <div class="table-scroll">
                             <table><thead><tr><th>Paquete</th><th>Precio</th><th>Precio anterior</th><th>% Desc</th><th style="color:#ff9800;">Costo (lo que te cuesta)</th><th>Etiqueta</th><th>Descripción</th><th>Foto</th><th>Activo</th><th>Acción</th></tr></thead><tbody id="tabla-catalogo-diamantes"></tbody></table>
                         </div>
@@ -844,6 +847,9 @@
                     <!-- STREAMING -->
                     <div class="card-box" data-rol="streaming">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">live_tv</span> Catálogo de Streaming</h3>
+                        <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+                            <button class="btn-primary" style="background:#00e676; color:black; border:none; border-radius:8px; padding:10px 18px; cursor:pointer; display:flex; align-items:center; gap:6px; font-weight:bold;" onclick="guardarTodoCatalogo('tabla-catalogo-streaming')"><span class="material-icons" style="font-size:18px;">save</span> Guardar todo</button>
+                        </div>
                         <div class="table-scroll">
                             <table><thead><tr><th>Plataforma</th><th>Tipo</th><th>Precio</th><th>Precio anterior</th><th>% Desc</th><th style="color:#ff9800;">Costo (lo que te cuesta)</th><th>Perfiles/cuenta</th><th>Foto</th><th>Activo</th><th>Acción</th></tr></thead><tbody id="tabla-catalogo-streaming"></tbody></table>
                         </div>
@@ -2581,15 +2587,14 @@
             </tr>`;
         }
 
-        async function guardarProductoCatalogo(id) {
-            const tr = document.querySelector(`tr[data-id="${id}"]`);
-            if (!tr) return;
+        async function guardarFilaProductoCatalogo(tr) {
+            const id = tr.dataset.id;
             const precio = parseFloat(tr.querySelector('.campo-precio').value);
             const precioAnteriorRaw = tr.querySelector('.campo-precio-anterior').value;
             const precioAnterior = precioAnteriorRaw ? parseFloat(precioAnteriorRaw) : null;
 
-            if (isNaN(precio) || precio <= 0) return showToast("Ingresa un precio válido.", "warning");
-            if (precioAnterior !== null && precioAnterior <= precio) return showToast("El precio anterior debe ser mayor al precio actual.", "warning");
+            if (isNaN(precio) || precio <= 0) return { ok: false, type: "warning", message: "Ingresa un precio válido." };
+            if (precioAnterior !== null && precioAnterior <= precio) return { ok: false, type: "warning", message: "El precio anterior debe ser mayor al precio actual." };
 
             const cambios = { precio, precio_anterior: precioAnterior };
             const campoEtiqueta = tr.querySelector('.campo-etiqueta');
@@ -2600,7 +2605,7 @@
             if (campoPerfiles) cambios.perfiles_por_cuenta = campoPerfiles.value ? parseInt(campoPerfiles.value) : null;
 
             const { error } = await supabaseClient.from('productos').update(cambios).eq('id', id);
-            if (error) { showToast("Error: " + error.message, "error"); return; }
+            if (error) return { ok: false, type: "error", message: "Error: " + error.message };
 
             const campoCosto = tr.querySelector('.campo-costo');
             if (campoCosto) {
@@ -2609,14 +2614,41 @@
                     await supabaseClient.from('costos_productos').delete().eq('producto_id', id);
                 } else {
                     const costo = parseFloat(costoRaw);
-                    if (isNaN(costo) || costo < 0) { showToast("El costo debe ser un número válido.", "warning"); return; }
+                    if (isNaN(costo) || costo < 0) return { ok: false, type: "warning", message: "El costo debe ser un número válido." };
                     const { error: errorCosto } = await supabaseClient.from('costos_productos').upsert({ producto_id: id, costo, actualizado_en: new Date().toISOString() }, { onConflict: 'producto_id' });
-                    if (errorCosto) { showToast("Error al guardar el costo: " + errorCosto.message, "error"); return; }
+                    if (errorCosto) return { ok: false, type: "error", message: "Error al guardar el costo: " + errorCosto.message };
                 }
             }
 
+            return { ok: true };
+        }
+
+        async function guardarProductoCatalogo(id) {
+            const tr = document.querySelector(`tr[data-id="${id}"]`);
+            if (!tr) return;
+            const resultado = await guardarFilaProductoCatalogo(tr);
+            if (!resultado.ok) { showToast(resultado.message, resultado.type); return; }
             showToast("Producto actualizado.");
             if (tr.closest('#tabla-catalogo-streaming')) cargarProductosStreamingAdmin(); else cargarProductosDiamantesAdmin();
+        }
+
+        async function guardarTodoCatalogo(tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            const filas = tbody ? [...tbody.querySelectorAll('tr[data-id]')] : [];
+            if (filas.length === 0) return showToast("No hay productos para guardar.", "warning");
+
+            let exitos = 0;
+            const errores = [];
+            for (const tr of filas) {
+                const nombre = tr.children[0]?.innerText.trim() || tr.dataset.id;
+                const resultado = await guardarFilaProductoCatalogo(tr);
+                if (resultado.ok) exitos++; else errores.push(`${nombre}: ${resultado.message}`);
+            }
+
+            if (errores.length === 0) showToast(`${exitos} producto(s) actualizados.`);
+            else showToast(`${exitos} guardados. Error en "${errores[0]}"${errores.length > 1 ? ` (+${errores.length - 1} más)` : ''}`, "warning");
+
+            if (tbodyId === 'tabla-catalogo-streaming') cargarProductosStreamingAdmin(); else cargarProductosDiamantesAdmin();
         }
 
         async function toggleActivoProducto(id, activo) {
