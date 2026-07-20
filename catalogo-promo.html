@@ -361,6 +361,20 @@
                         </button>
                     </div>
                     <p id="modal-id-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
+
+                    <div id="modal-id-resultado-card" style="display: none; margin-top: 12px; background: rgba(0,230,118,0.06); border: 1px solid rgba(0,230,118,0.3); border-radius: 12px; padding: 14px; align-items: center; gap: 14px;">
+                        <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(0,230,118,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <span class="material-icons" style="font-size: 28px; color: #00e676;">sports_esports</span>
+                        </div>
+                        <div style="flex: 1; min-width: 0; text-align: left;">
+                            <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 3px;">
+                                <span class="material-icons" style="font-size: 13px; color: #00e676;">check_circle</span>
+                                <span style="color: #00e676; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Cuenta confirmada</span>
+                            </div>
+                            <div id="modal-id-resultado-nombre" style="color: white; font-weight: 800; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                            <div style="color: #8a8a9a; font-size: 11.5px; margin-top: 2px;">UID <span id="modal-id-resultado-uid"></span> · Nivel <span id="modal-id-resultado-nivel"></span></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="modal-nickname-wrap" style="display: none; margin-bottom: 25px;">
@@ -373,7 +387,7 @@
                     <p style="margin: 0; color: #ffc107; font-size: 12px; line-height: 1.5;">Verifica bien tu ID y Nickname. No nos hacemos responsables por recargas enviadas a datos incorrectos.</p>
                 </div>
 
-                <button id="btn-confirmar-pago" class="btn-primary" style="width: 100%; padding: 15px; font-size: 15px; font-weight: bold;" onclick="procesarTransaccion()">Confirmar y Descontar Saldo</button>
+                <button id="btn-confirmar-pago" class="btn-primary" style="width: 100%; padding: 15px; font-size: 15px; font-weight: bold;" onclick="procesarTransaccion()">Completar Pedido</button>
             </div>
 
             <div id="compra-pantalla-error" style="display: none; text-align: center; padding: 10px 0;">
@@ -530,6 +544,8 @@
             campo.style.fontWeight = 'normal';
             campo.style.cursor = 'text';
             document.getElementById('modal-nickname-wrap').style.display = 'none';
+            const tarjeta = document.getElementById('modal-id-resultado-card');
+            if (tarjeta) tarjeta.style.display = 'none';
         }
 
         // Se usa cuando la validación automática del ID falla: revela el campo para que
@@ -552,7 +568,10 @@
             const msg = document.getElementById('modal-id-mensaje');
             const uid = idInput.value.trim();
 
+            const tarjeta = document.getElementById('modal-id-resultado-card');
+
             if (!uid || uid.length < 7) {
+                tarjeta.style.display = 'none';
                 msg.style.display = 'block';
                 msg.style.color = '#ff4757';
                 msg.innerText = 'Ingresa un ID válido primero.';
@@ -562,6 +581,7 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="material-icons" style="font-size:16px;">hourglass_top</span> Validando...';
             msg.style.display = 'none';
+            tarjeta.style.display = 'none';
 
             const resultado = await validarUidFreeFire(uid);
 
@@ -570,9 +590,10 @@
 
             if (resultado.ok) {
                 bloquearNickname(resultado.nickname);
-                msg.style.display = 'block';
-                msg.style.color = '#00e676';
-                msg.innerText = `✓ Cuenta encontrada: ${resultado.nickname} (Nivel ${resultado.nivel})`;
+                document.getElementById('modal-id-resultado-nombre').innerText = resultado.nickname;
+                document.getElementById('modal-id-resultado-uid').innerText = uid;
+                document.getElementById('modal-id-resultado-nivel').innerText = resultado.nivel;
+                tarjeta.style.display = 'flex';
             } else {
                 mostrarNicknameManual();
                 msg.style.display = 'block';
@@ -692,12 +713,12 @@
                 if (resultado && resultado.mensaje === 'Saldo insuficiente.') {
                     document.getElementById('compra-pantalla-formulario').style.display = 'none';
                     document.getElementById('compra-pantalla-error').style.display = 'block';
-                    btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo";
+                    btn.disabled = false; btn.innerText = "Completar Pedido";
                     return;
                 }
                 const msg = errorCompra ? errorCompra.message : (resultado ? resultado.mensaje : "Error desconocido.");
                 alert("Error: " + msg);
-                btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo";
+                btn.disabled = false; btn.innerText = "Completar Pedido";
                 return;
             }
 
@@ -708,7 +729,7 @@
             document.getElementById('compra-pantalla-formulario').style.display = 'none';
             document.getElementById('compra-pantalla-exito').style.display = 'block';
             
-            btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo";
+            btn.disabled = false; btn.innerText = "Completar Pedido";
 
             // REDIRECCIÓN A WHATSAPP
             const numeroAdmin = "51943737572";
