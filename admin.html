@@ -1471,9 +1471,19 @@
             return `¡Hola *${c.nombre_cliente}*! 👋\n\nTu servicio de *${c.plataforma}* (${c.tipo_perfil}) fue suspendido por falta de renovación.\n\nCuando quieras reactivarlo, aquí estoy para ayudarte. 🙌`;
         }
 
-        function mensajeActualizacion(c, cambios) {
-            const detalle = cambios.length === 1 ? cambios[0] : 'Se realizaron actualizaciones en los datos de tu cuenta.';
-            return `¡Hola *${c.nombre_cliente}*! 👋\n\n🔄 Actualizamos algo en tu servicio *${c.plataforma}*:\n\n${detalle}\n\nCualquier duda, aquí estoy. ¡Gracias por confiar en *CarzaD'Cross*! 🙌`;
+        function mensajeActualizacionPerfil(cm, p, cambios) {
+            const metodo = normalizarMetodoEntrega(p.metodo_entrega_cliente || cm.metodo_entrega);
+            let accesoTxt;
+            if (metodo === 'qr_o_codigo') {
+                accesoTxt = `📧 *Correo:* ${cm.correo || '—'}\n📺 Sin contraseña (QR de TV o código al iniciar sesión)`;
+            } else if (metodo === 'invitacion') {
+                accesoTxt = `📧 *Correo para la invitación:* ${cm.correo || '—'}`;
+            } else {
+                accesoTxt = `📧 *Correo:* ${cm.correo || '—'}\n🔑 *Contraseña:* ${cm.contrasena || '—'}`;
+            }
+            const pinTxt = p.pin ? `\n🔢 *PIN:* ${p.pin}` : '';
+            const cambiosTxt = cambios.length > 0 ? `\n\n${cambios.join('\n')}` : '';
+            return `¡Hola *${p.nombre_cliente}*! 👋\n\n🔄 Actualizamos tu servicio de *${cm.plataforma}*:${cambiosTxt}\n\n📋 *Tus datos de acceso:*\n${accesoTxt}${pinTxt}\n\nCualquier duda, aquí estoy. ¡Gracias por confiar en *CarzaD'Cross*! 🙌`;
         }
 
         // ================= CUENTAS MADRE STREAMING =================
@@ -1814,6 +1824,9 @@
             const metodoEntrega = document.getElementById('map-metodo-entrega').value;
 
             if (modo === 'editar') {
+                const antesEncontrado = buscarPerfilYCuenta(perfilId);
+                const antes = antesEncontrado ? { ...antesEncontrado.p } : null;
+
                 const nombre = document.getElementById('map-nombre').value.trim();
                 if (!nombre) return showToast('Ingresa el nombre del cliente.', 'warning');
                 const celular = document.getElementById('map-celular').value.replace(/\D/g, '');
@@ -1840,7 +1853,17 @@
                     if (conf) {
                         const encontrado = buscarPerfilYCuenta(perfilId);
                         const cm = encontrado ? encontrado.cm : null;
-                        abrirWhatsappCliente(whatsapp, mensajeActualizacion({ nombre_cliente: nombre, plataforma: cm ? cm.plataforma : '' }, ['Se actualizaron los datos de tu servicio.']));
+                        const pActual = encontrado ? encontrado.p : { nombre_cliente: nombre, pin, metodo_entrega_cliente: metodoEntrega };
+
+                        const cambios = [];
+                        if (antes) {
+                            if ((antes.nombre_cliente || '') !== nombre) cambios.push(`📝 *Nombre:* ${antes.nombre_cliente || '—'} → ${nombre}`);
+                            if (Number(antes.precio || 0) !== precio) cambios.push(`💰 *Precio:* S/ ${Number(antes.precio || 0).toFixed(2)} → S/ ${precio.toFixed(2)}`);
+                            if ((antes.fecha_vencimiento_perfil || '') !== (fechaVenc || '')) cambios.push(`📅 *Vencimiento:* ${antes.fecha_vencimiento_perfil ? formatearFechaCorta(antes.fecha_vencimiento_perfil) : '—'} → ${fechaVenc ? formatearFechaCorta(fechaVenc) : '—'}`);
+                            if ((antes.pin || '') !== (pin || '')) cambios.push(`🔢 *PIN:* ${antes.pin || '—'} → ${pin || '—'}`);
+                        }
+
+                        if (cm) abrirWhatsappCliente(whatsapp, mensajeActualizacionPerfil(cm, pActual, cambios));
                     }
                 }
                 return;
