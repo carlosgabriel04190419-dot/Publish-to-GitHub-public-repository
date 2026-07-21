@@ -171,6 +171,7 @@
              <div class="user-profile" onclick="toggleMenu()" id="btn-usuario-nav" style="cursor: pointer;"><span>Carlos</span><span class="material-icons">expand_more</span></div>
             <div id="menu-desplegable" style="display: none; position: absolute; top: 120%; right: 0; background-color: #1a1a1f; border: 1px solid #333; border-radius: 8px; min-width: 160px; z-index: 1000; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
                  <a href="perfil.html" style="display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">person</span> Mis Datos</a>
+                 <a href="mis-codigos.html" style="display: flex; align-items: center; gap: 10px; color: #00d2ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">vpn_key</span> Mis Códigos</a>
                  <a href="mis-plataformas.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">live_tv</span> Mis Plataformas</a>
                  <a href="mis-cuentas.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">badge</span> Mis Cuentas</a>
                  <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #00e676; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
@@ -683,7 +684,6 @@
         async function procesarTransaccion() {
             const idJuego = document.getElementById('modal-id-juego').value.trim();
             const nicknameJuego = document.getElementById('modal-nickname-juego').value.trim();
-            const nombreGuardado = localStorage.getItem('nombreUsuario');
             const btn = document.getElementById('btn-confirmar-pago');
 
             if (!idJuego || idJuego.length < 7) { alert("El ID ingresado es muy corto o inválido."); return; }
@@ -707,18 +707,7 @@
                 return;
             }
 
-            const nuevoSaldo = Number(resultado.saldo_restante);
-            const precioFinalCobrado = saldoActualUsuario - nuevoSaldo;
-            if(document.getElementById('saldo-nav')) document.getElementById('saldo-nav').innerText = nuevoSaldo.toFixed(2);
-
-            document.getElementById('compra-pantalla-formulario').style.display = 'none';
-            document.getElementById('compra-pantalla-exito').style.display = 'block';
-            
-            btn.disabled = false; btn.innerText = "Completar Pedido";
-
-            const numeroAdmin = "51943737572";
-            const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de realizar una *RECARGA REGULAR* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n💎 *Paquete:* ${paqueteSeleccionado}\n💰 *Precio:* S/ ${precioFinalCobrado.toFixed(2)}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para proceder. ¡Gracias!`;
-            window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
+            window.location.href = 'mis-codigos.html';
         }
     </script>
     

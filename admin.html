@@ -769,8 +769,23 @@
                 <!-- ============ HISTORIAL GLOBAL ============ -->
                 <div class="admin-view" id="view-historial">
                     <h1 class="view-title"><span class="material-icons" style="color:#ff9800;">history</span> Historial Global</h1>
-                    <p class="view-subtitle">Últimos 40 movimientos de toda la tienda.</p>
+                    <p class="view-subtitle">Movimientos de toda la tienda.</p>
                     <div class="card-box history-container">
+                        <div style="display:flex; flex-wrap:wrap; gap:15px; align-items:center; margin-bottom:15px;">
+                            <label style="display:flex; align-items:center; gap:8px; color:#e0e0e0; font-size:14px; cursor:pointer;">
+                                <input type="checkbox" id="historial-filtro-hoy" onchange="cargarHistorial()"> Solo hoy
+                            </label>
+                            <select id="historial-filtro-categoria" class="bulk-select" style="max-width:220px; margin-bottom:0; width:auto;" onchange="cargarHistorial()">
+                                <option value="">Todas las categorías</option>
+                                <option value="regular">Regular</option>
+                                <option value="directa">Directa</option>
+                                <option value="promo">Promo</option>
+                                <option value="fragmentos">Fragmentos</option>
+                                <option value="cajas">Cajas</option>
+                                <option value="streaming">Streaming</option>
+                                <option value="cuentas">Cuentas</option>
+                            </select>
+                        </div>
                         <div class="table-scroll">
                             <table><thead><tr><th>Fecha</th><th>Usuario</th><th>Descripción</th><th>Monto S/</th><th>Estado</th></tr></thead><tbody id="tabla-historial"></tbody></table>
                         </div>
@@ -3434,9 +3449,26 @@
             if (lista.length === 0) return;
             const conf = await openCustomModal({ title: "Guardar Inventario", desc: `¿Guardar <b>${lista.length}</b> códigos para <b>"${pkt}"</b>?`, icon: 'inventory_2', color: '#00d2ff', type: 'confirm', confirmText: 'Guardar' });
             if (!conf) return;
-            const datos = lista.map(cod => ({ paquete: pkt, codigo: cod, estado: 'Disponible' }));
-            await supabaseClient.from('inventario_codigos').insert(datos);
-            showToast(`¡${lista.length} códigos añadidos!`); document.getElementById('bulk-codigos').value = ''; cargarPedidos(); cargarStock();
+
+            const { data, error } = await supabaseClient.rpc('admin_agregar_codigos_regular', { p_paquete: pkt, p_codigos: lista });
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+
+            const completados = (data || []).filter(r => r.pedido_id !== null);
+            let msg = `¡${lista.length} códigos añadidos!`;
+            if (completados.length > 0) msg += ` Se completaron ${completados.length} pedido(s) pendiente(s) automáticamente.`;
+            showToast(msg);
+
+            completados.forEach(r => {
+                enviarNotificacionCorreo(
+                    r.correo, r.nickname,
+                    `✅ Tu código de ${r.paquete} ya está listo`,
+                    `Ya agregamos stock y tu pedido de <b>${r.paquete}</b> quedó completado. Revisa tu código en tu panel de <b>Mis Códigos</b> dentro de la web.`,
+                    'Ver mis códigos', 'https://carzadcross.com/mis-codigos.html', null
+                );
+            });
+
+            document.getElementById('bulk-codigos').value = '';
+            cargarPedidos(); cargarStock();
         }
 
         function actualizarTipoCargaDisponible() {
@@ -4147,7 +4179,19 @@
 
         // HISTORIAL GLOBAL
         async function cargarHistorial() {
-            const { data } = await supabaseClient.from('historial').select('*').order('created_at', { ascending: false }).limit(40);
+            const soloHoy = document.getElementById('historial-filtro-hoy')?.checked;
+            const categoria = document.getElementById('historial-filtro-categoria')?.value || '';
+
+            let query = supabaseClient.from('v_historial_categorizado').select('*').order('created_at', { ascending: false });
+            if (soloHoy) {
+                const inicioHoy = new Date(); inicioHoy.setHours(0, 0, 0, 0);
+                query = query.gte('created_at', inicioHoy.toISOString());
+            } else {
+                query = query.limit(40);
+            }
+            if (categoria) query = query.eq('categoria', categoria);
+
+            const { data } = await query;
             const tbody = document.getElementById('tabla-historial'); tbody.innerHTML = "";
             if(!data || data.length===0){ tbody.innerHTML = "<tr><td colspan='5' style='text-align: center;'>Vacio</td></tr>"; return;}
             data.forEach(h => {
