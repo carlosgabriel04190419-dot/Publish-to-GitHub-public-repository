@@ -1804,7 +1804,7 @@
             document.getElementById('map-precio').value = '';
             document.getElementById('map-dias').value = '30';
             document.getElementById('map-fecha-exacta').value = '';
-            document.getElementById('map-pin').value = '';
+            document.getElementById('map-pin').value = encontrado ? (encontrado.p.pin || '') : '';
             document.getElementById('map-notas').value = '';
             actualizarCamposAsignarPerfil();
             document.getElementById('modal-asignar-perfil-overlay').style.display = 'flex';
