@@ -365,22 +365,19 @@
                     </div>
                     <p id="modal-id-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
 
-                    <div id="modal-id-resultado-card" style="display: none; margin-top: 12px; background: rgba(0,230,118,0.06); border: 1px solid rgba(0,230,118,0.3); border-radius: 12px; padding: 12px; flex-direction: column; gap: 8px;">
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <span class="material-icons" style="font-size: 13px; color: #00e676;">check_circle</span>
-                            <span style="color: #00e676; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Cuenta confirmada</span>
+                    <div id="modal-id-resultado-card" style="display: none; margin-top: 12px; background: rgba(0,230,118,0.06); border: 1px solid rgba(0,230,118,0.3); border-radius: 12px; padding: 14px; align-items: center; gap: 14px;">
+                        <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(0,230,118,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; position: relative;">
+                            <span id="modal-id-resultado-icono" class="material-icons" style="font-size: 28px; color: #00e676;">sports_esports</span>
+                            <img id="modal-id-resultado-banner" alt="" style="display: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left center;">
                         </div>
-                        <img id="modal-id-resultado-banner" alt="Banner de la cuenta" style="display: none; width: 100%; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
-                        <div id="modal-id-resultado-fallback" style="display: none; align-items: center; gap: 14px;">
-                            <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(0,230,118,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                <span class="material-icons" style="font-size: 28px; color: #00e676;">sports_esports</span>
+                        <div style="flex: 1; min-width: 0; text-align: left;">
+                            <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 3px;">
+                                <span class="material-icons" style="font-size: 13px; color: #00e676;">check_circle</span>
+                                <span style="color: #00e676; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Cuenta confirmada</span>
                             </div>
-                            <div style="flex: 1; min-width: 0; text-align: left;">
-                                <div id="modal-id-resultado-nombre" style="color: white; font-weight: 800; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                                <div style="color: #8a8a9a; font-size: 11.5px; margin-top: 2px;">Nivel <span id="modal-id-resultado-nivel"></span></div>
-                            </div>
+                            <div id="modal-id-resultado-nombre" style="color: white; font-weight: 800; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                            <div style="color: #8a8a9a; font-size: 11.5px; margin-top: 2px;">UID <span id="modal-id-resultado-uid"></span> · Nivel <span id="modal-id-resultado-nivel"></span></div>
                         </div>
-                        <div style="color: #8a8a9a; font-size: 11px; text-align: center;">UID <span id="modal-id-resultado-uid"></span></div>
                     </div>
                 </div>
 
@@ -601,11 +598,11 @@
                 document.getElementById('modal-id-resultado-nivel').innerText = resultado.nivel;
 
                 const banner = document.getElementById('modal-id-resultado-banner');
-                const fallback = document.getElementById('modal-id-resultado-fallback');
+                const icono = document.getElementById('modal-id-resultado-icono');
                 banner.style.display = 'none';
-                fallback.style.display = 'none';
-                banner.onload = () => { banner.style.display = 'block'; fallback.style.display = 'none'; };
-                banner.onerror = () => { banner.style.display = 'none'; fallback.style.display = 'flex'; };
+                icono.style.display = '';
+                banner.onload = () => { banner.style.display = 'block'; icono.style.display = 'none'; };
+                banner.onerror = () => { banner.style.display = 'none'; icono.style.display = ''; };
                 banner.src = urlBannerFreeFire(uid);
 
                 tarjeta.style.display = 'flex';

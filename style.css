@@ -503,3 +503,22 @@ body { background-color: #121214; color: #ffffff; min-height: 100vh; }
 .text-carza { color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-transform: uppercase; }
 .text-d { color: #a155ff; margin: 0 2px; }
 .text-cross { background: linear-gradient(45deg, #00d2ff, #a155ff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-style: italic; text-transform: uppercase; padding-right: 5px; }
+
+/* --- Ventanas modales: que la tarjeta se desplace internamente en vez de la página de fondo --- */
+#custom-modal-overlay > div,
+#modal-buscar-usuario-overlay > div,
+#modal-galeria-cuenta-overlay > div,
+#modal-editar-cuenta-overlay > div,
+#modal-completar-cuenta-overlay > div,
+#modal-asignar-perfil-overlay > div,
+#modal-editar-cuenta-madre-overlay > div,
+#modal-editar-cliente-overlay > div,
+#user-history-modal > div,
+#modal-compra-container > div,
+#modal-compra-cuenta-container > div,
+#modal-renovar-container > div,
+#modal-exito-recarga > div,
+#modal-whatsapp-grupo > div {
+    max-height: 90vh;
+    overflow-y: auto;
+}
