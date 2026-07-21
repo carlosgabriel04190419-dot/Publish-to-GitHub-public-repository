@@ -294,7 +294,7 @@ async function validarUidFreeFire(uid) {
         'modal-editar-cuenta-overlay', 'modal-completar-cuenta-overlay', 'modal-asignar-perfil-overlay',
         'modal-editar-cuenta-madre-overlay', 'modal-editar-cliente-overlay', 'user-history-modal',
         'modal-compra-container', 'modal-compra-cuenta-container', 'modal-renovar-container',
-        'modal-exito-recarga', 'modal-whatsapp-grupo'
+        'modal-exito-recarga', 'modal-whatsapp-grupo', 'modal-canje-lightbox'
     ];
 
     function actualizarBloqueoScroll() {
