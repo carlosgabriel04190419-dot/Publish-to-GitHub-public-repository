@@ -434,6 +434,11 @@
                     </div>
                 </div>
 
+                <div id="modal-codigo-aviso-wrap" style="display: none; background: rgba(0,210,255,0.05); border: 1px solid rgba(0,210,255,0.2); border-radius: 8px; padding: 12px; margin-bottom: 25px; gap: 10px; align-items: center;">
+                    <span class="material-icons" style="color: #00d2ff; font-size: 18px;">lightbulb</span>
+                    <p style="margin: 0; color: #a8a8b3; font-size: 12px; line-height: 1.5;">Tu código llega a "Mis Códigos" para que lo canjees tú mismo en Hype con el ID (tuyo o de tu cliente). Es privado — no lo compartas con nadie.</p>
+                </div>
+
                 <button id="btn-confirmar-pago" class="btn-primary" style="width: 100%; padding: 15px; font-size: 15px; font-weight: bold;" onclick="procesarTransaccion()">Completar Pedido</button>
             </div>
 
@@ -693,6 +698,7 @@
             document.getElementById('compra-pantalla-error').style.display = 'none';
             document.getElementById('compra-pantalla-exito').style.display = 'none';
             document.getElementById('modal-id-seccion-wrap').style.display = (nombrePaquete === 'Pase Booyah') ? 'block' : 'none';
+            document.getElementById('modal-codigo-aviso-wrap').style.display = (nombrePaquete === 'Pase Booyah') ? 'none' : 'flex';
             document.getElementById('modal-id-juego').value = "";
             desbloquearNickname();
             precioFinalConCupon = null; codigoCuponValidado = '';
