@@ -195,7 +195,7 @@
     <header class="hero-container" style="background: linear-gradient(rgba(18, 18, 20, 0.8), rgba(18, 18, 20, 1)), url('freefire.jpg') center/cover; padding: 60px 20px;">
         <div class="hero-content" style="text-align: center;">
             <div class="hero-badge" style="border-color: #a155ff; color: #a155ff; background: rgba(161,85,255,0.1); border-radius: 30px; padding: 6px 16px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 20px;">💎 CATÁLOGO OFICIAL</div>
-            <h1 class="hero-title" style="font-size: 38px; font-weight: bold; margin-bottom: 15px;">Recarga <br><span style="color: #a155ff;">REGULAR</span></h1>
+            <h1 class="hero-title" style="font-size: 38px; font-weight: bold; margin-bottom: 15px;">Recarga Diamantes <br><span style="color: #a155ff;">+10%</span></h1>
             <p class="hero-subtitle" style="color: #a8a8b3; font-size: 15px; max-width: 600px; margin: 0 auto;">Adquiere tus diamantes y pases de forma automática y 100% segura con tu saldo.</p>
             <!-- TEXTO VIP MOTIVACIONAL -->
             <p style="color: #ffc107; font-size: 13px; font-weight: bold; margin-top: 15px; text-shadow: 0 0 10px rgba(255,193,7,0.5);"><span class="material-icons" style="font-size: 14px; vertical-align: middle;">stars</span> Recuerda que cada S/ 1.00 de saldo que recargas te da 10 Puntos para la Caja Misteriosa VIP.</p>
@@ -204,7 +204,31 @@
 
     <main class="container" style="padding-top: 30px;">
         <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a8a8b3'"><span class="material-icons">arrow_back</span> Volver al inicio</a>
-        
+
+        <div class="rr-pasos-wrap">
+            <div class="rr-pasos-titulo"><span class="material-icons">bolt</span> Así de fácil funciona</div>
+            <div class="rr-pasos-grid">
+                <div class="rr-paso">
+                    <span class="rr-paso-num">1</span>
+                    <span class="material-icons rr-paso-icon">shopping_cart</span>
+                    <h4>Compra tu paquete</h4>
+                    <p>Elige tus diamantes y paga al toque con tu saldo.</p>
+                </div>
+                <div class="rr-paso">
+                    <span class="rr-paso-num">2</span>
+                    <span class="material-icons rr-paso-icon">vpn_key</span>
+                    <h4>Recibe tu código</h4>
+                    <p>Aparece al instante en <b>Mis Códigos</b>, listo para copiar.</p>
+                </div>
+                <div class="rr-paso">
+                    <span class="rr-paso-num">3</span>
+                    <span class="material-icons rr-paso-icon">redeem</span>
+                    <h4>Canjéalo en Hype</h4>
+                    <p>Pega tu código con tu ID y tus diamantes llegan directo.</p>
+                </div>
+            </div>
+        </div>
+
         <div class="category-header"><h2>PAQUETES DISPONIBLES 💎 (Ilimitado)</h2></div>
         
         <section class="products-grid" id="products-grid">
@@ -251,6 +275,24 @@
     </main>
 
     <style>
+        .rr-pasos-wrap { max-width: 1000px; margin: 0 auto 45px; }
+        .rr-pasos-titulo { display: flex; align-items: center; justify-content: center; gap: 8px; color: #a155ff; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 18px; }
+        .rr-pasos-titulo .material-icons { font-size: 18px; }
+        .rr-pasos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .rr-paso { position: relative; background: rgba(26, 26, 31, 0.7); border: 1px solid rgba(161,85,255,0.15); border-radius: 14px; padding: 24px 20px; text-align: center; transition: border-color 0.2s, transform 0.2s; }
+        .rr-paso:hover { border-color: rgba(161,85,255,0.45); transform: translateY(-3px); }
+        .rr-paso-num { position: absolute; top: 14px; left: 16px; width: 22px; height: 22px; border-radius: 50%; background: rgba(161,85,255,0.15); color: #a155ff; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+        .rr-paso-icon { font-size: 30px; color: #00d2ff; background: rgba(0,210,255,0.1); padding: 12px; border-radius: 50%; margin-bottom: 14px; }
+        .rr-paso h4 { color: white; font-size: 15px; margin: 0 0 8px 0; }
+        .rr-paso p { color: #a8a8b3; font-size: 12.5px; line-height: 1.5; margin: 0; }
+        @media (max-width: 700px) {
+            .rr-pasos-grid { gap: 8px; }
+            .rr-paso { padding: 14px 6px; border-radius: 10px; }
+            .rr-paso-num { width: 16px; height: 16px; font-size: 9px; top: 6px; left: 6px; }
+            .rr-paso-icon { font-size: 18px; padding: 8px; margin-bottom: 8px; }
+            .rr-paso h4 { font-size: 11px; margin: 0 0 3px 0; line-height: 1.25; }
+            .rr-paso p { display: none; }
+        }
         .cz-faq-wrapper { max-width: 850px; margin: 30px auto 60px; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .cz-faq-header { text-align: center; margin-bottom: 50px; }
         .cz-faq-subtitle { color: #a155ff; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 12px; }
@@ -354,39 +396,41 @@
                     </div>
                 </div>
 
-                <div style="margin-bottom: 20px;">
-                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('modal-id-mensaje').style.display='none'; desbloquearNickname();" autocomplete="off" placeholder="Ej. 24958302" style="flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
-                        <button type="button" id="btn-validar-id" onclick="validarIdEnModal()" style="background: rgba(0,230,118,0.1); border: 1px solid #00e676; color: #00e676; border-radius: 8px; padding: 0 16px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
-                            <span class="material-icons" style="font-size: 16px;">search</span> Validar
-                        </button>
-                    </div>
-                    <p id="modal-id-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
-
-                    <div id="modal-id-resultado-card" style="display: none; margin-top: 12px; background: rgba(0,230,118,0.06); border: 1px solid rgba(0,230,118,0.3); border-radius: 12px; padding: 14px; align-items: center; gap: 14px;">
-                        <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(0,230,118,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <span class="material-icons" style="font-size: 28px; color: #00e676;">sports_esports</span>
+                <div id="modal-id-seccion-wrap" style="display: none;">
+                    <div style="margin-bottom: 20px;">
+                        <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('modal-id-mensaje').style.display='none'; desbloquearNickname();" autocomplete="off" placeholder="Ej. 24958302" style="flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
+                            <button type="button" id="btn-validar-id" onclick="validarIdEnModal()" style="background: rgba(0,230,118,0.1); border: 1px solid #00e676; color: #00e676; border-radius: 8px; padding: 0 16px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+                                <span class="material-icons" style="font-size: 16px;">search</span> Validar
+                            </button>
                         </div>
-                        <div style="flex: 1; min-width: 0; text-align: left;">
-                            <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 3px;">
-                                <span class="material-icons" style="font-size: 13px; color: #00e676;">check_circle</span>
-                                <span style="color: #00e676; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Cuenta confirmada</span>
+                        <p id="modal-id-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
+
+                        <div id="modal-id-resultado-card" style="display: none; margin-top: 12px; background: rgba(0,230,118,0.06); border: 1px solid rgba(0,230,118,0.3); border-radius: 12px; padding: 14px; align-items: center; gap: 14px;">
+                            <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(0,230,118,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <span class="material-icons" style="font-size: 28px; color: #00e676;">sports_esports</span>
                             </div>
-                            <div id="modal-id-resultado-nombre" style="color: white; font-weight: 800; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                            <div style="color: #8a8a9a; font-size: 11.5px; margin-top: 2px;">UID <span id="modal-id-resultado-uid"></span> · Nivel <span id="modal-id-resultado-nivel"></span></div>
+                            <div style="flex: 1; min-width: 0; text-align: left;">
+                                <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 3px;">
+                                    <span class="material-icons" style="font-size: 13px; color: #00e676;">check_circle</span>
+                                    <span style="color: #00e676; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Cuenta confirmada</span>
+                                </div>
+                                <div id="modal-id-resultado-nombre" style="color: white; font-weight: 800; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                                <div style="color: #8a8a9a; font-size: 11.5px; margin-top: 2px;">UID <span id="modal-id-resultado-uid"></span> · Nivel <span id="modal-id-resultado-nivel"></span></div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div id="modal-nickname-wrap" style="display: none; margin-bottom: 25px;">
-                    <label id="modal-nickname-label" style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Nombre de Usuario</label>
-                    <input type="text" id="modal-nickname-juego" autocomplete="off" placeholder="Ej. Carlos_Pro" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; text-align: center; transition: all 0.3s;">
-                </div>
+                    <div id="modal-nickname-wrap" style="display: none; margin-bottom: 25px;">
+                        <label id="modal-nickname-label" style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Nombre de Usuario</label>
+                        <input type="text" id="modal-nickname-juego" autocomplete="off" placeholder="Ej. Carlos_Pro" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; text-align: center; transition: all 0.3s;">
+                    </div>
 
-                <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px; margin-bottom: 25px; display: flex; gap: 10px; align-items: flex-start;">
-                    <span class="material-icons" style="color: #ffc107; font-size: 20px;">warning</span>
-                    <p style="margin: 0; color: #ffc107; font-size: 12px; line-height: 1.5;">Verifica bien tu ID y Nickname. No nos hacemos responsables por recargas enviadas a datos incorrectos.</p>
+                    <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px; margin-bottom: 25px; display: flex; gap: 10px; align-items: flex-start;">
+                        <span class="material-icons" style="color: #ffc107; font-size: 20px;">warning</span>
+                        <p style="margin: 0; color: #ffc107; font-size: 12px; line-height: 1.5;">Verifica bien tu ID y Nickname. No nos hacemos responsables por recargas enviadas a datos incorrectos.</p>
+                    </div>
                 </div>
 
                 <button id="btn-confirmar-pago" class="btn-primary" style="width: 100%; padding: 15px; font-size: 15px; font-weight: bold;" onclick="procesarTransaccion()">Completar Pedido</button>
@@ -632,12 +676,13 @@
         async function abrirModalCompra(nombrePaquete, precioPaquete) {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             if (!nombreGuardado) { window.location.href = 'login.html'; return; }
-            paqueteSeleccionado = nombrePaquete; 
+            paqueteSeleccionado = nombrePaquete;
             precioSeleccionado = parseFloat(precioPaquete);
-            
+
             document.getElementById('compra-pantalla-formulario').style.display = 'block';
             document.getElementById('compra-pantalla-error').style.display = 'none';
             document.getElementById('compra-pantalla-exito').style.display = 'none';
+            document.getElementById('modal-id-seccion-wrap').style.display = (nombrePaquete === 'Pase Booyah') ? 'block' : 'none';
             document.getElementById('modal-id-juego').value = "";
             desbloquearNickname();
             precioFinalConCupon = null; codigoCuponValidado = '';
@@ -682,19 +727,22 @@
         function cerrarModalCompra() { const modal = document.getElementById('modal-compra-container'); modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; }, 300); }
 
         async function procesarTransaccion() {
+            const esPaseBooyah = paqueteSeleccionado === 'Pase Booyah';
             const idJuego = document.getElementById('modal-id-juego').value.trim();
             const nicknameJuego = document.getElementById('modal-nickname-juego').value.trim();
             const btn = document.getElementById('btn-confirmar-pago');
 
-            if (!idJuego || idJuego.length < 7) { alert("El ID ingresado es muy corto o inválido."); return; }
-            if (!nicknameJuego) { alert("Por favor, ingresa tu Nickname del juego."); return; }
+            if (esPaseBooyah) {
+                if (!idJuego || idJuego.length < 7) { alert("El ID ingresado es muy corto o inválido."); return; }
+                if (!nicknameJuego) { alert("Por favor, ingresa tu Nickname del juego."); return; }
+            }
 
             btn.disabled = true; btn.innerText = "Procesando pedido...";
 
             const { data: resultadoRpc, error: errorCompra } = await supabaseClient.rpc('procesar_compra', {
                 p_paquete: paqueteSeleccionado,
-                p_id_juego: idJuego,
-                p_nickname_juego: nicknameJuego,
+                p_id_juego: esPaseBooyah ? idJuego : null,
+                p_nickname_juego: esPaseBooyah ? nicknameJuego : null,
                 p_codigo_cupon: codigoCuponValidado || null
             });
 
@@ -707,7 +755,24 @@
                 return;
             }
 
-            window.location.href = 'mis-codigos.html';
+            if (!esPaseBooyah) {
+                window.location.href = 'mis-codigos.html';
+                return;
+            }
+
+            const nuevoSaldo = Number(resultado.saldo_restante);
+            const precioFinalCobrado = saldoActualUsuario - nuevoSaldo;
+            if (document.getElementById('saldo-nav')) document.getElementById('saldo-nav').innerText = nuevoSaldo.toFixed(2);
+
+            document.getElementById('compra-pantalla-formulario').style.display = 'none';
+            document.getElementById('compra-pantalla-exito').style.display = 'block';
+
+            btn.disabled = false; btn.innerText = "Completar Pedido";
+
+            const nombreGuardado = localStorage.getItem('nombreUsuario');
+            const numeroAdmin = "51943737572";
+            const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de realizar una *RECARGA REGULAR* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n💎 *Paquete:* ${paqueteSeleccionado}\n💰 *Precio:* S/ ${precioFinalCobrado.toFixed(2)}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para proceder. ¡Gracias!`;
+            window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
         }
     </script>
     
