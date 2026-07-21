@@ -4003,9 +4003,24 @@
             if (error) { showToast("Error: " + error.message, "error"); return; }
             const r = data && data[0];
 
+            const esPromoPrimeraRecarga = paquete.includes('(Promo)');
+
             if (r && r.celular) {
                 let numStr = r.celular.replace(/[^0-9]/g, '');
-                let msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n⚠️ Te informamos que tu pedido de 💎 *${paquete}* 💎 tuvo que ser rechazado.\n\nEl monto de *S/ ${precio.toFixed(2)}* ha sido devuelto de manera íntegra a tu saldo web para que puedas volver a utilizarlo.\n\nPor favor, respóndenos a este mensaje para indicarte el motivo exacto.`;
+                let msg;
+
+                if (esPromoPrimeraRecarga) {
+                    const { data: usuarioComprador } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nick).maybeSingle();
+                    const saldoActual = usuarioComprador ? usuarioComprador.saldo : null;
+                    const desgloseSaldo = saldoActual !== null
+                        ? `\n\n💰 Saldo anterior: S/ ${(saldoActual - precio).toFixed(2)}\n➕ Reembolso: S/ ${precio.toFixed(2)}\n💳 Saldo actual: S/ ${saldoActual.toFixed(2)}`
+                        : '';
+
+                    msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n⚠️ Tu ID no aplica para *${paquete}*, ya que este precio especial es válido solo para la *primera recarga* y tu cuenta ya registra una recarga previa con este método.\n\nTu dinero ya fue reembolsado de manera íntegra a tu saldo web.${desgloseSaldo}\n\nTe invitamos a seguir recargando en nuestros catálogos *Directa* o *Regular*, que no tienen ningún límite. ¡Gracias por tu comprensión!`;
+                } else {
+                    msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n⚠️ Te informamos que tu pedido de 💎 *${paquete}* 💎 tuvo que ser rechazado.\n\nEl monto de *S/ ${precio.toFixed(2)}* ha sido devuelto de manera íntegra a tu saldo web para que puedas volver a utilizarlo.\n\nPor favor, respóndenos a este mensaje para indicarte el motivo exacto.`;
+                }
+
                 window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
             }
 
