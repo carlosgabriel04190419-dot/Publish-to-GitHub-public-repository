@@ -46,12 +46,22 @@
         .ayuda-canje-toggle:hover { border-color: rgba(161,85,255,0.55); }
         .ayuda-canje-toggle .material-icons.chevron { transition: transform 0.25s ease; color: #a8a8b3; }
         .ayuda-canje-toggle.abierto .material-icons.chevron { transform: rotate(180deg); }
-        .ayuda-canje-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 14px; margin-top: 15px; }
-        .ayuda-canje-card { background: rgba(26,26,31,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px; cursor: pointer; transition: border-color 0.2s, transform 0.2s; text-align: center; }
-        .ayuda-canje-card:hover { border-color: rgba(161,85,255,0.45); transform: translateY(-2px); }
-        .ayuda-canje-num { width: 22px; height: 22px; border-radius: 50%; background: #a155ff; color: white; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; }
-        .ayuda-canje-card img { width: 100%; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 8px; display: block; }
-        .ayuda-canje-card p { margin: 0; font-size: 11.5px; line-height: 1.4; color: #a8a8b3; }
+
+        .ayuda-canje-stepper { max-width: 300px; margin: 20px auto 0; }
+        .ayuda-canje-img-wrap { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: #0a0a0d; box-shadow: 0 15px 35px rgba(0,0,0,0.45); cursor: zoom-in; }
+        .ayuda-canje-img-wrap img { width: 100%; display: block; aspect-ratio: 1088 / 1600; object-fit: cover; transition: opacity 0.15s ease; }
+        .ayuda-canje-badge { position: absolute; top: 12px; left: 12px; background: rgba(10,10,13,0.75); backdrop-filter: blur(4px); color: #a155ff; font-size: 11px; font-weight: 800; padding: 5px 11px; border-radius: 20px; border: 1px solid rgba(161,85,255,0.4); letter-spacing: 0.3px; }
+        .ayuda-canje-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; background: rgba(10,10,13,0.7); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; }
+        .ayuda-canje-nav:hover { background: rgba(161,85,255,0.55); }
+        .ayuda-canje-nav.prev { left: 10px; }
+        .ayuda-canje-nav.next { right: 10px; }
+        .ayuda-canje-nav .material-icons { font-size: 20px; }
+        .ayuda-canje-caption { margin: 14px 4px 0; font-size: 13px; line-height: 1.5; color: #c8c8d3; text-align: center; min-height: 40px; }
+        .ayuda-canje-caption b { color: #a155ff; }
+        .ayuda-canje-dots { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }
+        .ayuda-canje-dot { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); color: #8a8a9a; font-size: 10.5px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; padding: 0; font-family: inherit; }
+        .ayuda-canje-dot:hover { border-color: rgba(161,85,255,0.5); color: white; }
+        .ayuda-canje-dot.activo { background: #a155ff; border-color: #a155ff; color: white; }
         #modal-canje-lightbox img { max-width: 88vw; max-height: 85vh; border-radius: 14px; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
 
         .cz-footer { background: #050508; border-top: 1px solid rgba(161, 85, 255, 0.15); padding: 80px 20px 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 50px; }
@@ -161,37 +171,15 @@
                 </button>
 
                 <div id="ayuda-canje-body" style="display:none;">
-                    <div class="ayuda-canje-grid">
-                        <div class="ayuda-canje-card" onclick="abrirLightboxCanje('canje-paso1.jpeg')">
-                            <div class="ayuda-canje-num">1</div>
-                            <img src="canje-paso1.jpeg" alt="Paso 1: Completar Pedido" loading="lazy">
-                            <p>Dale a <b>"Completar Pedido"</b> para confirmar tu compra.</p>
+                    <div class="ayuda-canje-stepper">
+                        <div class="ayuda-canje-img-wrap" onclick="abrirLightboxCanje(PASOS_CANJE[pasoCanjeActual].src)">
+                            <span class="ayuda-canje-badge" id="ayuda-canje-contador">Paso 1 de 6</span>
+                            <img id="ayuda-canje-img" src="canje-paso1.jpeg" alt="Paso 1">
+                            <span class="ayuda-canje-nav prev" onclick="event.stopPropagation(); moverPasoCanje(-1)"><span class="material-icons">chevron_left</span></span>
+                            <span class="ayuda-canje-nav next" onclick="event.stopPropagation(); moverPasoCanje(1)"><span class="material-icons">chevron_right</span></span>
                         </div>
-                        <div class="ayuda-canje-card" onclick="abrirLightboxCanje('canje-paso2.jpeg')">
-                            <div class="ayuda-canje-num">2</div>
-                            <img src="canje-paso2.jpeg" alt="Paso 2: Copiar código" loading="lazy">
-                            <p>Copia tu código y dale a <b>"Canjear en Hype"</b>.</p>
-                        </div>
-                        <div class="ayuda-canje-card" onclick="abrirLightboxCanje('canje-paso3.jpeg')">
-                            <div class="ayuda-canje-num">3</div>
-                            <img src="canje-paso3.jpeg" alt="Paso 3: Pegar código" loading="lazy">
-                            <p>Pega el código y dale a <b>"Canjear"</b>.</p>
-                        </div>
-                        <div class="ayuda-canje-card" onclick="abrirLightboxCanje('canje-paso4.jpeg')">
-                            <div class="ayuda-canje-num">4</div>
-                            <img src="canje-paso4.jpeg" alt="Paso 4: Ingresar ID" loading="lazy">
-                            <p>Escribe el ID (tuyo o de tu cliente), acepta los términos y dale a <b>"Verificar ID"</b>.</p>
-                        </div>
-                        <div class="ayuda-canje-card" onclick="abrirLightboxCanje('canje-paso5.jpeg')">
-                            <div class="ayuda-canje-num">5</div>
-                            <img src="canje-paso5.jpeg" alt="Paso 5: Canjear ahora" loading="lazy">
-                            <p>Cuando aparezca el nickname correcto, dale a <b>"Canjear ahora"</b>.</p>
-                        </div>
-                        <div class="ayuda-canje-card" onclick="abrirLightboxCanje('canje-paso6.jpeg')">
-                            <div class="ayuda-canje-num">6</div>
-                            <img src="canje-paso6.jpeg" alt="Paso 6: Canje exitoso" loading="lazy">
-                            <p>Listo, se canjea al instante. Entra al juego a revisar tus diamantes.</p>
-                        </div>
+                        <p class="ayuda-canje-caption" id="ayuda-canje-caption"></p>
+                        <div class="ayuda-canje-dots" id="ayuda-canje-dots"></div>
                     </div>
                 </div>
             </div>
@@ -235,7 +223,35 @@
             const abierto = body.style.display !== 'none';
             body.style.display = abierto ? 'none' : 'block';
             btn.classList.toggle('abierto', !abierto);
+            if (!abierto) pintarPasoCanje();
         }
+
+        const PASOS_CANJE = [
+            { src: 'canje-paso1.jpeg', caption: 'Dale a <b>"Completar Pedido"</b> para confirmar tu compra.' },
+            { src: 'canje-paso2.jpeg', caption: 'Copia tu código y dale a <b>"Canjear en Hype"</b>.' },
+            { src: 'canje-paso3.jpeg', caption: 'Pega el código y dale a <b>"Canjear"</b>.' },
+            { src: 'canje-paso4.jpeg', caption: 'Escribe el ID (tuyo o de tu cliente), acepta los términos y dale a <b>"Verificar ID"</b>.' },
+            { src: 'canje-paso5.jpeg', caption: 'Cuando aparezca el nickname correcto, dale a <b>"Canjear ahora"</b>.' },
+            { src: 'canje-paso6.jpeg', caption: 'Listo, se canjea al instante. Entra al juego a revisar tus diamantes.' },
+        ];
+        let pasoCanjeActual = 0;
+
+        function pintarPasoCanje() {
+            const paso = PASOS_CANJE[pasoCanjeActual];
+            document.getElementById('ayuda-canje-img').src = paso.src;
+            document.getElementById('ayuda-canje-caption').innerHTML = paso.caption;
+            document.getElementById('ayuda-canje-contador').innerText = `Paso ${pasoCanjeActual + 1} de ${PASOS_CANJE.length}`;
+            document.getElementById('ayuda-canje-dots').innerHTML = PASOS_CANJE.map((_, i) =>
+                `<button type="button" class="ayuda-canje-dot ${i === pasoCanjeActual ? 'activo' : ''}" onclick="irAPasoCanje(${i})">${i + 1}</button>`
+            ).join('');
+        }
+
+        function moverPasoCanje(delta) {
+            pasoCanjeActual = (pasoCanjeActual + delta + PASOS_CANJE.length) % PASOS_CANJE.length;
+            pintarPasoCanje();
+        }
+
+        function irAPasoCanje(i) { pasoCanjeActual = i; pintarPasoCanje(); }
 
         function abrirLightboxCanje(src) {
             document.getElementById('lightbox-canje-img').src = src;
