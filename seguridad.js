@@ -244,6 +244,15 @@ function avatarPillHTML(usuario) {
 const FF_API_BASE = 'https://siambhau69.eu.cc/freefireinfo/bhau';
 const FF_API_KEY = 'FFINFO-Free';
 const FF_API_REGION = 'SAC'; // Sudamérica: cubre Perú y el resto de países que atiende la tienda
+const FF_BANNER_API_BASE = 'https://siambhau69.eu.cc/banner/profile';
+const FF_BANNER_API_KEY = 'FreeBanner';
+
+/**
+ * URL de la imagen de banner (avatar, escudo del clan y nivel) de una cuenta de Free Fire.
+ */
+function urlBannerFreeFire(uid) {
+    return `${FF_BANNER_API_BASE}?uid=${encodeURIComponent(uid)}&region=${FF_API_REGION}&key=${FF_BANNER_API_KEY}`;
+}
 
 /**
  * Consulta el nickname real de una cuenta de Free Fire a partir de su UID.
