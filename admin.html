@@ -1267,6 +1267,12 @@
                                 <option value="HBO">HBO Max</option>
                                 <option value="Apple One">Apple One</option>
                             </select>
+                            <select id="filtro-vencimiento-clientes" class="bulk-select" style="max-width:240px; margin-bottom:0; width:auto; border-color:rgba(255,152,0,0.4);" onchange="filtrarClientesStreaming()">
+                                <option value="">Todos (vencidos y vigentes)</option>
+                                <option value="vencidos">⚠️ Ya vencidos</option>
+                                <option value="3">🔔 Vencen en 3 días o menos</option>
+                                <option value="7">🔔 Vencen en 7 días o menos</option>
+                            </select>
                         </div>
                         <div class="clientes-grid" id="lista-mis-clientes"></div>
                     </div>
@@ -2177,6 +2183,15 @@
             let lista = filtroPlataforma
                 ? clientesStreamingCache.filter(c => (c.plataforma || '').toLowerCase().includes(filtroPlataforma.toLowerCase()))
                 : [...clientesStreamingCache];
+
+            const filtroVencimiento = document.getElementById('filtro-vencimiento-clientes')?.value || '';
+            if (filtroVencimiento) {
+                const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+                lista = lista.filter(c => {
+                    const diffDias = Math.round((new Date(c.fecha_vencimiento + 'T00:00:00') - hoy) / 86400000);
+                    return filtroVencimiento === 'vencidos' ? diffDias < 0 : diffDias >= 0 && diffDias <= Number(filtroVencimiento);
+                });
+            }
 
             const orden = document.getElementById('orden-clientes')?.value || 'vencimiento';
             if (orden === 'adquirida') {
