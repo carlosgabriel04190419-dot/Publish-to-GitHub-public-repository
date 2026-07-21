@@ -400,6 +400,36 @@
         </div>
     </div>
 
+    <!-- MODAL CAMBIAR DE CUENTA (mover/intercambiar cliente a otro correo) -->
+    <div id="modal-cambiar-cuenta-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:20px; box-sizing:border-box;">
+        <div style="background:#121218; width:100%; max-width:520px; max-height:90vh; overflow-y:auto; padding:24px; border:1px solid #00d2ff; border-radius:16px; box-shadow:0 0 30px rgba(0,210,255,0.15);">
+            <h3 style="margin:0 0 6px 0; font-size:18px; display:flex; align-items:center; gap:8px;"><span class="material-icons" style="color:#00d2ff;">swap_horiz</span> Cambiar de Cuenta</h3>
+            <p id="ccc-titulo-perfil" style="color:#a8a8b3; font-size:13px; margin:0 0 15px 0;"></p>
+
+            <div style="background:rgba(0,210,255,0.06); border:1px solid rgba(0,210,255,0.2); border-radius:8px; padding:10px 12px; margin-bottom:18px; display:flex; gap:8px; align-items:flex-start;">
+                <span class="material-icons" style="color:#00d2ff; font-size:18px;">info</span>
+                <p style="margin:0; color:#a8a8b3; font-size:12px; line-height:1.5;">Mueve a este cliente a un perfil de <b>otra cuenta</b> (otro correo). Su nombre, WhatsApp, precio, notas y vencimiento viajan con él. El PIN se queda fijo en cada perfil.</p>
+            </div>
+
+            <label style="color:#a155ff; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Cuenta de destino (mismo tipo de plataforma)</label>
+            <select id="ccc-cuenta-destino" class="bulk-select" onchange="cargarIntegrantesCuentaDestino()">
+                <option value="">Elige una cuenta...</option>
+            </select>
+
+            <div id="ccc-wrap-integrantes" style="display:none;">
+                <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Elige a quién le das el perfil</label>
+                <div id="ccc-lista-integrantes" style="display:flex; flex-direction:column; gap:8px; margin-bottom:6px;"></div>
+            </div>
+
+            <input type="hidden" id="ccc-perfil-origen-id" value="">
+            <input type="hidden" id="ccc-perfil-destino-id" value="">
+            <div style="display:flex; gap:10px; margin-top:16px;">
+                <button class="btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="cerrarModalCambiarCuenta()">Cancelar</button>
+                <button class="btn-complete" style="flex:1; padding:12px; font-weight:bold; color:black;" id="ccc-btn-confirmar" onclick="confirmarCambioCuenta()" disabled>Confirmar Cambio</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL HISTORIAL DE USUARIO ÚNICO -->
     <div id="user-history-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.9); z-index:9999; align-items:center; justify-content:center; padding: 20px; box-sizing: border-box;">
         <div style="background:#1a1a24; width:100%; max-width:800px; max-height: 80vh; border-radius: 16px; border: 1px solid #00d2ff; display: flex; flex-direction: column;">
@@ -1707,6 +1737,9 @@
                 <div class="pc-acciones">
                     <button class="btn-outline" onclick="compartirPerfilClienteRecordatorio(${p.perfil_id})"><span class="material-icons">ios_share</span> Enviar a Recordatorios (iPhone)</button>
                 </div>
+                <div class="pc-acciones">
+                    <button class="btn-outline" style="border-color:rgba(0,210,255,0.4); color:#00d2ff;" onclick="abrirModalCambiarCuenta(${p.perfil_id})"><span class="material-icons">swap_horiz</span> Cambiar de Cuenta</button>
+                </div>
             </div>`;
         }
 
@@ -1917,6 +1950,129 @@
             if (error) { showToast('Error: ' + error.message, 'error'); return; }
             showToast('Perfil liberado.');
             cargarCuentasMadre();
+        }
+
+        // ================= CAMBIAR DE CUENTA (mover/intercambiar cliente a otro correo) =================
+        function abrirModalCambiarCuenta(perfilId) {
+            const encontrado = buscarPerfilYCuenta(perfilId);
+            if (!encontrado) return;
+            const { cm, p } = encontrado;
+            document.getElementById('ccc-perfil-origen-id').value = perfilId;
+            document.getElementById('ccc-perfil-destino-id').value = '';
+            document.getElementById('ccc-titulo-perfil').innerText = `${p.nombre_cliente} — actualmente en ${cm.plataforma} (${cm.correo})`;
+            document.getElementById('ccc-wrap-integrantes').style.display = 'none';
+            document.getElementById('ccc-lista-integrantes').innerHTML = '';
+            document.getElementById('ccc-btn-confirmar').disabled = true;
+
+            const opciones = cuentasMadreCache
+                .filter(c => c.id !== cm.id && c.plataforma === cm.plataforma && c.estado_cuenta === 'activa')
+                .sort((a, b) => a.correo.localeCompare(b.correo))
+                .map(c => `<option value="${c.id}">${escHtml(c.correo)}</option>`).join('');
+            const sel = document.getElementById('ccc-cuenta-destino');
+            sel.innerHTML = '<option value="">Elige una cuenta...</option>' + opciones;
+            if (opciones === '') sel.innerHTML = '<option value="">No hay otra cuenta activa de esta plataforma</option>';
+
+            document.getElementById('modal-cambiar-cuenta-overlay').style.display = 'flex';
+        }
+
+        function cargarIntegrantesCuentaDestino() {
+            const cuentaId = document.getElementById('ccc-cuenta-destino').value;
+            const wrap = document.getElementById('ccc-wrap-integrantes');
+            const lista = document.getElementById('ccc-lista-integrantes');
+            document.getElementById('ccc-perfil-destino-id').value = '';
+            document.getElementById('ccc-btn-confirmar').disabled = true;
+
+            if (!cuentaId) { wrap.style.display = 'none'; lista.innerHTML = ''; return; }
+
+            const cm = cuentasMadreCache.find(c => String(c.id) === cuentaId);
+            if (!cm) return;
+
+            const candidatos = cm.perfiles
+                .filter(p => p.estado_perfil === 'disponible' || p.estado_perfil === 'cliente_manual')
+                .sort((a, b) => {
+                    if (a.estado_perfil !== b.estado_perfil) return a.estado_perfil === 'disponible' ? -1 : 1;
+                    if (a.estado_perfil === 'disponible') return a.numero_perfil - b.numero_perfil;
+                    return new Date(a.fecha_vencimiento_perfil) - new Date(b.fecha_vencimiento_perfil);
+                });
+
+            if (candidatos.length === 0) {
+                lista.innerHTML = "<p style='color:#a8a8b3; font-size:12.5px; margin:0;'>Esta cuenta no tiene perfiles libres ni clientes para intercambiar.</p>";
+                wrap.style.display = 'block';
+                return;
+            }
+
+            lista.innerHTML = candidatos.map(p => {
+                const libre = p.estado_perfil === 'disponible';
+                const info = libre
+                    ? `<span style="color:#00e676; font-weight:700;">Disponible</span>`
+                    : `<span style="color:#e0e0e0;">${escHtml(p.nombre_cliente)}</span> <span style="color:#a8a8b3; font-size:11.5px;">— vence ${formatearFechaCorta(p.fecha_vencimiento_perfil)} (${badgeDiasRestantes(p.fecha_vencimiento_perfil)})</span>`;
+                return `<div class="ccc-integrante" id="ccc-integrante-${p.perfil_id}" onclick="elegirIntegranteCambio(${p.perfil_id})" style="cursor:pointer; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:10px; transition:border-color 0.2s, background 0.2s;">
+                    <div style="font-size:13px;">Perfil ${p.numero_perfil}${p.pin ? ` <span style="color:#6a6a78; font-size:11px;">(PIN ${escHtml(p.pin)})</span>` : ''}<br>${info}</div>
+                    <span class="material-icons" style="color:#6a6a78;">radio_button_unchecked</span>
+                </div>`;
+            }).join('');
+            wrap.style.display = 'block';
+        }
+
+        function elegirIntegranteCambio(perfilId) {
+            document.getElementById('ccc-perfil-destino-id').value = perfilId;
+            document.querySelectorAll('.ccc-integrante').forEach(el => {
+                const seleccionado = el.id === `ccc-integrante-${perfilId}`;
+                el.style.borderColor = seleccionado ? '#00d2ff' : 'rgba(255,255,255,0.1)';
+                el.style.background = seleccionado ? 'rgba(0,210,255,0.08)' : 'transparent';
+                const icono = el.querySelector('.material-icons');
+                icono.innerText = seleccionado ? 'radio_button_checked' : 'radio_button_unchecked';
+                icono.style.color = seleccionado ? '#00d2ff' : '#6a6a78';
+            });
+            document.getElementById('ccc-btn-confirmar').disabled = false;
+        }
+
+        function cerrarModalCambiarCuenta() {
+            document.getElementById('modal-cambiar-cuenta-overlay').style.display = 'none';
+        }
+
+        async function confirmarCambioCuenta() {
+            const perfilOrigenId = document.getElementById('ccc-perfil-origen-id').value;
+            const perfilDestinoId = document.getElementById('ccc-perfil-destino-id').value;
+            if (!perfilOrigenId || !perfilDestinoId) return;
+
+            const antesOrigen = buscarPerfilYCuenta(perfilOrigenId);
+            const antesDestino = buscarPerfilYCuenta(perfilDestinoId);
+            if (!antesOrigen || !antesDestino) return;
+
+            const esIntercambio = antesDestino.p.estado_perfil === 'cliente_manual';
+            const desc = esIntercambio
+                ? `¿Intercambiar a <b>${escHtml(antesOrigen.p.nombre_cliente)}</b> con <b>${escHtml(antesDestino.p.nombre_cliente)}</b>? Cada uno pasa a la cuenta del otro (${escHtml(antesOrigen.cm.correo)} ↔ ${escHtml(antesDestino.cm.correo)}).`
+                : `¿Mover a <b>${escHtml(antesOrigen.p.nombre_cliente)}</b> a la cuenta <b>${escHtml(antesDestino.cm.correo)}</b>?`;
+            const conf = await openCustomModal({ title: 'Confirmar Cambio de Cuenta', desc, icon: 'swap_horiz', color: '#00d2ff', type: 'confirm', confirmText: esIntercambio ? 'Intercambiar' : 'Mover' });
+            if (!conf) return;
+
+            const { error } = await supabaseClient.rpc('admin_intercambiar_perfil_cliente', { p_perfil_origen_id: perfilOrigenId, p_perfil_destino_id: perfilDestinoId });
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
+
+            showToast(esIntercambio ? 'Clientes intercambiados.' : 'Cliente movido de cuenta.');
+            cerrarModalCambiarCuenta();
+            await cargarCuentasMadre();
+
+            // El cliente que estaba en el perfil de origen ahora vive en el perfil de destino.
+            await avisarCambioCuenta(perfilDestinoId, antesOrigen);
+            // Si fue intercambio, el otro cliente ahora vive en el perfil de origen.
+            if (esIntercambio) await avisarCambioCuenta(perfilOrigenId, antesDestino);
+        }
+
+        async function avisarCambioCuenta(perfilIdAhora, antes) {
+            const encontrado = buscarPerfilYCuenta(perfilIdAhora);
+            if (!encontrado) return;
+            const { cm: cmNuevo, p: pNuevo } = encontrado;
+            if (!pNuevo.whatsapp_cliente) return;
+
+            const cambios = [];
+            if (antes.cm.correo !== cmNuevo.correo) cambios.push(`📧 *Correo:* ${antes.cm.correo} → ${cmNuevo.correo}`);
+            if (antes.cm.contrasena !== cmNuevo.contrasena) cambios.push(`🔑 *Contraseña:* ${antes.cm.contrasena} → ${cmNuevo.contrasena}`);
+            if ((antes.p.pin || '') !== (pNuevo.pin || '')) cambios.push(`🔢 *PIN:* ${antes.p.pin || '—'} → ${pNuevo.pin || '—'}`);
+
+            const conf = await openCustomModal({ title: 'Avisar al cliente', desc: `¿Enviarle un WhatsApp a <b>${escHtml(pNuevo.nombre_cliente)}</b> con sus nuevos datos de acceso?`, icon: 'campaign', color: '#00d2ff', type: 'confirm', confirmText: 'Enviar aviso' });
+            if (conf) abrirWhatsappCliente(pNuevo.whatsapp_cliente, mensajeActualizacionPerfil(cmNuevo, pNuevo, cambios));
         }
 
         async function renovarPerfilClienteUI(perfilId) {
@@ -3757,7 +3913,7 @@
             const idsModales = [
                 'custom-modal-overlay', 'modal-buscar-usuario-overlay', 'modal-galeria-cuenta-overlay',
                 'modal-editar-cuenta-overlay', 'modal-completar-cuenta-overlay', 'modal-asignar-perfil-overlay',
-                'modal-editar-cuenta-madre-overlay', 'user-history-modal',
+                'modal-editar-cuenta-madre-overlay', 'modal-cambiar-cuenta-overlay', 'user-history-modal',
                 'modal-compra-container', 'modal-compra-cuenta-container', 'modal-renovar-container',
                 'modal-exito-recarga', 'modal-whatsapp-grupo'
             ];
