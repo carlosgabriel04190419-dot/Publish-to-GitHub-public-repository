@@ -264,6 +264,13 @@ async function validarUidFreeFire(uid) {
         const resp = await fetch(url);
         const datos = await resp.json();
 
+        // La API a veces responde 200/503 con un cuerpo tipo {"error":"maintenance",...}
+        // en vez de fallar la petición — hay que detectarlo antes de asumir "cuenta no encontrada",
+        // para no darle a entender al cliente que su ID está mal cuando el problema es del bot.
+        if (!resp.ok || (datos && datos.error)) {
+            return { ok: false, error: 'El bot de reconocimiento de nickname está en mantenimiento.' };
+        }
+
         if (!datos || !datos.basicInfo || !datos.basicInfo.nickname) {
             return { ok: false, error: 'No se encontró ninguna cuenta con ese ID.' };
         }
@@ -271,6 +278,6 @@ async function validarUidFreeFire(uid) {
         return { ok: true, nickname: datos.basicInfo.nickname, nivel: datos.basicInfo.level };
     } catch (e) {
         console.error('Error validando UID de Free Fire:', e);
-        return { ok: false, error: 'No se pudo validar el ID en este momento. Puedes escribir tu nickname manualmente.' };
+        return { ok: false, error: 'El bot de reconocimiento de nickname está en mantenimiento.' };
     }
 }
