@@ -281,3 +281,34 @@ async function validarUidFreeFire(uid) {
         return { ok: false, error: 'El bot de reconocimiento de nickname está en mantenimiento.' };
     }
 }
+
+// ==========================================
+// BLOQUEO DE SCROLL DE FONDO CON MODALES ABIERTOS
+// ==========================================
+// Evita que la página de atrás se desplace junto con la ventana modal abierta.
+// Se fija sola en cualquier modal que exista en la página (no hace falta tocar
+// las funciones que ya abren/cierran cada modal).
+(function inicializarBloqueoScrollModales() {
+    const idsModales = [
+        'custom-modal-overlay', 'modal-buscar-usuario-overlay', 'modal-galeria-cuenta-overlay',
+        'modal-editar-cuenta-overlay', 'modal-completar-cuenta-overlay', 'modal-asignar-perfil-overlay',
+        'modal-editar-cuenta-madre-overlay', 'modal-editar-cliente-overlay', 'user-history-modal',
+        'modal-compra-container', 'modal-compra-cuenta-container', 'modal-renovar-container',
+        'modal-exito-recarga', 'modal-whatsapp-grupo'
+    ];
+
+    function actualizarBloqueoScroll() {
+        const hayModalAbierto = idsModales.some(id => {
+            const el = document.getElementById(id);
+            return el && getComputedStyle(el).display !== 'none';
+        });
+        document.documentElement.style.overflow = hayModalAbierto ? 'hidden' : '';
+    }
+
+    const observador = new MutationObserver(actualizarBloqueoScroll);
+    idsModales.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) observador.observe(el, { attributes: true, attributeFilter: ['style'] });
+    });
+    actualizarBloqueoScroll();
+})();
