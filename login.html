@@ -21,6 +21,7 @@
     <meta name="twitter:image" content="https://carzadcross.com/hero-bg.jpg">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body class="login-body">
 
@@ -74,6 +75,8 @@
                     <label><input type="checkbox"> Recordarme</label>
                     <a href="#" onclick="abrirModalRecuperar(event)">¿Olvidaste tu contraseña?</a>
                 </div>
+
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAAD0cPwPWt2nJaxbc" data-callback="onTurnstileVerificado" data-expired-callback="onTurnstileExpirado" data-error-callback="onTurnstileExpirado" style="margin-bottom: 15px;"></div>
 
                 <button type="button" id="btn-login" class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="manejarLogin()">Iniciar Sesión</button>
 
@@ -185,6 +188,10 @@
             });
         }
 
+        let turnstileToken = null;
+        function onTurnstileVerificado(token) { turnstileToken = token; }
+        function onTurnstileExpirado() { turnstileToken = null; }
+
         async function manejarLogin() {
             const valorIngresado = document.getElementById('login-correo').value.trim();
             // El correo no distingue mayúsculas/minúsculas; el nickname si lo escribieron con
@@ -194,6 +201,7 @@
             const btn = document.getElementById('btn-login');
 
             if (!inputUsuario || !password) return mostrarError("Por favor, ingresa tu correo/usuario y contraseña.");
+            if (!turnstileToken) return mostrarError("Completa la verificación anti-bots antes de continuar.");
 
             btn.disabled = true; btn.innerText = "Ingresando...";
             document.getElementById('msg-box').style.display = 'none';
@@ -201,12 +209,16 @@
             let emailToLogin = inputUsuario;
 
             if (!inputUsuario.includes('@')) {
-                const { data: correoEncontrado } = await supabaseClient.rpc('obtener_correo_por_nickname', { p_nickname: inputUsuario });
+                const { data: correoEncontrado, error: errorLogin } = await supabaseClient.rpc('login_por_nickname', { p_nickname: inputUsuario, p_password: password });
+                if (errorLogin) { btn.disabled = false; btn.innerText = "Iniciar Sesión"; return mostrarError(errorLogin.message); }
                 if (correoEncontrado) { emailToLogin = correoEncontrado; }
-                else { btn.disabled = false; btn.innerText = "Iniciar Sesión"; return mostrarError("Usuario no encontrado."); }
+                else { btn.disabled = false; btn.innerText = "Iniciar Sesión"; return mostrarError("Usuario o contraseña incorrectos."); }
             }
 
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email: emailToLogin, password: password });
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email: emailToLogin, password: password, options: { captchaToken: turnstileToken } });
+
+            if (window.turnstile) turnstile.reset();
+            turnstileToken = null;
 
             if (error) {
                 btn.disabled = false; btn.innerText = "Iniciar Sesión";
