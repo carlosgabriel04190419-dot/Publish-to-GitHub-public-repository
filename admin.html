@@ -1679,6 +1679,7 @@
         function tarjetaCuentaMadre(cm) {
             const libres = cm.perfiles.filter(p => p.estado_perfil === 'disponible').length;
             const correoEsc = escAttr(cm.correo).replace(/'/g, "\\'");
+            const contrasenaEsc = escAttr(cm.contrasena).replace(/'/g, "\\'");
             const estadoColor = cm.estado_cuenta === 'activa' ? '#00e676' : '#ff4757';
             const perfilesClientes = cm.perfiles.filter(p => p.estado_perfil === 'cliente_manual');
             const perfilesOtros = cm.perfiles.filter(p => p.estado_perfil !== 'cliente_manual');
@@ -1689,6 +1690,7 @@
                     <div>
                         <div style="font-weight:800; font-size:16px;">${escHtml(cm.plataforma)} <span style="color:${estadoColor}; font-size:11px; font-weight:800; text-transform:uppercase;">● ${cm.estado_cuenta}</span></div>
                         <div style="color:#a8a8b3; font-size:13px; font-family:monospace;">${escHtml(cm.correo)} <button class="btn-copy" onclick="copiarTexto('${correoEsc}', this)"><span class="material-icons" style="font-size:11px;">content_copy</span></button></div>
+                        <div style="color:#a8a8b3; font-size:13px; font-family:monospace;">🔑 ${escHtml(cm.contrasena)} <button class="btn-copy" onclick="copiarTexto('${contrasenaEsc}', this)"><span class="material-icons" style="font-size:11px;">content_copy</span></button></div>
                         <div style="color:#6a6a78; font-size:12px; margin-top:4px;">${libres}/${cm.perfiles_totales} perfiles libres ${cm.fecha_vencimiento_cuenta ? `· Cuenta vence: ${formatearFechaCorta(cm.fecha_vencimiento_cuenta)} (${badgeDiasRestantes(cm.fecha_vencimiento_cuenta)})` : ''}</div>
                     </div>
                     <div style="display:flex; gap:8px;">
