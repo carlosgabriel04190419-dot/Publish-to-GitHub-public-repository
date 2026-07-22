@@ -131,7 +131,7 @@
 
         /* -------- TARJETAS DE MIS CLIENTES (STREAMING) -------- */
         .clientes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-        .cliente-card { background: #1a1a24; border: 1px solid #232330; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+        .cliente-card { background: #1a1a24; border: 1px solid #232330; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px; max-width: 400px; width: 100%; margin: 0 auto; }
         .cliente-card.vence-pronto { border-color: rgba(255,152,0,0.5); }
         .cliente-card.vencido { border-color: rgba(255,71,87,0.5); }
         .cliente-card-venc-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10.5px; font-weight: 800; white-space: nowrap; }
@@ -164,6 +164,11 @@
             .stat-value { font-size: 18px; }
 
             .grid-container { grid-template-columns: 1fr !important; }
+
+            .cliente-card { padding: 14px; gap: 8px; }
+            .cliente-card .pc-datos { gap: 14px; }
+            .cliente-card .pc-acciones button { font-size: 11px; padding: 7px 8px; }
+            .cliente-card .pc-acciones button .material-icons { font-size: 15px; }
 
             table, thead, tbody, th, td, tr { display: block; width: 100%; }
             thead tr { display: none; }
@@ -1748,13 +1753,11 @@
                     <button class="btn-remove" onclick="liberarPerfilUI(${p.perfil_id}, '${nombreEsc}')"><span class="material-icons">lock_open</span> Liberar</button>
                 </div>
                 <div class="pc-acciones">
-                    <button class="btn-outline" style="border-color:rgba(0,230,118,0.4); color:#00e676;" onclick="enviarDatosAccesoPerfilCliente(${p.perfil_id})"><span class="material-icons">vpn_key</span> Reenviar Datos de Acceso</button>
+                    <button class="btn-outline" style="border-color:rgba(0,230,118,0.4); color:#00e676;" onclick="enviarDatosAccesoPerfilCliente(${p.perfil_id})"><span class="material-icons">vpn_key</span> Reenviar Datos</button>
+                    <button class="btn-outline" style="border-color:rgba(0,210,255,0.4); color:#00d2ff;" onclick="abrirModalCambiarCuenta(${p.perfil_id})"><span class="material-icons">swap_horiz</span> Cambiar Cuenta</button>
                 </div>
                 <div class="pc-acciones">
                     <button class="btn-outline" onclick="compartirPerfilClienteRecordatorio(${p.perfil_id})"><span class="material-icons">ios_share</span> Enviar a Recordatorios (iPhone)</button>
-                </div>
-                <div class="pc-acciones">
-                    <button class="btn-outline" style="border-color:rgba(0,210,255,0.4); color:#00d2ff;" onclick="abrirModalCambiarCuenta(${p.perfil_id})"><span class="material-icons">swap_horiz</span> Cambiar de Cuenta</button>
                 </div>
             </div>`;
         }
