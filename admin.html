@@ -1082,6 +1082,7 @@
                     <div class="card-box">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#ff9800;">key</span> Mis Cuentas Madre</h3>
                         <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:18px;">
+                            <input type="text" id="filtro-busqueda-clientes" class="bulk-select" style="max-width:240px; margin-bottom:0; width:auto; flex:1; min-width:180px;" placeholder="🔎 Buscar por nombre o correo..." oninput="filtrarCuentasMadre()">
                             <select id="filtro-plataforma-cuentas-madre" class="bulk-select" style="max-width:220px; margin-bottom:0; width:auto;" onchange="filtrarCuentasMadre()">
                                 <option value="">Todas las plataformas</option>
                                 <option value="Netflix">Netflix</option>
@@ -1636,10 +1637,20 @@
             const filtroEstado = document.getElementById('filtro-estado-cuentas-madre')?.value || '';
             const filtroCuenta = document.getElementById('filtro-cuenta-especifica')?.value || '';
             const filtroVencimiento = document.getElementById('filtro-vencimiento-perfiles')?.value || '';
+            const busqueda = (document.getElementById('filtro-busqueda-clientes')?.value || '').trim().toLowerCase();
             let lista = cuentasMadreCache;
             if (filtroCuenta) lista = lista.filter(cm => String(cm.id) === filtroCuenta);
             if (filtroPlataforma) lista = lista.filter(cm => (cm.plataforma || '').toLowerCase().includes(filtroPlataforma.toLowerCase()));
             if (filtroEstado) lista = lista.filter(cm => cm.estado_cuenta === filtroEstado);
+            if (busqueda) {
+                lista = lista
+                    .map(cm => {
+                        const correoCoincide = (cm.correo || '').toLowerCase().includes(busqueda);
+                        if (correoCoincide) return cm;
+                        return { ...cm, perfiles: cm.perfiles.filter(p => p.estado_perfil === 'cliente_manual' && (p.nombre_cliente || '').toLowerCase().includes(busqueda)) };
+                    })
+                    .filter(cm => cm.perfiles.length > 0);
+            }
             if (filtroVencimiento) {
                 const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
                 lista = lista
@@ -1733,6 +1744,9 @@
                 <div class="pc-acciones">
                     <button class="btn-complete" onclick="enviarRecordatorioPerfilCliente(${p.perfil_id})"><span class="material-icons">notifications_active</span> Recordatorio</button>
                     <button class="btn-remove" onclick="liberarPerfilUI(${p.perfil_id}, '${nombreEsc}')"><span class="material-icons">lock_open</span> Liberar</button>
+                </div>
+                <div class="pc-acciones">
+                    <button class="btn-outline" style="border-color:rgba(0,230,118,0.4); color:#00e676;" onclick="enviarDatosAccesoPerfilCliente(${p.perfil_id})"><span class="material-icons">vpn_key</span> Reenviar Datos de Acceso</button>
                 </div>
                 <div class="pc-acciones">
                     <button class="btn-outline" onclick="compartirPerfilClienteRecordatorio(${p.perfil_id})"><span class="material-icons">ios_share</span> Enviar a Recordatorios (iPhone)</button>
@@ -2110,6 +2124,14 @@
             const { cm, p } = encontrado;
             if (!p.whatsapp_cliente) { showToast('Este cliente no tiene WhatsApp guardado.', 'warning'); return; }
             abrirWhatsappCliente(p.whatsapp_cliente, mensajeRecordatorio(objetoClienteDesdePerfil(cm, p)));
+        }
+
+        function enviarDatosAccesoPerfilCliente(perfilId) {
+            const encontrado = buscarPerfilYCuenta(perfilId);
+            if (!encontrado) return;
+            const { cm, p } = encontrado;
+            if (!p.whatsapp_cliente) { showToast('Este cliente no tiene WhatsApp guardado.', 'warning'); return; }
+            abrirWhatsappCliente(p.whatsapp_cliente, mensajeNuevoServicio(objetoClienteDesdePerfil(cm, p)));
         }
 
         // El nombre debe coincidir EXACTO con el del Atajo que crees en la app Atajos de iPhone.
