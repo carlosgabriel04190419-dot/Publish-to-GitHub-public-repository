@@ -1042,63 +1042,67 @@
 
                     <div class="card-box">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#ff9800;">key</span> Agregar Cuenta Madre</h3>
-                        <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 15px 0;">Una cuenta madre es tu cuenta real (Netflix, Disney+, etc.) con todos sus perfiles. Los perfiles que dejes "Disponibles" se ofrecen también en tu catálogo automático.</p>
+                        <p style="color:#a8a8b3; font-size:12px; margin:-8px 0 12px 0;">Una cuenta madre es tu cuenta real (Netflix, Disney+, etc.) con todos sus perfiles. Los perfiles que dejes "Disponibles" se ofrecen también en tu catálogo automático.</p>
 
-                        <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">¿La plataforma está en tu catálogo?</label>
-                        <select id="cm-tipo-plataforma" class="search-bar" style="max-width:none; margin-bottom:15px;" onchange="actualizarTipoPlataformaCuentaMadre()">
-                            <option value="catalogo">Sí, elegir de mi catálogo (se conecta a la venta automática)</option>
-                            <option value="personalizada">No, es una plataforma personalizada (ej. Crunchyroll)</option>
-                        </select>
-
-                        <div id="cm-wrap-plataforma-catalogo" style="margin-bottom:15px;">
-                            <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Producto del catálogo</label>
-                            <select id="cm-producto-id" class="search-bar" style="max-width:none;" onchange="autocompletarPerfilesCuentaMadre()"></select>
-                        </div>
-                        <div id="cm-wrap-plataforma-personalizada" style="display:none; margin-bottom:15px;">
-                            <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Nombre de la plataforma</label>
-                            <input type="text" id="cm-plataforma-custom" class="search-bar" style="max-width:none;" placeholder="Ej. Crunchyroll">
-                        </div>
-
-                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:15px; margin-bottom:15px;">
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:10px; margin-bottom:10px;">
                             <div>
-                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Correo</label>
+                                <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">¿La plataforma está en tu catálogo?</label>
+                                <select id="cm-tipo-plataforma" class="search-bar" style="max-width:none; margin-bottom:0;" onchange="actualizarTipoPlataformaCuentaMadre()">
+                                    <option value="catalogo">Sí, elegir de mi catálogo</option>
+                                    <option value="personalizada">No, es personalizada (ej. Crunchyroll)</option>
+                                </select>
+                            </div>
+                            <div id="cm-wrap-plataforma-catalogo">
+                                <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Producto del catálogo</label>
+                                <select id="cm-producto-id" class="search-bar" style="max-width:none;" onchange="autocompletarPerfilesCuentaMadre()"></select>
+                            </div>
+                            <div id="cm-wrap-plataforma-personalizada" style="display:none;">
+                                <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Nombre de la plataforma</label>
+                                <input type="text" id="cm-plataforma-custom" class="search-bar" style="max-width:none;" placeholder="Ej. Crunchyroll">
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:10px; margin-bottom:10px;">
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Correo</label>
                                 <input type="email" id="cm-correo" class="search-bar" style="max-width:none;" placeholder="correo@ejemplo.com">
                             </div>
                             <div>
-                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Contraseña</label>
+                                <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Contraseña</label>
                                 <input type="text" id="cm-contrasena" class="search-bar" style="max-width:none;" placeholder="Contraseña">
                             </div>
-                        </div>
-                        <div style="margin-bottom:15px;">
-                            <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Cómo se entrega el acceso</label>
-                            <select id="cm-metodo-entrega" class="search-bar" style="max-width:none;">
-                                <option value="correo_y_contrasena">Correo y contraseña</option>
-                                <option value="qr_o_codigo">Sin contraseña (QR de TV o código al iniciar sesión)</option>
-                                <option value="invitacion">Link de invitación (ej. Spotify Family/Dúo)</option>
-                            </select>
-                        </div>
-                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:15px; margin-bottom:15px;">
                             <div>
-                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Perfiles totales</label>
+                                <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Cómo se entrega el acceso</label>
+                                <select id="cm-metodo-entrega" class="search-bar" style="max-width:none;">
+                                    <option value="correo_y_contrasena">Correo y contraseña</option>
+                                    <option value="qr_o_codigo">Sin contraseña (QR o código)</option>
+                                    <option value="invitacion">Link de invitación (Family/Dúo)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:10px; margin-bottom:10px;">
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Perfiles totales</label>
                                 <input type="number" id="cm-perfiles-totales" class="search-bar" style="max-width:none;" min="1" step="1" value="5">
                             </div>
                             <div>
-                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Estado de la cuenta</label>
+                                <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Estado de la cuenta</label>
                                 <select id="cm-estado-cuenta" class="search-bar" style="max-width:none;">
                                     <option value="activa">Activa</option>
                                     <option value="suspendida">Suspendida</option>
                                 </select>
                             </div>
                             <div>
-                                <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Vence la cuenta (opcional)</label>
+                                <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Vence la cuenta (opcional)</label>
                                 <input type="date" id="cm-fecha-vencimiento-cuenta" class="search-bar" style="max-width:none;">
                             </div>
+                            <div>
+                                <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Notas (opcional)</label>
+                                <input type="text" id="cm-notas" class="search-bar" style="max-width:none;" placeholder="Ej. proveedor de Spotify, de Sebas...">
+                            </div>
                         </div>
-                        <div style="margin-bottom:15px;">
-                            <label style="display:block; color:#a8a8b3; font-size:12px; margin-bottom:6px;">Notas (opcional)</label>
-                            <textarea id="cm-notas" class="search-bar" style="max-width:none; min-height:50px; font-family:inherit; resize:vertical;" placeholder="Ej. de proveedor de Spotify, de Sebas..."></textarea>
-                        </div>
-                        <button class="btn-add" style="width:100%; padding:14px; justify-content:center; font-size:14px;" onclick="guardarCuentaMadre()">
+                        <button class="btn-add" style="width:100%; padding:12px; justify-content:center; font-size:14px;" onclick="guardarCuentaMadre()">
                             <span class="material-icons">key</span> Crear Cuenta Madre
                         </button>
                     </div>
