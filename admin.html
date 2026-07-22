@@ -178,6 +178,25 @@
             td::before { content: attr(data-label); float: left; font-weight: 700; color: #a155ff; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
         }
 
+        /* En celular, las tarjetas de cliente van de a 2 por fila (como en web), bien compactas */
+        @media (max-width: 640px) {
+            .clientes-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .cliente-card { max-width: none; padding: 8px; gap: 5px; border-radius: 10px; }
+            .cliente-card .pc-header { flex-wrap: wrap; gap: 4px; }
+            .cliente-card .pc-comprador { font-size: 12px; }
+            .cliente-card .pc-paquete { font-size: 10.5px; }
+            .cliente-card .cliente-card-venc-badge { font-size: 8px; padding: 2px 6px; }
+            .cliente-card .pc-datos { gap: 8px; }
+            .cliente-card .pc-dato-label { font-size: 7.5px; }
+            .cliente-card .pc-dato-valor { font-size: 11px; }
+            .cliente-card .pc-seccion { padding: 5px 6px; }
+            .cliente-card .pc-seccion-label { font-size: 7.5px; margin-bottom: 3px; }
+            .cliente-card .pc-seccion-cuerpo { font-size: 9px; line-height: 1.4; }
+            .cliente-card .pc-acciones { gap: 4px; }
+            .cliente-card .pc-acciones button { font-size: 8px; padding: 5px 3px; gap: 2px; line-height: 1.2; }
+            .cliente-card .pc-acciones button .material-icons { font-size: 12px; }
+        }
+
         @media print {
             .admin-sidebar, .admin-topbar, #sidebar-overlay, .no-imprimir { display: none !important; }
             .admin-main { margin: 0 !important; padding: 0 !important; }
