@@ -396,6 +396,22 @@
                     </div>
                 </div>
 
+                <div id="modal-modo-entrega-wrap" style="display: none; margin-bottom: 20px;">
+                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">¿Quién hace el canje?</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div id="modo-opcion-auto" onclick="elegirModoEntrega('auto')" style="cursor: pointer; border: 2px solid #00e676; border-radius: 10px; padding: 12px; text-align: center; transition: all 0.2s;">
+                            <span class="material-icons" style="color: #00e676; font-size: 22px;">bolt</span>
+                            <div style="color: white; font-weight: 700; font-size: 13px; margin-top: 4px;">Lo canjeo yo mismo</div>
+                            <div style="color: #a8a8b3; font-size: 11px; margin-top: 3px; line-height: 1.4;">Te llega el código al instante — eliges tú cuándo canjearlo.</div>
+                        </div>
+                        <div id="modo-opcion-admin" onclick="elegirModoEntrega('admin')" style="cursor: pointer; border: 2px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; text-align: center; transition: all 0.2s;">
+                            <span class="material-icons" style="color: #a8a8b3; font-size: 22px;">support_agent</span>
+                            <div style="color: white; font-weight: 700; font-size: 13px; margin-top: 4px;">Que lo haga el admin</div>
+                            <div style="color: #a8a8b3; font-size: 11px; margin-top: 3px; line-height: 1.4;">Puede demorar unos minutos, según disponibilidad.</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="modal-id-seccion-wrap" style="display: none;">
                     <div style="margin-bottom: 20px;">
                         <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador</label>
@@ -468,6 +484,22 @@
         let precioFinalConCupon = null;
         let codigoCuponValidado = '';
         let usuarioActualCompleto = null;
+        let modoEntregaRegular = 'auto';
+
+        function elegirModoEntrega(modo) {
+            modoEntregaRegular = modo;
+            document.getElementById('modo-opcion-auto').style.borderColor = modo === 'auto' ? '#00e676' : 'rgba(255,255,255,0.1)';
+            document.getElementById('modo-opcion-admin').style.borderColor = modo === 'admin' ? '#00d2ff' : 'rgba(255,255,255,0.1)';
+            const requiereId = modo === 'admin';
+            document.getElementById('modal-id-seccion-wrap').style.display = requiereId ? 'block' : 'none';
+            document.getElementById('modal-codigo-aviso-wrap').style.display = requiereId ? 'none' : 'flex';
+            if (!requiereId) {
+                document.getElementById('modal-id-juego').value = '';
+                document.getElementById('modal-id-mensaje').style.display = 'none';
+                document.getElementById('modal-id-resultado-card').style.display = 'none';
+                desbloquearNickname();
+            }
+        }
 
         window.onload = async function() {
             const usuario = await verificarSesion(false);
@@ -694,12 +726,16 @@
             paqueteSeleccionado = nombrePaquete;
             precioSeleccionado = parseFloat(precioPaquete);
 
+            const esPaseBooyah = nombrePaquete === 'Pase Booyah';
+
             document.getElementById('compra-pantalla-formulario').style.display = 'block';
             document.getElementById('compra-pantalla-error').style.display = 'none';
             document.getElementById('compra-pantalla-exito').style.display = 'none';
-            document.getElementById('modal-id-seccion-wrap').style.display = (nombrePaquete === 'Pase Booyah') ? 'block' : 'none';
-            document.getElementById('modal-codigo-aviso-wrap').style.display = (nombrePaquete === 'Pase Booyah') ? 'none' : 'flex';
+            document.getElementById('modal-modo-entrega-wrap').style.display = esPaseBooyah ? 'none' : 'block';
+            document.getElementById('modal-id-seccion-wrap').style.display = esPaseBooyah ? 'block' : 'none';
+            document.getElementById('modal-codigo-aviso-wrap').style.display = esPaseBooyah ? 'none' : 'flex';
             document.getElementById('modal-id-juego').value = "";
+            if (!esPaseBooyah) elegirModoEntrega('auto');
             desbloquearNickname();
             precioFinalConCupon = null; codigoCuponValidado = '';
             document.getElementById('modal-cupon').value = '';
@@ -744,11 +780,13 @@
 
         async function procesarTransaccion() {
             const esPaseBooyah = paqueteSeleccionado === 'Pase Booyah';
+            const esRegularManual = !esPaseBooyah && modoEntregaRegular === 'admin';
+            const requiereIdManual = esPaseBooyah || esRegularManual;
             const idJuego = document.getElementById('modal-id-juego').value.trim();
             const nicknameJuego = document.getElementById('modal-nickname-juego').value.trim();
             const btn = document.getElementById('btn-confirmar-pago');
 
-            if (esPaseBooyah) {
+            if (requiereIdManual) {
                 if (!idJuego || idJuego.length < 7) { alert("El ID ingresado es muy corto o inválido."); return; }
                 if (!nicknameJuego) { alert("Por favor, ingresa tu Nickname del juego."); return; }
             }
@@ -757,9 +795,10 @@
 
             const { data: resultadoRpc, error: errorCompra } = await supabaseClient.rpc('procesar_compra', {
                 p_paquete: paqueteSeleccionado,
-                p_id_juego: esPaseBooyah ? idJuego : null,
-                p_nickname_juego: esPaseBooyah ? nicknameJuego : null,
-                p_codigo_cupon: codigoCuponValidado || null
+                p_id_juego: requiereIdManual ? idJuego : null,
+                p_nickname_juego: requiereIdManual ? nicknameJuego : null,
+                p_codigo_cupon: codigoCuponValidado || null,
+                p_modo_entrega: esRegularManual ? 'admin' : 'auto'
             });
 
             const resultado = resultadoRpc && resultadoRpc[0];
@@ -771,7 +810,7 @@
                 return;
             }
 
-            if (!esPaseBooyah) {
+            if (!esPaseBooyah && !esRegularManual) {
                 window.location.href = 'mis-codigos.html';
                 return;
             }
@@ -787,7 +826,8 @@
 
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             const numeroAdmin = "51943737572";
-            const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de realizar una *RECARGA REGULAR* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n💎 *Paquete:* ${paqueteSeleccionado}\n💰 *Precio:* S/ ${precioFinalCobrado.toFixed(2)}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para proceder. ¡Gracias!`;
+            const tipoTexto = esPaseBooyah ? 'PASE BOOYAH' : 'RECARGA REGULAR (canje manual)';
+            const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de realizar una compra de *${tipoTexto}* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n💎 *Paquete:* ${paqueteSeleccionado}\n💰 *Precio:* S/ ${precioFinalCobrado.toFixed(2)}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para proceder. ¡Gracias!`;
             window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
         }
     </script>
