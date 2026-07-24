@@ -3807,7 +3807,23 @@
         }
 
         // ================= PEDIDOS =================
+        let cargandoPedidosEnCurso = false;
+
         async function cargarPedidos() {
+            // Evita que dos llamadas simultáneas (ej. el refresco automático y el
+            // "visibilitychange" al volver a la app en celular) se pisen entre sí:
+            // ambas limpian y vuelven a llenar la lista, y si se intercalan, el pedido
+            // aparece duplicado hasta que se refresca de nuevo.
+            if (cargandoPedidosEnCurso) return;
+            cargandoPedidosEnCurso = true;
+            try {
+                await cargarPedidosInterno();
+            } finally {
+                cargandoPedidosEnCurso = false;
+            }
+        }
+
+        async function cargarPedidosInterno() {
             const { data } = await supabaseClient.from('pedidos').select('*').eq('estado', 'Pendiente').order('created_at', { ascending: true });
             const cont = document.getElementById('tabla-pedidos'); cont.innerHTML = "";
             const badge = document.getElementById('badge-pedidos');
