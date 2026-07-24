@@ -750,14 +750,6 @@
                             <table><thead><tr><th>Paquete</th><th>Disponibles</th><th>Usados</th><th>Acción</th></tr></thead><tbody id="tabla-stock"></tbody></table>
                         </div>
                     </div>
-
-                    <div class="card-box" data-rol="streaming">
-                        <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">live_tv</span> Stock de Plataformas (por cuenta)</h3>
-                        <div id="alerta-stock-bajo-plataformas" class="stock-low-banner"></div>
-                        <div class="table-scroll">
-                            <table><thead><tr><th>Paquete</th><th>Cuenta</th><th>Disponibles</th><th>Acción</th></tr></thead><tbody id="tabla-stock-plataformas"></tbody></table>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- ============ HISTORIAL GLOBAL ============ -->
@@ -3483,16 +3475,13 @@
         async function cargarStock() {
             const { data, error } = await supabaseClient.rpc('admin_ver_inventario');
             const tbodyDiamantes = document.getElementById('tabla-stock');
-            const tbodyPlataformas = document.getElementById('tabla-stock-plataformas');
             if (error || !data) {
                 tbodyDiamantes.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#a8a8b3;'>No se pudo cargar el inventario.</td></tr>";
-                tbodyPlataformas.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#a8a8b3;'>No se pudo cargar el inventario.</td></tr>";
                 return;
             }
             inventarioCache = data;
 
             const diamantes = data.filter(c => !esPaqueteStreaming(c.paquete));
-            const plataformas = data.filter(c => esPaqueteStreaming(c.paquete));
 
             // --- DIAMANTES ---
             const resumen = {};
@@ -3521,45 +3510,13 @@
                 });
             }
 
-            // --- PLATAFORMAS (agrupadas por cuenta) ---
-            const grupos = {};
-            plataformas.forEach(c => {
-                const m = c.codigo && c.codigo.match(/Correo:\s*([^|]+)/);
-                const correo = m ? m[1].trim() : '(sin correo)';
-                const key = c.paquete + '||' + correo;
-                if (!grupos[key]) grupos[key] = { paquete: c.paquete, correo, disponibles: 0, usados: 0, idsDisponibles: [] };
-                if (c.estado === 'Disponible') { grupos[key].disponibles++; grupos[key].idsDisponibles.push(c.id); }
-                else grupos[key].usados++;
-            });
-            const claves = Object.keys(grupos);
-            if (claves.length === 0) {
-                tbodyPlataformas.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#a8a8b3;'>Sin cuentas de plataformas cargadas todavía.</td></tr>";
-            } else {
-                tbodyPlataformas.innerHTML = '';
-                claves.sort().forEach(k => {
-                    const g = grupos[k];
-                    const total = g.disponibles + g.usados;
-                    const colorDisp = g.disponibles === 0 ? '#ff4757' : (g.disponibles <= UMBRAL_STOCK_BAJO ? '#ffc107' : '#00e676');
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td data-label="Paquete" style="font-weight:bold;">${g.paquete}</td>
-                        <td data-label="Cuenta" style="font-family:monospace; font-size:12.5px;">${g.correo}</td>
-                        <td data-label="Disponibles" style="color:${colorDisp}; font-weight:bold;">${g.disponibles} / ${total}</td>
-                        <td data-label="Acción">${g.disponibles > 0 ? `<button class="btn-remove" onclick='quitarStockCuenta(${JSON.stringify(g.idsDisponibles)}, ${JSON.stringify(g.paquete)}, ${JSON.stringify(g.correo)})'><span class="material-icons">delete</span> Quitar</button>` : '<span style="color:#666;">—</span>'}</td>`;
-                    tbodyPlataformas.appendChild(tr);
-                });
-            }
-
             // --- ALERTAS DE STOCK BAJO ---
             const bajosDiamantes = paquetes.filter(p => resumen[p].disponibles > 0 && resumen[p].disponibles <= UMBRAL_STOCK_BAJO)
                 .map(p => `${p} (quedan ${resumen[p].disponibles})`);
-            const bajosPlataformas = claves.filter(k => grupos[k].disponibles > 0 && grupos[k].disponibles <= UMBRAL_STOCK_BAJO)
-                .map(k => `${grupos[k].paquete} — ${grupos[k].correo} (quedan ${grupos[k].disponibles})`);
 
             mostrarAlertaStockBajo('alerta-stock-bajo-diamantes', bajosDiamantes);
-            mostrarAlertaStockBajo('alerta-stock-bajo-plataformas', bajosPlataformas);
 
-            const totalBajos = (miRol !== 'streaming' ? bajosDiamantes.length : 0) + (miRol !== 'diamantes' ? bajosPlataformas.length : 0);
+            const totalBajos = miRol !== 'streaming' ? bajosDiamantes.length : 0;
             const badgeStockBajo = document.getElementById('badge-stock-bajo');
             if (badgeStockBajo) { badgeStockBajo.innerText = totalBajos; badgeStockBajo.classList.toggle('zero', totalBajos === 0); }
         }
@@ -3580,17 +3537,6 @@
             if (!conf) return;
 
             await supabaseClient.rpc('admin_eliminar_codigo_stock', { p_id: item.id });
-            showToast('Stock eliminado.', 'warning');
-            cargarStock();
-        }
-
-        async function quitarStockCuenta(ids, paquete, correo) {
-            const conf = await openCustomModal({ title: "Quitar Stock", desc: `¿Quitar ${ids.length} unidad(es) disponibles de <b>${paquete}</b><br>(${correo})?`, icon: 'delete', color: '#ff4757', textColor: 'white', type: 'confirm', confirmText: 'Quitar' });
-            if (!conf) return;
-
-            for (const id of ids) {
-                await supabaseClient.rpc('admin_eliminar_codigo_stock', { p_id: id });
-            }
             showToast('Stock eliminado.', 'warning');
             cargarStock();
         }
