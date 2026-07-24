@@ -3901,6 +3901,7 @@
                     <div class="pc-seccion">
                         <span class="pc-seccion-label">Código Asignado</span>
                         <div class="pc-seccion-cuerpo" style="color:#00e676;">${codHTML}</div>
+                        ${p.id_juego ? `<a href="https://redeem.hype.games" target="_blank" rel="noopener" class="btn-outline" style="display:inline-flex; align-items:center; gap:6px; margin-top:8px; padding:6px 12px; font-size:12px; text-decoration:none; width:fit-content;"><span class="material-icons" style="font-size:14px;">open_in_new</span> Ir a Hype a canjear</a>` : ''}
                     </div>
                     <div class="pc-acciones">
                         <button class="btn-complete" onclick="completarPedido(${p.id}, '${paqueteEsc}', '${nickEsc}', ${p.precio})"><span class="material-icons">check_circle</span> Listo</button>
