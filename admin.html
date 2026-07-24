@@ -1073,6 +1073,13 @@
                     <h1 class="view-title"><span class="material-icons" style="color:#a155ff;">subscriptions</span> Mis Clientes de Streaming</h1>
                     <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 20px 0;">Tu lista personal de clientes de streaming (Netflix, Disney+, etc.) que manejas por WhatsApp. Solo tú la ves — tu socio de streaming no tiene acceso a esto.</p>
 
+                    <div id="alerta-perfiles-pendientes" style="display:none; background:rgba(255,71,87,0.06); border:1px solid rgba(255,71,87,0.3); border-radius:12px; padding:16px 18px; margin-bottom:20px;">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px; font-weight:800; color:#ff4757;">
+                            <span class="material-icons">warning</span> <span id="alerta-perfiles-titulo">0 perfiles necesitan tu atención</span>
+                        </div>
+                        <div id="alerta-perfiles-lista" style="display:flex; flex-direction:column; gap:6px;"></div>
+                    </div>
+
                     <div class="card-box">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#ff9800;">key</span> Agregar Cuenta Madre</h3>
                         <p style="color:#a8a8b3; font-size:12px; margin:-8px 0 12px 0;">Una cuenta madre es tu cuenta real (Netflix, Disney+, etc.) con todos sus perfiles. Los perfiles que dejes "Disponibles" se ofrecen también en tu catálogo automático.</p>
@@ -1713,11 +1720,46 @@
 
             const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
             const limite = new Date(hoy); limite.setDate(limite.getDate() + 2);
-            const venciendo = cuentasMadreCache.reduce((total, cm) => total + cm.perfiles.filter(p =>
-                p.estado_perfil === 'cliente_manual' && p.fecha_vencimiento_perfil && new Date(p.fecha_vencimiento_perfil + 'T00:00:00') <= limite
-            ).length, 0);
+            const perfilesPendientes = [];
+            cuentasMadreCache.forEach(cm => {
+                cm.perfiles.forEach(p => {
+                    if (p.estado_perfil !== 'cliente_manual' || !p.fecha_vencimiento_perfil) return;
+                    const fecha = new Date(p.fecha_vencimiento_perfil + 'T00:00:00');
+                    if (fecha > limite) return;
+                    const diffDias = Math.round((fecha - hoy) / 86400000);
+                    perfilesPendientes.push({ perfil_id: p.perfil_id, nombre: p.nombre_cliente, plataforma: cm.plataforma, diffDias });
+                });
+            });
+            perfilesPendientes.sort((a, b) => a.diffDias - b.diffDias);
+
             const badge = document.getElementById('badge-clientes-venciendo');
-            if (badge) { badge.innerText = venciendo; badge.classList.toggle('zero', venciendo === 0); }
+            if (badge) { badge.innerText = perfilesPendientes.length; badge.classList.toggle('zero', perfilesPendientes.length === 0); }
+
+            const alerta = document.getElementById('alerta-perfiles-pendientes');
+            if (alerta) {
+                if (perfilesPendientes.length === 0) {
+                    alerta.style.display = 'none';
+                } else {
+                    document.getElementById('alerta-perfiles-titulo').innerText = `${perfilesPendientes.length} perfil(es) necesitan tu atención`;
+                    document.getElementById('alerta-perfiles-lista').innerHTML = perfilesPendientes.map(item => {
+                        const texto = item.diffDias < 0 ? `Vencido hace ${Math.abs(item.diffDias)} día(s)` : (item.diffDias === 0 ? 'Vence hoy' : `Vence en ${item.diffDias} día(s)`);
+                        return `<div onclick="irAPerfilPendiente(${item.perfil_id})" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:10px; background:rgba(255,255,255,0.03); border-radius:8px; padding:8px 12px;">
+                            <span style="color:white; font-size:13px;"><b>${escHtml(item.nombre)}</b> — ${escHtml(item.plataforma)}</span>
+                            <span style="color:#ff4757; font-size:12px; font-weight:700; white-space:nowrap;">${texto}</span>
+                        </div>`;
+                    }).join('');
+                    alerta.style.display = 'block';
+                }
+            }
+        }
+
+        function irAPerfilPendiente(perfilId) {
+            const el = document.getElementById(`cliente-perfil-${perfilId}`);
+            if (!el) return;
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.style.transition = 'box-shadow 0.3s';
+            el.style.boxShadow = '0 0 0 3px #ff4757';
+            setTimeout(() => { el.style.boxShadow = ''; }, 2000);
         }
 
         function poblarFiltroCuentaEspecifica() {
@@ -1836,7 +1878,7 @@
             if (diffDias < 0) { diasRestantesTxt = `Vencido (${Math.abs(diffDias)}d)`; diasRestantesColor = '#ff4757'; }
             else if (diffDias === 0) { diasRestantesTxt = 'Vence hoy'; diasRestantesColor = '#ff9800'; }
             else { diasRestantesTxt = `${diffDias} día(s)`; diasRestantesColor = diffDias <= 2 ? '#ff9800' : '#00e676'; }
-            return `<div class="cliente-card ${claseEstado}">
+            return `<div class="cliente-card ${claseEstado}" id="cliente-perfil-${p.perfil_id}">
                 <div class="pc-header">
                     <div class="pc-comprador">${escHtml(p.nombre_cliente)}</div>
                     ${badgeEstado}
@@ -2031,10 +2073,10 @@
 
                         const cambios = [];
                         if (antes) {
-                            if ((antes.nombre_cliente || '') !== nombre) cambios.push(`📝 *Nombre:* ${antes.nombre_cliente || '—'} → ${nombre}`);
-                            if (Number(antes.precio || 0) !== precio) cambios.push(`💰 *Precio:* S/ ${Number(antes.precio || 0).toFixed(2)} → S/ ${precio.toFixed(2)}`);
-                            if ((antes.fecha_vencimiento_perfil || '') !== (fechaVenc || '')) cambios.push(`📅 *Vencimiento:* ${antes.fecha_vencimiento_perfil ? formatearFechaCorta(antes.fecha_vencimiento_perfil) : '—'} → ${fechaVenc ? formatearFechaCorta(fechaVenc) : '—'}`);
-                            if ((antes.pin || '') !== (pin || '')) cambios.push(`🔢 *PIN:* ${antes.pin || '—'} → ${pin || '—'}`);
+                            if ((antes.nombre_cliente || '') !== nombre) { cambios.push(`📝 *Nombre anterior:* ${antes.nombre_cliente || '—'}`); cambios.push(`📝 *Nombre nuevo:* ${nombre}`); }
+                            if (Number(antes.precio || 0) !== precio) { cambios.push(`💰 *Precio anterior:* S/ ${Number(antes.precio || 0).toFixed(2)}`); cambios.push(`💰 *Precio nuevo:* S/ ${precio.toFixed(2)}`); }
+                            if ((antes.fecha_vencimiento_perfil || '') !== (fechaVenc || '')) { cambios.push(`📅 *Vencimiento anterior:* ${antes.fecha_vencimiento_perfil ? formatearFechaCorta(antes.fecha_vencimiento_perfil) : '—'}`); cambios.push(`📅 *Vencimiento nuevo:* ${fechaVenc ? formatearFechaCorta(fechaVenc) : '—'}`); }
+                            if ((antes.pin || '') !== (pin || '')) { cambios.push(`🔢 *PIN anterior:* ${antes.pin || '—'}`); cambios.push(`🔢 *PIN nuevo:* ${pin || '—'}`); }
                         }
 
                         if (cm) abrirWhatsappCliente(whatsapp, mensajeActualizacionPerfil(cm, pActual, cambios));
@@ -2201,31 +2243,27 @@
             await cargarCuentasMadre();
 
             // El cliente que estaba en el perfil de origen ahora vive en el perfil de destino,
-            // y (si fue intercambio) el otro cliente ahora vive en el perfil de origen.
-            const afectados = [{ perfilAhora: perfilDestinoId, antes: antesOrigen }];
-            if (esIntercambio) afectados.push({ perfilAhora: perfilOrigenId, antes: antesDestino });
-            await avisarCambioCuenta(afectados);
+            // y (si fue intercambio) el otro cliente ahora vive en el perfil de origen. Se avisa
+            // a cada uno por separado (cada aviso con su propio toque de "Enviar"), porque el
+            // navegador (sobre todo Safari/iPhone) bloquea la segunda ventana de WhatsApp si las
+            // dos se abren desde el mismo toque en vez de uno por cada una.
+            await avisarCambioCuenta(perfilDestinoId, antesOrigen);
+            if (esIntercambio) await avisarCambioCuenta(perfilOrigenId, antesDestino);
         }
 
-        async function avisarCambioCuenta(afectados) {
-            const listos = afectados
-                .map(a => ({ ...a, encontrado: buscarPerfilYCuenta(a.perfilAhora) }))
-                .filter(a => a.encontrado && a.encontrado.p.whatsapp_cliente);
-            if (listos.length === 0) return;
+        async function avisarCambioCuenta(perfilIdAhora, antes) {
+            const encontrado = buscarPerfilYCuenta(perfilIdAhora);
+            if (!encontrado || !encontrado.p.whatsapp_cliente) return;
+            const { cm: cmNuevo, p: pNuevo } = encontrado;
 
-            const nombres = listos.map(a => escHtml(a.encontrado.p.nombre_cliente)).join(' y ');
-            const conf = await openCustomModal({ title: 'Avisar al cliente', desc: `¿Enviarle un WhatsApp a <b>${nombres}</b> con sus nuevos datos de acceso?`, icon: 'campaign', color: '#00d2ff', type: 'confirm', confirmText: 'Enviar aviso' });
-            if (!conf) return;
+            const metodo = normalizarMetodoEntrega(pNuevo.metodo_entrega_cliente || cmNuevo.metodo_entrega);
+            const cambios = [];
+            if (antes.cm.correo !== cmNuevo.correo) { cambios.push(`📧 *Correo anterior:* ${antes.cm.correo}`); cambios.push(`📧 *Correo nuevo:* ${cmNuevo.correo}`); }
+            if (metodo === 'correo_y_contrasena' && antes.cm.contrasena !== cmNuevo.contrasena) { cambios.push(`🔑 *Contraseña anterior:* ${antes.cm.contrasena}`); cambios.push(`🔑 *Contraseña nueva:* ${cmNuevo.contrasena}`); }
+            if ((antes.p.pin || '') !== (pNuevo.pin || '')) { cambios.push(`🔢 *PIN anterior:* ${antes.p.pin || '—'}`); cambios.push(`🔢 *PIN nuevo:* ${pNuevo.pin || '—'}`); }
 
-            // Ambos envíos deben quedar en la misma ejecución síncrona (sin otro "await" de por medio),
-            // porque el navegador puede bloquear una segunda ventana emergente si hay una espera entre medio.
-            for (const { antes, encontrado } of listos) {
-                const { cm: cmNuevo, p: pNuevo } = encontrado;
-                const metodo = normalizarMetodoEntrega(pNuevo.metodo_entrega_cliente || cmNuevo.metodo_entrega);
-                const cambios = [];
-                if (antes.cm.correo !== cmNuevo.correo) cambios.push(`📧 *Correo:* ${antes.cm.correo} → ${cmNuevo.correo}`);
-                if (metodo === 'correo_y_contrasena' && antes.cm.contrasena !== cmNuevo.contrasena) cambios.push(`🔑 *Contraseña:* ${antes.cm.contrasena} → ${cmNuevo.contrasena}`);
-                if ((antes.p.pin || '') !== (pNuevo.pin || '')) cambios.push(`🔢 *PIN:* ${antes.p.pin || '—'} → ${pNuevo.pin || '—'}`);
+            const conf = await openCustomModal({ title: 'Avisar al cliente', desc: `¿Enviarle un WhatsApp a <b>${escHtml(pNuevo.nombre_cliente)}</b> con sus nuevos datos de acceso?`, icon: 'campaign', color: '#00d2ff', type: 'confirm', confirmText: 'Enviar aviso' });
+            if (conf) {
                 abrirWhatsappCliente(pNuevo.whatsapp_cliente, mensajeActualizacionPerfil(cmNuevo, pNuevo, cambios));
             }
         }
