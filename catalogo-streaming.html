@@ -271,7 +271,6 @@
                     { paquete: 'YouTube Premium + Music - Perfil', tipo: 'Perfil' }
                 ] },
             { key: 'appleone', nombre: 'Apple One 2TB', color: '#8e9297', imagen: 'apple-one.png',
-                requiereNota: 'imessage',
                 descripcion: `<div class="plat-desc">
                     <p style="margin:0 0 10px 0;font-weight:bold;color:white;font-size:15px;">🍎 Apple One + 2TB de almacenamiento en la nube 🌥️</p>
                     <p style="margin:0 0 8px 0;color:#a8a8b3;font-size:13px;">Incluye:</p>
@@ -282,7 +281,7 @@
                         <li>Apple Arcade (miles de juegos sin publicidad)</li>
                         <li>Apple TV+ (series y películas originales)</li>
                     </ul>
-                    <p style="margin:10px 0 0 0;color:#ffc107;font-size:12.5px;">Se entrega por invitación a tu Apple ID/iMessage, no es instantáneo.</p>
+                    <p style="margin:10px 0 0 0;color:#ffc107;font-size:12.5px;">Se entrega por invitación a tu Apple ID — apenas compres, te pedimos tus datos y te damos el enlace al instante.</p>
                 </div>`,
                 planes: [
                     { paquete: 'Apple One 2TB - Perfil', tipo: 'Perfil' }
@@ -623,15 +622,25 @@
                     <button class="btn-primary" style="width: 100%; padding: 12px;" onclick="cerrarModalCompra()">Entendido</button>
                 `;
             } else {
-                const mensajePendiente = (platSeleccionada && platSeleccionada.requiereNota)
-                    ? 'Tu saldo ya fue descontado. Te enviaremos la invitación al dato de contacto que nos diste en breve.'
-                    : 'Tu saldo ya fue descontado. Te enviaremos tus datos de acceso en breve, apenas confirmemos el stock.';
+                const esperandoDatosCliente = (resultado.codigo || '').includes('📋');
+                const mensajePendiente = esperandoDatosCliente
+                    ? 'Tu saldo ya fue descontado. Ve a "Mis Plataformas" y completa tus datos para recibir tu enlace de invitación al instante.'
+                    : (platSeleccionada && platSeleccionada.requiereNota)
+                        ? 'Tu saldo ya fue descontado. Te enviaremos la invitación al dato de contacto que nos diste en breve.'
+                        : 'Tu saldo ya fue descontado. Te enviaremos tus datos de acceso en breve, apenas confirmemos el stock.';
                 exito.innerHTML = `
                     <span class="material-icons" style="font-size: 56px; color: #ffc107; background: rgba(255,193,7,0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px;">hourglass_top</span>
                     <h2 style="font-size: 22px; color: white; margin: 0 0 10px 0;">¡Pedido Recibido!</h2>
                     <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">${mensajePendiente}</p>
+                    ${esperandoDatosCliente
+                        ? `<a href="mis-plataformas.html" class="btn-primary" style="display:block; width: 100%; padding: 14px; text-align:center; text-decoration:none; box-sizing:border-box; margin-bottom:10px;">Completar mis datos</a>`
+                        : ''}
                     <button class="btn-outline" style="width: 100%; padding: 14px; border-color: rgba(255,255,255,0.15);" onclick="cerrarModalCompra()">Entendido</button>
                 `;
+                if (esperandoDatosCliente) {
+                    btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo";
+                    return;
+                }
             }
 
             btn.disabled = false; btn.innerText = "Confirmar y Descontar Saldo";

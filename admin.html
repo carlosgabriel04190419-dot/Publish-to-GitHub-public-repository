@@ -324,11 +324,24 @@
                 <input type="text" id="map-nombre" class="bulk-select">
 
                 <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Cómo se le entrega el acceso a este cliente</label>
-                <select id="map-metodo-entrega" class="bulk-select">
+                <select id="map-metodo-entrega" class="bulk-select" onchange="actualizarMetodoEntregaAsignarPerfil()">
                     <option value="correo_y_contrasena">Correo y contraseña</option>
                     <option value="qr_o_codigo">Sin contraseña (QR de TV o código al iniciar sesión)</option>
                     <option value="invitacion">Link de invitación (ej. Spotify Family/Dúo)</option>
                 </select>
+
+                <div id="map-wrap-icloud" style="display:none;">
+                    <div class="grid-container" style="display:grid; grid-template-columns:repeat(2,1fr); gap:15px;">
+                        <div>
+                            <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Correo de la cuenta (opcional)</label>
+                            <input type="email" id="map-correo-icloud" class="bulk-select" placeholder="correo@icloud.com">
+                        </div>
+                        <div>
+                            <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Usuario (opcional)</label>
+                            <input type="text" id="map-usuario-icloud" class="bulk-select" placeholder="Nombre de usuario">
+                        </div>
+                    </div>
+                </div>
 
                 <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">WhatsApp del cliente</label>
                 <div style="display:flex; gap:8px; margin-bottom:4px;">
@@ -389,11 +402,14 @@
             <label style="color:#a155ff; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Correo</label>
             <input type="email" id="ecm-correo" class="bulk-select">
 
-            <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Contraseña</label>
-            <input type="text" id="ecm-contrasena" class="bulk-select">
+            <div id="ecm-wrap-contrasena">
+                <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Contraseña</label>
+                <input type="text" id="ecm-contrasena" class="bulk-select">
+            </div>
+            <p id="ecm-nota-links" style="display:none; color:#a8a8b3; font-size:12px; margin:-8px 0 15px 0;">Los links de invitación se agregan y consultan desde la tarjeta de esta cuenta en "Mis Cuentas Madre".</p>
 
             <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Cómo se entrega el acceso</label>
-            <select id="ecm-metodo-entrega" class="bulk-select">
+            <select id="ecm-metodo-entrega" class="bulk-select" onchange="actualizarMetodoEntregaEditarCuentaMadre()">
                 <option value="correo_y_contrasena">Correo y contraseña</option>
                 <option value="qr_o_codigo">Sin contraseña (QR de TV o código al iniciar sesión)</option>
                 <option value="invitacion">Link de invitación (ej. Spotify Family/Dúo)</option>
@@ -420,6 +436,23 @@
             <div style="display:flex; gap:10px; margin-top:6px;">
                 <button class="btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="cerrarModalEditarCuentaMadre()">Cancelar</button>
                 <button class="btn-complete" style="flex:1; padding:12px; font-weight:bold; color:black;" onclick="guardarEdicionCuentaMadre()">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL AGREGAR ENLACES DE INVITACIÓN -->
+    <div id="modal-agregar-enlaces-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,5,8,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:20px; box-sizing:border-box;">
+        <div style="background:#121218; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; padding:24px; border:1px solid #ff9800; border-radius:16px; box-shadow:0 0 30px rgba(255,152,0,0.15);">
+            <h3 style="margin:0 0 6px 0; font-size:18px; display:flex; align-items:center; gap:8px;"><span class="material-icons" style="color:#ff9800;">add_link</span> Agregar Enlaces de Invitación</h3>
+            <p id="mae-titulo-cuenta" style="color:#a8a8b3; font-size:13px; margin:0 0 15px 0;"></p>
+
+            <label style="color:#e0e0e0; font-weight:bold; font-size:13px; display:block; margin-bottom:6px;">Links (uno por línea)</label>
+            <textarea id="mae-links" class="bulk-select" style="min-height:110px; font-family:inherit; resize:vertical;" placeholder="https://appleid.apple.com/founder?...&#10;https://appleid.apple.com/founder?..."></textarea>
+
+            <input type="hidden" id="mae-cuenta-id" value="">
+            <div style="display:flex; gap:10px; margin-top:6px;">
+                <button class="btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="cerrarModalAgregarEnlaces()">Cancelar</button>
+                <button class="btn-complete" style="flex:1; padding:12px; font-weight:bold; color:black;" onclick="guardarEnlacesInvitacion()">Agregar</button>
             </div>
         </div>
     </div>
@@ -1067,18 +1100,23 @@
                                 <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Correo</label>
                                 <input type="email" id="cm-correo" class="search-bar" style="max-width:none;" placeholder="correo@ejemplo.com">
                             </div>
-                            <div>
+                            <div id="cm-wrap-contrasena">
                                 <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Contraseña</label>
                                 <input type="text" id="cm-contrasena" class="search-bar" style="max-width:none;" placeholder="Contraseña">
                             </div>
                             <div>
                                 <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Cómo se entrega el acceso</label>
-                                <select id="cm-metodo-entrega" class="search-bar" style="max-width:none;">
+                                <select id="cm-metodo-entrega" class="search-bar" style="max-width:none;" onchange="actualizarMetodoEntregaCuentaMadre()">
                                     <option value="correo_y_contrasena">Correo y contraseña</option>
                                     <option value="qr_o_codigo">Sin contraseña (QR o código)</option>
                                     <option value="invitacion">Link de invitación (Family/Dúo)</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <div id="cm-wrap-links" style="display:none; margin-bottom:10px;">
+                            <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Links de invitación (uno por línea, opcional — puedes agregar más después)</label>
+                            <textarea id="cm-links-invitacion" class="search-bar" style="max-width:none; min-height:70px; font-family:inherit; resize:vertical;" placeholder="https://appleid.apple.com/founder?...&#10;https://appleid.apple.com/founder?..."></textarea>
                         </div>
 
                         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:10px; margin-bottom:10px;">
@@ -1501,6 +1539,19 @@
             window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(mensaje)}`, '_blank');
         }
 
+        function beneficiosPlataforma(plataforma) {
+            if (!plataforma || !/apple\s*one/i.test(plataforma)) return '';
+            return '\n\n🎁 Recuerda que por este servicio tienes: iCloud+ 2TB, Apple Music, Apple TV+, Apple Arcade, Apple Fitness+, GoodNotes (ideal para universitarios) y más.';
+        }
+
+        function accesoTxtInvitacion(correo, usuario, enlace) {
+            const usuarioTxt = usuario ? `\n👤 *Usuario:* ${usuario}` : '';
+            const enlaceTxt = enlace
+                ? `\n🔗 *Enlace de invitación:* ${enlace}\n⚠️ Este enlace vence en cuanto aceptes la invitación, así que no lo compartas con nadie más.`
+                : `\n✉️ En breve te llega el enlace de invitación para unirte — solo acéptalo y listo.`;
+            return `📧 *Correo:* ${correo || '—'}${usuarioTxt}${enlaceTxt}`;
+        }
+
         function mensajeNuevoServicio(c) {
             const fechaTxt = formatearFechaLarga(c.fecha_vencimiento);
             let accesoTxt;
@@ -1508,12 +1559,12 @@
             if (metodo === 'qr_o_codigo') {
                 accesoTxt = `📧 *Correo:* ${c.correo || '—'}\n📺 *Si es para tu TV:* mándame una foto del código QR que te sale en pantalla apenas quieras entrar.\n📱 *Si es para celular, tablet o laptop:* entra con ese correo y dale a "Iniciar sesión"; el código que te pida la plataforma me lo pasas para confirmarte el acceso.`;
             } else if (metodo === 'invitacion') {
-                accesoTxt = `📧 *Correo para la invitación:* ${c.correo || '—'}\n✉️ En breve te llega una invitación a ese correo para unirte al plan — solo acéptala y listo.`;
+                accesoTxt = accesoTxtInvitacion(c.correo, c.usuario_icloud, c.enlace_invitacion);
             } else {
                 accesoTxt = `📧 *Correo:* ${c.correo || '—'}\n🔑 *Contraseña:* ${c.contrasena || '—'}`;
             }
             const pinTxt = c.pin ? `\n🔢 *PIN:* ${c.pin}` : '';
-            return `¡Hola *${c.nombre_cliente}*! 👋\n\nAsí quedó activado tu servicio con *CarzaD'Cross* 🎬\n\n🎬 *Plataforma:* ${c.plataforma}\n👤 *Tipo:* ${c.tipo_perfil}\n${accesoTxt}${pinTxt}\n💰 *Monto pagado:* S/ ${Number(c.precio).toFixed(2)}\n📅 *Vence el:* ${fechaTxt}\n🔁 *Renovable:* Sí, solo avísame antes de esa fecha.\n\n¡Gracias por elegir *CarzaD'Cross*! 🙌 Cualquier duda, aquí estoy.`;
+            return `¡Hola *${c.nombre_cliente}*! 👋\n\nTu suscripción a *${c.plataforma}* está activa 🎬\n\n👤 *Tipo:* ${c.tipo_perfil}\n${accesoTxt}${pinTxt}${beneficiosPlataforma(c.plataforma)}\n💰 *Monto pagado:* S/ ${Number(c.precio).toFixed(2)}\n📅 *Vence el:* ${fechaTxt}\n🔁 *Renovable:* Sí, solo avísame antes de esa fecha.\n\n¡Gracias por elegir *CarzaD'Cross*! 🙌 Cualquier duda, aquí estoy.`;
         }
 
         function mensajeRenovacion(c) {
@@ -1523,7 +1574,11 @@
 
         function mensajeRecordatorio(c) {
             const fechaTxt = formatearFechaLarga(c.fecha_vencimiento);
-            return `¡Hola *${c.nombre_cliente}*! 👋\n\n⏰ Tu servicio de *${c.plataforma}* (${c.tipo_perfil}) está por vencer el *${fechaTxt}*.\n\nSi quieres renovar sin cortes, el monto es *S/ ${Number(c.precio).toFixed(2)}*:\n\n${YAPE_INFO_STREAMING}\n\n¡Gracias por preferir *CarzaD'Cross*! 🙌`;
+            const metodo = normalizarMetodoEntrega(c.metodo_entrega);
+            const accesoTxt = metodo === 'invitacion'
+                ? `\n\n📋 *Tus datos de acceso:*\n${accesoTxtInvitacion(c.correo, c.usuario_icloud, c.enlace_invitacion)}`
+                : '';
+            return `¡Hola *${c.nombre_cliente}*! 👋\n\n⏰ Tu servicio de *${c.plataforma}* (${c.tipo_perfil}) está por vencer el *${fechaTxt}*.${accesoTxt}\n\nSi quieres renovar sin cortes, el monto es *S/ ${Number(c.precio).toFixed(2)}*:\n\n${YAPE_INFO_STREAMING}\n\n¡Gracias por preferir *CarzaD'Cross*! 🙌`;
         }
 
         function mensajeCorte(c) {
@@ -1536,17 +1591,18 @@
             if (metodo === 'qr_o_codigo') {
                 accesoTxt = `📧 *Correo:* ${cm.correo || '—'}\n📺 Sin contraseña (QR de TV o código al iniciar sesión)`;
             } else if (metodo === 'invitacion') {
-                accesoTxt = `📧 *Correo para la invitación:* ${cm.correo || '—'}`;
+                accesoTxt = accesoTxtInvitacion(p.correo_icloud, p.usuario_icloud, p.enlace_invitacion);
             } else {
                 accesoTxt = `📧 *Correo:* ${cm.correo || '—'}\n🔑 *Contraseña:* ${cm.contrasena || '—'}`;
             }
             const pinTxt = p.pin ? `\n🔢 *PIN:* ${p.pin}` : '';
             const cambiosTxt = cambios.length > 0 ? `\n\n${cambios.join('\n')}` : '';
-            return `¡Hola *${p.nombre_cliente}*! 👋\n\n🔄 Actualizamos tu servicio de *${cm.plataforma}*:${cambiosTxt}\n\n📋 *Tus datos de acceso:*\n${accesoTxt}${pinTxt}\n\nCualquier duda, aquí estoy. ¡Gracias por confiar en *CarzaD'Cross*! 🙌`;
+            return `¡Hola *${p.nombre_cliente}*! 👋\n\n🔄 Actualizamos tu servicio de *${cm.plataforma}*:${cambiosTxt}\n\n📋 *Tus datos de acceso:*\n${accesoTxt}${pinTxt}${beneficiosPlataforma(cm.plataforma)}\n\nCualquier duda, aquí estoy. ¡Gracias por confiar en *CarzaD'Cross*! 🙌`;
         }
 
         // ================= CUENTAS MADRE STREAMING =================
         let cuentasMadreCache = [];
+        let poolEnlacesCache = {};
 
         async function cargarProductosCatalogoParaCuentaMadre() {
             const { data } = await supabaseClient.from('productos').select('id, plataforma, perfiles_por_cuenta')
@@ -1564,6 +1620,12 @@
             document.getElementById('cm-wrap-plataforma-personalizada').style.display = esCatalogo ? 'none' : 'block';
         }
 
+        function actualizarMetodoEntregaCuentaMadre() {
+            const esInvitacion = document.getElementById('cm-metodo-entrega').value === 'invitacion';
+            document.getElementById('cm-wrap-contrasena').style.display = esInvitacion ? 'none' : 'block';
+            document.getElementById('cm-wrap-links').style.display = esInvitacion ? 'block' : 'none';
+        }
+
         function autocompletarPerfilesCuentaMadre() {
             const sel = document.getElementById('cm-producto-id');
             const opt = sel.options[sel.selectedIndex];
@@ -1576,11 +1638,13 @@
             document.getElementById('cm-correo').value = '';
             document.getElementById('cm-contrasena').value = '';
             document.getElementById('cm-metodo-entrega').value = 'correo_y_contrasena';
+            document.getElementById('cm-links-invitacion').value = '';
             document.getElementById('cm-perfiles-totales').value = '5';
             document.getElementById('cm-estado-cuenta').value = 'activa';
             document.getElementById('cm-fecha-vencimiento-cuenta').value = '';
             document.getElementById('cm-notas').value = '';
             actualizarTipoPlataformaCuentaMadre();
+            actualizarMetodoEntregaCuentaMadre();
         }
 
         async function guardarCuentaMadre() {
@@ -1591,21 +1655,26 @@
                 ? (selProducto.options[selProducto.selectedIndex] ? selProducto.options[selProducto.selectedIndex].textContent : '')
                 : document.getElementById('cm-plataforma-custom').value.trim();
             const correo = document.getElementById('cm-correo').value.trim();
-            const contrasena = document.getElementById('cm-contrasena').value.trim();
             const metodoEntrega = document.getElementById('cm-metodo-entrega').value;
+            const esInvitacion = metodoEntrega === 'invitacion';
+            const contrasena = esInvitacion ? null : document.getElementById('cm-contrasena').value.trim();
+            const links = esInvitacion
+                ? document.getElementById('cm-links-invitacion').value.split('\n').map(l => l.trim()).filter(Boolean)
+                : [];
             const perfilesTotales = parseInt(document.getElementById('cm-perfiles-totales').value);
             const estadoCuenta = document.getElementById('cm-estado-cuenta').value;
             const fechaVencCuenta = document.getElementById('cm-fecha-vencimiento-cuenta').value || null;
             const notas = document.getElementById('cm-notas').value.trim() || null;
 
             if (!plataforma) return showToast(esCatalogo ? 'Elige un producto del catálogo.' : 'Escribe el nombre de la plataforma.', 'warning');
-            if (!correo || !contrasena) return showToast('Ingresa correo y contraseña.', 'warning');
+            if (!correo) return showToast('Ingresa el correo.', 'warning');
+            if (!esInvitacion && !contrasena) return showToast('Ingresa correo y contraseña.', 'warning');
             if (isNaN(perfilesTotales) || perfilesTotales < 1) return showToast('Ingresa cuántos perfiles tiene la cuenta.', 'warning');
 
             const { data, error } = await supabaseClient.rpc('admin_crear_cuenta_madre_streaming', {
                 p_plataforma: plataforma, p_correo: correo, p_contrasena: contrasena, p_perfiles_totales: perfilesTotales,
                 p_producto_id: productoId, p_metodo_entrega: metodoEntrega, p_estado_cuenta: estadoCuenta,
-                p_fecha_vencimiento_cuenta: fechaVencCuenta, p_notas: notas
+                p_fecha_vencimiento_cuenta: fechaVencCuenta, p_notas: notas, p_links: links
             });
             if (error) { showToast('Error: ' + error.message, 'error'); return; }
 
@@ -1615,7 +1684,17 @@
             cargarCuentasMadre();
         }
 
+        async function cargarPoolEnlacesInvitacion() {
+            const { data } = await supabaseClient.from('enlaces_invitacion_streaming').select('cuenta_madre_id, estado');
+            poolEnlacesCache = {};
+            (data || []).forEach(fila => {
+                if (fila.estado !== 'disponible') return;
+                poolEnlacesCache[fila.cuenta_madre_id] = (poolEnlacesCache[fila.cuenta_madre_id] || 0) + 1;
+            });
+        }
+
         async function cargarCuentasMadre() {
+            await cargarPoolEnlacesInvitacion();
             const { data } = await supabaseClient.from('v_cuentas_madre_streaming_detalle').select('*').order('cuenta_madre_id').order('numero_perfil');
             const grupos = {};
             (data || []).forEach(fila => {
@@ -1707,18 +1786,23 @@
         function tarjetaCuentaMadre(cm) {
             const libres = cm.perfiles.filter(p => p.estado_perfil === 'disponible').length;
             const correoEsc = escAttr(cm.correo).replace(/'/g, "\\'");
-            const contrasenaEsc = escAttr(cm.contrasena).replace(/'/g, "\\'");
             const estadoColor = cm.estado_cuenta === 'activa' ? '#00e676' : '#ff4757';
             const perfilesClientes = cm.perfiles.filter(p => p.estado_perfil === 'cliente_manual');
             const perfilesOtros = cm.perfiles.filter(p => p.estado_perfil !== 'cliente_manual');
             const tarjetasClientes = perfilesClientes.map(p => tarjetaPerfilCliente(cm, p)).join('');
             const filasOtros = perfilesOtros.map(p => filaPerfilCuentaMadre(cm, p)).join('');
+            const esInvitacion = cm.metodo_entrega === 'invitacion';
+            const enlacesDisponibles = poolEnlacesCache[cm.id] || 0;
+            const plataformaEsc = escAttr(cm.plataforma).replace(/'/g, "\\'");
+            const filaAcceso = esInvitacion
+                ? `<div style="color:${enlacesDisponibles > 0 ? '#a8a8b3' : '#ff9800'}; font-size:13px;">🔗 ${enlacesDisponibles} link(s) de invitación disponible(s) <button class="btn-view" style="padding:3px 8px; font-size:11px;" onclick="abrirModalAgregarEnlaces(${cm.id}, '${plataformaEsc}', '${correoEsc}')"><span class="material-icons" style="font-size:12px;">add</span> Agregar</button></div>`
+                : `<div style="color:#a8a8b3; font-size:13px; font-family:monospace;">🔑 ${escHtml(cm.contrasena)} <button class="btn-copy" onclick="copiarTexto('${escAttr(cm.contrasena).replace(/'/g, "\\'")}', this)"><span class="material-icons" style="font-size:11px;">content_copy</span></button></div>`;
             return `<div class="card-box" style="background:#15151d; margin-bottom:16px;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
                     <div>
                         <div style="font-weight:800; font-size:16px;">${escHtml(cm.plataforma)} <span style="color:${estadoColor}; font-size:11px; font-weight:800; text-transform:uppercase;">● ${cm.estado_cuenta}</span></div>
                         <div style="color:#a8a8b3; font-size:13px; font-family:monospace;">${escHtml(cm.correo)} <button class="btn-copy" onclick="copiarTexto('${correoEsc}', this)"><span class="material-icons" style="font-size:11px;">content_copy</span></button></div>
-                        <div style="color:#a8a8b3; font-size:13px; font-family:monospace;">🔑 ${escHtml(cm.contrasena)} <button class="btn-copy" onclick="copiarTexto('${contrasenaEsc}', this)"><span class="material-icons" style="font-size:11px;">content_copy</span></button></div>
+                        ${filaAcceso}
                         <div style="color:#6a6a78; font-size:12px; margin-top:4px;">${libres}/${cm.perfiles_totales} perfiles libres ${cm.fecha_vencimiento_cuenta ? `· Cuenta vence: ${formatearFechaCorta(cm.fecha_vencimiento_cuenta)} (${badgeDiasRestantes(cm.fecha_vencimiento_cuenta)})` : ''}</div>
                     </div>
                     <div style="display:flex; gap:8px;">
@@ -1807,9 +1891,11 @@
         }
 
         function objetoClienteDesdePerfil(cm, p) {
+            const metodo = normalizarMetodoEntrega(p.metodo_entrega_cliente || cm.metodo_entrega);
             return {
                 nombre_cliente: p.nombre_cliente, plataforma: cm.plataforma, tipo_perfil: 'Perfil',
-                metodo_entrega: p.metodo_entrega_cliente || cm.metodo_entrega, correo: cm.correo, contrasena: cm.contrasena,
+                metodo_entrega: metodo, correo: metodo === 'invitacion' ? p.correo_icloud : cm.correo, contrasena: cm.contrasena,
+                usuario_icloud: p.usuario_icloud, enlace_invitacion: p.enlace_invitacion,
                 pin: p.pin, precio: p.precio, fecha_vencimiento: p.fecha_vencimiento_perfil
             };
         }
@@ -1840,6 +1926,8 @@
             document.getElementById('map-uso').value = 'cliente_manual';
             document.getElementById('map-nombre').value = '';
             document.getElementById('map-metodo-entrega').value = encontrado ? encontrado.cm.metodo_entrega : 'correo_y_contrasena';
+            document.getElementById('map-correo-icloud').value = '';
+            document.getElementById('map-usuario-icloud').value = '';
             document.getElementById('map-codigo-pais').value = '51';
             document.getElementById('map-celular').value = '';
             document.getElementById('map-celular-hint').innerText = 'Perú: 9 dígitos';
@@ -1849,6 +1937,7 @@
             document.getElementById('map-pin').value = encontrado ? (encontrado.p.pin || '') : '';
             document.getElementById('map-notas').value = '';
             actualizarCamposAsignarPerfil();
+            actualizarMetodoEntregaAsignarPerfil();
             document.getElementById('modal-asignar-perfil-overlay').style.display = 'flex';
         }
 
@@ -1869,6 +1958,8 @@
             document.getElementById('map-titulo-perfil').innerText = `${cm.plataforma} — Perfil ${p.numero_perfil}`;
             document.getElementById('map-nombre').value = p.nombre_cliente || '';
             document.getElementById('map-metodo-entrega').value = p.metodo_entrega_cliente || cm.metodo_entrega;
+            document.getElementById('map-correo-icloud').value = p.correo_icloud || '';
+            document.getElementById('map-usuario-icloud').value = p.usuario_icloud || '';
             const { codigo, celular } = dividirWhatsapp(p.whatsapp_cliente || '');
             document.getElementById('map-codigo-pais').value = codigo;
             document.getElementById('map-celular').value = celular;
@@ -1878,6 +1969,7 @@
             document.getElementById('map-fecha-directa').value = p.fecha_vencimiento_perfil || '';
             document.getElementById('map-pin').value = p.pin || '';
             document.getElementById('map-notas').value = p.notas_cliente || '';
+            actualizarMetodoEntregaAsignarPerfil();
             document.getElementById('modal-asignar-perfil-overlay').style.display = 'flex';
         }
 
@@ -1890,6 +1982,10 @@
             document.getElementById('map-wrap-cliente').style.display = document.getElementById('map-uso').value === 'cliente_manual' ? 'block' : 'none';
         }
 
+        function actualizarMetodoEntregaAsignarPerfil() {
+            document.getElementById('map-wrap-icloud').style.display = document.getElementById('map-metodo-entrega').value === 'invitacion' ? 'block' : 'none';
+        }
+
         async function guardarAsignacionPerfil() {
             const modo = document.getElementById('map-modo').value;
             const perfilId = document.getElementById('map-perfil-id').value;
@@ -1897,6 +1993,8 @@
             const notas = document.getElementById('map-notas').value.trim() || null;
 
             const metodoEntrega = document.getElementById('map-metodo-entrega').value;
+            const correoIcloud = metodoEntrega === 'invitacion' ? (document.getElementById('map-correo-icloud').value.trim() || null) : null;
+            const usuarioIcloud = metodoEntrega === 'invitacion' ? (document.getElementById('map-usuario-icloud').value.trim() || null) : null;
 
             if (modo === 'editar') {
                 const antesEncontrado = buscarPerfilYCuenta(perfilId);
@@ -1915,7 +2013,8 @@
 
                 const { error } = await supabaseClient.rpc('admin_editar_perfil_cliente', {
                     p_perfil_id: perfilId, p_nombre_cliente: nombre, p_whatsapp_cliente: whatsapp,
-                    p_precio: precio, p_fecha_vencimiento: fechaVenc, p_pin: pin, p_notas: notas, p_metodo_entrega: metodoEntrega
+                    p_precio: precio, p_fecha_vencimiento: fechaVenc, p_pin: pin, p_notas: notas, p_metodo_entrega: metodoEntrega,
+                    p_correo_icloud: correoIcloud, p_usuario_icloud: usuarioIcloud
                 });
                 if (error) { showToast('Error: ' + error.message, 'error'); return; }
 
@@ -1963,7 +2062,8 @@
             const { data, error } = await supabaseClient.rpc('admin_asignar_perfil_cliente', {
                 p_perfil_id: perfilId, p_uso: uso, p_nombre_cliente: nombre, p_whatsapp_cliente: whatsapp,
                 p_precio: precio, p_dias_servicio: dias, p_fecha_exacta: fechaExacta, p_pin: pin, p_notas: notas,
-                p_metodo_entrega: uso === 'cliente_manual' ? metodoEntrega : null
+                p_metodo_entrega: uso === 'cliente_manual' ? metodoEntrega : null,
+                p_correo_icloud: correoIcloud, p_usuario_icloud: usuarioIcloud
             });
             if (error) { showToast('Error: ' + error.message, 'error'); return; }
 
@@ -1975,11 +2075,15 @@
             if (uso === 'cliente_manual' && whatsapp) {
                 const conf = await openCustomModal({ title: 'Enviar datos al cliente', desc: `¿Mandarle a <b>${escHtml(nombre)}</b> el mensaje de WhatsApp con los datos de su servicio?`, icon: 'send', color: '#00d2ff', type: 'confirm', confirmText: 'Enviar' });
                 if (conf) {
-                    const cm = cuentasMadreCache.find(c => c.perfiles.some(p => p.perfil_id == perfilId));
+                    const encontrado = buscarPerfilYCuenta(perfilId);
+                    const cm = encontrado ? encontrado.cm : cuentasMadreCache.find(c => c.perfiles.some(p => p.perfil_id == perfilId));
+                    const pActual = encontrado ? encontrado.p : {};
                     abrirWhatsappCliente(whatsapp, mensajeNuevoServicio({
                         nombre_cliente: nombre, plataforma: perfilAsignandoInfo ? perfilAsignandoInfo.plataforma : (cm ? cm.plataforma : ''),
                         tipo_perfil: 'Perfil', metodo_entrega: metodoEntrega,
-                        correo: cm ? cm.correo : '', contrasena: cm ? cm.contrasena : '', pin, precio, fecha_vencimiento: fechaVenc
+                        correo: metodoEntrega === 'invitacion' ? correoIcloud : (cm ? cm.correo : ''), contrasena: cm ? cm.contrasena : '',
+                        usuario_icloud: usuarioIcloud, enlace_invitacion: pActual.enlace_invitacion || null,
+                        pin, precio, fecha_vencimiento: fechaVenc
                     }));
                 }
             }
@@ -2170,9 +2274,15 @@
             if (!encontrado) return;
             const { cm, p } = encontrado;
             const titulo = `${p.nombre_cliente} - ${cm.plataforma} (Perfil)`;
-            const accesoTxt = normalizarMetodoEntrega(cm.metodo_entrega) === 'qr_o_codigo'
-                ? `Correo: ${cm.correo || '—'} (sin contraseña, QR o código)`
-                : `Correo: ${cm.correo || '—'} / Contraseña: ${cm.contrasena || '—'}`;
+            const metodo = normalizarMetodoEntrega(p.metodo_entrega_cliente || cm.metodo_entrega);
+            let accesoTxt;
+            if (metodo === 'qr_o_codigo') {
+                accesoTxt = `Correo: ${cm.correo || '—'} (sin contraseña, QR o código)`;
+            } else if (metodo === 'invitacion') {
+                accesoTxt = `Correo: ${p.correo_icloud || '—'}${p.usuario_icloud ? ` / Usuario: ${p.usuario_icloud}` : ''} / Enlace: ${p.enlace_invitacion || 'pendiente'}`;
+            } else {
+                accesoTxt = `Correo: ${cm.correo || '—'} / Contraseña: ${cm.contrasena || '—'}`;
+            }
             const pinTxt = p.pin ? ` / PIN: ${p.pin}` : '';
             const notas = `${accesoTxt}${pinTxt} / Precio: S/ ${Number(p.precio || 0).toFixed(2)} / WhatsApp: ${p.whatsapp_cliente || '—'}`;
             const texto = `${titulo}|||${notas}|||${p.fecha_vencimiento_perfil}`;
@@ -2185,12 +2295,19 @@
             if (!cm) return;
             document.getElementById('ecm-id').value = cm.id;
             document.getElementById('ecm-correo').value = cm.correo;
-            document.getElementById('ecm-contrasena').value = cm.contrasena;
+            document.getElementById('ecm-contrasena').value = cm.contrasena || '';
             document.getElementById('ecm-metodo-entrega').value = cm.metodo_entrega;
             document.getElementById('ecm-estado-cuenta').value = cm.estado_cuenta;
             document.getElementById('ecm-fecha-vencimiento-cuenta').value = cm.fecha_vencimiento_cuenta || '';
             document.getElementById('ecm-notas').value = cm.notas || '';
+            actualizarMetodoEntregaEditarCuentaMadre();
             document.getElementById('modal-editar-cuenta-madre-overlay').style.display = 'flex';
+        }
+
+        function actualizarMetodoEntregaEditarCuentaMadre() {
+            const esInvitacion = document.getElementById('ecm-metodo-entrega').value === 'invitacion';
+            document.getElementById('ecm-wrap-contrasena').style.display = esInvitacion ? 'none' : 'block';
+            document.getElementById('ecm-nota-links').style.display = esInvitacion ? 'block' : 'none';
         }
 
         function cerrarModalEditarCuentaMadre() {
@@ -2200,13 +2317,14 @@
         async function guardarEdicionCuentaMadre() {
             const id = document.getElementById('ecm-id').value;
             const correo = document.getElementById('ecm-correo').value.trim();
-            const contrasena = document.getElementById('ecm-contrasena').value.trim();
             const metodoEntrega = document.getElementById('ecm-metodo-entrega').value;
+            const esInvitacion = metodoEntrega === 'invitacion';
+            const contrasena = esInvitacion ? null : document.getElementById('ecm-contrasena').value.trim();
             const estadoCuenta = document.getElementById('ecm-estado-cuenta').value;
             const fechaVencCuenta = document.getElementById('ecm-fecha-vencimiento-cuenta').value || null;
             const notas = document.getElementById('ecm-notas').value.trim() || null;
 
-            if (!correo || !contrasena) return showToast('Ingresa correo y contraseña.', 'warning');
+            if (!correo || (!esInvitacion && !contrasena)) return showToast('Ingresa correo y contraseña.', 'warning');
 
             const { error } = await supabaseClient.rpc('admin_editar_cuenta_madre', {
                 p_cuenta_madre_id: id, p_correo: correo, p_contrasena: contrasena, p_metodo_entrega: metodoEntrega,
@@ -2215,6 +2333,31 @@
             if (error) { showToast('Error: ' + error.message, 'error'); return; }
             showToast('Cuenta madre actualizada.');
             cerrarModalEditarCuentaMadre();
+            cargarCuentasMadre();
+        }
+
+        function abrirModalAgregarEnlaces(cuentaMadreId, plataforma, correo) {
+            document.getElementById('mae-cuenta-id').value = cuentaMadreId;
+            document.getElementById('mae-titulo-cuenta').innerText = `${plataforma} — ${correo}`;
+            document.getElementById('mae-links').value = '';
+            document.getElementById('modal-agregar-enlaces-overlay').style.display = 'flex';
+        }
+
+        function cerrarModalAgregarEnlaces() {
+            document.getElementById('modal-agregar-enlaces-overlay').style.display = 'none';
+        }
+
+        async function guardarEnlacesInvitacion() {
+            const cuentaMadreId = document.getElementById('mae-cuenta-id').value;
+            const links = document.getElementById('mae-links').value.split('\n').map(l => l.trim()).filter(Boolean);
+            if (links.length === 0) return showToast('Pega al menos un link.', 'warning');
+
+            const { data, error } = await supabaseClient.rpc('admin_agregar_enlaces_invitacion', {
+                p_cuenta_madre_id: cuentaMadreId, p_links: links
+            });
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
+            showToast(`${data} enlace(s) agregado(s).`);
+            cerrarModalAgregarEnlaces();
             cargarCuentasMadre();
         }
 
@@ -3551,7 +3694,7 @@
                 const otrosPendientesMismoCliente = pedidosPorNick[p.nickname].length > 1;
                 let codHTML = '<span style="color:#666;">Activación directa</span>';
                 if (p.codigo) {
-                    codHTML = p.codigo.split(' | ').map(l => (l.includes("⚠️") || l.includes("Pendiente —")) ? `<span style="color:#ff4757; font-weight:bold;">${escHtml(l)}</span>` : `${escHtml(l)} <button class="btn-copy" onclick="copiarTexto('${escAttr(l).replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>`).join('<br>');
+                    codHTML = p.codigo.split(' | ').map(l => (l.includes("⚠️") || l.includes("Pendiente —") || l.includes("📋") || l.includes("🔗")) ? `<span style="color:#ff4757; font-weight:bold;">${escHtml(l)}</span>` : `${escHtml(l)} <button class="btn-copy" onclick="copiarTexto('${escAttr(l).replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>`).join('<br>');
                 }
                 let colDetalle;
                 if (p.nota_cliente) {

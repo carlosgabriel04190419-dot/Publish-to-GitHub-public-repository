@@ -210,6 +210,8 @@
             'Paramount+': 'paramount+.png'
         };
 
+        const MP_INPUT_STYLE = 'background:#121214; border:1px solid #29292e; color:white; border-radius:8px; padding:10px; width:100%; box-sizing:border-box; font-size:14px;';
+
         let nombreActualGlobal = '';
         let saldoActualGlobal = 0;
         let suscripcionesCache = {};
@@ -260,21 +262,117 @@
                 .order('created_at', { ascending: false });
 
             const streamingPendientes = (data || []).filter(p => Object.keys(IMAGENES_PLATAFORMA).some(plat => p.paquete.startsWith(plat)));
-            if (streamingPendientes.length === 0) return;
+            if (streamingPendientes.length === 0) { document.getElementById('mp-pendientes-wrap').style.display = 'none'; return; }
 
             document.getElementById('mp-pendientes-wrap').style.display = 'block';
-            document.getElementById('mp-pendientes-lista').innerHTML = streamingPendientes.map(p => `
-                <div class="mp-pendiente-item">
-                    <div><strong style="color:white;">${p.paquete}</strong><br><span style="color:#a8a8b3; font-size:12px;">Pedido el ${new Date(p.created_at).toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'numeric' })}</span></div>
-                    <span style="color:#ffc107; font-size:13px;">Te avisaremos por WhatsApp cuando esté listo.</span>
-                </div>
-            `).join('');
+            document.getElementById('mp-pendientes-lista').innerHTML = streamingPendientes.map(p => {
+                const fechaTxt = new Date(p.created_at).toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'numeric' });
+                const codigo = p.codigo || '';
+                if (codigo.includes('📋')) return htmlFormularioDatosInvitacion(p, fechaTxt);
+                if (codigo.includes('🔗')) return `
+                    <div class="mp-pendiente-item">
+                        <div><strong style="color:white;">${p.paquete}</strong><br><span style="color:#a8a8b3; font-size:12px;">Pedido el ${fechaTxt}</span></div>
+                        <span style="color:#ffc107; font-size:13px;">Ya registramos tus datos. En cuanto tengamos un enlace disponible te lo entregamos aquí mismo.</span>
+                    </div>`;
+                return `
+                    <div class="mp-pendiente-item">
+                        <div><strong style="color:white;">${p.paquete}</strong><br><span style="color:#a8a8b3; font-size:12px;">Pedido el ${fechaTxt}</span></div>
+                        <span style="color:#ffc107; font-size:13px;">Te avisaremos por WhatsApp cuando esté listo.</span>
+                    </div>`;
+            }).join('');
+        }
+
+        function htmlFormularioDatosInvitacion(p, fechaTxt) {
+            return `
+                <div class="mp-pendiente-item" style="flex-direction:column; align-items:stretch;" id="dp-wrap-${p.id}">
+                    <div style="margin-bottom:10px;"><strong style="color:white;">${p.paquete}</strong><br><span style="color:#a8a8b3; font-size:12px;">Pedido el ${fechaTxt}</span></div>
+                    <p style="color:#ffc107; font-size:13px; margin:0 0 12px 0;">Ya casi. Completa estos datos para recibir tu enlace de invitación al instante.</p>
+
+                    <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Tu correo de la cuenta</label>
+                    <input type="email" id="dp-correo-${p.id}" style="${MP_INPUT_STYLE} margin-bottom:10px;" placeholder="correo@ejemplo.com">
+
+                    <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Tu nombre de usuario</label>
+                    <input type="text" id="dp-usuario-${p.id}" style="${MP_INPUT_STYLE} margin-bottom:10px;" placeholder="Nombre de usuario">
+
+                    <label style="display:block; color:#a8a8b3; font-size:11px; margin-bottom:4px;">Tu WhatsApp (opcional)</label>
+                    <div style="display:flex; gap:8px; margin-bottom:12px;">
+                        <select id="dp-codigo-pais-${p.id}" style="${MP_INPUT_STYLE} max-width:105px; flex-shrink:0;">
+                            <option value="51" selected>🇵🇪 +51</option>
+                            <option value="52">🇲🇽 +52</option>
+                            <option value="57">🇨🇴 +57</option>
+                            <option value="54">🇦🇷 +54</option>
+                            <option value="56">🇨🇱 +56</option>
+                            <option value="58">🇻🇪 +58</option>
+                            <option value="593">🇪🇨 +593</option>
+                            <option value="591">🇧🇴 +591</option>
+                        </select>
+                        <input type="tel" inputmode="numeric" id="dp-celular-${p.id}" style="${MP_INPUT_STYLE} flex:1;" placeholder="987 654 321">
+                    </div>
+
+                    <button class="btn-primary" style="width:100%; padding:12px;" onclick="completarDatosPedidoInvitacion(${p.id})" id="dp-btn-${p.id}">Recibir mi enlace</button>
+                </div>`;
+        }
+
+        async function completarDatosPedidoInvitacion(pedidoId) {
+            const correo = document.getElementById(`dp-correo-${pedidoId}`).value.trim();
+            const usuario = document.getElementById(`dp-usuario-${pedidoId}`).value.trim();
+            const celular = document.getElementById(`dp-celular-${pedidoId}`).value.replace(/\D/g, '');
+            const codigoPais = document.getElementById(`dp-codigo-pais-${pedidoId}`).value;
+            const whatsapp = celular ? (codigoPais + celular) : null;
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) { alert('Ingresa un correo válido.'); return; }
+            if (!usuario) { alert('Ingresa tu nombre de usuario.'); return; }
+
+            const btn = document.getElementById(`dp-btn-${pedidoId}`);
+            btn.disabled = true; btn.innerText = 'Enviando...';
+
+            const { data, error } = await supabaseClient.rpc('completar_datos_invitacion_streaming', {
+                p_pedido_id: pedidoId, p_correo_icloud: correo, p_usuario_icloud: usuario, p_whatsapp: whatsapp
+            });
+            const resultado = data && data[0];
+
+            if (error || !resultado || resultado.estado === 'error') {
+                alert('Error: ' + (error ? error.message : (resultado ? resultado.mensaje : 'Error desconocido.')));
+                btn.disabled = false; btn.innerText = 'Recibir mi enlace';
+                return;
+            }
+
+            const wrap = document.getElementById(`dp-wrap-${pedidoId}`);
+            if (resultado.estado === 'completado') {
+                wrap.innerHTML = `
+                    <p style="color:#a8a8b3; font-size:12px; margin:0 0 6px 0; text-transform:uppercase;">Tu enlace de invitación</p>
+                    <div class="mp-cred-box" style="margin-bottom:10px;">
+                        <div class="mp-cred-valor" style="text-align:left; color:#00e676;">${escHtmlMP(resultado.enlace)}</div>
+                    </div>
+                    <p style="color:#a8a8b3; font-size:12.5px; line-height:1.6; margin:0;">Haz clic en el enlace, acepta la invitación y listo. Si te pide tu cuenta, ingresa la tuya — te redirige al sitio oficial de Apple. Este enlace caduca apenas lo aceptes, así que no lo compartas con nadie más.</p>`;
+            } else {
+                wrap.innerHTML = `<p style="color:#ffc107; font-size:13px; margin:0;">${escHtmlMP(resultado.mensaje)}</p>`;
+            }
+            cargarMisPlataformas(nombreActualGlobal);
+        }
+
+        function escHtmlMP(s) {
+            const div = document.createElement('div');
+            div.innerText = s == null ? '' : String(s);
+            return div.innerHTML;
         }
 
         function parsearCredenciales(credenciales) {
             if (!credenciales) return { tipo: 'desconocido' };
             if (credenciales.startsWith('Invitación enviada a:')) {
                 return { tipo: 'invitacion', dato: credenciales.replace('Invitación enviada a:', '').trim() };
+            }
+            if (credenciales.startsWith('Invitación:')) {
+                const partesLink = credenciales.split(' | ');
+                const linkParte = partesLink.find(p => p.trim().startsWith('Invitación:'));
+                const correoParte = partesLink.find(p => p.trim().startsWith('Correo:'));
+                const usuarioParte = partesLink.find(p => p.trim().startsWith('Usuario:'));
+                return {
+                    tipo: 'invitacion_link',
+                    link: linkParte ? linkParte.replace('Invitación:', '').trim() : '',
+                    correo: correoParte ? correoParte.replace('Correo:', '').trim() : '',
+                    usuario: usuarioParte ? usuarioParte.replace('Usuario:', '').trim() : ''
+                };
             }
             const partes = credenciales.split(' | ');
             const correoParte = partes.find(p => p.trim().startsWith('Correo:'));
@@ -336,6 +434,16 @@
                         </div>`;
                 } else if (cred.tipo === 'invitacion') {
                     credHTML = `<div class="mp-cred-box"><div class="mp-cred-label" style="margin-bottom:6px;">Invitación enviada a</div><div class="mp-cred-valor" style="color:#00e676; text-align:left;">${cred.dato}</div></div>`;
+                } else if (cred.tipo === 'invitacion_link') {
+                    credHTML = `
+                        <div class="mp-cred-box">
+                            <div class="mp-cred-row">
+                                <div><div class="mp-cred-label">Enlace de invitación</div><div class="mp-cred-valor" style="text-align:left;">${cred.link}</div></div>
+                                <button class="mp-copy-btn" onclick="copiarMP('${cred.link.replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>
+                            </div>
+                            ${cred.correo ? `<div class="mp-cred-row"><div class="mp-cred-label">Correo</div><div class="mp-cred-valor">${cred.correo}</div></div>` : ''}
+                            ${cred.usuario ? `<div class="mp-cred-row"><div class="mp-cred-label">Usuario</div><div class="mp-cred-valor">${cred.usuario}</div></div>` : ''}
+                        </div>`;
                 } else {
                     credHTML = `<div class="mp-cred-box"><div class="mp-cred-valor" style="text-align:left;">${cred.crudo || 'Consulta con soporte.'}</div></div>`;
                 }
