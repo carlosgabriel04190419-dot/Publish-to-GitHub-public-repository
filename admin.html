@@ -3506,25 +3506,35 @@
                 ? `⚠️ <b style="color:#ff4757;">${duplicados.length} código(s) repetido(s) en más de una fila</b> — revisa las marcadas en rojo.`
                 : `${codigos.length} código(s) en total, sin duplicados.`;
 
+            const filaCodigo = (c) => {
+                const esDuplicado = conteoPorCodigo[c.codigo] > 1;
+                const colorEstado = c.estado === 'Disponible' ? '#00e676' : '#a8a8b3';
+                return `
+                    <div style="background:${esDuplicado ? 'rgba(255,71,87,0.08)' : 'rgba(255,255,255,0.03)'}; border:1px solid ${esDuplicado ? 'rgba(255,71,87,0.4)' : 'rgba(255,255,255,0.08)'}; border-radius:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                        <div style="min-width:0;">
+                            <div style="font-family:monospace; font-size:12px; color:white; word-break:break-all;">${escHtml(c.codigo)}</div>
+                            <div style="font-size:11px; color:${colorEstado}; margin-top:3px;">${escHtml(c.estado)}${c.nickname_comprador ? ' · ' + escHtml(c.nickname_comprador) : ''}${esDuplicado ? ' · <span style="color:#ff4757; font-weight:bold;">⚠️ Repetido</span>' : ''}</div>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-shrink:0;">
+                            <button class="btn-copy" onclick="copiarTexto('${escAttr(c.codigo).replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>
+                            ${c.estado === 'Disponible' ? `<button class="btn-remove" style="padding:6px 8px;" onclick="eliminarCodigoDesdeModal(${c.id}, '${paquete.replace(/'/g, "\\'")}')"><span class="material-icons" style="font-size:16px;">delete</span></button>` : ''}
+                        </div>
+                    </div>`;
+            };
+
+            const disponibles = codigos.filter(c => c.estado === 'Disponible');
+            const usados = codigos.filter(c => c.estado !== 'Disponible');
+
             const lista = document.getElementById('mvc-lista');
             if (codigos.length === 0) {
                 lista.innerHTML = "<p style='color:#a8a8b3; text-align:center;'>Sin códigos cargados.</p>";
             } else {
-                lista.innerHTML = codigos.map(c => {
-                    const esDuplicado = conteoPorCodigo[c.codigo] > 1;
-                    const colorEstado = c.estado === 'Disponible' ? '#00e676' : '#a8a8b3';
-                    return `
-                        <div style="background:${esDuplicado ? 'rgba(255,71,87,0.08)' : 'rgba(255,255,255,0.03)'}; border:1px solid ${esDuplicado ? 'rgba(255,71,87,0.4)' : 'rgba(255,255,255,0.08)'}; border-radius:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
-                            <div style="min-width:0;">
-                                <div style="font-family:monospace; font-size:12px; color:white; word-break:break-all;">${escHtml(c.codigo)}</div>
-                                <div style="font-size:11px; color:${colorEstado}; margin-top:3px;">${escHtml(c.estado)}${c.nickname_comprador ? ' · ' + escHtml(c.nickname_comprador) : ''}${esDuplicado ? ' · <span style="color:#ff4757; font-weight:bold;">⚠️ Repetido</span>' : ''}</div>
-                            </div>
-                            <div style="display:flex; gap:6px; flex-shrink:0;">
-                                <button class="btn-copy" onclick="copiarTexto('${escAttr(c.codigo).replace(/'/g, "\\'")}', this)"><span class="material-icons">content_copy</span></button>
-                                ${c.estado === 'Disponible' ? `<button class="btn-remove" style="padding:6px 8px;" onclick="eliminarCodigoDesdeModal(${c.id}, '${paquete.replace(/'/g, "\\'")}')"><span class="material-icons" style="font-size:16px;">delete</span></button>` : ''}
-                            </div>
-                        </div>`;
-                }).join('');
+                lista.innerHTML = `
+                    <div style="color:#00e676; font-weight:bold; font-size:13px; display:flex; align-items:center; gap:6px;"><span class="material-icons" style="font-size:16px;">check_circle</span> Disponibles (${disponibles.length})</div>
+                    ${disponibles.length > 0 ? disponibles.map(filaCodigo).join('') : "<p style='color:#a8a8b3; font-size:12px; margin:0 0 4px 0;'>No hay códigos disponibles.</p>"}
+                    <div style="color:#a8a8b3; font-weight:bold; font-size:13px; display:flex; align-items:center; gap:6px; margin-top:10px;"><span class="material-icons" style="font-size:16px;">history</span> Usados (${usados.length})</div>
+                    ${usados.length > 0 ? usados.map(filaCodigo).join('') : "<p style='color:#a8a8b3; font-size:12px; margin:0;'>No hay códigos usados.</p>"}
+                `;
             }
 
             document.getElementById('modal-ver-codigos-overlay').style.display = 'flex';
