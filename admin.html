@@ -685,6 +685,29 @@
                     <h1 class="view-title"><span class="material-icons" style="color:#00d2ff;">inventory_2</span> Stock de Códigos</h1>
                     <p class="view-subtitle">Carga nuevos códigos y revisa cuánto stock disponible te queda por paquete.</p>
 
+                    <div class="card-box" data-rol="diamantes">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">tune</span> Modo de Entrega — Recarga Regular</h3>
+                        <p style="color:#a8a8b3; font-size:12px; margin:-8px 0 15px 0;">Define cómo funciona la compra de diamantes en la web. Podés cambiarlo cuando quieras, sin tocar código.</p>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:10px; margin-bottom:12px;">
+                            <div id="modo-rr-opcion-manual" onclick="elegirModoRecargaRegularUI('manual')" style="cursor:pointer; border:2px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px; text-align:center; transition:all 0.2s;">
+                                <span class="material-icons" style="color:#a8a8b3; font-size:24px;">support_agent</span>
+                                <div style="color:white; font-weight:700; font-size:13px; margin-top:6px;">Solo Manual</div>
+                                <div style="color:#a8a8b3; font-size:11px; margin-top:4px; line-height:1.4;">Siempre lo completás vos — pide ID, cae en Pedidos, sin auto-canje.</div>
+                            </div>
+                            <div id="modo-rr-opcion-hibrido" onclick="elegirModoRecargaRegularUI('hibrido')" style="cursor:pointer; border:2px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px; text-align:center; transition:all 0.2s;">
+                                <span class="material-icons" style="color:#a8a8b3; font-size:24px;">call_split</span>
+                                <div style="color:white; font-weight:700; font-size:13px; margin-top:6px;">Híbrido</div>
+                                <div style="color:#a8a8b3; font-size:11px; margin-top:4px; line-height:1.4;">El cliente elige: lo canjea él mismo o lo hacés vos.</div>
+                            </div>
+                            <div id="modo-rr-opcion-autoservicio" onclick="elegirModoRecargaRegularUI('autoservicio')" style="cursor:pointer; border:2px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px; text-align:center; transition:all 0.2s;">
+                                <span class="material-icons" style="color:#a8a8b3; font-size:24px;">bolt</span>
+                                <div style="color:white; font-weight:700; font-size:13px; margin-top:6px;">Solo Autoservicio</div>
+                                <div style="color:#a8a8b3; font-size:11px; margin-top:4px; line-height:1.4;">Siempre entrega el código al instante, el cliente lo canjea él mismo.</div>
+                            </div>
+                        </div>
+                        <p id="modo-rr-estado-actual" style="color:#00e676; font-size:12px; margin:0;"></p>
+                    </div>
+
                     <div class="card-box upload-container" data-rol="diamantes">
                         <h3 class="card-box-title"><span class="material-icons" style="color: #00d2ff;">cloud_upload</span> Ingreso Rápido de Códigos</h3>
                         <div class="grid-container" style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
@@ -1399,7 +1422,7 @@
             }
             await cargarPedidos(); await cargarHistorial(); await cargarStock();
 
-            if (rol === 'full' || rol === 'diamantes') { await cargarProductosDiamantesAdmin(); await cargarPortadasAdmin('diamantes'); }
+            if (rol === 'full' || rol === 'diamantes') { await cargarProductosDiamantesAdmin(); await cargarPortadasAdmin('diamantes'); await cargarModoRecargaRegular(); }
             if (rol === 'full' || rol === 'streaming') { await cargarProductosStreamingAdmin(); await cargarPortadasAdmin('streaming'); }
             await cargarCuentasExcluidas();
             fijarRangoGanancias('hoy');
@@ -2482,6 +2505,32 @@
         // ================= CATÁLOGO: DIAMANTES =================
         function escAttr(v) { return (v === null || v === undefined) ? '' : String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
         function escHtml(v) { return (v === null || v === undefined) ? '' : String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+        const NOMBRES_MODO_RR = { manual: 'Solo Manual', hibrido: 'Híbrido', autoservicio: 'Solo Autoservicio' };
+
+        async function cargarModoRecargaRegular() {
+            const { data } = await supabaseClient.from('config_recarga_regular').select('modo').eq('id', 1).maybeSingle();
+            pintarModoRecargaRegularUI(data ? data.modo : 'manual');
+        }
+
+        function pintarModoRecargaRegularUI(modo) {
+            ['manual', 'hibrido', 'autoservicio'].forEach(m => {
+                const el = document.getElementById(`modo-rr-opcion-${m}`);
+                if (!el) return;
+                const activo = m === modo;
+                el.style.borderColor = activo ? '#a155ff' : 'rgba(255,255,255,0.1)';
+                el.style.background = activo ? 'rgba(161,85,255,0.08)' : 'transparent';
+            });
+            const estado = document.getElementById('modo-rr-estado-actual');
+            if (estado) estado.innerText = `Modo actual: ${NOMBRES_MODO_RR[modo] || modo}`;
+        }
+
+        async function elegirModoRecargaRegularUI(modo) {
+            const { error } = await supabaseClient.rpc('admin_cambiar_modo_recarga_regular', { p_modo: modo });
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
+            pintarModoRecargaRegularUI(modo);
+            showToast(`Recarga Regular ahora en modo "${NOMBRES_MODO_RR[modo]}".`);
+        }
 
         async function cargarProductosDiamantesAdmin() {
             const selectCat = document.getElementById('cat-diam-categoria');

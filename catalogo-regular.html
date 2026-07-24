@@ -485,6 +485,7 @@
         let codigoCuponValidado = '';
         let usuarioActualCompleto = null;
         let modoEntregaRegular = 'auto';
+        let MODO_RECARGA_REGULAR = 'manual';
 
         function elegirModoEntrega(modo) {
             modoEntregaRegular = modo;
@@ -520,6 +521,9 @@
             }
 
             cargarProductosCatalogo('regular');
+
+            const { data: config } = await supabaseClient.from('config_recarga_regular').select('modo').eq('id', 1).maybeSingle();
+            if (config && config.modo) MODO_RECARGA_REGULAR = config.modo;
 
             // LANZAR TICKER EN VIVO
             cargarSistemaComunidadDinamica();
@@ -731,11 +735,25 @@
             document.getElementById('compra-pantalla-formulario').style.display = 'block';
             document.getElementById('compra-pantalla-error').style.display = 'none';
             document.getElementById('compra-pantalla-exito').style.display = 'none';
-            document.getElementById('modal-modo-entrega-wrap').style.display = esPaseBooyah ? 'none' : 'block';
-            document.getElementById('modal-id-seccion-wrap').style.display = esPaseBooyah ? 'block' : 'none';
-            document.getElementById('modal-codigo-aviso-wrap').style.display = esPaseBooyah ? 'none' : 'flex';
             document.getElementById('modal-id-juego').value = "";
-            if (!esPaseBooyah) elegirModoEntrega('auto');
+            if (esPaseBooyah) {
+                document.getElementById('modal-modo-entrega-wrap').style.display = 'none';
+                document.getElementById('modal-id-seccion-wrap').style.display = 'block';
+                document.getElementById('modal-codigo-aviso-wrap').style.display = 'none';
+            } else if (MODO_RECARGA_REGULAR === 'manual') {
+                document.getElementById('modal-modo-entrega-wrap').style.display = 'none';
+                modoEntregaRegular = 'admin';
+                document.getElementById('modal-id-seccion-wrap').style.display = 'block';
+                document.getElementById('modal-codigo-aviso-wrap').style.display = 'none';
+            } else if (MODO_RECARGA_REGULAR === 'autoservicio') {
+                document.getElementById('modal-modo-entrega-wrap').style.display = 'none';
+                modoEntregaRegular = 'auto';
+                document.getElementById('modal-id-seccion-wrap').style.display = 'none';
+                document.getElementById('modal-codigo-aviso-wrap').style.display = 'flex';
+            } else {
+                document.getElementById('modal-modo-entrega-wrap').style.display = 'block';
+                elegirModoEntrega('auto');
+            }
             desbloquearNickname();
             precioFinalConCupon = null; codigoCuponValidado = '';
             document.getElementById('modal-cupon').value = '';
