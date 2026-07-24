@@ -743,44 +743,6 @@
                         </div>
                     </div>
 
-                    <div class="card-box upload-container" data-rol="streaming">
-                        <h3 class="card-box-title"><span class="material-icons" style="color: #a155ff;">live_tv</span> Stock de Plataformas (Streaming)</h3>
-                        <p style="color: #a8a8b3; font-size: 13px; margin: -10px 0 15px 0;">Cada cuenta que agregues se reparte automáticamente en perfiles, o se guarda como venta única si eliges Cuenta Completa.</p>
-                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px;">
-                            <div>
-                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Plataforma</label>
-                                <select id="plat-stock-plataforma" class="bulk-select" onchange="actualizarTipoCargaDisponible()">
-                                    <option value="Netflix 4K" data-cuenta="1">Netflix 4K</option>
-                                    <option value="Disney+ (incluye ESPN)" data-cuenta="1">Disney+ (incluye ESPN)</option>
-                                    <option value="HBO Max" data-cuenta="1">HBO Max</option>
-                                    <option value="Prime Video" data-cuenta="1">Prime Video</option>
-                                    <option value="DirecTV Go" data-cuenta="0">DirecTV Go</option>
-                                    <option value="Paramount+" data-cuenta="0">Paramount+</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label style="color: #00e676; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Tipo de carga</label>
-                                <select id="plat-stock-tipo" class="bulk-select">
-                                    <option value="perfil">Perfil (se divide automático)</option>
-                                    <option value="cuenta_completa">Cuenta Completa (venta única)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
-                            <div>
-                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Correo</label>
-                                <input type="email" id="plat-stock-correo" class="bulk-select" placeholder="cuenta@gmail.com" style="width: 100%; box-sizing: border-box;">
-                            </div>
-                            <div>
-                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Contraseña</label>
-                                <input type="text" id="plat-stock-contrasena" class="bulk-select" placeholder="Contraseña de la cuenta" style="width: 100%; box-sizing: border-box;">
-                            </div>
-                        </div>
-                        <button class="btn-primary" id="btn-guardar-cuenta-plataforma" style="width: 100%; padding: 15px; font-weight: bold; background: #a155ff; color: white; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-top: 15px;" onclick="guardarCuentaPlataforma()">
-                            <span class="material-icons">save</span> Guardar Cuenta
-                        </button>
-                    </div>
-
                     <div class="card-box" data-rol="diamantes">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">inventory</span> Stock de Diamantes</h3>
                         <div id="alerta-stock-bajo-diamantes" class="stock-low-banner"></div>
@@ -3448,47 +3410,6 @@
             });
 
             document.getElementById('bulk-codigos').value = '';
-            cargarPedidos(); cargarStock();
-        }
-
-        function actualizarTipoCargaDisponible() {
-            const sel = document.getElementById('plat-stock-plataforma');
-            const tieneCuenta = sel.options[sel.selectedIndex].dataset.cuenta === '1';
-            const tipoSel = document.getElementById('plat-stock-tipo');
-            tipoSel.querySelector('option[value="cuenta_completa"]').disabled = !tieneCuenta;
-            if (!tieneCuenta && tipoSel.value === 'cuenta_completa') tipoSel.value = 'perfil';
-        }
-
-        async function guardarCuentaPlataforma() {
-            const plataforma = document.getElementById('plat-stock-plataforma').value;
-            const tipo = document.getElementById('plat-stock-tipo').value;
-            const correo = document.getElementById('plat-stock-correo').value.trim();
-            const contrasena = document.getElementById('plat-stock-contrasena').value.trim();
-
-            const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!regexEmail.test(correo)) return showToast("Ingresa un correo válido.", "warning");
-            if (!contrasena) return showToast("Ingresa la contraseña de la cuenta.", "warning");
-
-            const tipoTexto = tipo === 'cuenta_completa' ? 'Cuenta Completa (venta única)' : 'Perfil (se divide automático)';
-            const conf = await openCustomModal({ title: "Guardar Cuenta", desc: `¿Guardar esta cuenta de <b>${plataforma}</b> como <b>${tipoTexto}</b>?`, icon: 'live_tv', color: '#a155ff', textColor: 'white', type: 'confirm', confirmText: 'Guardar' });
-            if (!conf) return;
-
-            const { data, error } = await supabaseClient.rpc('admin_agregar_stock_plataforma', {
-                p_plataforma: plataforma, p_tipo: tipo, p_correo: correo, p_contrasena: contrasena
-            });
-
-            if (error) { showToast("Error: " + error.message, "error"); return; }
-
-            const resultado = data && data[0];
-            const filas = resultado ? resultado.filas_creadas : 0;
-            const completados = resultado ? resultado.pedidos_completados : 0;
-
-            let msg = `Se agregaron ${filas} unidad(es) de stock.`;
-            if (completados > 0) msg += ` Se completaron ${completados} pedido(s) pendiente(s) automáticamente.`;
-            showToast(msg);
-
-            document.getElementById('plat-stock-correo').value = '';
-            document.getElementById('plat-stock-contrasena').value = '';
             cargarPedidos(); cargarStock();
         }
 
