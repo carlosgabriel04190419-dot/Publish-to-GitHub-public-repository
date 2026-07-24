@@ -2773,7 +2773,7 @@
             cont.innerHTML = '';
             (data || []).forEach(p => {
                 const categoria = SLUG_A_CATEGORIA_MANTENIMIENTO[p.slug];
-                const mant = mantPorCategoria[categoria] || { en_mantenimiento: false, mensaje: null };
+                const mant = mantPorCategoria[categoria] || { en_mantenimiento: false, mensaje: null, visible: true };
                 const div = document.createElement('div');
                 div.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:10px; padding:10px; text-align:center;';
                 div.innerHTML = `
@@ -2782,7 +2782,11 @@
                     <input type="file" accept="image/png,image/jpeg,image/webp" style="width:100%; font-size:11px;" onchange="subirPortada('${p.slug}', this)">
                     ${categoria ? `
                     <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08); text-align:left;">
-                        <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#ff9800; cursor:pointer; font-weight:bold;">
+                        <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#00e676; cursor:pointer; font-weight:bold;">
+                            <input type="checkbox" ${mant.visible !== false ? 'checked' : ''} onchange="toggleVisibilidadCategoria('${categoria}', this.checked)">
+                            Mostrar en la web
+                        </label>
+                        <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#ff9800; cursor:pointer; font-weight:bold; margin-top:8px;">
                             <input type="checkbox" ${mant.en_mantenimiento ? 'checked' : ''} onchange="toggleMantenimientoCategoria('${categoria}', this.checked)">
                             En mantenimiento
                         </label>
@@ -2791,6 +2795,12 @@
                 `;
                 cont.appendChild(div);
             });
+        }
+
+        async function toggleVisibilidadCategoria(categoria, visible) {
+            const { error } = await supabaseClient.from('categorias_mantenimiento').update({ visible, actualizado_en: new Date().toISOString() }).eq('categoria', categoria);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast(visible ? "Catálogo visible de nuevo en la web." : "Catálogo oculto — ya no aparece en la web.", visible ? "success" : "warning");
         }
 
         async function cargarPortadaCuentas() {

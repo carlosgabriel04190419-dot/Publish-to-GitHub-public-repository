@@ -151,7 +151,7 @@
 
         <div class="games-grid">
 
-            <div class="game-card" onclick="window.location.href='catalogo-regular.html'">
+            <div class="game-card" data-categoria="regular" onclick="window.location.href='catalogo-regular.html'">
                 <div class="game-content">
                     <div class="game-image free-fire-bg" id="portada-freefire-regular"></div>
                     <div class="game-info">
@@ -161,7 +161,7 @@
                 </div>
             </div>
 
-            <div class="game-card" onclick="window.location.href='catalogo-recarga-directa.html'">
+            <div class="game-card" data-categoria="directa" onclick="window.location.href='catalogo-recarga-directa.html'">
                 <div class="game-content">
                     <div class="game-image" id="portada-freefire-directa" style="background: url('recargadirecta.jpg') center/cover no-repeat;"></div>
                     <div class="game-info">
@@ -171,7 +171,7 @@
                 </div>
             </div>
 
-            <div class="game-card" onclick="window.location.href='catalogo-promo.html'">
+            <div class="game-card" data-categoria="promo" onclick="window.location.href='catalogo-promo.html'">
                 <div class="game-content">
                     <div class="game-image free-fire-pr-bg" id="portada-freefire-promo"></div>
                     <div class="game-info">
@@ -181,7 +181,7 @@
                 </div>
             </div>
 
-            <div class="game-card" onclick="window.location.href='catalogo-fragmentos.html'">
+            <div class="game-card" data-categoria="fragmentos" onclick="window.location.href='catalogo-fragmentos.html'">
                 <div class="game-content">
                     <div class="game-image" id="portada-freefire-fragmentos" style="background: url('fragmentos.png') center/cover no-repeat;"></div>
                     <div class="game-info">
@@ -191,7 +191,7 @@
                 </div>
             </div>
 
-            <div class="game-card" onclick="window.location.href='catalogo-cajas.html'">
+            <div class="game-card" data-categoria="cajas" onclick="window.location.href='catalogo-cajas.html'">
                 <div class="game-content">
                     <div class="game-image" id="portada-freefire-cajas" style="background: url('cajas.png') center/cover no-repeat;"></div>
                     <div class="game-info">
@@ -201,7 +201,7 @@
                 </div>
             </div>
 
-            <div class="game-card" onclick="window.location.href='catalogo-cuentas.html'">
+            <div class="game-card" data-categoria="cuentas" onclick="window.location.href='catalogo-cuentas.html'">
                 <div class="game-content">
                     <div class="game-image" id="portada-freefire-cuentas" style="background: linear-gradient(135deg, #a155ff, #00d2ff);"></div>
                     <div class="game-info">
@@ -245,6 +245,7 @@
             }
 
             cargarSistemaComunidadDinamica();
+            ocultarCatalogosNoVisibles();
 
             aplicarPortadas({
                 'portada-hero-freefire': { slug: 'hub-freefire', plantilla: "linear-gradient(rgba(18, 18, 20, 0.8), rgba(18, 18, 20, 1)), url('{url}') center/cover" },
@@ -258,6 +259,14 @@
         };
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
+
+        async function ocultarCatalogosNoVisibles() {
+            const tarjetas = document.querySelectorAll('.game-card[data-categoria]');
+            const categorias = Array.from(tarjetas).map(t => t.dataset.categoria);
+            const { data } = await supabaseClient.from('categorias_mantenimiento').select('categoria, visible').in('categoria', categorias);
+            const noVisibles = new Set((data || []).filter(c => c.visible === false).map(c => c.categoria));
+            tarjetas.forEach(t => { if (noVisibles.has(t.dataset.categoria)) t.style.display = 'none'; });
+        }
 
         async function cargarSistemaComunidadDinamica() {
             try {
