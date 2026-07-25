@@ -400,7 +400,7 @@
                     ultimas10.forEach(p => {
                         let idRaw = p.id_juego ? p.id_juego.toString().trim() : '';
                         let idOculto = idRaw.length > 4 ? idRaw.substring(0, idRaw.length - 4) + '****' : '********';
-                        tickerHtml += `<div class="ticker-item">💎 <span class="hl">${p.nickname}</span> adquirió ${p.paquete} <span class="id-text">| ID: ${idOculto}</span></div>`;
+                        tickerHtml += `<div class="ticker-item">💎 <span class="hl">${escHtml(p.nickname)}</span> adquirió ${escHtml(p.paquete)} <span class="id-text">| ID: ${idOculto}</span></div>`;
                     });
 
                     if(tickerHtml !== '') {

@@ -31,6 +31,11 @@ const supabaseUrl = 'https://kskynakwlglwmliffcnx.supabase.co';
 const supabaseKey = 'sb_publishable_piAkvgxqryyzBfvbeIvTNw_MD_U4OjF';
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+// Escapa texto antes de insertarlo con innerHTML — usar siempre que se muestre un
+// nickname, paquete u otro dato que un usuario haya podido escribir (ej. el ticker
+// de compras en vivo), para que no se pueda inyectar HTML/JS con un nickname malicioso.
+function escHtml(v) { return (v === null || v === undefined) ? '' : String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
 /**
  * Verifica la sesión REAL de Supabase Auth (no localStorage) y trae los datos
  * actuales del usuario directo de la base de datos. Sincroniza localStorage

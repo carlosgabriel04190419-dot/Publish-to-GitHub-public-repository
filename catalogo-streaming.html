@@ -415,7 +415,7 @@
                     const ultimas10 = pedidosTicker.filter(p => !usuariosExcluidos.includes(p.nickname.toLowerCase())).slice(0, 10);
                     let tickerHtml = '';
                     ultimas10.forEach(p => {
-                        tickerHtml += `<div class="ticker-item">🛒 <span class="hl">${p.nickname}</span> adquirió ${p.paquete}</div>`;
+                        tickerHtml += `<div class="ticker-item">🛒 <span class="hl">${escHtml(p.nickname)}</span> adquirió ${escHtml(p.paquete)}</div>`;
                     });
                     if (tickerHtml !== '') {
                         const track = document.getElementById('ticker-track');

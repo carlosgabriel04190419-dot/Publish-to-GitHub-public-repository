@@ -988,7 +988,7 @@
                     let tickerHtml = '';
                     ultimas10.forEach(p => {
                         let idOculto = p.id_juego && p.id_juego.length > 4 ? p.id_juego.substring(0, p.id_juego.length - 4) + '****' : '********';
-                        tickerHtml += `<div class="ticker-item">💎 <span class="hl">${p.nickname}</span> adquirió ${p.paquete} <span class="id-text">| ID: ${idOculto}</span></div>`;
+                        tickerHtml += `<div class="ticker-item">💎 <span class="hl">${escHtml(p.nickname)}</span> adquirió ${escHtml(p.paquete)} <span class="id-text">| ID: ${idOculto}</span></div>`;
                     });
                     if(tickerHtml !== '') {
                         const track = document.getElementById('ticker-track');
