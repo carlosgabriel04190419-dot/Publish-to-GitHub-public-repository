@@ -1689,7 +1689,8 @@
 
         async function cargarCuentasMadre() {
             await cargarPoolEnlacesInvitacion();
-            const { data } = await supabaseClient.from('v_cuentas_madre_streaming_detalle').select('*').order('cuenta_madre_id').order('numero_perfil');
+            const { data: dataRaw } = await supabaseClient.rpc('admin_ver_cuentas_madre_streaming_detalle');
+            const data = (dataRaw || []).slice().sort((a, b) => a.cuenta_madre_id - b.cuenta_madre_id || a.numero_perfil - b.numero_perfil);
             const grupos = {};
             (data || []).forEach(fila => {
                 if (!grupos[fila.cuenta_madre_id]) {
