@@ -828,7 +828,7 @@
             filtrados.forEach(p => {
                 const fecha = new Date(p.created_at).toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'2-digit', hour:'2-digit', minute:'2-digit' });
                 let claseEstado = p.estado === 'Completado' ? 'status-completed' : (p.estado === 'Rechazado' ? 'status-discount' : '');
-                let datosJuego = `<div style="font-family:monospace; line-height:1.5;">ID: <span style="color:#e0e0e0;">${p.id_juego||'N/A'}</span><br>Nick: <span style="color:#a155ff; font-weight:bold;">${p.nickname_juego||'N/A'}</span></div>`;
+                let datosJuego = `<div style="font-family:monospace; line-height:1.5;">ID: <span style="color:#e0e0e0;">${escHtml(p.id_juego||'N/A')}</span><br>Nick: <span style="color:#a155ff; font-weight:bold;">${escHtml(p.nickname_juego||'N/A')}</span></div>`;
 
                 tbCompras.innerHTML += `
                     <tr>
