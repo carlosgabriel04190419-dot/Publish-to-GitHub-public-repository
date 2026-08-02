@@ -279,10 +279,14 @@
         }
 
         async function cargarMisCodigos(nickname) {
-            const { data } = await supabaseClient.from('pedidos').select('*')
+            const { data: dataCruda } = await supabaseClient.from('pedidos').select('*')
                 .eq('nickname', nickname).in('paquete', PAQUETES_REGULAR)
                 .gte('created_at', FECHA_INICIO_AUTOSERVICIO)
                 .order('created_at', { ascending: false });
+
+            // Los pedidos entregados en automático (CodeStore) no tienen código que canjear,
+            // ya se acreditaron solos a la cuenta — no deben aparecer en esta lista.
+            const data = (dataCruda || []).filter(p => !(p.codigo || '').startsWith('CodeStore:'));
 
             const grid = document.getElementById('mc-grid');
 

@@ -580,7 +580,11 @@
                     </div>
                 </div>
 
-                <p style="color: #a8a8b3; font-size: 13px; line-height: 1.6; margin-bottom: 20px;">Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.</p>
+                <div id="exito-mantenimiento-wrap" style="display: none; background: rgba(255,171,0,0.12); border: 1px solid rgba(255,171,0,0.3); border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; text-align: left;">
+                    <p style="color: #ffab00; font-size: 13px; line-height: 1.5; margin: 0;">🔧 <span id="exito-mantenimiento-msg"></span></p>
+                </div>
+
+                <p id="exito-texto-plazo" style="color: #a8a8b3; font-size: 13px; line-height: 1.6; margin-bottom: 20px;">Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.</p>
                 <button class="btn-outline" style="width: 100%; padding: 14px; border-color: rgba(255,255,255,0.15);" onclick="cerrarModalCompra()">Entendido</button>
             </div>
         </div>
@@ -951,22 +955,19 @@
         async function procesarTransaccion() {
             const esPaseBooyah = paqueteSeleccionado === 'Pase Booyah';
             const esRegularManual = !esPaseBooyah && modoEntregaRegular === 'admin';
-            const requiereIdManual = esPaseBooyah || esRegularManual;
             const idJuego = paso1IdValidado;
             const nicknameJuego = paso1NicknameConfirmado;
             const btn = document.getElementById('btn-confirmar-pago');
 
-            if (requiereIdManual) {
-                if (!idJuego || idJuego.length < 7) { alert("Falta tu ID de jugador — vuelve al Paso 1."); return; }
-                if (!nicknameJuego) { alert("Falta tu nombre de usuario — vuelve al Paso 1."); return; }
-            }
+            if (!idJuego || idJuego.length < 7) { alert("Falta tu ID de jugador — vuelve al Paso 1."); return; }
+            if (!nicknameJuego) { alert("Falta tu nombre de usuario — vuelve al Paso 1."); return; }
 
             btn.disabled = true; btn.innerText = "Procesando pedido...";
 
             const { data: resultadoRpc, error: errorCompra } = await supabaseClient.rpc('procesar_compra', {
                 p_paquete: paqueteSeleccionado,
-                p_id_juego: requiereIdManual ? idJuego : null,
-                p_nickname_juego: requiereIdManual ? nicknameJuego : null,
+                p_id_juego: idJuego,
+                p_nickname_juego: nicknameJuego,
                 p_codigo_cupon: codigoCuponValidado || null,
                 p_modo_entrega: esRegularManual ? 'admin' : 'auto'
             });
@@ -980,7 +981,13 @@
                 return;
             }
 
-            if (!esPaseBooyah && !esRegularManual) {
+            const vinoDeCodestore = !!(resultado.codigo && resultado.codigo.startsWith('CodeStore:'));
+            const cayoAMantenimiento = resultado.estado === 'pendiente_mantenimiento';
+            // Si CodeStore ya entregó los diamantes automáticamente, no importa qué se eligió
+            // en "¿Quién hace el canje?" — ya no requiere ninguna acción tuya.
+            const requiereAccionAdmin = cayoAMantenimiento || (!vinoDeCodestore && (esPaseBooyah || esRegularManual));
+
+            if (!esPaseBooyah && !esRegularManual && !vinoDeCodestore && !cayoAMantenimiento) {
                 window.location.href = 'mis-codigos.html';
                 return;
             }
@@ -1007,17 +1014,33 @@
                 bonoExitoWrap.style.display = 'none';
             }
 
+            const mantenimientoWrap = document.getElementById('exito-mantenimiento-wrap');
+            const textoPlazo = document.getElementById('exito-texto-plazo');
+            if (cayoAMantenimiento) {
+                document.getElementById('exito-mantenimiento-msg').innerText = resultado.mensaje;
+                mantenimientoWrap.style.display = 'block';
+                textoPlazo.innerText = 'Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.';
+            } else if (vinoDeCodestore) {
+                mantenimientoWrap.style.display = 'none';
+                textoPlazo.innerText = '✅ ¡Tus diamantes ya fueron entregados automáticamente a tu cuenta de Free Fire!';
+            } else {
+                mantenimientoWrap.style.display = 'none';
+                textoPlazo.innerText = 'Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.';
+            }
+
             btn.disabled = false; btn.innerText = "Comprar ahora";
 
             // Deja el paquete listo para que elija otro sin arrastrar la selección anterior.
             document.getElementById('paso3-wrap').style.display = 'none';
             document.querySelectorAll('#products-grid .dtile').forEach(t => t.classList.remove('dtile-selected'));
 
-            const nombreGuardado = localStorage.getItem('nombreUsuario');
-            const numeroAdmin = "51943737572";
-            const tipoTexto = esPaseBooyah ? 'PASE BOOYAH' : 'RECARGA REGULAR (canje manual)';
-            const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de realizar una compra de *${tipoTexto}* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n💎 *Paquete:* ${paqueteSeleccionado}\n💰 *Precio:* S/ ${precioFinalCobrado.toFixed(2)}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para proceder. ¡Gracias!`;
-            window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
+            if (requiereAccionAdmin) {
+                const nombreGuardado = localStorage.getItem('nombreUsuario');
+                const numeroAdmin = "51943737572";
+                const tipoTexto = esPaseBooyah ? 'PASE BOOYAH' : (cayoAMantenimiento ? 'RECARGA REGULAR (recarga automática en mantenimiento, completar manual)' : 'RECARGA REGULAR (canje manual)');
+                const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de realizar una compra de *${tipoTexto}* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n💎 *Paquete:* ${paqueteSeleccionado}\n💰 *Precio:* S/ ${precioFinalCobrado.toFixed(2)}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para proceder. ¡Gracias!`;
+                window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
+            }
         }
     </script>
     
