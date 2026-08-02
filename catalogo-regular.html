@@ -205,35 +205,91 @@
     <main class="container" style="padding-top: 30px;">
         <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a8a8b3'"><span class="material-icons">arrow_back</span> Volver al inicio</a>
 
-        <div class="rr-pasos-wrap">
-            <div class="rr-pasos-titulo"><span class="material-icons">bolt</span> Así de fácil funciona</div>
-            <div class="rr-pasos-grid">
-                <div class="rr-paso">
-                    <span class="rr-paso-num">1</span>
-                    <span class="material-icons rr-paso-icon">shopping_cart</span>
-                    <h4>Compra tu paquete</h4>
-                    <p>Elige tus diamantes y paga al toque con tu saldo.</p>
+        <!-- PASO 1: ID DE JUGADOR -->
+        <div class="paso-card">
+            <div class="paso-titulo"><span class="paso-num">1</span> Ingresa tu ID</div>
+
+            <div id="paso1-form">
+                <label class="paso-label">ID de Jugador (Free Fire)</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="paso1-id-input" class="paso-input" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('paso1-mensaje').style.display='none';" autocomplete="off" placeholder="Ej. 24958302">
+                    <button type="button" id="paso1-btn-validar" class="paso-btn-validar" onclick="validarIdPaso1()"><span class="material-icons" style="font-size: 16px;">search</span> Validar</button>
                 </div>
-                <div class="rr-paso">
-                    <span class="rr-paso-num">2</span>
-                    <span class="material-icons rr-paso-icon">vpn_key</span>
-                    <h4>Recibe tu código</h4>
-                    <p>Aparece al instante en <b>Mis Códigos</b>, listo para copiar.</p>
+                <p id="paso1-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
+
+                <div id="paso1-nickname-manual-wrap" style="display: none; margin-top: 14px;">
+                    <label class="paso-label">Nombre de Usuario</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="paso1-nickname-input" class="paso-input" autocomplete="off" placeholder="Ej. Carlos_Pro">
+                        <button type="button" class="paso-btn-validar" onclick="confirmarNicknameManualPaso1()"><span class="material-icons" style="font-size: 16px;">check</span> Confirmar</button>
+                    </div>
                 </div>
-                <div class="rr-paso">
-                    <span class="rr-paso-num">3</span>
-                    <span class="material-icons rr-paso-icon">redeem</span>
-                    <h4>Canjéalo en Hype</h4>
-                    <p>Pega tu código con tu ID y tus diamantes llegan directo.</p>
+
+                <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px; margin-top: 16px; display: flex; gap: 10px; align-items: flex-start;">
+                    <span class="material-icons" style="color: #ffc107; font-size: 20px;">warning</span>
+                    <p style="margin: 0; color: #ffc107; font-size: 12px; line-height: 1.5;">Verifica bien tu ID y Nickname. No nos hacemos responsables por recargas enviadas a datos incorrectos.</p>
+                </div>
+            </div>
+
+            <div id="paso1-confirmado" style="display: none;">
+                <div class="cuenta-confirmada-card">
+                    <div class="cc-avatar-wrap">
+                        <span id="cc-avatar-icono" class="material-icons cc-avatar-icono">sports_esports</span>
+                        <img id="cc-avatar-banner" alt="" class="cc-avatar-banner" style="display: none;">
+                    </div>
+                    <div class="cc-info">
+                        <div class="cc-check"><span class="material-icons" style="font-size: 13px;">check_circle</span> Cuenta confirmada</div>
+                        <div class="cc-linea">Nombre de usuario: <b id="cc-nombre-txt"></b></div>
+                        <div class="cc-linea">ID de jugador: <b id="cc-id-txt"></b></div>
+                    </div>
+                    <a href="javascript:void(0)" class="cc-salir" onclick="salirPaso1()"><span class="material-icons" style="font-size: 15px;">sync_alt</span> Salir</a>
                 </div>
             </div>
         </div>
 
-        <div class="category-header"><h2>PAQUETES DISPONIBLES 💎 (Ilimitado)</h2></div>
-        
-        <section class="diamond-grid" id="products-grid">
-            <p style="color: #a8a8b3;">Cargando catálogo...</p>
-        </section>
+        <!-- PASO 2: MONTO DE RECARGA -->
+        <div class="paso-card">
+            <div class="paso-titulo"><span class="paso-num">2</span> Monto de recarga</div>
+            <section class="diamond-grid" id="products-grid">
+                <p style="color: #a8a8b3;">Cargando catálogo...</p>
+            </section>
+        </div>
+
+        <!-- PASO 3: CONFIRMAR COMPRA -->
+        <div class="paso-card" id="paso3-wrap" style="display: none;">
+            <div class="paso-titulo"><span class="paso-num">3</span> Confirmar compra</div>
+
+            <div class="paso3-resumen">
+                <div class="paso3-resumen-item">
+                    <span>Paquete</span>
+                    <b id="paso3-paquete-txt">—</b>
+                </div>
+                <div class="paso3-resumen-item">
+                    <span>Costo</span>
+                    <b id="paso3-costo-txt" style="color: #00e676;">S/ 0.00</b>
+                </div>
+            </div>
+
+            <div id="modal-modo-entrega-wrap" style="display: none; margin: 18px 0 0;">
+                <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">¿Quién hace el canje?</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div id="modo-opcion-auto" onclick="elegirModoEntrega('auto')" style="cursor: pointer; border: 2px solid #00e676; border-radius: 10px; padding: 12px; text-align: center; transition: all 0.2s;">
+                        <span class="material-icons" style="color: #00e676; font-size: 22px;">bolt</span>
+                        <div style="color: white; font-weight: 700; font-size: 13px; margin-top: 4px;">Lo canjeo yo mismo</div>
+                        <div style="color: #a8a8b3; font-size: 11px; margin-top: 3px; line-height: 1.4;">Te llega el código al instante — eliges tú cuándo canjearlo.</div>
+                    </div>
+                    <div id="modo-opcion-admin" onclick="elegirModoEntrega('admin')" style="cursor: pointer; border: 2px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; text-align: center; transition: all 0.2s;">
+                        <span class="material-icons" style="color: #a8a8b3; font-size: 22px;">support_agent</span>
+                        <div style="color: white; font-weight: 700; font-size: 13px; margin-top: 4px;">Que lo haga el admin</div>
+                        <div style="color: #a8a8b3; font-size: 11px; margin-top: 3px; line-height: 1.4;">Puede demorar unos minutos, según disponibilidad.</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-primary paso3-btn-comprar" onclick="abrirRevisionFinal()">
+                <span class="material-icons">shopping_cart_checkout</span> Comprar ahora
+            </button>
+        </div>
 
         <!-- SECCIÓN DE RECOMENDACIONES (CROSS-SELLING) -->
         <div style="margin-top: 70px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 40px; padding-bottom: 40px;">
@@ -275,23 +331,68 @@
     </main>
 
     <style>
-        .rr-pasos-wrap { max-width: 1000px; margin: 0 auto 45px; }
-        .rr-pasos-titulo { display: flex; align-items: center; justify-content: center; gap: 8px; color: #a155ff; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 18px; }
-        .rr-pasos-titulo .material-icons { font-size: 18px; }
-        .rr-pasos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-        .rr-paso { position: relative; background: rgba(26, 26, 31, 0.7); border: 1px solid rgba(161,85,255,0.15); border-radius: 14px; padding: 24px 20px; text-align: center; transition: border-color 0.2s, transform 0.2s; }
-        .rr-paso:hover { border-color: rgba(161,85,255,0.45); transform: translateY(-3px); }
-        .rr-paso-num { position: absolute; top: 14px; left: 16px; width: 22px; height: 22px; border-radius: 50%; background: rgba(161,85,255,0.15); color: #a155ff; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
-        .rr-paso-icon { font-size: 30px; color: #00d2ff; background: rgba(0,210,255,0.1); padding: 12px; border-radius: 50%; margin-bottom: 14px; }
-        .rr-paso h4 { color: white; font-size: 15px; margin: 0 0 8px 0; }
-        .rr-paso p { color: #a8a8b3; font-size: 12.5px; line-height: 1.5; margin: 0; }
+        /* --- FLUJO DE COMPRA EN PASOS (estilo "centro de recargas") --- */
+        .paso-card {
+            max-width: 1000px; margin: 0 auto 22px;
+            background: rgba(26, 26, 31, 0.7); border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px; padding: 22px;
+        }
+        .paso-titulo {
+            display: flex; align-items: center; gap: 12px;
+            color: white; font-size: 18px; font-weight: 800; margin-bottom: 18px;
+        }
+        .paso-num {
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            width: 30px; height: 30px; border-radius: 8px;
+            background: linear-gradient(135deg, #a155ff, #7c3fd4); color: white;
+            font-size: 15px; font-weight: 900;
+            box-shadow: 0 0 12px rgba(161,85,255,0.35);
+        }
+        .paso-label { color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500; }
+        .paso-input {
+            flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box;
+            font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;
+        }
+        .paso-btn-validar {
+            background: rgba(0,230,118,0.1); border: 1px solid #00e676; color: #00e676;
+            border-radius: 8px; padding: 0 16px; font-weight: bold; font-size: 12px; cursor: pointer;
+            white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;
+        }
+        .cuenta-confirmada-card {
+            display: flex; align-items: center; gap: 14px;
+            background: rgba(0,230,118,0.06); border: 1px solid rgba(0,230,118,0.3);
+            border-radius: 12px; padding: 14px;
+        }
+        .cc-avatar-wrap {
+            width: 52px; height: 52px; border-radius: 12px; background: rgba(0,230,118,0.15);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            overflow: hidden; position: relative;
+        }
+        .cc-avatar-icono { font-size: 28px; color: #00e676; }
+        .cc-avatar-banner { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left center; }
+        .cc-info { flex: 1; min-width: 0; text-align: left; }
+        .cc-check { display: flex; align-items: center; gap: 5px; color: #00e676; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .cc-linea { color: white; font-size: 13px; margin-top: 2px; }
+        .cc-linea b { color: #00e676; }
+        .cc-salir { color: #a8a8b3; font-size: 12px; text-decoration: none; display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+        .cc-salir:hover { color: white; }
+        .paso3-resumen { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 6px; }
+        .paso3-resumen-item {
+            background: rgba(0,0,0,0.3); border-radius: 10px; padding: 14px;
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        .paso3-resumen-item span { color: #a8a8b3; font-size: 12px; }
+        .paso3-resumen-item b { color: white; font-size: 17px; }
+        .paso3-btn-comprar {
+            width: 100%; padding: 16px; font-size: 15px; font-weight: bold; margin-top: 18px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .dtile-selected { border-color: #a155ff !important; box-shadow: 0 0 0 2px rgba(161,85,255,0.4), 0 10px 25px rgba(161, 85, 255, 0.2); }
         @media (max-width: 700px) {
-            .rr-pasos-grid { gap: 8px; }
-            .rr-paso { padding: 14px 6px; border-radius: 10px; }
-            .rr-paso-num { width: 16px; height: 16px; font-size: 9px; top: 6px; left: 6px; }
-            .rr-paso-icon { font-size: 18px; padding: 8px; margin-bottom: 8px; }
-            .rr-paso h4 { font-size: 11px; margin: 0 0 3px 0; line-height: 1.25; }
-            .rr-paso p { display: none; }
+            .paso-card { padding: 16px; border-radius: 12px; }
+            .paso-titulo { font-size: 15px; margin-bottom: 14px; }
+            .paso-num { width: 26px; height: 26px; font-size: 13px; }
         }
         .cz-faq-wrapper { max-width: 850px; margin: 30px auto 60px; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .cz-faq-header { text-align: center; margin-bottom: 50px; }
@@ -348,7 +449,7 @@
             <div id="compra-pantalla-formulario">
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
                     <span class="material-icons" style="color: #a155ff; font-size: 32px; background: rgba(161,85,255,0.1); padding: 10px; border-radius: 50%;">shopping_bag</span>
-                    <div><h2 style="font-size: 20px; color: white; margin: 0;">Confirmar Pedido</h2><p style="color: #a8a8b3; font-size: 13px; margin: 3px 0 0 0;">Estás a un paso de adquirir tu producto.</p></div>
+                    <div><h2 style="font-size: 20px; color: white; margin: 0;">Confirmar Compra</h2><p style="color: #a8a8b3; font-size: 13px; margin: 3px 0 0 0;">Revisa los detalles antes de continuar.</p></div>
                 </div>
 
                 <!-- TICKET FINANCIERO DETALLADO -->
@@ -356,6 +457,16 @@
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                         <span style="color: #a8a8b3; font-size: 14px;">Producto:</span>
                         <strong id="modal-paquete-nombre" style="color: white; font-size: 15px;">---</strong>
+                    </div>
+                    <div id="modal-bono-wrap" style="display: none; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span style="color: #a8a8b3; font-size: 12.5px;">Diamantes base:</span>
+                            <strong style="color: white; font-size: 12.5px;">💎 <span id="modal-bono-base"></span></strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #a8a8b3; font-size: 12.5px;">+ Bono:</span>
+                            <strong style="color: #00e676; font-size: 12.5px;">💎 <span id="modal-bono-extra"></span></strong>
+                        </div>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
                         <span style="color: #a8a8b3; font-size: 14px; padding-top: 2px;">Costo a descontar:</span>
@@ -396,66 +507,23 @@
                     </div>
                 </div>
 
-                <div id="modal-modo-entrega-wrap" style="display: none; margin-bottom: 20px;">
-                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">¿Quién hace el canje?</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div id="modo-opcion-auto" onclick="elegirModoEntrega('auto')" style="cursor: pointer; border: 2px solid #00e676; border-radius: 10px; padding: 12px; text-align: center; transition: all 0.2s;">
-                            <span class="material-icons" style="color: #00e676; font-size: 22px;">bolt</span>
-                            <div style="color: white; font-weight: 700; font-size: 13px; margin-top: 4px;">Lo canjeo yo mismo</div>
-                            <div style="color: #a8a8b3; font-size: 11px; margin-top: 3px; line-height: 1.4;">Te llega el código al instante — eliges tú cuándo canjearlo.</div>
-                        </div>
-                        <div id="modo-opcion-admin" onclick="elegirModoEntrega('admin')" style="cursor: pointer; border: 2px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; text-align: center; transition: all 0.2s;">
-                            <span class="material-icons" style="color: #a8a8b3; font-size: 22px;">support_agent</span>
-                            <div style="color: white; font-weight: 700; font-size: 13px; margin-top: 4px;">Que lo haga el admin</div>
-                            <div style="color: #a8a8b3; font-size: 11px; margin-top: 3px; line-height: 1.4;">Puede demorar unos minutos, según disponibilidad.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="modal-id-seccion-wrap" style="display: none;">
-                    <div style="margin-bottom: 20px;">
-                        <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('modal-id-mensaje').style.display='none'; desbloquearNickname();" autocomplete="off" placeholder="Ej. 24958302" style="flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
-                            <button type="button" id="btn-validar-id" onclick="validarIdEnModal()" style="background: rgba(0,230,118,0.1); border: 1px solid #00e676; color: #00e676; border-radius: 8px; padding: 0 16px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
-                                <span class="material-icons" style="font-size: 16px;">search</span> Validar
-                            </button>
-                        </div>
-                        <p id="modal-id-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
-
-                        <div id="modal-id-resultado-card" style="display: none; margin-top: 12px; background: rgba(0,230,118,0.06); border: 1px solid rgba(0,230,118,0.3); border-radius: 12px; padding: 14px; align-items: center; gap: 14px;">
-                            <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(0,230,118,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; position: relative;">
-                                <span id="modal-id-resultado-icono" class="material-icons" style="font-size: 28px; color: #00e676;">sports_esports</span>
-                                <img id="modal-id-resultado-banner" alt="" style="display: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left center;">
-                            </div>
-                            <div style="flex: 1; min-width: 0; text-align: left;">
-                                <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 3px;">
-                                    <span class="material-icons" style="font-size: 13px; color: #00e676;">check_circle</span>
-                                    <span style="color: #00e676; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Cuenta confirmada</span>
-                                </div>
-                                <div id="modal-id-resultado-nombre" style="color: white; font-weight: 800; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                                <div style="color: #8a8a9a; font-size: 11.5px; margin-top: 2px;">UID <span id="modal-id-resultado-uid"></span> · Nivel <span id="modal-id-resultado-nivel"></span></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="modal-nickname-wrap" style="display: none; margin-bottom: 25px;">
-                        <label id="modal-nickname-label" style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Nombre de Usuario</label>
-                        <input type="text" id="modal-nickname-juego" autocomplete="off" placeholder="Ej. Carlos_Pro" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; text-align: center; transition: all 0.3s;">
-                    </div>
-
-                    <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px; margin-bottom: 25px; display: flex; gap: 10px; align-items: flex-start;">
-                        <span class="material-icons" style="color: #ffc107; font-size: 20px;">warning</span>
-                        <p style="margin: 0; color: #ffc107; font-size: 12px; line-height: 1.5;">Verifica bien tu ID y Nickname. No nos hacemos responsables por recargas enviadas a datos incorrectos.</p>
-                    </div>
-                </div>
-
-                <div id="modal-codigo-aviso-wrap" style="display: none; background: rgba(0,210,255,0.05); border: 1px solid rgba(0,210,255,0.2); border-radius: 8px; padding: 12px; margin-bottom: 25px; gap: 10px; align-items: center;">
+                <div id="modal-codigo-aviso-wrap" style="display: none; background: rgba(0,210,255,0.05); border: 1px solid rgba(0,210,255,0.2); border-radius: 8px; padding: 12px; margin-bottom: 20px; gap: 10px; align-items: center;">
                     <span class="material-icons" style="color: #00d2ff; font-size: 18px;">lightbulb</span>
-                    <p style="margin: 0; color: #a8a8b3; font-size: 12px; line-height: 1.5;">Tu código llega a "Mis Códigos" para que lo canjees tú mismo en Hype con el ID (tuyo o de tu cliente). Es privado — no lo compartas con nadie.</p>
+                    <p style="margin: 0; color: #a8a8b3; font-size: 12px; line-height: 1.5;">Tu código llega a "Mis Códigos" para que lo canjees tú mismo en Hype con tu ID. Es privado — no lo compartas con nadie.</p>
                 </div>
 
-                <button id="btn-confirmar-pago" class="btn-primary" style="width: 100%; padding: 15px; font-size: 15px; font-weight: bold;" onclick="procesarTransaccion()">Completar Pedido</button>
+                <div style="background: rgba(0,0,0,0.25); border-radius: 10px; padding: 14px 15px; margin-bottom: 25px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #a8a8b3; font-size: 13px;">Método de pago:</span>
+                        <strong style="color: white; font-size: 13px; display: flex; align-items: center; gap: 5px;"><span class="material-icons" style="font-size: 15px; color: #00e676;">account_balance_wallet</span> Saldo disponible</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #a8a8b3; font-size: 13px;">Nombre del jugador:</span>
+                        <strong id="modal-jugador-nombre" style="color: white; font-size: 13px;">---</strong>
+                    </div>
+                </div>
+
+                <button id="btn-confirmar-pago" class="btn-primary" style="width: 100%; padding: 15px; font-size: 15px; font-weight: bold;" onclick="procesarTransaccion()">Comprar ahora</button>
             </div>
 
             <div id="compra-pantalla-error" style="display: none; text-align: center; padding: 10px 0;">
@@ -486,20 +554,18 @@
         let usuarioActualCompleto = null;
         let modoEntregaRegular = 'auto';
         let MODO_RECARGA_REGULAR = 'manual';
+        let descripcionSeleccionada = '';
+
+        // Estado del Paso 1 (ID de jugador) — se llena una vez y queda disponible
+        // para todas las compras que haga el cliente en esta misma visita.
+        let paso1IdValidado = '';
+        let paso1NicknameConfirmado = '';
 
         function elegirModoEntrega(modo) {
             modoEntregaRegular = modo;
             document.getElementById('modo-opcion-auto').style.borderColor = modo === 'auto' ? '#00e676' : 'rgba(255,255,255,0.1)';
             document.getElementById('modo-opcion-admin').style.borderColor = modo === 'admin' ? '#00d2ff' : 'rgba(255,255,255,0.1)';
-            const requiereId = modo === 'admin';
-            document.getElementById('modal-id-seccion-wrap').style.display = requiereId ? 'block' : 'none';
-            document.getElementById('modal-codigo-aviso-wrap').style.display = requiereId ? 'none' : 'flex';
-            if (!requiereId) {
-                document.getElementById('modal-id-juego').value = '';
-                document.getElementById('modal-id-mensaje').style.display = 'none';
-                document.getElementById('modal-id-resultado-card').style.display = 'none';
-                desbloquearNickname();
-            }
+            document.getElementById('modal-codigo-aviso-wrap').style.display = modo === 'auto' ? 'flex' : 'none';
         }
 
         window.onload = async function() {
@@ -553,8 +619,11 @@
                 : `<span class="dtile-price-current">S/ ${Number(p.precio).toFixed(2)}</span>`;
 
             const paqueteEscapado = p.paquete.replace(/'/g, "\\'");
+            const descEscapada = (p.descripcion || '').replace(/'/g, "\\'");
 
-            return `<div class="dtile" onclick="abrirModalCompra('${paqueteEscapado}', ${p.precio})">${badgeHtml}${iconoHtml}<h3 class="dtile-title">${escHtml(p.paquete)}</h3>${descHtml}<div class="dtile-prices">${preciosHtml}</div><div class="dtile-cta">Comprar <span class="material-icons" style="font-size:13px;">arrow_forward</span></div></div>`;
+            const paqueteAttr = escHtml(p.paquete).replace(/"/g, '&quot;');
+
+            return `<div class="dtile" data-paquete="${paqueteAttr}" onclick="seleccionarPaquete('${paqueteEscapado}', ${p.precio}, '${descEscapada}')">${badgeHtml}${iconoHtml}<h3 class="dtile-title">${escHtml(p.paquete)}</h3>${descHtml}<div class="dtile-prices">${preciosHtml}</div><div class="dtile-cta">Elegir <span class="material-icons" style="font-size:13px;">arrow_forward</span></div></div>`;
         }
 
         async function cargarProductosCatalogo(categoria) {
@@ -600,56 +669,20 @@
             } catch(e) { console.error(e); }
         }
 
-        function bloquearNickname(nickname) {
-            const campo = document.getElementById('modal-nickname-juego');
-            campo.value = nickname;
-            campo.readOnly = true;
-            campo.style.background = 'rgba(0,230,118,0.08)';
-            campo.style.borderColor = '#00e676';
-            campo.style.color = '#00e676';
-            campo.style.fontWeight = 'bold';
-            campo.style.cursor = 'not-allowed';
-            document.getElementById('modal-nickname-wrap').style.display = 'none';
-        }
-
-        function desbloquearNickname() {
-            const campo = document.getElementById('modal-nickname-juego');
-            campo.value = '';
-            campo.readOnly = false;
-            campo.style.background = 'rgba(0, 0, 0, 0.5)';
-            campo.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-            campo.style.color = 'white';
-            campo.style.fontWeight = 'normal';
-            campo.style.cursor = 'text';
-            document.getElementById('modal-nickname-wrap').style.display = 'none';
-            const tarjeta = document.getElementById('modal-id-resultado-card');
-            if (tarjeta) tarjeta.style.display = 'none';
-        }
-
-        // Se usa cuando la validación automática del ID falla: revela el campo para que
-        // el cliente escriba su nombre de usuario manualmente (antes salía siempre visible,
-        // y eso hacía que muchos lo llenaran a mano sin usar "Validar").
-        function mostrarNicknameManual() {
-            desbloquearNickname();
-            document.getElementById('modal-nickname-wrap').style.display = 'block';
-        }
-
         function mostrarCampoCupon() {
             document.getElementById('modal-cupon-wrap').style.display = 'block';
             document.getElementById('toggle-cupon-link').style.display = 'none';
             document.getElementById('modal-cupon').focus();
         }
 
-        async function validarIdEnModal() {
-            const idInput = document.getElementById('modal-id-juego');
-            const btn = document.getElementById('btn-validar-id');
-            const msg = document.getElementById('modal-id-mensaje');
+        // ================= PASO 1: ID DE JUGADOR =================
+        async function validarIdPaso1() {
+            const idInput = document.getElementById('paso1-id-input');
+            const btn = document.getElementById('paso1-btn-validar');
+            const msg = document.getElementById('paso1-mensaje');
             const uid = idInput.value.trim();
 
-            const tarjeta = document.getElementById('modal-id-resultado-card');
-
             if (!uid || uid.length < 7) {
-                tarjeta.style.display = 'none';
                 msg.style.display = 'block';
                 msg.style.color = '#ff4757';
                 msg.innerText = 'Ingresa un ID válido primero.';
@@ -659,7 +692,6 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="material-icons" style="font-size:16px;">hourglass_top</span> Validando...';
             msg.style.display = 'none';
-            tarjeta.style.display = 'none';
 
             const resultado = await validarUidFreeFire(uid);
 
@@ -667,26 +699,51 @@
             btn.innerHTML = '<span class="material-icons" style="font-size:16px;">search</span> Validar';
 
             if (resultado.ok) {
-                bloquearNickname(resultado.nickname);
-                document.getElementById('modal-id-resultado-nombre').innerText = resultado.nickname;
-                document.getElementById('modal-id-resultado-uid').innerText = uid;
-                document.getElementById('modal-id-resultado-nivel').innerText = resultado.nivel;
-
-                const banner = document.getElementById('modal-id-resultado-banner');
-                const icono = document.getElementById('modal-id-resultado-icono');
-                banner.style.display = 'none';
-                icono.style.display = '';
-                banner.onload = () => { banner.style.display = 'block'; icono.style.display = 'none'; };
-                banner.onerror = () => { banner.style.display = 'none'; icono.style.display = ''; };
-                banner.src = urlBannerFreeFire(uid);
-
-                tarjeta.style.display = 'flex';
+                confirmarPaso1(uid, resultado.nickname);
             } else {
-                mostrarNicknameManual();
+                document.getElementById('paso1-nickname-manual-wrap').style.display = 'block';
                 msg.style.display = 'block';
                 msg.style.color = '#ff4757';
                 msg.innerText = resultado.error + ' Escribe tu nombre de usuario manualmente abajo.';
             }
+        }
+
+        function confirmarNicknameManualPaso1() {
+            const uid = document.getElementById('paso1-id-input').value.trim();
+            const nick = document.getElementById('paso1-nickname-input').value.trim();
+            if (!uid || uid.length < 7) { alert('Ingresa un ID válido primero.'); return; }
+            if (!nick) { alert('Ingresa tu nombre de usuario.'); return; }
+            confirmarPaso1(uid, nick);
+        }
+
+        function confirmarPaso1(uid, nickname) {
+            paso1IdValidado = uid;
+            paso1NicknameConfirmado = nickname;
+
+            document.getElementById('cc-nombre-txt').innerText = nickname;
+            document.getElementById('cc-id-txt').innerText = uid;
+
+            const banner = document.getElementById('cc-avatar-banner');
+            const icono = document.getElementById('cc-avatar-icono');
+            banner.style.display = 'none';
+            icono.style.display = '';
+            banner.onload = () => { banner.style.display = 'block'; icono.style.display = 'none'; };
+            banner.onerror = () => { banner.style.display = 'none'; icono.style.display = ''; };
+            banner.src = urlBannerFreeFire(uid);
+
+            document.getElementById('paso1-form').style.display = 'none';
+            document.getElementById('paso1-confirmado').style.display = 'block';
+        }
+
+        function salirPaso1() {
+            paso1IdValidado = '';
+            paso1NicknameConfirmado = '';
+            document.getElementById('paso1-id-input').value = '';
+            document.getElementById('paso1-nickname-input').value = '';
+            document.getElementById('paso1-nickname-manual-wrap').style.display = 'none';
+            document.getElementById('paso1-mensaje').style.display = 'none';
+            document.getElementById('paso1-confirmado').style.display = 'none';
+            document.getElementById('paso1-form').style.display = 'block';
         }
 
         async function aplicarCupon() {
@@ -724,45 +781,88 @@
             txtRestante.style.color = saldoRestante < 0 ? '#ff4757' : '#00e676';
         }
 
-        async function abrirModalCompra(nombrePaquete, precioPaquete) {
+        // ================= PASO 2 -> PASO 3: SELECCIÓN DE PAQUETE =================
+        function seleccionarPaquete(nombrePaquete, precioPaquete, descripcionPaquete) {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             if (!nombreGuardado) { window.location.href = 'login.html'; return; }
+
             paqueteSeleccionado = nombrePaquete;
             precioSeleccionado = parseFloat(precioPaquete);
+            descripcionSeleccionada = descripcionPaquete || '';
+
+            document.querySelectorAll('#products-grid .dtile').forEach(t => t.classList.remove('dtile-selected'));
+            const tileEl = document.querySelector(`#products-grid .dtile[data-paquete="${CSS.escape(nombrePaquete)}"]`);
+            if (tileEl) tileEl.classList.add('dtile-selected');
 
             const esPaseBooyah = nombrePaquete === 'Pase Booyah';
-
-            document.getElementById('compra-pantalla-formulario').style.display = 'block';
-            document.getElementById('compra-pantalla-error').style.display = 'none';
-            document.getElementById('compra-pantalla-exito').style.display = 'none';
-            document.getElementById('modal-id-juego').value = "";
             if (esPaseBooyah) {
                 document.getElementById('modal-modo-entrega-wrap').style.display = 'none';
-                document.getElementById('modal-id-seccion-wrap').style.display = 'block';
                 document.getElementById('modal-codigo-aviso-wrap').style.display = 'none';
+                modoEntregaRegular = 'admin';
             } else if (MODO_RECARGA_REGULAR === 'manual') {
                 document.getElementById('modal-modo-entrega-wrap').style.display = 'none';
-                modoEntregaRegular = 'admin';
-                document.getElementById('modal-id-seccion-wrap').style.display = 'block';
                 document.getElementById('modal-codigo-aviso-wrap').style.display = 'none';
+                modoEntregaRegular = 'admin';
             } else if (MODO_RECARGA_REGULAR === 'autoservicio') {
                 document.getElementById('modal-modo-entrega-wrap').style.display = 'none';
-                modoEntregaRegular = 'auto';
-                document.getElementById('modal-id-seccion-wrap').style.display = 'none';
                 document.getElementById('modal-codigo-aviso-wrap').style.display = 'flex';
+                modoEntregaRegular = 'auto';
             } else {
                 document.getElementById('modal-modo-entrega-wrap').style.display = 'block';
                 elegirModoEntrega('auto');
             }
-            desbloquearNickname();
+
+            document.getElementById('paso3-paquete-txt').innerText = nombrePaquete;
+            document.getElementById('paso3-costo-txt').innerText = `S/ ${precioSeleccionado.toFixed(2)}`;
+
+            const paso3 = document.getElementById('paso3-wrap');
+            paso3.style.display = 'block';
+            paso3.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Lee descripciones tipo "100 + 10 Extra" para mostrar el desglose de diamantes
+        // en la revisión final, igual que hace Garena con su "Precio inicial + Bono".
+        function parsearBonoDescripcion(desc) {
+            if (!desc) return null;
+            const m = desc.match(/^([\d.,]+)\s*\+\s*([\d.,]+)\s*Extra/i);
+            if (!m) return null;
+            return { base: m[1], bono: m[2] };
+        }
+
+        // ================= PASO 3 -> REVISIÓN FINAL (modal) =================
+        async function abrirRevisionFinal() {
+            const nombreGuardado = localStorage.getItem('nombreUsuario');
+            if (!nombreGuardado) { window.location.href = 'login.html'; return; }
+
+            if (!paso1IdValidado || !paso1NicknameConfirmado) {
+                alert('Antes de comprar, completa el Paso 1: ingresa y valida tu ID de jugador.');
+                document.getElementById('paso1-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+            }
+
+            document.getElementById('compra-pantalla-formulario').style.display = 'block';
+            document.getElementById('compra-pantalla-error').style.display = 'none';
+            document.getElementById('compra-pantalla-exito').style.display = 'none';
+
             precioFinalConCupon = null; codigoCuponValidado = '';
             document.getElementById('modal-cupon').value = '';
             document.getElementById('modal-cupon-mensaje').style.display = 'none';
             document.getElementById('modal-cupon-wrap').style.display = 'none';
             document.getElementById('toggle-cupon-link').style.display = 'inline-flex';
-            
-            // CÁLCULO FINANCIERO DEL MODAL
-            document.getElementById('modal-paquete-nombre').innerText = nombrePaquete;
+
+            document.getElementById('modal-paquete-nombre').innerText = paqueteSeleccionado;
+            document.getElementById('modal-jugador-nombre').innerText = paso1NicknameConfirmado;
+
+            const bono = parsearBonoDescripcion(descripcionSeleccionada);
+            const bonoWrap = document.getElementById('modal-bono-wrap');
+            if (bono) {
+                document.getElementById('modal-bono-base').innerText = bono.base;
+                document.getElementById('modal-bono-extra').innerText = bono.bono;
+                bonoWrap.style.display = 'block';
+            } else {
+                bonoWrap.style.display = 'none';
+            }
+
             document.getElementById('modal-paquete-precio').innerText = `S/ ${precioSeleccionado.toFixed(2)}`;
             actualizarElementoConversion('modal-paquete-precio-alt', precioSeleccionado, usuarioActualCompleto);
 
@@ -782,7 +882,7 @@
 
                     if (saldoRestante < 0) {
                         txtRestante.style.color = '#ff4757'; // Rojo si no le alcanza
-                        document.getElementById('compra-pantalla-formulario').style.display = 'none'; 
+                        document.getElementById('compra-pantalla-formulario').style.display = 'none';
                         document.getElementById('compra-pantalla-error').style.display = 'block';
                     } else {
                         txtRestante.style.color = '#00e676'; // Verde si le alcanza
@@ -800,13 +900,13 @@
             const esPaseBooyah = paqueteSeleccionado === 'Pase Booyah';
             const esRegularManual = !esPaseBooyah && modoEntregaRegular === 'admin';
             const requiereIdManual = esPaseBooyah || esRegularManual;
-            const idJuego = document.getElementById('modal-id-juego').value.trim();
-            const nicknameJuego = document.getElementById('modal-nickname-juego').value.trim();
+            const idJuego = paso1IdValidado;
+            const nicknameJuego = paso1NicknameConfirmado;
             const btn = document.getElementById('btn-confirmar-pago');
 
             if (requiereIdManual) {
-                if (!idJuego || idJuego.length < 7) { alert("El ID ingresado es muy corto o inválido."); return; }
-                if (!nicknameJuego) { alert("Por favor, ingresa tu Nickname del juego."); return; }
+                if (!idJuego || idJuego.length < 7) { alert("Falta tu ID de jugador — vuelve al Paso 1."); return; }
+                if (!nicknameJuego) { alert("Falta tu nombre de usuario — vuelve al Paso 1."); return; }
             }
 
             btn.disabled = true; btn.innerText = "Procesando pedido...";
@@ -824,7 +924,7 @@
             if (errorCompra || !resultado || resultado.estado === 'error') {
                 const msg = errorCompra ? errorCompra.message : (resultado ? resultado.mensaje : "Error desconocido.");
                 alert("Error: " + msg);
-                btn.disabled = false; btn.innerText = "Completar Pedido";
+                btn.disabled = false; btn.innerText = "Comprar ahora";
                 return;
             }
 
@@ -840,7 +940,11 @@
             document.getElementById('compra-pantalla-formulario').style.display = 'none';
             document.getElementById('compra-pantalla-exito').style.display = 'block';
 
-            btn.disabled = false; btn.innerText = "Completar Pedido";
+            btn.disabled = false; btn.innerText = "Comprar ahora";
+
+            // Deja el paquete listo para que elija otro sin arrastrar la selección anterior.
+            document.getElementById('paso3-wrap').style.display = 'none';
+            document.querySelectorAll('#products-grid .dtile').forEach(t => t.classList.remove('dtile-selected'));
 
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             const numeroAdmin = "51943737572";
