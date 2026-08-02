@@ -617,6 +617,10 @@
                             <div class="stat-icon" style="background:rgba(255,152,0,0.12);"><span class="material-icons" style="color:#ff9800;">payments</span></div>
                             <div><div class="stat-value" id="stat-saldo-total">S/ 0.00</div><div class="stat-label">Saldo total en billeteras</div></div>
                         </div>
+                        <div class="stat-card" data-rol="diamantes">
+                            <div class="stat-icon" style="background:rgba(33,150,243,0.12);"><span class="material-icons" style="color:#2196f3;">account_balance</span></div>
+                            <div><div class="stat-value" id="stat-saldo-codestore">--</div><div class="stat-label">Saldo en CodeStore <span class="material-icons" style="font-size:14px; cursor:pointer; vertical-align:middle; color:#8a8a9a;" onclick="cargarSaldoCodestore()" title="Actualizar">refresh</span></div></div>
+                        </div>
                     </div>
 
                     <div class="card-box" style="margin-top: 22px;">
@@ -1386,7 +1390,7 @@
             }
             await cargarPedidos(); await cargarHistorial(); await cargarStock();
 
-            if (rol === 'full' || rol === 'diamantes') { await cargarProductosDiamantesAdmin(); await cargarPortadasAdmin('diamantes'); await cargarModoRecargaRegular(); }
+            if (rol === 'full' || rol === 'diamantes') { await cargarProductosDiamantesAdmin(); await cargarPortadasAdmin('diamantes'); await cargarModoRecargaRegular(); await cargarSaldoCodestore(); }
             if (rol === 'full' || rol === 'streaming') { await cargarProductosStreamingAdmin(); await cargarPortadasAdmin('streaming'); }
             await cargarCuentasExcluidas();
             fijarRangoGanancias('hoy');
@@ -2472,6 +2476,20 @@
         function escHtml(v) { return (v === null || v === undefined) ? '' : String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
 
         const NOMBRES_MODO_RR = { manual: 'Solo Manual', hibrido: 'Híbrido', autoservicio: 'Solo Autoservicio' };
+
+        async function cargarSaldoCodestore() {
+            const el = document.getElementById('stat-saldo-codestore');
+            if (!el) return;
+            el.innerText = '...';
+            const { data, error } = await supabaseClient.rpc('admin_ver_saldo_codestore');
+            if (error || !data || data.error) {
+                el.innerText = 'Error';
+                el.title = (data && data.error) ? data.error : (error ? error.message : 'Error desconocido');
+                return;
+            }
+            el.title = '';
+            el.innerText = '$' + Number(data.saldo).toFixed(2);
+        }
 
         async function cargarModoRecargaRegular() {
             const { data } = await supabaseClient.from('config_recarga_regular').select('modo').eq('id', 1).maybeSingle();

@@ -73,7 +73,20 @@ async function verificarSesion(requerido = true) {
     localStorage.setItem('nombreUsuario', usuario.nickname);
     actualizarSaldoConvertido(usuario);
     convertirPreciosCatalogo(usuario);
+    mostrarSaldoCodestoreSiEsAdmin();
     return usuario;
+}
+
+// Chip "CODESTORE $XXX" en el menú superior — solo se muestra si el correo logueado
+// es de un administrador (el RPC ya trae ese chequeo incorporado, así que para un
+// cliente normal esto no hace nada visible).
+async function mostrarSaldoCodestoreSiEsAdmin() {
+    const pill = document.getElementById('pill-saldo-codestore');
+    if (!pill) return;
+    const { data, error } = await supabaseClient.rpc('admin_ver_saldo_codestore');
+    if (error || !data || data.error) return;
+    document.getElementById('codestore-saldo-nav').innerText = '$' + Number(data.saldo).toFixed(2);
+    pill.style.display = 'flex';
 }
 
 // ==========================================
