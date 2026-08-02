@@ -247,10 +247,10 @@ function avatarPillHTML(usuario) {
 // API gratuita de terceros (no oficial de Garena), usada solo para confirmar
 // el nickname real detrás de un ID antes de procesar una recarga.
 const FF_API_BASE = 'https://siambhau69.eu.cc/freefireinfo/bhau';
-const FF_API_KEY = 'FFINFO-Free';
+const FF_API_KEY = 'FFINFO-Free69';
 const FF_API_REGION = 'SAC'; // Sudamérica: cubre Perú y el resto de países que atiende la tienda
 const FF_BANNER_API_BASE = 'https://siambhau69.eu.cc/banner/profile';
-const FF_BANNER_API_KEY = 'FreeBanner';
+const FF_BANNER_API_KEY = 'BANNER-Free69';
 
 /**
  * URL de la imagen de banner (avatar, escudo del clan y nivel) de una cuenta de Free Fire.
