@@ -186,6 +186,8 @@
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         .dtile-selected { border-color: #a155ff !important; box-shadow: 0 0 0 2px rgba(161,85,255,0.4), 0 10px 25px rgba(161, 85, 255, 0.2); }
+        .dtile-usado { opacity: 0.45; cursor: not-allowed; pointer-events: none; filter: grayscale(0.6); }
+        .dtile-usado .dtile-cta { color: #ff4757 !important; }
         @media (max-width: 700px) {
             .paso-card { padding: 16px; border-radius: 12px; }
             .paso-titulo { font-size: 15px; margin-bottom: 14px; }
@@ -758,6 +760,8 @@
 
             document.getElementById('paso1-form').style.display = 'none';
             document.getElementById('paso1-confirmado').style.display = 'block';
+
+            marcarPaquetesPromoUsados(uid);
         }
 
         function salirPaso1() {
@@ -769,6 +773,42 @@
             document.getElementById('paso1-mensaje').style.display = 'none';
             document.getElementById('paso1-confirmado').style.display = 'none';
             document.getElementById('paso1-form').style.display = 'block';
+
+            // Al cambiar de ID se limpia el estado de "ya usado" — cada ID tiene su propio historial.
+            document.getElementById('paso3-wrap').style.display = 'none';
+            document.querySelectorAll('#products-grid .dtile').forEach(t => {
+                t.classList.remove('dtile-selected', 'dtile-usado');
+                const cta = t.querySelector('.dtile-cta');
+                if (cta) cta.innerHTML = 'Elegir <span class="material-icons" style="font-size:13px;">arrow_forward</span>';
+            });
+        }
+
+        // Consulta, contra tu propio historial de pedidos, qué paquetes de Promo
+        // (1ra recarga) ya se le entregaron a este ID de jugador — así el cliente ve
+        // de una vez cuáles le quedan disponibles, sin tener que preguntarte a ti.
+        async function marcarPaquetesPromoUsados(idJuego) {
+            const { data, error } = await supabaseClient.rpc('paquetes_promo_usados_por_id', { p_id_juego: idJuego });
+            if (error) { console.error(error); return; }
+            const usados = new Set((data || []).map(r => r.paquete));
+
+            document.querySelectorAll('#products-grid .dtile').forEach(tile => {
+                const paquete = tile.dataset.paquete;
+                const yaUsado = usados.has(paquete);
+                tile.classList.toggle('dtile-usado', yaUsado);
+                const cta = tile.querySelector('.dtile-cta');
+                if (cta) {
+                    cta.innerHTML = yaUsado
+                        ? '<span class="material-icons" style="font-size:13px;">block</span> Ya usado con este ID'
+                        : 'Elegir <span class="material-icons" style="font-size:13px;">arrow_forward</span>';
+                }
+            });
+
+            if (paqueteSeleccionado && usados.has(paqueteSeleccionado)) {
+                paqueteSeleccionado = '';
+                document.getElementById('paso3-wrap').style.display = 'none';
+                document.querySelectorAll('#products-grid .dtile').forEach(t => t.classList.remove('dtile-selected'));
+                alert('Ese paquete ya lo usaste con este ID en la promo de primera recarga. Elige otro paquete disponible.');
+            }
         }
 
         async function aplicarCupon() {
@@ -811,12 +851,17 @@
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             if (!nombreGuardado) { window.location.href = 'login.html'; return; }
 
+            const tileEl = document.querySelector(`#products-grid .dtile[data-paquete="${CSS.escape(nombrePaquete)}"]`);
+            if (tileEl && tileEl.classList.contains('dtile-usado')) {
+                alert('Ya usaste este paquete con tu ID en la promo de primera recarga.');
+                return;
+            }
+
             paqueteSeleccionado = nombrePaquete;
             precioSeleccionado = parseFloat(precioPaquete);
             descripcionSeleccionada = descripcionPaquete || '';
 
             document.querySelectorAll('#products-grid .dtile').forEach(t => t.classList.remove('dtile-selected'));
-            const tileEl = document.querySelector(`#products-grid .dtile[data-paquete="${CSS.escape(nombrePaquete)}"]`);
             if (tileEl) tileEl.classList.add('dtile-selected');
 
             document.getElementById('paso3-paquete-txt').innerText = nombrePaquete;
