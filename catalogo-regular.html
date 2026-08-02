@@ -211,23 +211,23 @@
 
             <div id="paso1-form">
                 <label class="paso-label">ID de Jugador (Free Fire)</label>
-                <div style="display: flex; gap: 10px;">
+                <div style="display: flex; gap: 8px; max-width: 380px;">
                     <input type="text" id="paso1-id-input" class="paso-input" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('paso1-mensaje').style.display='none';" autocomplete="off" placeholder="Ej. 24958302">
                     <button type="button" id="paso1-btn-validar" class="paso-btn-validar" onclick="validarIdPaso1()"><span class="material-icons" style="font-size: 16px;">search</span> Validar</button>
                 </div>
                 <p id="paso1-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
 
-                <div id="paso1-nickname-manual-wrap" style="display: none; margin-top: 14px;">
+                <div id="paso1-nickname-manual-wrap" style="display: none; margin-top: 12px; max-width: 380px;">
                     <label class="paso-label">Nombre de Usuario</label>
-                    <div style="display: flex; gap: 10px;">
+                    <div style="display: flex; gap: 8px;">
                         <input type="text" id="paso1-nickname-input" class="paso-input" autocomplete="off" placeholder="Ej. Carlos_Pro">
                         <button type="button" class="paso-btn-validar" onclick="confirmarNicknameManualPaso1()"><span class="material-icons" style="font-size: 16px;">check</span> Confirmar</button>
                     </div>
                 </div>
 
-                <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px; margin-top: 16px; display: flex; gap: 10px; align-items: flex-start;">
-                    <span class="material-icons" style="color: #ffc107; font-size: 20px;">warning</span>
-                    <p style="margin: 0; color: #ffc107; font-size: 12px; line-height: 1.5;">Verifica bien tu ID y Nickname. No nos hacemos responsables por recargas enviadas a datos incorrectos.</p>
+                <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 10px; margin-top: 12px; display: flex; gap: 8px; align-items: flex-start; max-width: 520px;">
+                    <span class="material-icons" style="color: #ffc107; font-size: 17px;">warning</span>
+                    <p style="margin: 0; color: #ffc107; font-size: 11.5px; line-height: 1.45;">Verifica bien tu ID y Nickname. No nos hacemos responsables por recargas enviadas a datos incorrectos.</p>
                 </div>
             </div>
 
@@ -333,30 +333,30 @@
     <style>
         /* --- FLUJO DE COMPRA EN PASOS (estilo "centro de recargas") --- */
         .paso-card {
-            max-width: 1000px; margin: 0 auto 22px;
+            max-width: 1000px; margin: 0 auto 18px;
             background: rgba(26, 26, 31, 0.7); border: 1px solid rgba(255,255,255,0.07);
-            border-radius: 16px; padding: 22px;
+            border-radius: 16px; padding: 18px;
         }
         .paso-titulo {
             display: flex; align-items: center; gap: 12px;
-            color: white; font-size: 18px; font-weight: 800; margin-bottom: 18px;
+            color: white; font-size: 17px; font-weight: 800; margin-bottom: 14px;
         }
         .paso-num {
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-            width: 30px; height: 30px; border-radius: 8px;
+            width: 28px; height: 28px; border-radius: 8px;
             background: linear-gradient(135deg, #a155ff, #7c3fd4); color: white;
-            font-size: 15px; font-weight: 900;
+            font-size: 14px; font-weight: 900;
             box-shadow: 0 0 12px rgba(161,85,255,0.35);
         }
-        .paso-label { color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500; }
+        .paso-label { color: #e0e0e0; font-size: 13px; margin-bottom: 7px; display: block; font-weight: 500; }
         .paso-input {
             flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box;
-            font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;
+            border-radius: 8px; padding: 10px 12px; color: white; font-size: 14px; outline: none; box-sizing: border-box;
+            font-family: monospace; letter-spacing: 1px; text-align: center; transition: all 0.3s;
         }
         .paso-btn-validar {
             background: rgba(0,230,118,0.1); border: 1px solid #00e676; color: #00e676;
-            border-radius: 8px; padding: 0 16px; font-weight: bold; font-size: 12px; cursor: pointer;
+            border-radius: 8px; padding: 0 14px; font-weight: bold; font-size: 12px; cursor: pointer;
             white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;
         }
         .cuenta-confirmada-card {
@@ -534,9 +534,44 @@
             </div>
 
             <div id="compra-pantalla-exito" style="display: none; text-align: center; padding: 10px 0;">
-                <span class="material-icons" style="font-size: 56px; color: #00e676; background: rgba(0,230,118,0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px;">check_circle</span>
-                <h2 style="font-size: 22px; color: white; margin: 0 0 10px 0;">¡Pedido Recibido!</h2>
-                <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.</p>
+                <span class="material-icons" style="font-size: 56px; color: #00e676; background: rgba(0,230,118,0.1); padding: 15px; border-radius: 50%; margin-bottom: 14px;">check_circle</span>
+                <h2 style="font-size: 22px; color: white; margin: 0 0 6px 0;">¡Pago Finalizado!</h2>
+                <p style="color: #8a8a9a; font-size: 12px; margin: 0 0 20px 0;">ID del pedido <span id="exito-pedido-id" style="color: #a8a8b3; font-weight: 600;">---</span></p>
+
+                <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="color: #a8a8b3; font-size: 13px;">Monto total:</span>
+                        <strong id="exito-monto-total" style="color: white; font-size: 14px;">---</strong>
+                    </div>
+                    <div id="exito-bono-wrap" style="display: none; background: rgba(0,0,0,0.25); border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span style="color: #a8a8b3; font-size: 12px;">Precio inicial:</span>
+                            <strong style="color: white; font-size: 12px;">💎 <span id="exito-bono-base"></span></strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #a8a8b3; font-size: 12px;">+ Bono:</span>
+                            <strong style="color: #00e676; font-size: 12px;">💎 <span id="exito-bono-extra"></span></strong>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
+                        <span style="color: #a8a8b3; font-size: 13px;">Precio:</span>
+                        <strong id="exito-precio" style="color: white; font-size: 14px;">S/ 0.00</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="color: #a8a8b3; font-size: 13px;">Juego:</span>
+                        <strong style="color: white; font-size: 13px;">Free Fire</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="color: #a8a8b3; font-size: 13px;">Método de pago:</span>
+                        <strong style="color: white; font-size: 13px;">Saldo disponible</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #a8a8b3; font-size: 13px;">Fecha:</span>
+                        <strong id="exito-fecha" style="color: white; font-size: 13px;">---</strong>
+                    </div>
+                </div>
+
+                <p style="color: #a8a8b3; font-size: 13px; line-height: 1.6; margin-bottom: 20px;">Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.</p>
                 <button class="btn-outline" style="width: 100%; padding: 14px; border-color: rgba(255,255,255,0.15);" onclick="cerrarModalCompra()">Entendido</button>
             </div>
         </div>
@@ -939,6 +974,21 @@
 
             document.getElementById('compra-pantalla-formulario').style.display = 'none';
             document.getElementById('compra-pantalla-exito').style.display = 'block';
+
+            document.getElementById('exito-pedido-id').innerText = resultado.pedido_id ? ('#' + resultado.pedido_id) : '---';
+            document.getElementById('exito-monto-total').innerText = paqueteSeleccionado;
+            document.getElementById('exito-precio').innerText = `S/ ${precioFinalCobrado.toFixed(2)}`;
+            document.getElementById('exito-fecha').innerText = new Date().toLocaleString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+            const bonoExito = parsearBonoDescripcion(descripcionSeleccionada);
+            const bonoExitoWrap = document.getElementById('exito-bono-wrap');
+            if (bonoExito) {
+                document.getElementById('exito-bono-base').innerText = bonoExito.base;
+                document.getElementById('exito-bono-extra').innerText = bonoExito.bono;
+                bonoExitoWrap.style.display = 'block';
+            } else {
+                bonoExitoWrap.style.display = 'none';
+            }
 
             btn.disabled = false; btn.innerText = "Comprar ahora";
 
