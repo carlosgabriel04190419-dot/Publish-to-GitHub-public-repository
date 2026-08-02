@@ -23,67 +23,66 @@
     
     <!-- TODOS LOS EFECTOS VISUALES, GAMIFICACIÓN Y FOOTER UNIFICADOS AQUÍ -->
     <style>
-        /* Efectos de levitación y resplandor para las tarjetas (TONO CYAN PARA FRAGMENTOS) */
-        .products-grid .card {
+        /* --- TARJETAS DE PAQUETE ESTILO "CENTRO DE RECARGAS" (limpias, tipo Garena) --- */
+        .diamond-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 14px;
+        }
+        .dtile {
             position: relative;
-            overflow: hidden;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, border-color 0.3s ease;
+            background: linear-gradient(180deg, #1c1c22, #16161a);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 20px 14px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .products-grid .card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(0, 188, 212, 0.25);
-            border-color: #00bcd4;
-            z-index: 2;
+        .dtile:hover {
+            border-color: #a155ff;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(161, 85, 255, 0.2);
         }
-        /* Luz de fondo en hover (Tono Cyan) */
-        .products-grid .card::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(0, 188, 212, 0.1) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-        .products-grid .card:hover::before {
-            opacity: 1;
-        }
-        /* Brillo mágico en los iconos */
-        .card-icon {
-            text-shadow: 0 0 15px rgba(0, 188, 212, 0.4);
-            transition: transform 0.3s ease, text-shadow 0.3s ease;
-        }
-        .products-grid .card:hover .card-icon {
-            transform: scale(1.15) rotate(5deg);
-            text-shadow: 0 0 25px rgba(0, 188, 212, 0.8);
-        }
-        /* Etiqueta animada de Más Vendido (Fuego) */
-        .badge-bestseller {
-            position: absolute; top: 12px; right: 12px;
+        .dtile-badge {
+            display: inline-block;
             background: linear-gradient(45deg, #ff4757, #ff9800);
-            color: white; padding: 4px 10px; border-radius: 20px;
-            font-size: 10px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase;
-            box-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
-            animation: pulse-fire 2s infinite;
-            z-index: 10;
+            color: white; font-size: 9.5px; font-weight: 900;
+            padding: 3px 10px; border-radius: 20px; letter-spacing: 0.3px; text-transform: uppercase;
+            box-shadow: 0 0 8px rgba(255, 71, 87, 0.4);
+            margin-bottom: 8px;
         }
-        @keyframes pulse-fire {
-            0% { box-shadow: 0 0 5px rgba(255, 71, 87, 0.4); transform: scale(1); }
-            50% { box-shadow: 0 0 15px rgba(255, 71, 87, 0.8); transform: scale(1.05); }
-            100% { box-shadow: 0 0 5px rgba(255, 71, 87, 0.4); transform: scale(1); }
+        .dtile-icon {
+            font-size: 34px; margin-bottom: 8px; line-height: 1;
+            filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.4));
         }
-        /* Botones de compra más vibrantes en hover */
-        .products-grid .card .btn-buy {
-            transition: all 0.3s ease;
+        .dtile-icon.dtile-icon-img {
+            width: 100%; height: 46px; margin-bottom: 8px;
+            background-size: contain; background-position: center; background-repeat: no-repeat;
         }
-        .products-grid .card:hover .btn-buy {
-            background: linear-gradient(45deg, #00bcd4, #26c6da);
-            box-shadow: 0 0 15px rgba(0, 188, 212, 0.4);
-            transform: scale(1.05);
-            color: #000;
+        .dtile-title { color: white; font-weight: 800; font-size: 15px; margin: 0 0 2px 0; line-height: 1.25; }
+        .dtile-desc { color: #8a8a9a; font-size: 11px; margin: 0 0 10px 0; line-height: 1.4; }
+        .dtile-prices { margin-top: 4px; }
+        .dtile-price-old { color: #6b6b76; font-size: 11.5px; text-decoration: line-through; display: block; margin-bottom: 1px; }
+        .dtile-price-current { color: #00e676; font-size: 17px; font-weight: 800; }
+        .dtile-cta {
+            margin-top: 10px; color: #a155ff; font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center; gap: 2px; opacity: 0.85;
+            transition: opacity 0.2s ease, gap 0.2s ease;
+        }
+        .dtile:hover .dtile-cta { opacity: 1; gap: 5px; }
+        @media (max-width: 768px) {
+            .diamond-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            .dtile { padding: 14px 8px 12px; border-radius: 12px; }
+            .dtile-icon { font-size: 26px; margin-bottom: 6px; }
+            .dtile-icon.dtile-icon-img { height: 34px; }
+            .dtile-title { font-size: 12.5px; }
+            .dtile-desc { font-size: 9.5px; margin-bottom: 6px; }
+            .dtile-price-current { font-size: 14px; }
+            .dtile-cta { font-size: 9.5px; margin-top: 6px; }
         }
 
-        /* --- ESTILOS DE LA CINTA DE COMPRAS EN VIVO (LIVE TICKER) --- */
+                /* --- ESTILOS DE LA CINTA DE COMPRAS EN VIVO (LIVE TICKER) --- */
         .live-ticker-wrap {
             width: 100%; background: rgba(20, 20, 26, 0.9);
             border-bottom: 1px solid rgba(161, 85, 255, 0.2);
@@ -121,7 +120,78 @@
         .rec-card:hover { border-color: #a155ff; transform: translateY(-3px); background: rgba(161,85,255,0.05); }
 
         /* --- PREGUNTAS FRECUENTES (FAQ) --- */
-        .cz-faq-wrapper { max-width: 850px; margin: 30px auto 60px; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        /* --- FLUJO DE COMPRA EN PASOS (estilo "centro de recargas") --- */
+        .paso-card {
+            max-width: 1000px; margin: 0 auto 18px;
+            background: rgba(26, 26, 31, 0.7); border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px; padding: 18px;
+        }
+        .paso-titulo {
+            display: flex; align-items: center; gap: 12px;
+            color: white; font-size: 17px; font-weight: 800; margin-bottom: 14px;
+        }
+        .paso-num {
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            width: 28px; height: 28px; border-radius: 8px;
+            background: linear-gradient(135deg, #a155ff, #7c3fd4); color: white;
+            font-size: 14px; font-weight: 900;
+            box-shadow: 0 0 12px rgba(161,85,255,0.35);
+        }
+        .paso-label { color: #e0e0e0; font-size: 13px; margin-bottom: 7px; display: block; font-weight: 500; }
+        .paso-input {
+            flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px; padding: 10px 12px; color: white; font-size: 14px; outline: none; box-sizing: border-box;
+            font-family: monospace; letter-spacing: 1px; text-align: center; transition: all 0.3s;
+        }
+        .paso-btn-validar {
+            background: rgba(0,230,118,0.1); border: 1px solid #00e676; color: #00e676;
+            border-radius: 8px; padding: 0 14px; font-weight: bold; font-size: 12px; cursor: pointer;
+            white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;
+        }
+        .cuenta-confirmada-card {
+            display: flex; align-items: center; gap: 12px; max-width: 420px;
+            background: rgba(0,230,118,0.06); border: 1px solid rgba(0,230,118,0.3);
+            border-radius: 12px; padding: 12px;
+        }
+        .cc-avatar-wrap {
+            width: 44px; height: 44px; border-radius: 10px; background: rgba(0,230,118,0.15);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            overflow: hidden; position: relative;
+        }
+        .cc-avatar-icono { font-size: 24px; color: #00e676; }
+        .cc-avatar-banner { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left center; }
+        .cc-info { flex: 1; min-width: 0; text-align: left; }
+        .cc-check { display: flex; align-items: center; gap: 5px; color: #00e676; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+        .cc-linea { color: white; font-size: 12px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .cc-linea b { color: #00e676; }
+        .cc-salir { color: #a8a8b3; font-size: 11.5px; text-decoration: none; display: flex; align-items: center; gap: 3px; flex-shrink: 0; align-self: flex-start; }
+        .cc-salir:hover { color: white; }
+        @media (max-width: 700px) {
+            .cuenta-confirmada-card { max-width: 100%; gap: 10px; padding: 10px; }
+            .cc-avatar-wrap { width: 38px; height: 38px; border-radius: 9px; }
+            .cc-avatar-icono { font-size: 20px; }
+            .cc-check { font-size: 9px; }
+            .cc-linea { font-size: 11px; }
+            .cc-salir { font-size: 10.5px; }
+        }
+        .paso3-resumen { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 6px; }
+        .paso3-resumen-item {
+            background: rgba(0,0,0,0.3); border-radius: 10px; padding: 14px;
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        .paso3-resumen-item span { color: #a8a8b3; font-size: 12px; }
+        .paso3-resumen-item b { color: white; font-size: 17px; }
+        .paso3-btn-comprar {
+            width: 100%; padding: 16px; font-size: 15px; font-weight: bold; margin-top: 18px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .dtile-selected { border-color: #a155ff !important; box-shadow: 0 0 0 2px rgba(161,85,255,0.4), 0 10px 25px rgba(161, 85, 255, 0.2); }
+        @media (max-width: 700px) {
+            .paso-card { padding: 16px; border-radius: 12px; }
+            .paso-titulo { font-size: 15px; margin-bottom: 14px; }
+            .paso-num { width: 26px; height: 26px; font-size: 13px; }
+        }
+                .cz-faq-wrapper { max-width: 850px; margin: 30px auto 60px; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .cz-faq-header { text-align: center; margin-bottom: 50px; }
         .cz-faq-subtitle { color: #a155ff; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 12px; }
         .cz-faq-title { font-size: 32px; color: white; margin: 0; font-weight: 800; letter-spacing: 0.5px; }
@@ -245,11 +315,76 @@
     <main class="container" style="padding-top: 30px;">
         <a href="index.html" style="color: #a8a8b3; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 14px; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a8a8b3'"><span class="material-icons">arrow_back</span> Volver al inicio</a>
         
-        <div class="category-header"><h2>CATÁLOGO DE FRAGMENTOS ⚛️</h2></div>
-        
-        <section class="products-grid" id="products-grid">
-            <p style="color: #a8a8b3;">Cargando catálogo...</p>
-        </section>
+        <!-- PASO 1: ID DE JUGADOR -->
+        <div class="paso-card">
+            <div class="paso-titulo"><span class="paso-num">1</span> Ingresa tu ID</div>
+
+            <div id="paso1-form">
+                <label class="paso-label">ID de Jugador (Free Fire)</label>
+                <div style="display: flex; gap: 8px; max-width: 380px;">
+                    <input type="text" id="paso1-id-input" class="paso-input" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('paso1-mensaje').style.display='none';" autocomplete="off" placeholder="Ej. 24958302">
+                    <button type="button" id="paso1-btn-validar" class="paso-btn-validar" onclick="validarIdPaso1()"><span class="material-icons" style="font-size: 16px;">search</span> Validar</button>
+                </div>
+                <p id="paso1-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
+
+                <div id="paso1-nickname-manual-wrap" style="display: none; margin-top: 12px; max-width: 380px;">
+                    <label class="paso-label">Nombre de Usuario</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="paso1-nickname-input" class="paso-input" autocomplete="off" placeholder="Ej. Carlos_Pro">
+                        <button type="button" class="paso-btn-validar" onclick="confirmarNicknameManualPaso1()"><span class="material-icons" style="font-size: 16px;">check</span> Confirmar</button>
+                    </div>
+                </div>
+
+                <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 10px; margin-top: 12px; display: flex; gap: 8px; align-items: flex-start; max-width: 520px;">
+                    <span class="material-icons" style="color: #ffc107; font-size: 17px;">warning</span>
+                    <p style="margin: 0; color: #ffc107; font-size: 11.5px; line-height: 1.45;">Verifica bien tu ID y Nickname. No nos hacemos responsables por recargas enviadas a datos incorrectos.</p>
+                </div>
+            </div>
+
+            <div id="paso1-confirmado" style="display: none;">
+                <div class="cuenta-confirmada-card">
+                    <div class="cc-avatar-wrap">
+                        <span id="cc-avatar-icono" class="material-icons cc-avatar-icono">sports_esports</span>
+                        <img id="cc-avatar-banner" alt="" class="cc-avatar-banner" style="display: none;">
+                    </div>
+                    <div class="cc-info">
+                        <div class="cc-check"><span class="material-icons" style="font-size: 13px;">check_circle</span> Cuenta confirmada</div>
+                        <div class="cc-linea">Nombre de usuario: <b id="cc-nombre-txt"></b></div>
+                        <div class="cc-linea">ID de jugador: <b id="cc-id-txt"></b></div>
+                        <div class="cc-linea" id="cc-nivel-wrap" style="display: none;">Nivel: <b id="cc-nivel-txt"></b></div>
+                    </div>
+                    <a href="javascript:void(0)" class="cc-salir" onclick="salirPaso1()"><span class="material-icons" style="font-size: 15px;">sync_alt</span> Salir</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 2: MONTO DE RECARGA -->
+        <div class="paso-card">
+            <div class="paso-titulo"><span class="paso-num">2</span> Elige tu paquete</div>
+            <section class="diamond-grid" id="products-grid">
+                <p style="color: #a8a8b3;">Cargando catálogo...</p>
+            </section>
+        </div>
+
+        <!-- PASO 3: CONFIRMAR COMPRA -->
+        <div class="paso-card" id="paso3-wrap" style="display: none;">
+            <div class="paso-titulo"><span class="paso-num">3</span> Confirmar compra</div>
+
+            <div class="paso3-resumen">
+                <div class="paso3-resumen-item">
+                    <span>Paquete</span>
+                    <b id="paso3-paquete-txt">—</b>
+                </div>
+                <div class="paso3-resumen-item">
+                    <span>Costo</span>
+                    <b id="paso3-costo-txt" style="color: #00e676;">S/ 0.00</b>
+                </div>
+            </div>
+
+            <button class="btn-primary paso3-btn-comprar" onclick="abrirRevisionFinal()">
+                <span class="material-icons">shopping_cart_checkout</span> Comprar ahora
+            </button>
+        </div>
 
         <!-- SECCIÓN DE RECOMENDACIONES (CROSS-SELLING) -->
         <div style="margin-top: 70px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 40px; padding-bottom: 40px;">
@@ -316,7 +451,7 @@
             <div id="compra-pantalla-formulario">
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
                     <span class="material-icons" style="color: #a155ff; font-size: 32px; background: rgba(161,85,255,0.1); padding: 10px; border-radius: 50%;">shopping_bag</span>
-                    <div><h2 style="font-size: 20px; color: white; margin: 0;">Confirmar Pedido</h2><p style="color: #a8a8b3; font-size: 13px; margin: 3px 0 0 0;">Estás a un paso de adquirir tu producto.</p></div>
+                    <div><h2 style="font-size: 20px; color: white; margin: 0;">Confirmar Compra</h2><p style="color: #a8a8b3; font-size: 13px; margin: 3px 0 0 0;">Revisa los detalles antes de continuar.</p></div>
                 </div>
 
                 <!-- TICKET FINANCIERO DETALLADO -->
@@ -324,6 +459,16 @@
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                         <span style="color: #a8a8b3; font-size: 14px;">Producto:</span>
                         <strong id="modal-paquete-nombre" style="color: white; font-size: 15px;">---</strong>
+                    </div>
+                    <div id="modal-bono-wrap" style="display: none; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span style="color: #a8a8b3; font-size: 12.5px;">Cantidad base:</span>
+                            <strong style="color: white; font-size: 12.5px;">💎 <span id="modal-bono-base"></span></strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #a8a8b3; font-size: 12.5px;">+ Bono:</span>
+                            <strong style="color: #00e676; font-size: 12.5px;">💎 <span id="modal-bono-extra"></span></strong>
+                        </div>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
                         <span style="color: #a8a8b3; font-size: 14px; padding-top: 2px;">Costo a descontar:</span>
@@ -364,43 +509,18 @@
                     </div>
                 </div>
 
-                <div style="margin-bottom: 20px;">
-                    <label style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Ingresa tu ID de Jugador</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="modal-id-juego" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('modal-id-mensaje').style.display='none'; desbloquearNickname();" autocomplete="off" placeholder="Ej. 24958302" style="flex: 1; min-width: 0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; font-family: monospace; letter-spacing: 1.5px; text-align: center; transition: all 0.3s;">
-                        <button type="button" id="btn-validar-id" onclick="validarIdEnModal()" style="background: rgba(0,230,118,0.1); border: 1px solid #00e676; color: #00e676; border-radius: 8px; padding: 0 16px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
-                            <span class="material-icons" style="font-size: 16px;">search</span> Validar
-                        </button>
+                <div style="background: rgba(0,0,0,0.25); border-radius: 10px; padding: 14px 15px; margin-bottom: 25px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #a8a8b3; font-size: 13px;">Método de pago:</span>
+                        <strong style="color: white; font-size: 13px; display: flex; align-items: center; gap: 5px;"><span class="material-icons" style="font-size: 15px; color: #00e676;">account_balance_wallet</span> Saldo disponible</strong>
                     </div>
-                    <p id="modal-id-mensaje" style="margin: 8px 0 0 0; font-size: 12px; display: none; line-height: 1.4;"></p>
-
-                    <div id="modal-id-resultado-card" style="display: none; margin-top: 12px; background: rgba(0,230,118,0.06); border: 1px solid rgba(0,230,118,0.3); border-radius: 12px; padding: 14px; align-items: center; gap: 14px;">
-                        <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(0,230,118,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; position: relative;">
-                            <span id="modal-id-resultado-icono" class="material-icons" style="font-size: 28px; color: #00e676;">sports_esports</span>
-                            <img id="modal-id-resultado-banner" alt="" style="display: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left center;">
-                        </div>
-                        <div style="flex: 1; min-width: 0; text-align: left;">
-                            <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 3px;">
-                                <span class="material-icons" style="font-size: 13px; color: #00e676;">check_circle</span>
-                                <span style="color: #00e676; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Cuenta confirmada</span>
-                            </div>
-                            <div id="modal-id-resultado-nombre" style="color: white; font-weight: 800; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                            <div style="color: #8a8a9a; font-size: 11.5px; margin-top: 2px;">UID <span id="modal-id-resultado-uid"></span> · Nivel <span id="modal-id-resultado-nivel"></span></div>
-                        </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #a8a8b3; font-size: 13px;">Nombre del jugador:</span>
+                        <strong id="modal-jugador-nombre" style="color: white; font-size: 13px;">---</strong>
                     </div>
                 </div>
 
-                <div id="modal-nickname-wrap" style="display: none; margin-bottom: 25px;">
-                    <label id="modal-nickname-label" style="color: #e0e0e0; font-size: 14px; margin-bottom: 10px; display: block; font-weight: 500;">Nombre de Usuario</label>
-                    <input type="text" id="modal-nickname-juego" autocomplete="off" placeholder="Ej. Carlos_Pro" style="width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; color: white; font-size: 16px; outline: none; box-sizing: border-box; text-align: center; transition: all 0.3s;">
-                </div>
-
-                <div style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px; margin-bottom: 25px; display: flex; gap: 10px; align-items: flex-start;">
-                    <span class="material-icons" style="color: #ffc107; font-size: 20px;">warning</span>
-                    <p style="margin: 0; color: #ffc107; font-size: 12px; line-height: 1.5;">Verifica bien tu ID y Nickname. No nos hacemos responsables por recargas enviadas a datos incorrectos.</p>
-                </div>
-
-                <button id="btn-confirmar-pago" class="btn-primary" style="width: 100%; padding: 15px; font-size: 15px; font-weight: bold;" onclick="procesarTransaccion()">Completar Pedido</button>
+                <button id="btn-confirmar-pago" class="btn-primary" style="width: 100%; padding: 15px; font-size: 15px; font-weight: bold;" onclick="procesarTransaccion()">Comprar ahora</button>
             </div>
 
             <div id="compra-pantalla-error" style="display: none; text-align: center; padding: 10px 0;">
@@ -411,9 +531,44 @@
             </div>
 
             <div id="compra-pantalla-exito" style="display: none; text-align: center; padding: 10px 0;">
-                <span class="material-icons" style="font-size: 56px; color: #00e676; background: rgba(0,230,118,0.1); padding: 15px; border-radius: 50%; margin-bottom: 20px;">check_circle</span>
-                <h2 style="font-size: 22px; color: white; margin: 0 0 10px 0;">¡Pedido Recibido!</h2>
-                <p style="color: #a8a8b3; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.</p>
+                <span class="material-icons" style="font-size: 56px; color: #00e676; background: rgba(0,230,118,0.1); padding: 15px; border-radius: 50%; margin-bottom: 14px;">check_circle</span>
+                <h2 style="font-size: 22px; color: white; margin: 0 0 6px 0;">¡Pago Finalizado!</h2>
+                <p style="color: #8a8a9a; font-size: 12px; margin: 0 0 20px 0;">ID del pedido <span id="exito-pedido-id" style="color: #a8a8b3; font-weight: 600;">---</span></p>
+
+                <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="color: #a8a8b3; font-size: 13px;">Producto:</span>
+                        <strong id="exito-monto-total" style="color: white; font-size: 14px;">---</strong>
+                    </div>
+                    <div id="exito-bono-wrap" style="display: none; background: rgba(0,0,0,0.25); border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span style="color: #a8a8b3; font-size: 12px;">Cantidad base:</span>
+                            <strong style="color: white; font-size: 12px;">💎 <span id="exito-bono-base"></span></strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #a8a8b3; font-size: 12px;">+ Bono:</span>
+                            <strong style="color: #00e676; font-size: 12px;">💎 <span id="exito-bono-extra"></span></strong>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
+                        <span style="color: #a8a8b3; font-size: 13px;">Precio:</span>
+                        <strong id="exito-precio" style="color: white; font-size: 14px;">S/ 0.00</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="color: #a8a8b3; font-size: 13px;">Juego:</span>
+                        <strong style="color: white; font-size: 13px;">Free Fire</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="color: #a8a8b3; font-size: 13px;">Método de pago:</span>
+                        <strong style="color: white; font-size: 13px;">Saldo disponible</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #a8a8b3; font-size: 13px;">Fecha:</span>
+                        <strong id="exito-fecha" style="color: white; font-size: 13px;">---</strong>
+                    </div>
+                </div>
+
+                <p style="color: #a8a8b3; font-size: 13px; line-height: 1.6; margin-bottom: 20px;">Tu pedido se procesará en nuestro sistema en un plazo máximo de 5 minutos.</p>
                 <button class="btn-outline" style="width: 100%; padding: 14px; border-color: rgba(255,255,255,0.15);" onclick="cerrarModalCompra()">Entendido</button>
             </div>
         </div>
@@ -429,6 +584,12 @@
         let precioFinalConCupon = null;
         let codigoCuponValidado = '';
         let usuarioActualCompleto = null;
+        let descripcionSeleccionada = '';
+
+        // Estado del Paso 1 (ID de jugador) — se llena una vez y queda disponible
+        // para todas las compras que haga el cliente en esta misma visita.
+        let paso1IdValidado = '';
+        let paso1NicknameConfirmado = '';
 
         window.onload = async function() {
             const usuario = await verificarSesion(false);
@@ -458,28 +619,30 @@
         function crearTarjetaProducto(p) {
             let badgeHtml = '';
             if (p.etiqueta) {
-                badgeHtml = `<div class="card-badge">${p.etiqueta}</div>`;
+                badgeHtml = `<div class="dtile-badge">${escHtml(p.etiqueta)}</div>`;
             } else if (p.precio_anterior) {
                 const pct = Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100);
-                badgeHtml = `<div class="card-badge">-${pct}%</div>`;
+                badgeHtml = `<div class="dtile-badge">-${pct}%</div>`;
             }
 
             let iconoHtml;
             if (p.imagen_url) {
-                iconoHtml = `<div class="card-icon" style="height: 60px; background: url('${p.imagen_url}') center/contain no-repeat; margin-bottom: 10px;"></div>`;
+                iconoHtml = `<div class="dtile-icon dtile-icon-img" style="background-image: url('${p.imagen_url}')"></div>`;
             } else {
-                iconoHtml = `<div class="card-icon">${p.emoji_fallback || '💎'}</div>`;
+                iconoHtml = `<div class="dtile-icon">${p.emoji_fallback || '💎'}</div>`;
             }
 
-            const descHtml = p.descripcion ? `<p class="card-stock">${p.descripcion}</p>` : '';
+            const descHtml = p.descripcion ? `<p class="dtile-desc">${escHtml(p.descripcion)}</p>` : '';
 
             const preciosHtml = p.precio_anterior
-                ? `<span class="price-old">S/ ${Number(p.precio_anterior).toFixed(2)}</span><span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`
-                : `<span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`;
+                ? `<span class="dtile-price-old">S/ ${Number(p.precio_anterior).toFixed(2)}</span><span class="dtile-price-current">S/ ${Number(p.precio).toFixed(2)}</span>`
+                : `<span class="dtile-price-current">S/ ${Number(p.precio).toFixed(2)}</span>`;
 
             const paqueteEscapado = p.paquete.replace(/'/g, "\\'");
+            const descEscapada = (p.descripcion || '').replace(/'/g, "\\'");
+            const paqueteAttr = escHtml(p.paquete).replace(/"/g, '&quot;');
 
-            return `<div class="card">${badgeHtml}${iconoHtml}<h3 class="card-title">${p.paquete}</h3>${descHtml}<div class="card-prices">${preciosHtml}</div><button class="btn-buy" onclick="abrirModalCompra('${paqueteEscapado}', ${p.precio})">Comprar</button></div>`;
+            return `<div class="dtile" data-paquete="${paqueteAttr}" onclick="seleccionarPaquete('${paqueteEscapado}', ${p.precio}, '${descEscapada}')">${badgeHtml}${iconoHtml}<h3 class="dtile-title">${escHtml(p.paquete)}</h3>${descHtml}<div class="dtile-prices">${preciosHtml}</div><div class="dtile-cta">Elegir <span class="material-icons" style="font-size:13px;">arrow_forward</span></div></div>`;
         }
 
         async function cargarProductosCatalogo(categoria) {
@@ -544,66 +707,29 @@
             } catch(e) { console.error(e); }
         }
 
-        function bloquearNickname(nickname) {
-            const campo = document.getElementById('modal-nickname-juego');
-            campo.value = nickname;
-            campo.readOnly = true;
-            campo.style.background = 'rgba(0,230,118,0.08)';
-            campo.style.borderColor = '#00e676';
-            campo.style.color = '#00e676';
-            campo.style.fontWeight = 'bold';
-            campo.style.cursor = 'not-allowed';
-            document.getElementById('modal-nickname-wrap').style.display = 'none';
-        }
-
-        function desbloquearNickname() {
-            const campo = document.getElementById('modal-nickname-juego');
-            campo.value = '';
-            campo.readOnly = false;
-            campo.style.background = 'rgba(0, 0, 0, 0.5)';
-            campo.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-            campo.style.color = 'white';
-            campo.style.fontWeight = 'normal';
-            campo.style.cursor = 'text';
-            document.getElementById('modal-nickname-wrap').style.display = 'none';
-            const tarjeta = document.getElementById('modal-id-resultado-card');
-            if (tarjeta) tarjeta.style.display = 'none';
-        }
-
-        // Se usa cuando la validación automática del ID falla: revela el campo para que
-        // el cliente escriba su nombre de usuario manualmente (antes salía siempre visible,
-        // y eso hacía que muchos lo llenaran a mano sin usar "Validar").
-        function mostrarNicknameManual() {
-            desbloquearNickname();
-            document.getElementById('modal-nickname-wrap').style.display = 'block';
-        }
-
         function mostrarCampoCupon() {
             document.getElementById('modal-cupon-wrap').style.display = 'block';
             document.getElementById('toggle-cupon-link').style.display = 'none';
             document.getElementById('modal-cupon').focus();
         }
 
-        async function validarIdEnModal() {
-            const idInput = document.getElementById('modal-id-juego');
-            const btn = document.getElementById('btn-validar-id');
-            const msg = document.getElementById('modal-id-mensaje');
+        // ================= PASO 1: ID DE JUGADOR =================
+        async function validarIdPaso1() {
+            const idInput = document.getElementById('paso1-id-input');
+            const btn = document.getElementById('paso1-btn-validar');
+            const msg = document.getElementById('paso1-mensaje');
             const uid = idInput.value.trim();
 
-            const tarjeta = document.getElementById('modal-id-resultado-card');
-
             if (!uid || uid.length < 7) {
-                tarjeta.style.display = 'none';
                 msg.style.display = 'block';
                 msg.style.color = '#ff4757';
-                msg.innerText = 'Ingresa un ID válido primero.';
+                msg.innerText = 'Ingresa un ID v\u00e1lido primero.';
                 return;
             }
 
             btn.disabled = true;
             btn.innerHTML = '<span class="material-icons" style="font-size:16px;">hourglass_top</span> Validando...';
             msg.style.display = 'none';
-            tarjeta.style.display = 'none';
 
             const resultado = await validarUidFreeFire(uid);
 
@@ -611,26 +737,59 @@
             btn.innerHTML = '<span class="material-icons" style="font-size:16px;">search</span> Validar';
 
             if (resultado.ok) {
-                bloquearNickname(resultado.nickname);
-                document.getElementById('modal-id-resultado-nombre').innerText = resultado.nickname;
-                document.getElementById('modal-id-resultado-uid').innerText = uid;
-                document.getElementById('modal-id-resultado-nivel').innerText = resultado.nivel;
-
-                const banner = document.getElementById('modal-id-resultado-banner');
-                const icono = document.getElementById('modal-id-resultado-icono');
-                banner.style.display = 'none';
-                icono.style.display = '';
-                banner.onload = () => { banner.style.display = 'block'; icono.style.display = 'none'; };
-                banner.onerror = () => { banner.style.display = 'none'; icono.style.display = ''; };
-                banner.src = urlBannerFreeFire(uid);
-
-                tarjeta.style.display = 'flex';
+                confirmarPaso1(uid, resultado.nickname, resultado.nivel);
             } else {
-                mostrarNicknameManual();
+                document.getElementById('paso1-nickname-manual-wrap').style.display = 'block';
                 msg.style.display = 'block';
                 msg.style.color = '#ff4757';
                 msg.innerText = resultado.error + ' Escribe tu nombre de usuario manualmente abajo.';
             }
+        }
+
+        function confirmarNicknameManualPaso1() {
+            const uid = document.getElementById('paso1-id-input').value.trim();
+            const nick = document.getElementById('paso1-nickname-input').value.trim();
+            if (!uid || uid.length < 7) { alert('Ingresa un ID v\u00e1lido primero.'); return; }
+            if (!nick) { alert('Ingresa tu nombre de usuario.'); return; }
+            confirmarPaso1(uid, nick);
+        }
+
+        function confirmarPaso1(uid, nickname, nivel) {
+            paso1IdValidado = uid;
+            paso1NicknameConfirmado = nickname;
+
+            document.getElementById('cc-nombre-txt').innerText = nickname;
+            document.getElementById('cc-id-txt').innerText = uid;
+
+            const nivelWrap = document.getElementById('cc-nivel-wrap');
+            if (nivel !== undefined && nivel !== null) {
+                document.getElementById('cc-nivel-txt').innerText = nivel;
+                nivelWrap.style.display = 'block';
+            } else {
+                nivelWrap.style.display = 'none';
+            }
+
+            const banner = document.getElementById('cc-avatar-banner');
+            const icono = document.getElementById('cc-avatar-icono');
+            banner.style.display = 'none';
+            icono.style.display = '';
+            banner.onload = () => { banner.style.display = 'block'; icono.style.display = 'none'; };
+            banner.onerror = () => { banner.style.display = 'none'; icono.style.display = ''; };
+            banner.src = urlBannerFreeFire(uid);
+
+            document.getElementById('paso1-form').style.display = 'none';
+            document.getElementById('paso1-confirmado').style.display = 'block';
+        }
+
+        function salirPaso1() {
+            paso1IdValidado = '';
+            paso1NicknameConfirmado = '';
+            document.getElementById('paso1-id-input').value = '';
+            document.getElementById('paso1-nickname-input').value = '';
+            document.getElementById('paso1-nickname-manual-wrap').style.display = 'none';
+            document.getElementById('paso1-mensaje').style.display = 'none';
+            document.getElementById('paso1-confirmado').style.display = 'none';
+            document.getElementById('paso1-form').style.display = 'block';
         }
 
         async function aplicarCupon() {
@@ -668,27 +827,70 @@
             txtRestante.style.color = saldoRestante < 0 ? '#ff4757' : '#00e676';
         }
 
-        async function abrirModalCompra(nombrePaquete, precioPaquete) {
+        // ================= PASO 2 -> PASO 3: SELECCI\u00d3N DE PAQUETE =================
+        function seleccionarPaquete(nombrePaquete, precioPaquete, descripcionPaquete) {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             if (!nombreGuardado) { window.location.href = 'login.html'; return; }
 
             paqueteSeleccionado = nombrePaquete;
             precioSeleccionado = parseFloat(precioPaquete);
+            descripcionSeleccionada = descripcionPaquete || '';
+
+            document.querySelectorAll('#products-grid .dtile').forEach(t => t.classList.remove('dtile-selected'));
+            const tileEl = document.querySelector(`#products-grid .dtile[data-paquete="${CSS.escape(nombrePaquete)}"]`);
+            if (tileEl) tileEl.classList.add('dtile-selected');
+
+            document.getElementById('paso3-paquete-txt').innerText = nombrePaquete;
+            document.getElementById('paso3-costo-txt').innerText = `S/ ${precioSeleccionado.toFixed(2)}`;
+
+            const paso3 = document.getElementById('paso3-wrap');
+            paso3.style.display = 'block';
+            paso3.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Lee descripciones tipo "100 + 10 Extra" para mostrar el desglose en la
+        // revisi\u00f3n final, igual que hace Garena con su "Precio inicial + Bono".
+        function parsearBonoDescripcion(desc) {
+            if (!desc) return null;
+            const m = desc.match(/^([\d.,]+)\s*\+\s*([\d.,]+)\s*Extra/i);
+            if (!m) return null;
+            return { base: m[1], bono: m[2] };
+        }
+
+        // ================= PASO 3 -> REVISI\u00d3N FINAL (modal) =================
+        async function abrirRevisionFinal() {
+            const nombreGuardado = localStorage.getItem('nombreUsuario');
+            if (!nombreGuardado) { window.location.href = 'login.html'; return; }
+
+            if (!paso1IdValidado || !paso1NicknameConfirmado) {
+                alert('Antes de comprar, completa el Paso 1: ingresa y valida tu ID de jugador.');
+                document.getElementById('paso1-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+            }
 
             document.getElementById('compra-pantalla-formulario').style.display = 'block';
             document.getElementById('compra-pantalla-error').style.display = 'none';
             document.getElementById('compra-pantalla-exito').style.display = 'none';
-            
-            document.getElementById('modal-id-juego').value = "";
-            desbloquearNickname();
+
             precioFinalConCupon = null; codigoCuponValidado = '';
             document.getElementById('modal-cupon').value = '';
             document.getElementById('modal-cupon-mensaje').style.display = 'none';
             document.getElementById('modal-cupon-wrap').style.display = 'none';
             document.getElementById('toggle-cupon-link').style.display = 'inline-flex';
 
-            // CÁLCULO FINANCIERO DEL MODAL
-            document.getElementById('modal-paquete-nombre').innerText = nombrePaquete;
+            document.getElementById('modal-paquete-nombre').innerText = paqueteSeleccionado;
+            document.getElementById('modal-jugador-nombre').innerText = paso1NicknameConfirmado;
+
+            const bono = parsearBonoDescripcion(descripcionSeleccionada);
+            const bonoWrap = document.getElementById('modal-bono-wrap');
+            if (bono) {
+                document.getElementById('modal-bono-base').innerText = bono.base;
+                document.getElementById('modal-bono-extra').innerText = bono.bono;
+                bonoWrap.style.display = 'block';
+            } else {
+                bonoWrap.style.display = 'none';
+            }
+
             document.getElementById('modal-paquete-precio').innerText = `S/ ${precioSeleccionado.toFixed(2)}`;
             actualizarElementoConversion('modal-paquete-precio-alt', precioSeleccionado, usuarioActualCompleto);
 
@@ -702,10 +904,10 @@
 
                     let saldoRestante = saldoActualUsuario - precioSeleccionado;
                     let txtRestante = document.getElementById('modal-saldo-restante');
-                    actualizarElementoConversion('modal-saldo-restante-alt', saldoRestante, usuarioActualCompleto);
 
                     txtRestante.innerText = `S/ ${saldoRestante.toFixed(2)}`;
-                    
+                    actualizarElementoConversion('modal-saldo-restante-alt', saldoRestante, usuarioActualCompleto);
+
                     if (saldoRestante < 0) {
                         txtRestante.style.color = '#ff4757'; // Rojo si no le alcanza
                         document.getElementById('compra-pantalla-formulario').style.display = 'none';
@@ -714,11 +916,10 @@
                         txtRestante.style.color = '#00e676'; // Verde si le alcanza
                     }
                 }
-            } catch (err) { console.error("Error al verificar fondos:", err); }
+            } catch (err) { console.error(err); }
 
             const modal = document.getElementById('modal-compra-container');
-            modal.style.display = 'flex';
-            setTimeout(() => { modal.style.opacity = '1'; }, 10);
+            modal.style.display = 'flex'; setTimeout(() => { modal.style.opacity = '1'; }, 10);
         }
 
         function cerrarModalCompra() {
@@ -728,13 +929,13 @@
         }
 
         async function procesarTransaccion() {
-            const idJuego = document.getElementById('modal-id-juego').value.trim();
-            const nicknameJuego = document.getElementById('modal-nickname-juego').value.trim();
+            const idJuego = paso1IdValidado;
+            const nicknameJuego = paso1NicknameConfirmado;
             const nombreGuardado = localStorage.getItem('nombreUsuario');
             const btn = document.getElementById('btn-confirmar-pago');
 
-            if (!idJuego || idJuego.length < 7) { alert("El ID ingresado es muy corto o inválido."); return; }
-            if (!nicknameJuego) { alert("Por favor, ingresa tu Nickname del juego."); return; }
+            if (!idJuego || idJuego.length < 7) { alert("Falta tu ID de jugador — vuelve al Paso 1."); return; }
+            if (!nicknameJuego) { alert("Falta tu nombre de usuario — vuelve al Paso 1."); return; }
 
             btn.disabled = true; btn.innerText = "Procesando pedido...";
 
@@ -751,12 +952,12 @@
                 if (resultado && resultado.mensaje === 'Saldo insuficiente.') {
                     document.getElementById('compra-pantalla-formulario').style.display = 'none';
                     document.getElementById('compra-pantalla-error').style.display = 'block';
-                    btn.disabled = false; btn.innerText = "Completar Pedido";
+                    btn.disabled = false; btn.innerText = "Comprar ahora";
                     return;
                 }
                 const msg = errorCompra ? errorCompra.message : (resultado ? resultado.mensaje : "Error desconocido.");
                 alert("Error: " + msg);
-                btn.disabled = false; btn.innerText = "Completar Pedido";
+                btn.disabled = false; btn.innerText = "Comprar ahora";
                 return;
             }
 
@@ -766,8 +967,27 @@
 
             document.getElementById('compra-pantalla-formulario').style.display = 'none';
             document.getElementById('compra-pantalla-exito').style.display = 'block';
+
+            document.getElementById('exito-pedido-id').innerText = resultado.pedido_id ? ('#' + resultado.pedido_id) : '---';
+            document.getElementById('exito-monto-total').innerText = paqueteSeleccionado;
+            document.getElementById('exito-precio').innerText = `S/ ${precioFinalCobrado.toFixed(2)}`;
+            document.getElementById('exito-fecha').innerText = new Date().toLocaleString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+            const bonoExito = parsearBonoDescripcion(descripcionSeleccionada);
+            const bonoExitoWrap = document.getElementById('exito-bono-wrap');
+            if (bonoExito) {
+                document.getElementById('exito-bono-base').innerText = bonoExito.base;
+                document.getElementById('exito-bono-extra').innerText = bonoExito.bono;
+                bonoExitoWrap.style.display = 'block';
+            } else {
+                bonoExitoWrap.style.display = 'none';
+            }
+
+            // Deja el paquete listo para que elija otro sin arrastrar la selección anterior.
+            document.getElementById('paso3-wrap').style.display = 'none';
+            document.querySelectorAll('#products-grid .dtile').forEach(t => t.classList.remove('dtile-selected'));
             
-            btn.disabled = false; btn.innerText = "Completar Pedido";
+            btn.disabled = false; btn.innerText = "Comprar ahora";
 
             // REDIRECCIÓN A WHATSAPP
             const numeroAdmin = "51943737572";
