@@ -241,6 +241,7 @@
                         <div class="cc-check"><span class="material-icons" style="font-size: 13px;">check_circle</span> Cuenta confirmada</div>
                         <div class="cc-linea">Nombre de usuario: <b id="cc-nombre-txt"></b></div>
                         <div class="cc-linea">ID de jugador: <b id="cc-id-txt"></b></div>
+                        <div class="cc-linea" id="cc-nivel-wrap" style="display: none;">Nivel: <b id="cc-nivel-txt"></b></div>
                     </div>
                     <a href="javascript:void(0)" class="cc-salir" onclick="salirPaso1()"><span class="material-icons" style="font-size: 15px;">sync_alt</span> Salir</a>
                 </div>
@@ -734,7 +735,7 @@
             btn.innerHTML = '<span class="material-icons" style="font-size:16px;">search</span> Validar';
 
             if (resultado.ok) {
-                confirmarPaso1(uid, resultado.nickname);
+                confirmarPaso1(uid, resultado.nickname, resultado.nivel);
             } else {
                 document.getElementById('paso1-nickname-manual-wrap').style.display = 'block';
                 msg.style.display = 'block';
@@ -751,12 +752,20 @@
             confirmarPaso1(uid, nick);
         }
 
-        function confirmarPaso1(uid, nickname) {
+        function confirmarPaso1(uid, nickname, nivel) {
             paso1IdValidado = uid;
             paso1NicknameConfirmado = nickname;
 
             document.getElementById('cc-nombre-txt').innerText = nickname;
             document.getElementById('cc-id-txt').innerText = uid;
+
+            const nivelWrap = document.getElementById('cc-nivel-wrap');
+            if (nivel !== undefined && nivel !== null) {
+                document.getElementById('cc-nivel-txt').innerText = nivel;
+                nivelWrap.style.display = 'block';
+            } else {
+                nivelWrap.style.display = 'none';
+            }
 
             const banner = document.getElementById('cc-avatar-banner');
             const icono = document.getElementById('cc-avatar-icono');
