@@ -23,63 +23,63 @@
     
     <!-- NUEVOS EFECTOS VISUALES Y GAMIFICACIÓN -->
     <style>
-        /* Efectos de levitación y resplandor para las tarjetas */
-        .products-grid .card {
+        /* --- TARJETAS DE PAQUETE ESTILO "CENTRO DE RECARGAS" (limpias, tipo Garena) --- */
+        .diamond-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 14px;
+        }
+        .dtile {
             position: relative;
-            overflow: hidden;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, border-color 0.3s ease;
+            background: linear-gradient(180deg, #1c1c22, #16161a);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 20px 14px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .products-grid .card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(161, 85, 255, 0.25);
+        .dtile:hover {
             border-color: #a155ff;
-            z-index: 2;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(161, 85, 255, 0.2);
         }
-        /* Luz de fondo en hover */
-        .products-grid .card::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(161,85,255,0.1) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-        .products-grid .card:hover::before {
-            opacity: 1;
-        }
-        /* Brillo mágico en los diamantes */
-        .card-icon {
-            text-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
-            transition: transform 0.3s ease, text-shadow 0.3s ease;
-        }
-        .products-grid .card:hover .card-icon {
-            transform: scale(1.15) rotate(5deg);
-            text-shadow: 0 0 25px rgba(0, 210, 255, 0.8);
-        }
-        /* Etiqueta animada de Más Vendido (Fuego) */
-        .badge-bestseller {
-            position: absolute; top: 12px; right: 12px;
+        .dtile-badge {
+            display: inline-block;
             background: linear-gradient(45deg, #ff4757, #ff9800);
-            color: white; padding: 4px 10px; border-radius: 20px;
-            font-size: 10px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase;
-            box-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
-            animation: pulse-fire 2s infinite;
-            z-index: 10;
+            color: white; font-size: 9.5px; font-weight: 900;
+            padding: 3px 10px; border-radius: 20px; letter-spacing: 0.3px; text-transform: uppercase;
+            box-shadow: 0 0 8px rgba(255, 71, 87, 0.4);
+            margin-bottom: 8px;
         }
-        @keyframes pulse-fire {
-            0% { box-shadow: 0 0 5px rgba(255, 71, 87, 0.4); transform: scale(1); }
-            50% { box-shadow: 0 0 15px rgba(255, 71, 87, 0.8); transform: scale(1.05); }
-            100% { box-shadow: 0 0 5px rgba(255, 71, 87, 0.4); transform: scale(1); }
+        .dtile-icon {
+            font-size: 34px; margin-bottom: 8px; line-height: 1;
+            filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.4));
         }
-        /* Botones de compra más vibrantes en hover */
-        .products-grid .card .btn-buy {
-            transition: all 0.3s ease;
+        .dtile-icon.dtile-icon-img {
+            width: 100%; height: 46px; margin-bottom: 8px;
+            background-size: contain; background-position: center; background-repeat: no-repeat;
         }
-        .products-grid .card:hover .btn-buy {
-            background: linear-gradient(45deg, #a155ff, #c385ff);
-            box-shadow: 0 0 15px rgba(161, 85, 255, 0.4);
-            transform: scale(1.05);
+        .dtile-title { color: white; font-weight: 800; font-size: 15px; margin: 0 0 2px 0; line-height: 1.25; }
+        .dtile-desc { color: #8a8a9a; font-size: 11px; margin: 0 0 10px 0; line-height: 1.4; }
+        .dtile-prices { margin-top: 4px; }
+        .dtile-price-old { color: #6b6b76; font-size: 11.5px; text-decoration: line-through; display: block; margin-bottom: 1px; }
+        .dtile-price-current { color: #00e676; font-size: 17px; font-weight: 800; }
+        .dtile-cta {
+            margin-top: 10px; color: #a155ff; font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center; gap: 2px; opacity: 0.85;
+            transition: opacity 0.2s ease, gap 0.2s ease;
+        }
+        .dtile:hover .dtile-cta { opacity: 1; gap: 5px; }
+        @media (max-width: 768px) {
+            .diamond-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            .dtile { padding: 14px 8px 12px; border-radius: 12px; }
+            .dtile-icon { font-size: 26px; margin-bottom: 6px; }
+            .dtile-icon.dtile-icon-img { height: 34px; }
+            .dtile-title { font-size: 12.5px; }
+            .dtile-desc { font-size: 9.5px; margin-bottom: 6px; }
+            .dtile-price-current { font-size: 14px; }
+            .dtile-cta { font-size: 9.5px; margin-top: 6px; }
         }
 
         /* --- ESTILOS DE LA CINTA DE COMPRAS EN VIVO (LIVE TICKER) --- */
@@ -231,7 +231,7 @@
 
         <div class="category-header"><h2>PAQUETES DISPONIBLES 💎 (Ilimitado)</h2></div>
         
-        <section class="products-grid" id="products-grid">
+        <section class="diamond-grid" id="products-grid">
             <p style="color: #a8a8b3;">Cargando catálogo...</p>
         </section>
 
@@ -533,28 +533,28 @@
         function crearTarjetaProducto(p) {
             let badgeHtml = '';
             if (p.etiqueta) {
-                badgeHtml = `<div class="card-badge">${p.etiqueta}</div>`;
+                badgeHtml = `<div class="dtile-badge">${escHtml(p.etiqueta)}</div>`;
             } else if (p.precio_anterior) {
                 const pct = Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100);
-                badgeHtml = `<div class="card-badge">-${pct}%</div>`;
+                badgeHtml = `<div class="dtile-badge">-${pct}%</div>`;
             }
 
             let iconoHtml;
             if (p.imagen_url) {
-                iconoHtml = `<div class="card-icon" style="height: 60px; background: url('${p.imagen_url}') center/contain no-repeat; margin-bottom: 10px;"></div>`;
+                iconoHtml = `<div class="dtile-icon dtile-icon-img" style="background-image: url('${p.imagen_url}')"></div>`;
             } else {
-                iconoHtml = `<div class="card-icon">${p.emoji_fallback || '💎'}</div>`;
+                iconoHtml = `<div class="dtile-icon">${p.emoji_fallback || '💎'}</div>`;
             }
 
-            const descHtml = p.descripcion ? `<p class="card-stock">${p.descripcion}</p>` : '';
+            const descHtml = p.descripcion ? `<p class="dtile-desc">${escHtml(p.descripcion)}</p>` : '';
 
             const preciosHtml = p.precio_anterior
-                ? `<span class="price-old">S/ ${Number(p.precio_anterior).toFixed(2)}</span><span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`
-                : `<span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`;
+                ? `<span class="dtile-price-old">S/ ${Number(p.precio_anterior).toFixed(2)}</span><span class="dtile-price-current">S/ ${Number(p.precio).toFixed(2)}</span>`
+                : `<span class="dtile-price-current">S/ ${Number(p.precio).toFixed(2)}</span>`;
 
             const paqueteEscapado = p.paquete.replace(/'/g, "\\'");
 
-            return `<div class="card">${badgeHtml}${iconoHtml}<h3 class="card-title">${p.paquete}</h3>${descHtml}<div class="card-prices">${preciosHtml}</div><button class="btn-buy" onclick="abrirModalCompra('${paqueteEscapado}', ${p.precio})">Comprar</button></div>`;
+            return `<div class="dtile" onclick="abrirModalCompra('${paqueteEscapado}', ${p.precio})">${badgeHtml}${iconoHtml}<h3 class="dtile-title">${escHtml(p.paquete)}</h3>${descHtml}<div class="dtile-prices">${preciosHtml}</div><div class="dtile-cta">Comprar <span class="material-icons" style="font-size:13px;">arrow_forward</span></div></div>`;
         }
 
         async function cargarProductosCatalogo(categoria) {
