@@ -361,23 +361,31 @@
             white-space: nowrap; display: flex; align-items: center; gap: 5px; flex-shrink: 0;
         }
         .cuenta-confirmada-card {
-            display: flex; align-items: center; gap: 14px;
+            display: flex; align-items: center; gap: 12px; max-width: 420px;
             background: rgba(0,230,118,0.06); border: 1px solid rgba(0,230,118,0.3);
-            border-radius: 12px; padding: 14px;
+            border-radius: 12px; padding: 12px;
         }
         .cc-avatar-wrap {
-            width: 52px; height: 52px; border-radius: 12px; background: rgba(0,230,118,0.15);
+            width: 44px; height: 44px; border-radius: 10px; background: rgba(0,230,118,0.15);
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
             overflow: hidden; position: relative;
         }
-        .cc-avatar-icono { font-size: 28px; color: #00e676; }
+        .cc-avatar-icono { font-size: 24px; color: #00e676; }
         .cc-avatar-banner { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left center; }
         .cc-info { flex: 1; min-width: 0; text-align: left; }
-        .cc-check { display: flex; align-items: center; gap: 5px; color: #00e676; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .cc-linea { color: white; font-size: 13px; margin-top: 2px; }
+        .cc-check { display: flex; align-items: center; gap: 5px; color: #00e676; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+        .cc-linea { color: white; font-size: 12px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .cc-linea b { color: #00e676; }
-        .cc-salir { color: #a8a8b3; font-size: 12px; text-decoration: none; display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+        .cc-salir { color: #a8a8b3; font-size: 11.5px; text-decoration: none; display: flex; align-items: center; gap: 3px; flex-shrink: 0; align-self: flex-start; }
         .cc-salir:hover { color: white; }
+        @media (max-width: 700px) {
+            .cuenta-confirmada-card { max-width: 100%; gap: 10px; padding: 10px; }
+            .cc-avatar-wrap { width: 38px; height: 38px; border-radius: 9px; }
+            .cc-avatar-icono { font-size: 20px; }
+            .cc-check { font-size: 9px; }
+            .cc-linea { font-size: 11px; }
+            .cc-salir { font-size: 10.5px; }
+        }
         .paso3-resumen { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 6px; }
         .paso3-resumen-item {
             background: rgba(0,0,0,0.3); border-radius: 10px; padding: 14px;
