@@ -570,6 +570,7 @@
                     <div class="admin-nav-item" id="nav-item-cuentas" data-view="cuentas" onclick="cambiarVista('cuentas')" style="display:none;"><span class="material-icons">badge</span> Cuentas</div>
                     <div class="admin-nav-item solo-full" data-view="mis-clientes" onclick="cambiarVista('mis-clientes')"><span class="material-icons">subscriptions</span> Mis Clientes <span class="nav-badge zero" id="badge-clientes-venciendo">0</span></div>
                     <div class="admin-nav-item solo-full" data-view="cupones" onclick="cambiarVista('cupones')"><span class="material-icons">sell</span> Cupones</div>
+                    <div class="admin-nav-item solo-full" data-view="canjes" onclick="cambiarVista('canjes')"><span class="material-icons">redeem</span> Canjes</div>
                     <div class="admin-nav-item solo-full" data-view="administradores" onclick="cambiarVista('administradores')"><span class="material-icons">admin_panel_settings</span> Administradores</div>
                 </nav>
 
@@ -1241,6 +1242,57 @@
                     </div>
                 </div>
 
+                <!-- ============ CANJES POR PUNTOS ============ -->
+                <div class="admin-view" id="view-canjes">
+                    <h1 class="view-title"><span class="material-icons" style="color:#ffc107;">redeem</span> Canjes por Puntos</h1>
+                    <p class="view-subtitle">Premios y cupones que los clientes pueden canjear con sus CarzaPuntos.</p>
+
+                    <div class="card-box upload-container">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#00d2ff;">add_circle</span> Crear Canje</h3>
+                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Nombre</label>
+                                <input type="text" id="canje-nombre" class="bulk-select" placeholder="Ej. Pase Booyah" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #00e676; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Tipo</label>
+                                <select id="canje-tipo" class="bulk-select" onchange="actualizarCampoValorCanje()">
+                                    <option value="premio_fisico">Premio físico (pide ID del jugador)</option>
+                                    <option value="cupon">Cupón de descuento</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Costo en puntos</label>
+                                <input type="number" id="canje-costo-puntos" class="bulk-select" placeholder="10000" min="1" step="1" style="width:100%; box-sizing:border-box;">
+                            </div>
+                        </div>
+                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                            <div id="canje-wrap-valor" style="display:none;">
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Valor del cupón (S/)</label>
+                                <input type="number" id="canje-valor" class="bulk-select" placeholder="2" min="0.01" step="0.01" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Ícono (Material Icons)</label>
+                                <input type="text" id="canje-icono" class="bulk-select" placeholder="local_activity" value="redeem" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Descripción (opcional)</label>
+                                <input type="text" id="canje-descripcion" class="bulk-select" placeholder="Ingresa tu ID para recibirlo" style="width:100%; box-sizing:border-box;">
+                            </div>
+                        </div>
+                        <button class="btn-primary" style="width: 100%; padding: 15px; font-weight: bold; background: #00e676; color: black; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-top: 15px;" onclick="crearCanje()">
+                            <span class="material-icons">add_circle</span> Crear Canje
+                        </button>
+                    </div>
+
+                    <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">redeem</span> Canjes existentes</h3>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Nombre</th><th>Tipo</th><th>Costo</th><th>Valor</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="tabla-canjes"></tbody></table>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ============ ADMINISTRADORES ============ -->
                 <div class="admin-view" id="view-administradores">
                     <h1 class="view-title"><span class="material-icons" style="color:#a155ff;">admin_panel_settings</span> Administradores</h1>
@@ -1383,7 +1435,7 @@
             });
 
             if (rol === 'full') {
-                await cargarUsuarios(); await cargarRecargas(); await cargarAdmins(); await cargarCupones();
+                await cargarUsuarios(); await cargarRecargas(); await cargarAdmins(); await cargarCupones(); await cargarCanjes();
                 await cargarProductosCatalogoParaCuentaMadre(); await cargarCuentasMadre();
             } else {
                 cambiarVista('pedidos');
@@ -2469,6 +2521,68 @@
             if (error) { showToast("Error: " + error.message, "error"); return; }
             showToast(nuevoEstado ? "Cupón activado." : "Cupón desactivado.", nuevoEstado ? "success" : "warning");
             cargarCupones();
+        }
+
+        // ================= CANJES POR PUNTOS =================
+        const NOMBRES_TIPO_CANJE = { premio_fisico: 'Premio físico', cupon: 'Cupón' };
+
+        function actualizarCampoValorCanje() {
+            const tipo = document.getElementById('canje-tipo').value;
+            document.getElementById('canje-wrap-valor').style.display = (tipo === 'cupon') ? '' : 'none';
+        }
+
+        async function cargarCanjes() {
+            const { data } = await supabaseClient.from('canjes_puntos').select('*').order('costo_puntos');
+            const tbody = document.getElementById('tabla-canjes'); tbody.innerHTML = '';
+            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#a8a8b3;'>Sin canjes creados todavía.</td></tr>"; return; }
+            data.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Nombre" style="font-weight:bold;">${c.nombre}</td>
+                    <td data-label="Tipo">${NOMBRES_TIPO_CANJE[c.tipo] || c.tipo}</td>
+                    <td data-label="Costo" style="color:#ffc107; font-weight:bold;">${c.costo_puntos.toLocaleString('es-PE')} pts</td>
+                    <td data-label="Valor">${c.valor ? 'S/ ' + c.valor : '—'}</td>
+                    <td data-label="Estado" style="color:${c.activo ? '#00e676' : '#666'}; font-weight:bold;">${c.activo ? 'Activo' : 'Desactivado'}</td>
+                    <td data-label="Acción">${c.activo
+                        ? `<button class="btn-remove" onclick="toggleCanje(${c.id}, false)"><span class="material-icons">block</span> Desactivar</button>`
+                        : `<button class="btn-add" onclick="toggleCanje(${c.id}, true)"><span class="material-icons">check</span> Activar</button>`}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function crearCanje() {
+            const nombre = document.getElementById('canje-nombre').value.trim();
+            const tipo = document.getElementById('canje-tipo').value;
+            const costoPuntos = parseInt(document.getElementById('canje-costo-puntos').value);
+            const valor = document.getElementById('canje-valor').value ? parseFloat(document.getElementById('canje-valor').value) : null;
+            const icono = document.getElementById('canje-icono').value.trim() || 'redeem';
+            const descripcion = document.getElementById('canje-descripcion').value.trim() || null;
+
+            if (!nombre) return showToast("Ingresa un nombre.", "warning");
+            if (isNaN(costoPuntos) || costoPuntos <= 0) return showToast("Ingresa un costo en puntos válido.", "warning");
+            if (tipo === 'cupon' && (!valor || valor <= 0)) return showToast("Ingresa el valor en soles del cupón.", "warning");
+
+            const conf = await openCustomModal({ title: "Crear Canje", desc: `¿Crear el canje <b>${nombre}</b> por <b>${costoPuntos.toLocaleString('es-PE')} puntos</b>?`, icon: 'redeem', color: '#ffc107', textColor: 'black', type: 'confirm', confirmText: 'Crear' });
+            if (!conf) return;
+
+            const { error } = await supabaseClient.from('canjes_puntos').insert([{
+                nombre, tipo, costo_puntos: costoPuntos, valor: tipo === 'cupon' ? valor : null, icono, descripcion
+            }]);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast("Canje creado.");
+            document.getElementById('canje-nombre').value = '';
+            document.getElementById('canje-costo-puntos').value = '';
+            document.getElementById('canje-valor').value = '';
+            document.getElementById('canje-icono').value = 'redeem';
+            document.getElementById('canje-descripcion').value = '';
+            cargarCanjes();
+        }
+
+        async function toggleCanje(id, nuevoEstado) {
+            const { error } = await supabaseClient.from('canjes_puntos').update({ activo: nuevoEstado }).eq('id', id);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast(nuevoEstado ? "Canje activado." : "Canje desactivado.", nuevoEstado ? "success" : "warning");
+            cargarCanjes();
         }
 
         // ================= CATÁLOGO: DIAMANTES =================
@@ -3681,14 +3795,14 @@
 
             if(user.celular) {
                 let numStr = user.celular.replace(/[^0-9]/g, '');
-                let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga ha sido aprobada exitosamente.\n\n💰 Saldo anterior: S/ ${saldoAnterior.toFixed(2)}\n➕ Recarga acreditada: S/ ${montoFinal.toFixed(2)}\n💳 Saldo actual: S/ ${nuevoSaldo.toFixed(2)}\n\n🎁 Además, acabas de ganar *${puntosGanados} CarzaPuntos* para la Ruleta VIP.\n\n📲 Únete a nuestro grupo de WhatsApp para promos y sorteos exclusivos: ${LINK_GRUPO_WHATSAPP}\n\n🌐 carzadcross.com`;
+                let msg = `¡Hola ${nickname}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu recarga ha sido aprobada exitosamente.\n\n💰 Saldo anterior: S/ ${saldoAnterior.toFixed(2)}\n➕ Recarga acreditada: S/ ${montoFinal.toFixed(2)}\n💳 Saldo actual: S/ ${nuevoSaldo.toFixed(2)}\n\n🎁 Además, acabas de ganar *${puntosGanados} CarzaPuntos* para canjear premios.\n\n📲 Únete a nuestro grupo de WhatsApp para promos y sorteos exclusivos: ${LINK_GRUPO_WHATSAPP}\n\n🌐 carzadcross.com`;
                 window.open(`https://wa.me/${numStr}?text=${encodeURIComponent(msg)}`, '_blank');
             }
 
             enviarNotificacionCorreo(
                 user.correo, nickname,
                 `✅ Tu recarga de S/ ${montoFinal.toFixed(2)} fue aprobada (#${id})`,
-                `Tu recarga por <b>S/ ${montoFinal.toFixed(2)}</b> ya fue aprobada y tu saldo está actualizado. Además ganaste <b>${puntosGanados} CarzaPuntos</b> para la Ruleta VIP.<br><br>📲 Únete a nuestro <a href="${LINK_GRUPO_WHATSAPP}" style="color:#25D366; font-weight:bold;">grupo de WhatsApp</a> para promos y sorteos exclusivos.`,
+                `Tu recarga por <b>S/ ${montoFinal.toFixed(2)}</b> ya fue aprobada y tu saldo está actualizado. Además ganaste <b>${puntosGanados} CarzaPuntos</b> para canjear premios.<br><br>📲 Únete a nuestro <a href="${LINK_GRUPO_WHATSAPP}" style="color:#25D366; font-weight:bold;">grupo de WhatsApp</a> para promos y sorteos exclusivos.`,
                 'Ver mi saldo', 'https://carzadcross.com/perfil.html',
                 `💰 Saldo anterior: S/ ${saldoAnterior.toFixed(2)}<br>➕ Recarga: S/ ${montoFinal.toFixed(2)}<br>💳 Saldo actual: S/ ${nuevoSaldo.toFixed(2)}`
             );
@@ -3855,9 +3969,9 @@
                 let numStr = r.celular.replace(/[^0-9]/g, '');
                 let msg;
                 if (esJackpot) {
-                    msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n👑💎 ¡FELICIDADES POR EL PREMIO MAYOR! 💎👑\n\nGanaste *${paquete}* en la Caja Misteriosa, el mejor premio posible, y ya fue enviado a tu cuenta. ¡Eres una leyenda! 🏆\n\n¡Sigue jugando y mucha suerte la próxima!`;
+                    msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n👑💎 ¡FELICIDADES! 💎👑\n\nCanjeaste *${paquete}* con tus CarzaPuntos, y ya fue enviado a tu cuenta. ¡Disfrútalo! 🏆\n\n¡Sigue acumulando puntos para tu próximo canje!`;
                 } else if (r.es_premio_caja) {
-                    msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n🎉 ¡Felicidades! Tu premio *${paquete}* ganado en la Caja Misteriosa ya fue enviado a tu cuenta. ¡Disfrútalo! 🎁\n\nSigue intentando en la Caja Misteriosa por mejores premios. ¡Gracias por jugar con nosotros!`;
+                    msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n🎉 ¡Listo! Tu canje *${paquete}* ya fue enviado a tu cuenta. ¡Disfrútalo! 🎁\n\nSigue acumulando CarzaPuntos para tu próximo canje. ¡Gracias por preferirnos!`;
                 } else {
                     msg = r.es_streaming
                         ? `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n✅ Tu pedido de 📺 *${paquete}* 📺 acaba de ser procesado y completado exitosamente.\n\nYa puedes ver tus datos de acceso en tu panel de *Mis Plataformas* dentro de la web. ¡Gracias por preferirnos!`
@@ -3880,9 +3994,9 @@
                 }
 
                 let mensajeCorreo = esJackpot
-                    ? `¡Felicidades por el premio mayor! Ganaste <b>${paquete}</b> en la Caja Misteriosa y ya fue enviado a tu cuenta.`
+                    ? `¡Felicidades! Canjeaste <b>${paquete}</b> con tus CarzaPuntos y ya fue enviado a tu cuenta.`
                     : r.es_premio_caja
-                        ? `¡Felicidades! Tu premio <b>${paquete}</b> ganado en la Caja Misteriosa ya fue enviado a tu cuenta. Sigue intentando por mejores premios.`
+                        ? `¡Listo! Tu canje <b>${paquete}</b> ya fue enviado a tu cuenta. Sigue acumulando puntos para tu próximo canje.`
                         : r.es_streaming
                             ? `Tu pedido de <b>${paquete}</b> ya fue procesado. Ya puedes ver tus datos de acceso en tu panel de Mis Plataformas.`
                             : `Tu pedido de <b>${paquete}</b> ya fue procesado. Revisa tu cuenta del juego.`;
@@ -3890,7 +4004,7 @@
 
                 enviarNotificacionCorreo(
                     r.correo, nick,
-                    esJackpot ? `👑 ¡Ganaste el premio mayor! — ${paquete}` : (r.es_premio_caja ? `🎉 Tu premio de la Caja Misteriosa — ${paquete}` : `✅ Pedido #${id} completado — ${paquete}`),
+                    esJackpot ? `👑 ¡Tu canje fue enviado! — ${paquete}` : (r.es_premio_caja ? `🎉 Tu canje de puntos — ${paquete}` : `✅ Pedido #${id} completado — ${paquete}`),
                     mensajeCorreo,
                     r.es_streaming ? 'Ver Mis Plataformas' : 'Ir a la tienda',
                     r.es_streaming ? 'https://carzadcross.com/mis-plataformas.html' : 'https://carzadcross.com/',

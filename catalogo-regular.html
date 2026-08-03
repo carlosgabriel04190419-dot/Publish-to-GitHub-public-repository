@@ -185,7 +185,7 @@
                  <a href="mis-cuentas.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">badge</span> Mis Cuentas</a>
                  <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #00e676; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
                  <!-- ENLACE CAJA VIP -->
-                 <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">casino</span> Caja Misteriosa VIP</a>
+                 <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 12px 15px; border-bottom: 1px solid #333;"><span class="material-icons">redeem</span> Canjea tus Puntos</a>
                 <a href="#" onclick="cerrarSesionSegura()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 12px 15px;"><span class="material-icons">logout</span> Cerrar Sesión</a>
             </div>
          </div>
@@ -207,7 +207,7 @@
             <h1 class="hero-title" style="font-size: 38px; font-weight: bold; margin-bottom: 15px;">Recarga Diamantes <br><span style="color: #a155ff;">+10%</span></h1>
             <p class="hero-subtitle" style="color: #a8a8b3; font-size: 15px; max-width: 600px; margin: 0 auto;">Adquiere tus diamantes y pases de forma automática y 100% segura con tu saldo.</p>
             <!-- TEXTO VIP MOTIVACIONAL -->
-            <p style="color: #ffc107; font-size: 13px; font-weight: bold; margin-top: 15px; text-shadow: 0 0 10px rgba(255,193,7,0.5);"><span class="material-icons" style="font-size: 14px; vertical-align: middle;">stars</span> Recuerda que cada S/ 1.00 de saldo que recargas te da 10 Puntos para la Caja Misteriosa VIP.</p>
+            <p style="color: #ffc107; font-size: 13px; font-weight: bold; margin-top: 15px; text-shadow: 0 0 10px rgba(255,193,7,0.5);"><span class="material-icons" style="font-size: 14px; vertical-align: middle;">stars</span> Recuerda que cada S/ 1.00 de saldo que recargas te da 10 Puntos para canjear premios en la tienda de canjes.</p>
         </div>
     </header>
 
@@ -263,6 +263,11 @@
             <section class="diamond-grid" id="products-grid">
                 <p style="color: #a8a8b3;">Cargando catálogo...</p>
             </section>
+
+            <div id="membresias-heading" style="display:none; margin: 22px 0 12px; align-items:center; gap:8px; color:#a8a8b3; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">
+                <span class="material-icons" style="font-size:16px;">card_membership</span> Membresías
+            </div>
+            <section class="diamond-grid" id="products-grid-membresias"></section>
         </div>
 
         <!-- PASO 3: CONFIRMAR COMPRA -->
@@ -328,11 +333,11 @@
 
                 <div class="rec-card" onclick="window.location.href='recompensas.html'" style="border-color: rgba(255, 193, 7, 0.3);">
                     <div style="min-width: 70px; height: 70px; border-radius: 8px; background: linear-gradient(135deg, #a155ff, #ffc107); display: flex; align-items: center; justify-content: center;">
-                        <span class="material-icons" style="color: white; font-size: 32px;">casino</span>
+                        <span class="material-icons" style="color: white; font-size: 32px;">redeem</span>
                     </div>
                     <div>
-                        <h4 style="margin: 0 0 5px 0; font-size: 16px; color: #ffc107;">Caja Misteriosa VIP</h4>
-                        <p style="margin: 0; font-size: 13px; color: #a8a8b3;">Gira la caja y gana Saldo, Diamantes o Pases gratis.</p>
+                        <h4 style="margin: 0 0 5px 0; font-size: 16px; color: #ffc107;">Canjea tus Puntos</h4>
+                        <p style="margin: 0; font-size: 13px; color: #a8a8b3;">Cambia tus CarzaPuntos por Pase Booyah y cupones de descuento.</p>
                     </div>
                 </div>
 
@@ -685,12 +690,20 @@
 
         async function cargarProductosCatalogo(categoria) {
             const grid = document.getElementById('products-grid');
+            const gridMembresias = document.getElementById('products-grid-membresias');
+            const membresiasHeading = document.getElementById('membresias-heading');
             const { data, error } = await supabaseClient.from('productos').select('*').eq('categoria', categoria).eq('activo', true).order('precio');
             if (error || !data || data.length === 0) {
                 grid.innerHTML = "<p style='color:#a8a8b3;'>No hay productos disponibles en este momento.</p>";
                 return;
             }
-            grid.innerHTML = data.map(crearTarjetaProducto).join('');
+            const membresias = data.filter(p => p.grupo_regular === 'membresia');
+            const resto = data.filter(p => p.grupo_regular !== 'membresia');
+            grid.innerHTML = resto.map(crearTarjetaProducto).join('');
+            if (gridMembresias && membresiasHeading) {
+                gridMembresias.innerHTML = membresias.map(crearTarjetaProducto).join('');
+                membresiasHeading.style.display = membresias.length ? 'flex' : 'none';
+            }
         }
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }

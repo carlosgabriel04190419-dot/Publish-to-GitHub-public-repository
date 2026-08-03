@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cajas Misteriosas VIP | CarzaD'Cross</title>
+    <title>Canjea tus Puntos | CarzaD'Cross</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <meta name="description" content="Gana puntos VIP por cada recarga y gira la Caja Misteriosa para ganar diamantes, saldo y premios exclusivos.">
+    <meta name="description" content="Gana CarzaPuntos por cada recarga y canjéalos por Pase Booyah, cupones de descuento y más premios exclusivos.">
     <link rel="canonical" href="https://carzadcross.com/recompensas.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="CarzaD'Cross">
     <meta property="og:locale" content="es_PE">
-    <meta property="og:title" content="Cajas Misteriosas VIP | CarzaD'Cross">
-    <meta property="og:description" content="Gana puntos VIP por cada recarga y gira la Caja Misteriosa para ganar diamantes, saldo y premios exclusivos.">
+    <meta property="og:title" content="Canjea tus Puntos | CarzaD'Cross">
+    <meta property="og:description" content="Gana CarzaPuntos por cada recarga y canjéalos por Pase Booyah, cupones de descuento y más premios exclusivos.">
     <meta property="og:image" content="https://carzadcross.com/hero-bg.jpg">
     <meta property="og:url" content="https://carzadcross.com/recompensas.html">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Cajas Misteriosas VIP | CarzaD'Cross">
-    <meta name="twitter:description" content="Gana puntos VIP por cada recarga y gira la Caja Misteriosa para ganar diamantes, saldo y premios exclusivos.">
+    <meta name="twitter:title" content="Canjea tus Puntos | CarzaD'Cross">
+    <meta name="twitter:description" content="Gana CarzaPuntos por cada recarga y canjéalos por Pase Booyah, cupones de descuento y más premios exclusivos.">
     <meta name="twitter:image" content="https://carzadcross.com/hero-bg.jpg">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -67,56 +67,16 @@
         .glass-card { background: rgba(26, 26, 31, 0.7); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 215, 0, 0.2); border-radius: 16px; box-shadow: 0 8px 32px rgba(255, 215, 0, 0.1); padding: 30px; }
         .points-badge { background: rgba(255, 193, 7, 0.15); border: 1px solid #ffc107; color: #ffc107; padding: 8px 16px; border-radius: 20px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 15px rgba(255, 193, 7, 0.2); margin-bottom: 20px; font-size: 18px; transition: 0.3s; }
 
-        /* --- CAJAS MISTERIOSAS VIP (LOOT BOXES) --- */
-        .lootbox-container { display: flex; justify-content: center; gap: 20px; margin-top: 30px; flex-wrap: wrap; }
-        
-        .lootbox {
-            width: 130px; height: 130px;
-            background: linear-gradient(135deg, rgba(255,193,7,0.1), rgba(255,71,87,0.1));
-            border: 2px solid rgba(255,193,7,0.4); border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; position: relative;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-        }
-        .lootbox:hover {
-            transform: translateY(-10px) scale(1.05);
-            border-color: #ffc107;
-            box-shadow: 0 15px 30px rgba(255,193,7,0.3);
-            background: linear-gradient(135deg, rgba(255,193,7,0.2), rgba(255,71,87,0.2));
-        }
-        .box-icon { font-size: 64px; color: #ffc107; text-shadow: 0 0 15px rgba(255,193,7,0.6); transition: 0.3s; }
-        .lootbox:hover .box-icon { transform: scale(1.1); }
-
-        /* Animación de Temblores (Suspenso) */
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
-        }
-        .shaking {
-            animation: shake 0.3s infinite;
-            border-color: #ff4757 !important;
-            box-shadow: 0 0 40px rgba(255,71,87,0.6) !important;
-            background: rgba(255,71,87,0.2) !important;
-            pointer-events: none;
-        }
-
-        /* Animación de Explosión/Revelación */
-        @keyframes explode {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); background: white; border-color: white; box-shadow: 0 0 60px white; }
-            100% { transform: scale(1.1); background: rgba(0,0,0,0.8); }
-        }
-        .exploding { animation: explode 0.6s forwards; pointer-events: none; }
+        /* --- TARJETAS DE CANJE --- */
+        .canje-card { background: rgba(26, 26, 31, 0.7); border: 1px solid rgba(255,193,7,0.15); border-radius: 16px; padding: 24px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; transition: 0.25s ease; }
+        .canje-card:hover { border-color: rgba(255,193,7,0.5); transform: translateY(-4px); }
+        .canje-icon { width: 60px; height: 60px; border-radius: 50%; background: rgba(255,193,7,0.1); display: flex; align-items: center; justify-content: center; color: #ffc107; font-size: 30px; margin-bottom: 4px; }
+        .canje-nombre { color: white; font-size: 16px; font-weight: 700; margin: 0; }
+        .canje-desc { color: #a8a8b3; font-size: 12.5px; margin: 0; min-height: 32px; }
+        .canje-costo { color: #ffc107; font-size: 17px; font-weight: 900; margin: 6px 0; }
+        .btn-canjear { background: linear-gradient(45deg, #a155ff, #ff4757); color: white; border: none; padding: 12px 20px; font-weight: 900; border-radius: 10px; cursor: pointer; width: 100%; transition: 0.2s; }
+        .btn-canjear:hover:not(:disabled) { box-shadow: 0 5px 20px rgba(161,85,255,0.4); transform: translateY(-2px); }
+        .btn-canjear:disabled { background: #333; color: #777; cursor: not-allowed; }
 
         /* --- MODALES --- */
         .prize-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.9); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s; }
@@ -234,7 +194,7 @@
                     <a href="mis-plataformas.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(161,85,255,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">live_tv</span> Mis Plataformas</a>
                     <a href="mis-cuentas.html" style="display: flex; align-items: center; gap: 10px; color: #a155ff; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(161,85,255,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">badge</span> Mis Cuentas</a>
                     <a href="recargar.html" style="display: flex; align-items: center; gap: 10px; color: #00e676; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(0,230,118,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">account_balance_wallet</span> Recargar Saldo</a>
-                    <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(255,193,7,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">casino</span> Ruleta VIP</a>
+                    <a href="recompensas.html" style="display: flex; align-items: center; gap: 10px; color: #ffc107; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(255,193,7,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">redeem</span> Canjea tus Puntos</a>
                     <a href="#" onclick="cerrarSesionSegura()" style="display: flex; align-items: center; gap: 10px; color: #ff4757; text-decoration: none; padding: 15px; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,71,87,0.1)'" onmouseout="this.style.background='transparent'"><span class="material-icons">logout</span> Cerrar Sesión</a>
                 </div>
             </div>
@@ -251,53 +211,23 @@
 
     <header class="container" style="text-align: center; padding: 50px 20px 20px;">
         <div style="border-color: #ffc107; color: #ffc107; background: rgba(255,193,7,0.1); border-radius: 30px; padding: 6px 16px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 15px;">👑 CLUB VIP CARZAD'CROSS</div>
-        <h1 class="hero-title" style="font-size: 42px; margin-bottom: 10px;">Cajas Misteriosas <span style="color: #ffc107;">Booyah</span></h1>
-        <p style="color: #a8a8b3; max-width: 600px; margin: 0 auto;">Invierte 500 CarzaPuntos para abrir una caja misteriosa y prueba tu suerte con diamantes, Pase Booyah o saldo para tu billetera.</p>
+        <h1 class="hero-title" style="font-size: 42px; margin-bottom: 10px;">Canjea tus <span style="color: #ffc107;">Puntos</span></h1>
+        <p style="color: #a8a8b3; max-width: 600px; margin: 0 auto;">Usa tus CarzaPuntos para canjear Pase Booyah, cupones de descuento y más premios garantizados. Sin sorteos, sin azar.</p>
     </header>
 
-    <main class="container" style="display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; padding-bottom: 80px;">
-        
-        <!-- PANEL IZQUIERDO: INFO Y REGLAS -->
-        <div style="flex: 1; min-width: 300px; max-width: 400px;">
-            <div class="glass-card">
-                <h2 style="color: #ffc107; margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;">
-                    <span class="material-icons">account_balance</span> Tus CarzaPuntos
-                </h2>
-                <div class="points-badge" id="puntos-pantalla-caja">
-                    <span class="material-icons">stars</span> <span id="puntos-pantalla">0</span> Pts
-                </div>
-                <p style="color: #a8a8b3; font-size: 14px; margin-bottom: 30px;">Costo por caja: <strong style="color: white;">500 Pts</strong></p>
+    <main class="container" style="padding-bottom: 80px;">
 
-                <h3 style="font-size: 16px; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">🎁 Posibles Recompensas</h3>
-                <ul style="list-style: none; padding: 0; margin: 0; color: #e0e0e0; font-size: 14px; display: flex; flex-direction: column; gap: 14px;">
-                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #ffc107; font-size: 20px;">workspace_premium</span> <strong>1166 Diamantes</strong> (Jackpot 1%)</li>
-                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #a155ff; font-size: 20px;">local_activity</span> <strong>Pase Booyah</strong> (Raro 5%)</li>
-                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #00d2ff; font-size: 20px;">diamond</span> <strong>110 Diamantes directos</strong> (14%)</li>
-                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #00e676; font-size: 20px;">payments</span> <strong>S/ 1.00</strong> de Saldo Billetera (20%)</li>
-                    <li style="display: flex; align-items: center; gap: 10px;"><span class="material-icons" style="color: #9e9e9e; font-size: 20px;">sentiment_dissatisfied</span> <strong>Sigue Intentando</strong> (60%)</li>
-                </ul>
+        <div class="glass-card" style="max-width: 400px; margin: 0 auto 40px; text-align: center;">
+            <h2 style="color: #ffc107; margin: 0 0 20px 0; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <span class="material-icons">account_balance</span> Tus CarzaPuntos
+            </h2>
+            <div class="points-badge" id="puntos-pantalla-caja">
+                <span class="material-icons">stars</span> <span id="puntos-pantalla">0</span> Pts
             </div>
         </div>
 
-        <!-- PANEL DERECHO: LAS CAJAS MISTERIOSAS -->
-        <div style="flex: 1; min-width: 320px; max-width: 500px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            
-            <h3 style="color: white; margin-bottom: 10px;">¡Elige una caja para abrir!</h3>
-            <p style="color: #a8a8b3; font-size: 14px; margin-bottom: 20px;" id="caja-instruccion">Toca la caja que te dé más suerte.</p>
-
-            <div class="lootbox-container" id="lootbox-container">
-                <div class="lootbox" id="box-1" onclick="abrirCaja(1)">
-                    <span class="material-icons box-icon">inventory_2</span>
-                </div>
-                <div class="lootbox" id="box-2" onclick="abrirCaja(2)">
-                    <span class="material-icons box-icon">inventory_2</span>
-                </div>
-                <div class="lootbox" id="box-3" onclick="abrirCaja(3)">
-                    <span class="material-icons box-icon">inventory_2</span>
-                </div>
-            </div>
-
-            <p id="ruleta-msg" style="color: #ff4757; font-size: 15px; margin-top: 25px; display: none; font-weight: bold; background: rgba(255,71,87,0.1); padding: 10px 20px; border-radius: 8px;">No tienes puntos suficientes. ¡Recarga saldo!</p>
+        <div id="canjes-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto;">
+            <p style="color: #a8a8b3; text-align: center; grid-column: 1/-1;">Cargando canjes disponibles...</p>
         </div>
     </main>
 
@@ -322,21 +252,25 @@
         </div>
     </div>
 
-    <!-- MODAL DE PREMIO SALDO (AUTOMÁTICO) -->
+    <!-- MODAL DE CUPÓN GENERADO -->
     <div class="prize-modal" id="modal-premio">
         <div class="prize-modal-content" id="modal-premio-caja">
-            <span class="material-icons" id="premio-icono" style="font-size: 70px; color: #00e676; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0, 230, 118, 0.5);">payments</span>
-            <h2 style="font-size: 28px; margin: 0 0 10px 0; color: white;" id="premio-titulo">¡Felicidades!</h2>
-            <p style="color: #a8a8b3; font-size: 16px; margin-bottom: 25px; line-height: 1.5;" id="premio-desc">Has ganado Saldo.</p>
+            <span class="material-icons" id="premio-icono" style="font-size: 70px; color: #00e676; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0, 230, 118, 0.5);">sell</span>
+            <h2 style="font-size: 28px; margin: 0 0 10px 0; color: white;" id="premio-titulo">¡Cupón generado!</h2>
+            <p style="color: #a8a8b3; font-size: 16px; margin-bottom: 15px; line-height: 1.5;" id="premio-desc">Usa este código en tu próxima compra.</p>
+            <div id="premio-codigo-wrap" style="display:none; background: rgba(0,0,0,0.4); border: 1px dashed rgba(0,230,118,0.4); border-radius: 10px; padding: 14px; margin-bottom: 20px; display:flex; align-items:center; justify-content:center; gap:10px;">
+                <span id="premio-codigo-texto" style="color:#00e676; font-family: monospace; font-size: 18px; font-weight: bold; letter-spacing: 1px;"></span>
+                <button onclick="copiarCodigoCanje()" style="background:none; border:none; color:#00e676; cursor:pointer; display:flex; align-items:center;"><span class="material-icons">content_copy</span></button>
+            </div>
             <button class="btn-primary" style="width: 100%;" onclick="cerrarModalPremio()">Aceptar</button>
         </div>
     </div>
 
-    <!-- MODAL DE RECLAMO PARA PREMIOS FÍSICOS (DIAMANTES/PASES) -->
+    <!-- MODAL DE RECLAMO PARA PREMIOS FÍSICOS (PASE BOOYAH, ETC.) -->
     <div class="prize-modal" id="modal-reclamar-container" style="z-index: 20000;">
         <div class="prize-modal-content" id="modal-reclamar-caja" style="border-color: #a155ff; box-shadow: 0 0 50px rgba(161, 85, 255, 0.3);">
             <span class="material-icons" id="reclamar-icono" style="font-size: 60px; color: #a155ff; margin-bottom: 10px; text-shadow: 0 0 20px rgba(161, 85, 255, 0.5);">local_activity</span>
-            <h2 style="font-size: 24px; margin: 0 0 10px 0; color: white;" id="reclamar-titulo">¡Premio Mayor!</h2>
+            <h2 style="font-size: 24px; margin: 0 0 10px 0; color: white;" id="reclamar-titulo">¡Canje realizado!</h2>
             <p style="color: #a8a8b3; font-size: 14px; margin-bottom: 25px;" id="reclamar-desc">Para enviarte tu premio inmediatamente, ingresa los datos de tu cuenta.</p>
             
             <div style="margin-bottom: 15px; text-align: left;">
@@ -357,8 +291,8 @@
         <div class="cz-faq-header"><span class="cz-faq-subtitle">Centro de Ayuda</span><h2 class="cz-faq-title">Preguntas Frecuentes VIP</h2></div>
         <div class="cz-faq-grid">
             <div class="cz-faq-item" onclick="toggleCzFaq(this)"><div class="cz-faq-q"><span>¿Cómo consigo CarzaPuntos?</span><span class="material-icons cz-faq-icon">expand_more</span></div><div class="cz-faq-a">Por cada S/ 1.00 de recarga que realices y sea aprobado en la tienda, el sistema te otorgará 10 Puntos de forma automática a tu billetera.</div></div>
-            <div class="cz-faq-item" onclick="toggleCzFaq(this)"><div class="cz-faq-q"><span>¿Qué pasa si gano Saldo?</span><span class="material-icons cz-faq-icon">expand_more</span></div><div class="cz-faq-a">Si la caja misteriosa te otorga Saldo (Ej. S/ 1.00 o S/ 2.00), el dinero se abonará automáticamente a tu cuenta web. Podrás usarlo para comprar cualquier catálogo.</div></div>
-            <div class="cz-faq-item" onclick="toggleCzFaq(this)"><div class="cz-faq-q"><span>¿Cómo me entregan el Jackpot o los Diamantes?</span><span class="material-icons cz-faq-icon">expand_more</span></div><div class="cz-faq-a">Si sacas un premio mayor, se abrirá una ventana para que ingreses tu ID. El sistema validará tu premio y nos contactará vía WhatsApp para enviarlo de inmediato.</div></div>
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)"><div class="cz-faq-q"><span>¿Qué pasa si canjeo un cupón?</span><span class="material-icons cz-faq-icon">expand_more</span></div><div class="cz-faq-a">Al instante se genera un código de un solo uso que puedes copiar y aplicar en cualquier compra del catálogo antes de pagar.</div></div>
+            <div class="cz-faq-item" onclick="toggleCzFaq(this)"><div class="cz-faq-q"><span>¿Cómo me entregan el Pase Booyah u otros premios?</span><span class="material-icons cz-faq-icon">expand_more</span></div><div class="cz-faq-a">Al canjearlo se abrirá una ventana para que ingreses tu ID. El sistema registrará tu premio y nos contactará vía WhatsApp para enviarlo de inmediato.</div></div>
         </div>
     </section>
 
@@ -431,7 +365,7 @@
     <script>
         let puntosActuales = 0;
         let saldoActual = 0;
-        let abriendoCaja = false;
+        let procesandoCanje = false;
         let premioPendiente = "";
 
         window.onload = async function() {
@@ -447,6 +381,7 @@
             document.getElementById('puntos-pantalla').innerText = puntosActuales;
 
             cargarSistemaComunidadDinamica();
+            cargarCanjes();
         };
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }
@@ -494,118 +429,88 @@
         }
 
         // ==========================================
-        // MOTOR DE CAJAS MISTERIOSAS (LOOT BOXES)
+        // MOTOR DE CANJES POR PUNTOS
         // ==========================================
-        async function abrirCaja(boxId) {
-            if (abriendoCaja) return;
-            const msg = document.getElementById('ruleta-msg');
+        let ultimoCodigoCanje = "";
 
-            abriendoCaja = true;
-            document.getElementById('caja-instruccion').innerText = "Abriendo caja...";
+        async function cargarCanjes() {
+            const grid = document.getElementById('canjes-grid');
+            const { data, error } = await supabaseClient.from('canjes_puntos').select('*').eq('activo', true).order('costo_puntos');
+            if (error || !data || data.length === 0) {
+                grid.innerHTML = "<p style='color:#a8a8b3; text-align:center; grid-column:1/-1;'>No hay canjes disponibles por ahora.</p>";
+                return;
+            }
+            grid.innerHTML = data.map(c => {
+                const alcanza = puntosActuales >= c.costo_puntos;
+                return `<div class="canje-card">
+                    <div class="canje-icon"><span class="material-icons">${c.icono || 'redeem'}</span></div>
+                    <h3 class="canje-nombre">${escHtml(c.nombre)}</h3>
+                    <p class="canje-desc">${c.descripcion ? escHtml(c.descripcion) : ''}</p>
+                    <div class="canje-costo">${c.costo_puntos.toLocaleString('es-PE')} Pts</div>
+                    <button class="btn-canjear" ${alcanza ? '' : 'disabled'} onclick="canjear(${c.id})">${alcanza ? 'Canjear' : 'Puntos insuficientes'}</button>
+                </div>`;
+            }).join('');
+        }
 
-            const { data: resultadoRpc, error: errorCaja } = await supabaseClient.rpc('abrir_caja');
+        async function canjear(canjeId) {
+            if (procesandoCanje) return;
+            procesandoCanje = true;
+
+            const { data: resultadoRpc, error } = await supabaseClient.rpc('canjear_puntos', { p_canje_id: canjeId });
             const resultado = resultadoRpc && resultadoRpc[0];
+            procesandoCanje = false;
 
-            if (errorCaja || !resultado || resultado.tipo === 'error') {
-                msg.innerText = resultado ? resultado.desc_premio : "Error al abrir la caja.";
-                msg.style.display = 'block';
-                setTimeout(() => { msg.style.display = 'none'; }, 4000);
-                abriendoCaja = false;
-                document.getElementById('caja-instruccion').innerText = "Toca la caja que te dé más suerte.";
+            if (error || !resultado || !resultado.exito) {
+                alert(resultado ? resultado.mensaje : "Error al procesar el canje.");
                 return;
             }
 
             puntosActuales = resultado.puntos_restantes;
             document.getElementById('puntos-nav').innerText = puntosActuales;
             document.getElementById('puntos-pantalla').innerText = puntosActuales;
+            cargarCanjes();
 
-            // 2. Animación Inicial: Desaparecer las otras cajas
-            [1, 2, 3].forEach(id => {
-                const caja = document.getElementById('box-' + id);
-                if (id !== boxId) {
-                    caja.style.opacity = '0';
-                    caja.style.pointerEvents = 'none';
-                    caja.style.transform = 'scale(0.8)';
-                }
-            });
-
-            // 3. Empezar a sacudir la caja elegida
-            const cajaElegida = document.getElementById('box-' + boxId);
-            cajaElegida.classList.add('shaking');
-
-            const premioInfo = {
-                tipo: resultado.tipo,
-                monto: resultado.monto,
-                paquete: resultado.paquete,
-                titulo: resultado.titulo,
-                desc: resultado.desc_premio,
-                icono: resultado.icono,
-                color: resultado.color
-            };
-
-            // 5. Tras 2 segundos de suspenso, la caja explota y revela el premio
-            setTimeout(() => {
-                cajaElegida.classList.remove('shaking');
-                cajaElegida.classList.add('exploding');
-                cajaElegida.innerHTML = `<span class="material-icons" style="font-size: 80px; color: ${premioInfo.color}; text-shadow: 0 0 30px ${premioInfo.color};">${premioInfo.icono}</span>`;
-
-                // 6. Tras 1 segundo de ver el premio, abrimos el modal
-                setTimeout(() => {
-                    if(premioInfo.tipo === 'saldo' || premioInfo.tipo === 'nada') {
-                        mostrarModalPremio(premioInfo);
-                    } else {
-                        mostrarModalReclamo(premioInfo);
-                    }
-                }, 1200);
-
-            }, 2000);
+            if (resultado.tipo === 'cupon') {
+                mostrarModalCupon(resultado);
+            } else {
+                mostrarModalReclamo(resultado);
+            }
         }
 
-        // Resetea el área de juego cuando se cierra el modal
-        function resetCajas() {
-            abriendoCaja = false;
-            document.getElementById('caja-instruccion').innerText = "Toca la caja que te dé más suerte.";
-            [1, 2, 3].forEach(id => {
-                const caja = document.getElementById('box-' + id);
-                caja.style.opacity = '1';
-                caja.style.pointerEvents = 'auto';
-                caja.style.transform = 'scale(1)';
-                caja.classList.remove('shaking', 'exploding');
-                caja.innerHTML = `<span class="material-icons box-icon">inventory_2</span>`;
-            });
-        }
-
-        function mostrarModalPremio(info) {
-            document.getElementById('premio-icono').innerText = info.icono;
-            document.getElementById('premio-icono').style.color = info.color;
-            document.getElementById('premio-icono').style.textShadow = `0 0 30px ${info.color}`;
-            document.getElementById('premio-titulo').innerText = info.titulo;
-            document.getElementById('premio-desc').innerText = info.desc;
-            document.getElementById('modal-premio-caja').style.borderColor = info.color;
-            document.getElementById('modal-premio-caja').style.boxShadow = `0 0 50px ${info.color}40`;
+        function mostrarModalCupon(info) {
+            ultimoCodigoCanje = info.codigo_cupon;
+            document.getElementById('premio-titulo').innerText = '¡Cupón generado!';
+            document.getElementById('premio-desc').innerText = `Tu cupón de ${info.nombre_premio} está listo.`;
+            document.getElementById('premio-codigo-texto').innerText = info.codigo_cupon;
+            document.getElementById('premio-codigo-wrap').style.display = 'flex';
 
             const modal = document.getElementById('modal-premio');
             modal.style.display = 'flex'; setTimeout(() => { modal.style.opacity = '1'; document.getElementById('modal-premio-caja').style.transform = 'scale(1)'; }, 10);
         }
 
+        function copiarCodigoCanje() {
+            navigator.clipboard.writeText(ultimoCodigoCanje);
+        }
+
         function cerrarModalPremio() {
             const modal = document.getElementById('modal-premio');
-            modal.style.opacity = '0'; document.getElementById('modal-premio-caja').style.transform = 'scale(0.8)'; 
-            setTimeout(() => { modal.style.display = 'none'; resetCajas(); }, 300);
+            modal.style.opacity = '0'; document.getElementById('modal-premio-caja').style.transform = 'scale(0.8)';
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
         }
 
         // ==========================================
         // LÓGICA DE RECLAMO MANUAL (ID / NICK)
         // ==========================================
         function mostrarModalReclamo(info) {
-            premioPendiente = info.paquete;
-            document.getElementById('reclamar-icono').innerText = info.icono;
-            document.getElementById('reclamar-icono').style.color = info.color;
-            document.getElementById('reclamar-icono').style.textShadow = `0 0 20px ${info.color}`;
-            document.getElementById('reclamar-titulo').innerText = info.titulo;
-            document.getElementById('reclamar-titulo').style.color = info.color;
-            document.getElementById('reclamar-desc').innerText = info.desc;
-            
+            premioPendiente = info.nombre_premio;
+            const color = '#a155ff';
+            document.getElementById('reclamar-icono').innerText = 'local_activity';
+            document.getElementById('reclamar-icono').style.color = color;
+            document.getElementById('reclamar-icono').style.textShadow = `0 0 20px ${color}`;
+            document.getElementById('reclamar-titulo').innerText = `¡Canjeaste ${info.nombre_premio}!`;
+            document.getElementById('reclamar-titulo').style.color = color;
+            document.getElementById('reclamar-desc').innerText = info.mensaje;
+
             document.getElementById('reclamo-id-juego').value = "";
             document.getElementById('reclamo-nickname-juego').value = "";
             document.getElementById('modal-reclamar-caja').style.borderColor = info.color;
@@ -642,10 +547,10 @@
             }
 
             const modal = document.getElementById('modal-reclamar-container');
-            modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; resetCajas(); }, 300);
+            modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; }, 300);
 
             const numeroAdmin = "51943737572";
-            const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de GANAR en una *CAJA MISTERIOSA VIP* 🎁 y estoy reclamando mi premio.\n\n👤 *Usuario Web:* ${nombreGuardado}\n🏆 *Premio:* ${premioPendiente}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para enviármelo. ¡Gracias!`;
+            const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de CANJEAR mis puntos por *${premioPendiente}* 🎁 y estoy reclamando mi premio.\n\n👤 *Usuario Web:* ${nombreGuardado}\n🏆 *Premio:* ${premioPendiente}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para enviármelo. ¡Gracias!`;
             window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
 
             btn.disabled = false; btn.innerText = "Reclamar a mi Cuenta";
