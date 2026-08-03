@@ -74,7 +74,30 @@ async function verificarSesion(requerido = true) {
     actualizarSaldoConvertido(usuario);
     convertirPreciosCatalogo(usuario);
     mostrarSaldoCodestoreSiEsAdmin();
+    mostrarSaldoRevendedorEnNav(usuario);
     return usuario;
+}
+
+/**
+ * Si la cuenta es revendedor, hace que el chip de SALDO del menú (arriba a la
+ * derecha) muestre su saldo en dólares (saldo_usd) en vez de soles — en TODAS
+ * las páginas, no solo en el catálogo regular. Se aplica con un timeout de 0ms
+ * a propósito: cada página fija su propio "#saldo-nav" en soles dentro de su
+ * window.onload justo DESPUÉS de que verificarSesion() resuelve, así que si
+ * escribiéramos el valor aquí mismo quedaría sobrescrito de inmediato. Un
+ * setTimeout(0) encola esta corrección para la siguiente vuelta del event loop,
+ * es decir después de que el script propio de la página termine de correr.
+ */
+function mostrarSaldoRevendedorEnNav(usuario) {
+    if (!usuario || usuario.rol_cliente !== 'revendedor') return;
+    setTimeout(() => {
+        const label = document.getElementById('saldo-nav-label');
+        const simbolo = document.getElementById('saldo-nav-simbolo');
+        const monto = document.getElementById('saldo-nav');
+        if (label) label.innerText = 'SALDO USD';
+        if (simbolo) simbolo.innerText = '$ ';
+        if (monto) monto.innerText = Number(usuario.saldo_usd || 0).toFixed(2);
+    }, 0);
 }
 
 // Chip "CODESTORE $XXX" en el menú superior — solo se muestra si el correo logueado
