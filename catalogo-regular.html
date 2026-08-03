@@ -748,7 +748,8 @@
             }
 
             const membresias = data.filter(p => p.grupo_regular === 'membresia');
-            const resto = data.filter(p => p.grupo_regular !== 'membresia');
+            const resto = data.filter(p => p.grupo_regular !== 'membresia')
+                .sort((a, b) => (a.paquete === 'Pase Booyah' ? -1 : b.paquete === 'Pase Booyah' ? 1 : 0));
             grid.innerHTML = resto.map(crearTarjetaProducto).join('');
             if (gridMembresias && membresiasHeading) {
                 gridMembresias.innerHTML = membresias.map(crearTarjetaProducto).join('');
@@ -962,6 +963,17 @@
             return { base: m[1], bono: m[2] };
         }
 
+        // Mensaje de éxito según el tipo de paquete comprado (cuando CodeStore ya confirmó la entrega)
+        function mensajeExitoCodestore(paquete) {
+            if (paquete === 'Pase Booyah') {
+                return '✅ ¡Tu Pase Booyah fue procesado con éxito! Se entregará en un máximo de 5 minutos.';
+            }
+            if (paquete && paquete.startsWith('Tarjeta ')) {
+                return '✅ Tu tarjeta será enviada en un plazo máximo de 5 minutos.';
+            }
+            return '✅ ¡Tus diamantes ya fueron entregados automáticamente a tu cuenta de Free Fire!';
+        }
+
         // ================= PASO 3 -> REVISIÓN FINAL (modal) =================
         async function abrirRevisionFinal() {
             const nombreGuardado = localStorage.getItem('nombreUsuario');
@@ -1122,7 +1134,7 @@
                 textoPlazo.innerText = 'Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.';
             } else if (vinoDeCodestore) {
                 mantenimientoWrap.style.display = 'none';
-                textoPlazo.innerText = '✅ ¡Tus diamantes ya fueron entregados automáticamente a tu cuenta de Free Fire!';
+                textoPlazo.innerText = mensajeExitoCodestore(paqueteSeleccionado);
             } else {
                 mantenimientoWrap.style.display = 'none';
                 textoPlazo.innerText = 'Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.';
@@ -1203,7 +1215,7 @@
                 textoPlazo.innerText = 'Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.';
             } else if (vinoDeCodestore) {
                 mantenimientoWrap.style.display = 'none';
-                textoPlazo.innerText = '✅ ¡Tus diamantes ya fueron entregados automáticamente a tu cuenta de Free Fire!';
+                textoPlazo.innerText = mensajeExitoCodestore(paqueteSeleccionado);
             } else {
                 mantenimientoWrap.style.display = 'none';
                 textoPlazo.innerText = 'Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.';
