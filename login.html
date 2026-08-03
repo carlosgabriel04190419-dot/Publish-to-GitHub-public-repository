@@ -149,34 +149,36 @@
         }
 
         window.onload = async function() {
-            if (window.location.hash && window.location.hash.includes('access_token')) {
+            // No dependemos de "#access_token" en la URL: las versiones actuales de Supabase
+            // usan el flujo PKCE, que vuelve con "?code=..." en vez de eso en el hash, y el
+            // propio cliente ya intercambia ese code por una sesión real antes de que esto
+            // corra. Por eso basta con preguntar directamente si ya hay sesión.
+            const { data: { session } } = await supabaseClient.auth.getSession();
+
+            if (session) {
                 const btn = document.getElementById('btn-login');
                 btn.innerText = "Sincronizando perfil..."; btn.disabled = true;
 
-                const { data: { session } } = await supabaseClient.auth.getSession();
+                const email = session.user.email;
+                let fullName = session.user.user_metadata.full_name || email.split('@')[0];
+                let nicknameLimpio = fullName.replace(/[^a-zA-Z0-9_]/g, '');
 
-                if (session) {
-                    const email = session.user.email;
-                    let fullName = session.user.user_metadata.full_name || email.split('@')[0];
-                    let nicknameLimpio = fullName.replace(/[^a-zA-Z0-9_]/g, '');
+                let { data: usuarioData } = await supabaseClient.from('usuarios').select('nickname, celular').eq('correo', email).single();
 
-                    let { data: usuarioData } = await supabaseClient.from('usuarios').select('nickname, celular').eq('correo', email).single();
+                let esNuevo = false;
+                if (!usuarioData) {
+                    await supabaseClient.from('usuarios').insert([{ nickname: nicknameLimpio, correo: email, saldo: 0 }]);
+                    usuarioData = { nickname: nicknameLimpio, celular: null };
+                    esNuevo = true;
+                }
 
-                    let esNuevo = false;
-                    if (!usuarioData) {
-                        await supabaseClient.from('usuarios').insert([{ nickname: nicknameLimpio, correo: email, saldo: 0 }]);
-                        usuarioData = { nickname: nicknameLimpio, celular: null };
-                        esNuevo = true;
-                    }
+                localStorage.setItem('nombreUsuario', usuarioData.nickname);
 
-                    localStorage.setItem('nombreUsuario', usuarioData.nickname);
-
-                    // Si es cuenta nueva de Google, o le falta el WhatsApp, la completamos antes de entrar
-                    if (esNuevo || !usuarioData.celular) {
-                        window.location.href = 'completar-perfil.html';
-                    } else {
-                        window.location.href = 'index.html';
-                    }
+                // Si es cuenta nueva de Google, o le falta el WhatsApp, la completamos antes de entrar
+                if (esNuevo || !usuarioData.celular) {
+                    window.location.href = 'completar-perfil.html';
+                } else {
+                    window.location.href = 'index.html';
                 }
             }
         };
