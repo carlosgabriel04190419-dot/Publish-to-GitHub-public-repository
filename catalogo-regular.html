@@ -156,7 +156,7 @@
             <!-- SALDO -->
             <div class="balance-pill">
                 <span class="material-icons wallet-icon">account_balance_wallet</span>
-                <div class="balance-info"><span class="balance-label">SALDO</span><span class="balance-amount">S/ <span id="saldo-nav">0.00</span></span><span id="saldo-nav-alt" style="display:none; font-size:10px; color:#8a8a9a; font-weight:600; margin-top:1px;"></span></div>
+                <div class="balance-info"><span class="balance-label" id="saldo-nav-label">SALDO</span><span class="balance-amount"><span id="saldo-nav-simbolo">S/ </span><span id="saldo-nav">0.00</span></span><span id="saldo-nav-alt" style="display:none; font-size:10px; color:#8a8a9a; font-weight:600; margin-top:1px;"></span></div>
             </div>
             <!-- PUNTOS VIP AÑADIDOS -->
             <div class="balance-pill" style="border-color: #ffc107; background: rgba(255,193,7,0.1); margin-left: 10px;">
@@ -623,6 +623,21 @@
         let paso1IdValidado = '';
         let paso1NicknameConfirmado = '';
 
+        // ================= MODO REVENDEDOR (precios y saldo en USD) =================
+        let esRevendedor = false;
+        let saldoUsdActual = 0;
+        let preciosRevendedorMap = {};
+
+        function fmtMoneda(valor) {
+            return esRevendedor ? ('$' + Number(valor).toFixed(2)) : ('S/ ' + Number(valor).toFixed(2));
+        }
+
+        async function cargarPreciosRevendedor() {
+            const { data } = await supabaseClient.from('precios_revendedor').select('paquete, precio_usd').eq('activo', true);
+            preciosRevendedorMap = {};
+            (data || []).forEach(p => { preciosRevendedorMap[p.paquete] = Number(p.precio_usd); });
+        }
+
         function elegirModoEntrega(modo) {
             modoEntregaRegular = modo;
             document.getElementById('modo-opcion-auto').style.borderColor = modo === 'auto' ? '#00e676' : 'rgba(255,255,255,0.1)';
@@ -638,14 +653,27 @@
                 document.getElementById('nav-logged-in').style.display = 'flex';
                 document.getElementById('btn-usuario-nav').innerHTML = avatarPillHTML(usuario);
 
+                esRevendedor = usuario.rol_cliente === 'revendedor';
+                saldoUsdActual = Number(usuario.saldo_usd || 0);
+
                 const elementoSaldo = document.getElementById('saldo-nav');
-                if (elementoSaldo) { elementoSaldo.innerText = usuario.saldo.toFixed(2); }
+                if (elementoSaldo) {
+                    if (esRevendedor) {
+                        document.getElementById('saldo-nav-label').innerText = 'SALDO USD';
+                        document.getElementById('saldo-nav-simbolo').innerText = '$ ';
+                        elementoSaldo.innerText = saldoUsdActual.toFixed(2);
+                    } else {
+                        elementoSaldo.innerText = usuario.saldo.toFixed(2);
+                    }
+                }
 
                 const elementoPuntos = document.getElementById('puntos-nav');
                 if (elementoPuntos) { elementoPuntos.innerText = usuario.puntos || 0; }
 
                 saldoActualUsuario = usuario.saldo;
                 usuarioActualCompleto = usuario;
+
+                if (esRevendedor) await cargarPreciosRevendedor();
             }
 
             cargarProductosCatalogo('regular');
@@ -659,10 +687,12 @@
 
         // ================= CATÁLOGO DINÁMICO (desde la tabla productos) =================
         function crearTarjetaProducto(p) {
+            const precioMostrado = esRevendedor ? preciosRevendedorMap[p.paquete] : p.precio;
+
             let badgeHtml = '';
-            if (p.etiqueta) {
+            if (!esRevendedor && p.etiqueta) {
                 badgeHtml = `<div class="dtile-badge">${escHtml(p.etiqueta)}</div>`;
-            } else if (p.precio_anterior) {
+            } else if (!esRevendedor && p.precio_anterior) {
                 const pct = Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100);
                 badgeHtml = `<div class="dtile-badge">-${pct}%</div>`;
             }
@@ -676,16 +706,16 @@
 
             const descHtml = p.descripcion ? `<p class="dtile-desc">${escHtml(p.descripcion)}</p>` : '';
 
-            const preciosHtml = p.precio_anterior
-                ? `<span class="dtile-price-old">S/ ${Number(p.precio_anterior).toFixed(2)}</span><span class="dtile-price-current">S/ ${Number(p.precio).toFixed(2)}</span>`
-                : `<span class="dtile-price-current">S/ ${Number(p.precio).toFixed(2)}</span>`;
+            const preciosHtml = (!esRevendedor && p.precio_anterior)
+                ? `<span class="dtile-price-old">${fmtMoneda(p.precio_anterior)}</span><span class="dtile-price-current">${fmtMoneda(p.precio)}</span>`
+                : `<span class="dtile-price-current">${fmtMoneda(precioMostrado)}</span>`;
 
             const paqueteEscapado = p.paquete.replace(/'/g, "\\'");
             const descEscapada = (p.descripcion || '').replace(/'/g, "\\'");
 
             const paqueteAttr = escHtml(p.paquete).replace(/"/g, '&quot;');
 
-            return `<div class="dtile" data-paquete="${paqueteAttr}" onclick="seleccionarPaquete('${paqueteEscapado}', ${p.precio}, '${descEscapada}')">${badgeHtml}${iconoHtml}<h3 class="dtile-title">${escHtml(p.paquete)}</h3>${descHtml}<div class="dtile-prices">${preciosHtml}</div><div class="dtile-cta">Elegir <span class="material-icons" style="font-size:13px;">arrow_forward</span></div></div>`;
+            return `<div class="dtile" data-paquete="${paqueteAttr}" onclick="seleccionarPaquete('${paqueteEscapado}', ${precioMostrado}, '${descEscapada}')">${badgeHtml}${iconoHtml}<h3 class="dtile-title">${escHtml(p.paquete)}</h3>${descHtml}<div class="dtile-prices">${preciosHtml}</div><div class="dtile-cta">Elegir <span class="material-icons" style="font-size:13px;">arrow_forward</span></div></div>`;
         }
 
         async function cargarProductosCatalogo(categoria) {
@@ -697,6 +727,26 @@
                 grid.innerHTML = "<p style='color:#a8a8b3;'>No hay productos disponibles en este momento.</p>";
                 return;
             }
+
+            if (esRevendedor) {
+                // Catálogo de revendedor: solo paquetes con precio especial configurado, todo en USD,
+                // manteniendo la misma separación Diamantes / Membresías que ve un cliente normal.
+                const conPrecioRevendedor = data.filter(p => preciosRevendedorMap[p.paquete] !== undefined);
+                const membresiasRev = conPrecioRevendedor.filter(p => p.grupo_regular === 'membresia');
+                const restoRev = conPrecioRevendedor.filter(p => p.grupo_regular !== 'membresia')
+                    .sort((a, b) => (a.paquete === 'Pase Booyah' ? -1 : b.paquete === 'Pase Booyah' ? 1 : 0));
+
+                grid.innerHTML = restoRev.length
+                    ? restoRev.map(crearTarjetaProducto).join('')
+                    : "<p style='color:#a8a8b3;'>Todavía no tienes paquetes con precio de revendedor asignado. Contacta al administrador.</p>";
+
+                if (gridMembresias && membresiasHeading) {
+                    gridMembresias.innerHTML = membresiasRev.map(crearTarjetaProducto).join('');
+                    membresiasHeading.style.display = membresiasRev.length ? 'flex' : 'none';
+                }
+                return;
+            }
+
             const membresias = data.filter(p => p.grupo_regular === 'membresia');
             const resto = data.filter(p => p.grupo_regular !== 'membresia');
             grid.innerHTML = resto.map(crearTarjetaProducto).join('');
@@ -873,7 +923,12 @@
             if (tileEl) tileEl.classList.add('dtile-selected');
 
             const esPaseBooyah = nombrePaquete === 'Pase Booyah';
-            if (esPaseBooyah) {
+            if (esRevendedor) {
+                // Los revendedores siempre reciben entrega automática, sin selector de modo.
+                document.getElementById('modal-modo-entrega-wrap').style.display = 'none';
+                document.getElementById('modal-codigo-aviso-wrap').style.display = 'none';
+                modoEntregaRegular = 'auto';
+            } else if (esPaseBooyah) {
                 document.getElementById('modal-modo-entrega-wrap').style.display = 'none';
                 document.getElementById('modal-codigo-aviso-wrap').style.display = 'none';
                 modoEntregaRegular = 'admin';
@@ -891,7 +946,7 @@
             }
 
             document.getElementById('paso3-paquete-txt').innerText = nombrePaquete;
-            document.getElementById('paso3-costo-txt').innerText = `S/ ${precioSeleccionado.toFixed(2)}`;
+            document.getElementById('paso3-costo-txt').innerText = fmtMoneda(precioSeleccionado);
 
             const paso3 = document.getElementById('paso3-wrap');
             paso3.style.display = 'block';
@@ -926,7 +981,7 @@
             document.getElementById('modal-cupon').value = '';
             document.getElementById('modal-cupon-mensaje').style.display = 'none';
             document.getElementById('modal-cupon-wrap').style.display = 'none';
-            document.getElementById('toggle-cupon-link').style.display = 'inline-flex';
+            document.getElementById('toggle-cupon-link').style.display = esRevendedor ? 'none' : 'inline-flex';
 
             document.getElementById('modal-paquete-nombre').innerText = paqueteSeleccionado;
             document.getElementById('modal-jugador-nombre').innerText = paso1NicknameConfirmado;
@@ -941,29 +996,50 @@
                 bonoWrap.style.display = 'none';
             }
 
-            document.getElementById('modal-paquete-precio').innerText = `S/ ${precioSeleccionado.toFixed(2)}`;
-            actualizarElementoConversion('modal-paquete-precio-alt', precioSeleccionado, usuarioActualCompleto);
+            document.getElementById('modal-paquete-precio').innerText = fmtMoneda(precioSeleccionado);
+            if (!esRevendedor) actualizarElementoConversion('modal-paquete-precio-alt', precioSeleccionado, usuarioActualCompleto);
 
             try {
-                // Volvemos a consultar el saldo por seguridad justo antes de abrir
-                const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
-                if (data) {
-                    saldoActualUsuario = data.saldo;
-                    document.getElementById('modal-saldo-actual').innerText = `S/ ${saldoActualUsuario.toFixed(2)}`;
-                    actualizarElementoConversion('modal-saldo-actual-alt', saldoActualUsuario, usuarioActualCompleto);
+                if (esRevendedor) {
+                    // Revendedor: saldo en dólares, no se consulta ni se descuenta el saldo en soles.
+                    const { data } = await supabaseClient.from('usuarios').select('saldo_usd').eq('nickname', nombreGuardado).single();
+                    if (data) {
+                        saldoUsdActual = Number(data.saldo_usd);
+                        document.getElementById('modal-saldo-actual').innerText = fmtMoneda(saldoUsdActual);
 
-                    let saldoRestante = saldoActualUsuario - precioSeleccionado;
-                    let txtRestante = document.getElementById('modal-saldo-restante');
+                        let saldoRestante = saldoUsdActual - precioSeleccionado;
+                        let txtRestante = document.getElementById('modal-saldo-restante');
+                        txtRestante.innerText = fmtMoneda(saldoRestante);
 
-                    txtRestante.innerText = `S/ ${saldoRestante.toFixed(2)}`;
-                    actualizarElementoConversion('modal-saldo-restante-alt', saldoRestante, usuarioActualCompleto);
+                        if (saldoRestante < 0) {
+                            txtRestante.style.color = '#ff4757';
+                            document.getElementById('compra-pantalla-formulario').style.display = 'none';
+                            document.getElementById('compra-pantalla-error').style.display = 'block';
+                        } else {
+                            txtRestante.style.color = '#00e676';
+                        }
+                    }
+                } else {
+                    // Volvemos a consultar el saldo por seguridad justo antes de abrir
+                    const { data } = await supabaseClient.from('usuarios').select('saldo').eq('nickname', nombreGuardado).single();
+                    if (data) {
+                        saldoActualUsuario = data.saldo;
+                        document.getElementById('modal-saldo-actual').innerText = `S/ ${saldoActualUsuario.toFixed(2)}`;
+                        actualizarElementoConversion('modal-saldo-actual-alt', saldoActualUsuario, usuarioActualCompleto);
 
-                    if (saldoRestante < 0) {
-                        txtRestante.style.color = '#ff4757'; // Rojo si no le alcanza
-                        document.getElementById('compra-pantalla-formulario').style.display = 'none';
-                        document.getElementById('compra-pantalla-error').style.display = 'block';
-                    } else {
-                        txtRestante.style.color = '#00e676'; // Verde si le alcanza
+                        let saldoRestante = saldoActualUsuario - precioSeleccionado;
+                        let txtRestante = document.getElementById('modal-saldo-restante');
+
+                        txtRestante.innerText = `S/ ${saldoRestante.toFixed(2)}`;
+                        actualizarElementoConversion('modal-saldo-restante-alt', saldoRestante, usuarioActualCompleto);
+
+                        if (saldoRestante < 0) {
+                            txtRestante.style.color = '#ff4757'; // Rojo si no le alcanza
+                            document.getElementById('compra-pantalla-formulario').style.display = 'none';
+                            document.getElementById('compra-pantalla-error').style.display = 'block';
+                        } else {
+                            txtRestante.style.color = '#00e676'; // Verde si le alcanza
+                        }
                     }
                 }
             } catch (err) { console.error(err); }
@@ -975,6 +1051,8 @@
         function cerrarModalCompra() { const modal = document.getElementById('modal-compra-container'); modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; }, 300); }
 
         async function procesarTransaccion() {
+            if (esRevendedor) { await procesarTransaccionRevendedor(); return; }
+
             const esPaseBooyah = paqueteSeleccionado === 'Pase Booyah';
             const esRegularManual = !esPaseBooyah && modoEntregaRegular === 'admin';
             const idJuego = paso1IdValidado;
@@ -1061,6 +1139,85 @@
                 const numeroAdmin = "51943737572";
                 const tipoTexto = esPaseBooyah ? 'PASE BOOYAH' : (cayoAMantenimiento ? 'RECARGA REGULAR (recarga automática en mantenimiento, completar manual)' : 'RECARGA REGULAR (canje manual)');
                 const mensaje = `¡Hola CarzaD'Cross! 👋\n\nAcabo de realizar una compra de *${tipoTexto}* en la web. (El saldo ya fue descontado de mi cuenta).\n\n👤 *Usuario Web:* ${nombreGuardado}\n💎 *Paquete:* ${paqueteSeleccionado}\n💰 *Precio:* S/ ${precioFinalCobrado.toFixed(2)}\n\n🎮 *Mi ID:* ${idJuego}\n👤 *Mi Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para proceder. ¡Gracias!`;
+                window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
+            }
+        }
+
+        // ================= COMPRA DE REVENDEDOR (saldo y precios en USD) =================
+        async function procesarTransaccionRevendedor() {
+            const idJuego = paso1IdValidado;
+            const nicknameJuego = paso1NicknameConfirmado;
+            const btn = document.getElementById('btn-confirmar-pago');
+
+            if (!idJuego || idJuego.length < 7) { alert("Falta tu ID de jugador — vuelve al Paso 1."); return; }
+            if (!nicknameJuego) { alert("Falta tu nombre de usuario — vuelve al Paso 1."); return; }
+
+            btn.disabled = true; btn.innerText = "Procesando pedido...";
+
+            const { data: resultadoRpc, error: errorCompra } = await supabaseClient.rpc('procesar_compra_revendedor', {
+                p_paquete: paqueteSeleccionado,
+                p_id_juego: idJuego,
+                p_nickname_juego: nicknameJuego
+            });
+
+            const resultado = resultadoRpc && resultadoRpc[0];
+
+            if (errorCompra || !resultado || resultado.estado === 'error') {
+                const msg = errorCompra ? errorCompra.message : (resultado ? resultado.mensaje : "Error desconocido.");
+                alert("Error: " + msg);
+                btn.disabled = false; btn.innerText = "Comprar ahora";
+                return;
+            }
+
+            const vinoDeCodestore = !!(resultado.codigo && resultado.codigo.startsWith('CodeStore:'));
+            const cayoAMantenimiento = resultado.estado === 'pendiente_mantenimiento';
+
+            const nuevoSaldoUsd = Number(resultado.saldo_usd_restante);
+            const precioFinalCobrado = saldoUsdActual - nuevoSaldoUsd;
+            saldoUsdActual = nuevoSaldoUsd;
+            if (document.getElementById('saldo-nav')) document.getElementById('saldo-nav').innerText = nuevoSaldoUsd.toFixed(2);
+
+            document.getElementById('compra-pantalla-formulario').style.display = 'none';
+            document.getElementById('compra-pantalla-exito').style.display = 'block';
+
+            document.getElementById('exito-pedido-id').innerText = resultado.pedido_id ? ('#' + resultado.pedido_id) : '---';
+            document.getElementById('exito-monto-total').innerText = paqueteSeleccionado;
+            document.getElementById('exito-precio').innerText = fmtMoneda(precioFinalCobrado);
+            document.getElementById('exito-fecha').innerText = new Date().toLocaleString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+            const bonoExito = parsearBonoDescripcion(descripcionSeleccionada);
+            const bonoExitoWrap = document.getElementById('exito-bono-wrap');
+            if (bonoExito) {
+                document.getElementById('exito-bono-base').innerText = bonoExito.base;
+                document.getElementById('exito-bono-extra').innerText = bonoExito.bono;
+                bonoExitoWrap.style.display = 'block';
+            } else {
+                bonoExitoWrap.style.display = 'none';
+            }
+
+            const mantenimientoWrap = document.getElementById('exito-mantenimiento-wrap');
+            const textoPlazo = document.getElementById('exito-texto-plazo');
+            if (cayoAMantenimiento) {
+                document.getElementById('exito-mantenimiento-msg').innerText = resultado.mensaje;
+                mantenimientoWrap.style.display = 'block';
+                textoPlazo.innerText = 'Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.';
+            } else if (vinoDeCodestore) {
+                mantenimientoWrap.style.display = 'none';
+                textoPlazo.innerText = '✅ ¡Tus diamantes ya fueron entregados automáticamente a tu cuenta de Free Fire!';
+            } else {
+                mantenimientoWrap.style.display = 'none';
+                textoPlazo.innerText = 'Tu recarga se procesará en nuestro sistema en un plazo máximo de 5 minutos.';
+            }
+
+            btn.disabled = false; btn.innerText = "Comprar ahora";
+
+            document.getElementById('paso3-wrap').style.display = 'none';
+            document.querySelectorAll('#products-grid .dtile').forEach(t => t.classList.remove('dtile-selected'));
+
+            if (cayoAMantenimiento) {
+                const nombreGuardado = localStorage.getItem('nombreUsuario');
+                const numeroAdmin = "51943737572";
+                const mensaje = `¡Hola CarzaD'Cross! 👋\n\nCompra de *REVENDEDOR* (recarga automática en mantenimiento, completar manual).\n\n👤 *Revendedor:* ${nombreGuardado}\n💎 *Paquete:* ${paqueteSeleccionado}\n💰 *Precio:* ${fmtMoneda(precioFinalCobrado)}\n\n🎮 *ID:* ${idJuego}\n👤 *Nick:* ${nicknameJuego}\n\nPor favor, revisa el panel de administrador para proceder. ¡Gracias!`;
                 window.open(`https://wa.me/${numeroAdmin}?text=${encodeURIComponent(mensaje)}`, '_blank');
             }
         }

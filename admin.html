@@ -571,6 +571,7 @@
                     <div class="admin-nav-item solo-full" data-view="mis-clientes" onclick="cambiarVista('mis-clientes')"><span class="material-icons">subscriptions</span> Mis Clientes <span class="nav-badge zero" id="badge-clientes-venciendo">0</span></div>
                     <div class="admin-nav-item solo-full" data-view="cupones" onclick="cambiarVista('cupones')"><span class="material-icons">sell</span> Cupones</div>
                     <div class="admin-nav-item solo-full" data-view="canjes" onclick="cambiarVista('canjes')"><span class="material-icons">redeem</span> Canjes</div>
+                    <div class="admin-nav-item solo-full" data-view="revendedores" onclick="cambiarVista('revendedores')"><span class="material-icons">handshake</span> Revendedores</div>
                     <div class="admin-nav-item solo-full" data-view="administradores" onclick="cambiarVista('administradores')"><span class="material-icons">admin_panel_settings</span> Administradores</div>
                 </nav>
 
@@ -634,6 +635,9 @@
                             <button class="btn-complete" onclick="cambiarVista('cuentas')"><span class="material-icons">badge</span> Cuentas</button>
                             <button class="btn-add" onclick="cambiarVista('ganancias')"><span class="material-icons">payments</span> Ganancias</button>
                             <button class="btn-complete" onclick="cambiarVista('cupones')"><span class="material-icons">sell</span> Cupones</button>
+                            <button class="btn-view" onclick="cambiarVista('mis-clientes')"><span class="material-icons">subscriptions</span> Mis Clientes</button>
+                            <button class="btn-add" onclick="cambiarVista('canjes')"><span class="material-icons">redeem</span> Canjes</button>
+                            <button class="btn-complete" onclick="cambiarVista('revendedores')"><span class="material-icons">handshake</span> Revendedores</button>
                             <button class="btn-view" onclick="cambiarVista('administradores')"><span class="material-icons">admin_panel_settings</span> Administradores</button>
                         </div>
                     </div>
@@ -681,6 +685,7 @@
                                         <th>Registro</th>
                                         <th>Saldo Actual</th>
                                         <th style="color: #ff9800;">Puntos VIP</th>
+                                        <th style="color: #2196f3;">Revendedor</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -1293,6 +1298,106 @@
                     </div>
                 </div>
 
+                <!-- ============ REVENDEDORES ============ -->
+                <div class="admin-view" id="view-revendedores">
+                    <h1 class="view-title"><span class="material-icons" style="color:#00d2ff;">handshake</span> Revendedores</h1>
+                    <p class="view-subtitle">Clientes con precios especiales en dólares, con su propio saldo.</p>
+
+                    <div class="card-box upload-container">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">person_add</span> Marcar / Desmarcar Revendedor</h3>
+                        <div class="grid-container" style="display: grid; grid-template-columns: 220px auto; gap: 15px; align-items:end;">
+                            <div>
+                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Nickname del cliente</label>
+                                <input type="text" id="rev-nickname-marcar" class="bulk-select" list="lista-nicknames-clientes" placeholder="Buscar..." style="width:100%; box-sizing:border-box;">
+                                <datalist id="lista-nicknames-clientes"></datalist>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn-add" onclick="marcarRevendedor(true)"><span class="material-icons">check</span> Marcar</button>
+                                <button class="btn-remove" onclick="marcarRevendedor(false)"><span class="material-icons">block</span> Quitar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-box upload-container">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#00e676;">account_balance_wallet</span> Recargar Saldo en Dólares</h3>
+                        <div class="grid-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Revendedor</label>
+                                <select id="rev-nickname-recarga" class="bulk-select" style="width:100%; box-sizing:border-box;"></select>
+                            </div>
+                            <div>
+                                <label style="color: #00e676; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Monto recibido (S/)</label>
+                                <input type="number" id="rev-monto-soles" class="bulk-select" placeholder="500" min="0.01" step="0.01" style="width:100%; box-sizing:border-box;" oninput="previsualizarRecargaRevendedor()">
+                            </div>
+                            <div>
+                                <label style="color: #e0e0e0; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Tipo de cambio (S/ por $1)</label>
+                                <input type="number" id="rev-tipo-cambio" class="bulk-select" placeholder="3.75" min="0.01" step="0.001" style="width:100%; box-sizing:border-box;" oninput="previsualizarRecargaRevendedor()">
+                            </div>
+                        </div>
+
+                        <div id="rev-recarga-preview" style="display:none; background:rgba(0,0,0,0.3); border:1px dashed rgba(0,230,118,0.4); border-radius:10px; padding:14px 18px; margin-bottom:15px;">
+                            <div style="display:flex; justify-content:space-between; color:#a8a8b3; font-size:13px; margin-bottom:6px;"><span>Pagas</span><span id="rev-preview-pagas" style="color:white; font-weight:bold;">S/ 0.00</span></div>
+                            <div style="display:flex; justify-content:space-between; color:#a8a8b3; font-size:13px; margin-bottom:6px;"><span>Tipo de cambio</span><span id="rev-preview-tc" style="color:white; font-weight:bold;">S/ 0.00</span></div>
+                            <div style="display:flex; justify-content:space-between; color:#a8a8b3; font-size:13px; margin-bottom:6px;"><span>Cantidad bruta</span><span id="rev-preview-bruto" style="color:white; font-weight:bold;">$0.00</span></div>
+                            <div style="display:flex; justify-content:space-between; color:#a8a8b3; font-size:13px; margin-bottom:6px;"><span>Comisión</span><span style="color:#ff4757; font-weight:bold;">-$0.07</span></div>
+                            <div style="display:flex; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px; margin-top:2px;"><span style="color:#e0e0e0; font-weight:bold;">Recibe</span><span id="rev-preview-neto" style="color:#00e676; font-weight:bold; font-size:16px;">$0.00</span></div>
+                        </div>
+
+                        <button class="btn-primary" style="width: 100%; padding: 15px; font-weight: bold; background: #00e676; color: black; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="recargarRevendedor()">
+                            <span class="material-icons">add_circle</span> Recargar (se resta $0.07 de comisión)
+                        </button>
+                    </div>
+
+                    <div class="card-box upload-container">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ff9800;">tune</span> Ajustar Saldo Manualmente (corregir errores)</h3>
+                        <p class="view-subtitle" style="margin-top:-8px;">Suma o resta dólares directo, sin conversión ni comisión — úsalo para corregir una recarga mal hecha.</p>
+                        <div class="grid-container" style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 15px; align-items:end;">
+                            <div>
+                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Revendedor</label>
+                                <select id="rev-nickname-ajuste" class="bulk-select" style="width:100%; box-sizing:border-box;"></select>
+                            </div>
+                            <div>
+                                <label style="color: #ff9800; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Monto ($) — negativo para restar</label>
+                                <input type="number" id="rev-monto-ajuste" class="bulk-select" placeholder="-10.00" step="0.01" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <button class="btn-primary" style="padding: 12px 18px; font-weight:bold; background:#ff9800; color:black; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; gap:6px; height:44px;" onclick="ajustarSaldoRevendedor()">
+                                <span class="material-icons">save</span> Ajustar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">group</span> Revendedores actuales</h3>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Nickname</th><th>Correo</th><th>Saldo USD</th></tr></thead><tbody id="tabla-revendedores"></tbody></table>
+                        </div>
+                    </div>
+
+                    <div class="card-box upload-container">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#00d2ff;">sell</span> Precio de Revendedor por Paquete</h3>
+                        <div class="grid-container" style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 15px; align-items:end;">
+                            <div>
+                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Paquete</label>
+                                <select id="rev-precio-paquete" class="bulk-select" style="width:100%; box-sizing:border-box;"></select>
+                            </div>
+                            <div>
+                                <label style="color: #00e676; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Precio en USD ($)</label>
+                                <input type="number" id="rev-precio-usd" class="bulk-select" placeholder="5.00" min="0.01" step="0.01" style="width:100%; box-sizing:border-box;">
+                            </div>
+                            <button class="btn-primary" style="padding: 12px 18px; font-weight:bold; background:#a155ff; color:white; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; gap:6px; height:44px;" onclick="guardarPrecioRevendedor()">
+                                <span class="material-icons">save</span> Guardar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-box">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">list_alt</span> Precios de revendedor configurados</h3>
+                        <div class="table-scroll">
+                            <table><thead><tr><th>Paquete</th><th>Precio USD</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="tabla-precios-revendedor"></tbody></table>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ============ ADMINISTRADORES ============ -->
                 <div class="admin-view" id="view-administradores">
                     <h1 class="view-title"><span class="material-icons" style="color:#a155ff;">admin_panel_settings</span> Administradores</h1>
@@ -1436,6 +1541,7 @@
 
             if (rol === 'full') {
                 await cargarUsuarios(); await cargarRecargas(); await cargarAdmins(); await cargarCupones(); await cargarCanjes();
+                await cargarRevendedores(); await cargarSelectPaquetesRevendedor(); await cargarPreciosRevendedor(); await cargarListaNicknamesClientes();
                 await cargarProductosCatalogoParaCuentaMadre(); await cargarCuentasMadre();
             } else {
                 cambiarVista('pedidos');
@@ -2585,6 +2691,155 @@
             cargarCanjes();
         }
 
+        // ================= REVENDEDORES =================
+        async function marcarRevendedor(esRevendedor) {
+            const nickname = document.getElementById('rev-nickname-marcar').value.trim();
+            if (!nickname) return showToast("Ingresa un nickname.", "warning");
+
+            const { error } = await supabaseClient.rpc('admin_marcar_revendedor', { p_nickname: nickname, p_es_revendedor: esRevendedor });
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast(esRevendedor ? `${nickname} ahora es revendedor.` : `${nickname} ya no es revendedor.`);
+            document.getElementById('rev-nickname-marcar').value = '';
+            cargarRevendedores();
+        }
+
+        async function recargarRevendedor() {
+            const nickname = document.getElementById('rev-nickname-recarga').value.trim();
+            const montoSoles = parseFloat(document.getElementById('rev-monto-soles').value);
+            const tipoCambio = parseFloat(document.getElementById('rev-tipo-cambio').value);
+
+            if (!nickname) return showToast("Ingresa un nickname.", "warning");
+            if (isNaN(montoSoles) || montoSoles <= 0) return showToast("Ingresa un monto en soles válido.", "warning");
+            if (isNaN(tipoCambio) || tipoCambio <= 0) return showToast("Ingresa un tipo de cambio válido.", "warning");
+
+            const { data, error } = await supabaseClient.rpc('admin_recargar_revendedor', { p_nickname: nickname, p_monto_soles: montoSoles, p_tipo_cambio: tipoCambio });
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            const r = data && data[0];
+            showToast(`Se acreditaron $${r.usd_acreditado.toFixed(2)}. Saldo nuevo: $${r.saldo_usd_nuevo.toFixed(2)}`);
+            document.getElementById('rev-monto-soles').value = '';
+            document.getElementById('rev-tipo-cambio').value = '';
+            cargarRevendedores();
+        }
+
+        async function cargarRevendedores() {
+            const { data } = await supabaseClient.from('usuarios').select('nickname, correo, saldo_usd').eq('rol_cliente', 'revendedor').order('nickname');
+            const tbody = document.getElementById('tabla-revendedores'); tbody.innerHTML = '';
+            const selRecarga = document.getElementById('rev-nickname-recarga');
+            const selAjuste = document.getElementById('rev-nickname-ajuste');
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#a8a8b3;'>Sin revendedores todavía.</td></tr>";
+                if (selRecarga) selRecarga.innerHTML = "<option value=''>Sin revendedores todavía</option>";
+                if (selAjuste) selAjuste.innerHTML = "<option value=''>Sin revendedores todavía</option>";
+                return;
+            }
+            data.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td data-label="Nickname" style="font-weight:bold;">${escHtml(u.nickname)}</td><td data-label="Correo">${escHtml(u.correo)}</td><td data-label="Saldo USD" style="color:#00e676; font-weight:bold;">$${Number(u.saldo_usd).toFixed(2)}</td>`;
+                tbody.appendChild(tr);
+            });
+            const opciones = data.map(u => `<option value="${escAttr(u.nickname)}">${escHtml(u.nickname)} ($${Number(u.saldo_usd).toFixed(2)})</option>`).join('');
+            if (selRecarga) {
+                const seleccionActual = selRecarga.value;
+                selRecarga.innerHTML = opciones;
+                if (data.some(u => u.nickname === seleccionActual)) selRecarga.value = seleccionActual;
+            }
+            if (selAjuste) {
+                const seleccionActual = selAjuste.value;
+                selAjuste.innerHTML = opciones;
+                if (data.some(u => u.nickname === seleccionActual)) selAjuste.value = seleccionActual;
+            }
+        }
+
+        function previsualizarRecargaRevendedor() {
+            const montoSoles = parseFloat(document.getElementById('rev-monto-soles').value);
+            const tipoCambio = parseFloat(document.getElementById('rev-tipo-cambio').value);
+            const preview = document.getElementById('rev-recarga-preview');
+
+            if (isNaN(montoSoles) || montoSoles <= 0 || isNaN(tipoCambio) || tipoCambio <= 0) {
+                preview.style.display = 'none';
+                return;
+            }
+
+            const bruto = montoSoles / tipoCambio;
+            const neto = Math.max(bruto - 0.07, 0);
+
+            document.getElementById('rev-preview-pagas').innerText = `S/ ${montoSoles.toFixed(2)}`;
+            document.getElementById('rev-preview-tc').innerText = `S/ ${tipoCambio}`;
+            document.getElementById('rev-preview-bruto').innerText = `$${bruto.toFixed(2)}`;
+            document.getElementById('rev-preview-neto').innerText = `$${neto.toFixed(2)}`;
+            preview.style.display = 'block';
+        }
+
+        async function ajustarSaldoRevendedor() {
+            const nickname = document.getElementById('rev-nickname-ajuste').value.trim();
+            const montoUsd = parseFloat(document.getElementById('rev-monto-ajuste').value);
+
+            if (!nickname) return showToast("Elige un revendedor.", "warning");
+            if (isNaN(montoUsd) || montoUsd === 0) return showToast("Ingresa un monto distinto de 0 (negativo para restar).", "warning");
+
+            const conf = await openCustomModal({ title: "Ajustar Saldo", desc: `¿Confirmas ${montoUsd > 0 ? 'sumar' : 'restar'} <b>$${Math.abs(montoUsd).toFixed(2)}</b> al saldo de <b>${nickname}</b>?`, icon: 'tune', color: '#ff9800', textColor: 'black', type: 'confirm', confirmText: 'Ajustar' });
+            if (!conf) return;
+
+            const { data, error } = await supabaseClient.rpc('admin_ajustar_saldo_revendedor', { p_nickname: nickname, p_monto_usd: montoUsd });
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            const r = data && data[0];
+            showToast(`Saldo ajustado. Nuevo saldo: $${r.saldo_usd_nuevo.toFixed(2)}`);
+            document.getElementById('rev-monto-ajuste').value = '';
+            cargarRevendedores();
+        }
+
+        async function cargarListaNicknamesClientes() {
+            const { data } = await supabaseClient.from('usuarios').select('nickname').order('nickname');
+            const datalist = document.getElementById('lista-nicknames-clientes');
+            if (!datalist || !data) return;
+            datalist.innerHTML = data.map(u => `<option value="${escAttr(u.nickname)}"></option>`).join('');
+        }
+
+        async function cargarSelectPaquetesRevendedor() {
+            const { data } = await supabaseClient.from('productos').select('paquete').eq('categoria', 'regular').eq('activo', true).order('precio');
+            const sel = document.getElementById('rev-precio-paquete');
+            if (!sel || !data) return;
+            sel.innerHTML = data.map(p => `<option value="${escAttr(p.paquete)}">${escHtml(p.paquete)}</option>`).join('');
+        }
+
+        async function guardarPrecioRevendedor() {
+            const paquete = document.getElementById('rev-precio-paquete').value;
+            const precioUsd = parseFloat(document.getElementById('rev-precio-usd').value);
+            if (!paquete) return showToast("Elige un paquete.", "warning");
+            if (isNaN(precioUsd) || precioUsd <= 0) return showToast("Ingresa un precio en USD válido.", "warning");
+
+            const { error } = await supabaseClient.from('precios_revendedor').upsert([{ paquete, precio_usd: precioUsd, activo: true }], { onConflict: 'paquete' });
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast("Precio de revendedor guardado.");
+            document.getElementById('rev-precio-usd').value = '';
+            cargarPreciosRevendedor();
+        }
+
+        async function cargarPreciosRevendedor() {
+            const { data } = await supabaseClient.from('precios_revendedor').select('*').order('paquete');
+            const tbody = document.getElementById('tabla-precios-revendedor'); tbody.innerHTML = '';
+            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#a8a8b3;'>Sin precios configurados todavía.</td></tr>"; return; }
+            data.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Paquete" style="font-weight:bold;">${escHtml(p.paquete)}</td>
+                    <td data-label="Precio USD" style="color:#00e676; font-weight:bold;">$${Number(p.precio_usd).toFixed(2)}</td>
+                    <td data-label="Estado" style="color:${p.activo ? '#00e676' : '#666'}; font-weight:bold;">${p.activo ? 'Activo' : 'Desactivado'}</td>
+                    <td data-label="Acción">${p.activo
+                        ? `<button class="btn-remove" onclick="togglePrecioRevendedor(${p.id}, false)"><span class="material-icons">block</span> Desactivar</button>`
+                        : `<button class="btn-add" onclick="togglePrecioRevendedor(${p.id}, true)"><span class="material-icons">check</span> Activar</button>`}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function togglePrecioRevendedor(id, nuevoEstado) {
+            const { error } = await supabaseClient.from('precios_revendedor').update({ activo: nuevoEstado }).eq('id', id);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast(nuevoEstado ? "Precio activado." : "Precio desactivado.", nuevoEstado ? "success" : "warning");
+            cargarPreciosRevendedor();
+        }
+
         // ================= CATÁLOGO: DIAMANTES =================
         function escAttr(v) { return (v === null || v === undefined) ? '' : String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
         function escHtml(v) { return (v === null || v === undefined) ? '' : String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
@@ -3070,7 +3325,7 @@
                 `Mostrando ventas completadas del ${new Date(desdeStr + 'T12:00:00').toLocaleDateString('es-PE')} al ${new Date(hastaStr + 'T12:00:00').toLocaleDateString('es-PE')}, sin contar cuentas de prueba excluidas.`;
 
             const [pedidosRes, productosRes, costosRes] = await Promise.all([
-                supabaseClient.from('pedidos').select('created_at, paquete, precio, meses, nickname').eq('estado', 'Completado').gte('created_at', desdeStr + 'T00:00:00').lte('created_at', hastaStr + 'T23:59:59.999').order('created_at', { ascending: false }),
+                supabaseClient.from('pedidos').select('created_at, paquete, precio, meses, nickname').eq('estado', 'Completado').eq('es_revendedor', false).gte('created_at', desdeStr + 'T00:00:00').lte('created_at', hastaStr + 'T23:59:59.999').order('created_at', { ascending: false }),
                 supabaseClient.from('productos').select('id, paquete, categoria'),
                 supabaseClient.from('costos_productos').select('producto_id, costo')
             ]);
@@ -4141,7 +4396,7 @@
             const paginaActual = lista.slice(inicio, inicio + USUARIOS_POR_PAGINA);
 
             const tbody = document.getElementById('tabla-usuarios'); tbody.innerHTML = "";
-            if (lista.length === 0) { tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#a8a8b3;'>Sin resultados.</td></tr>"; }
+            if (lista.length === 0) { tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; color:#a8a8b3;'>Sin resultados.</td></tr>"; }
             paginaActual.forEach(u => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -4150,6 +4405,7 @@
                     <td data-label="Registro">${formatearFechaRegistro(u.created_at)}</td>
                     <td data-label="Saldo" style="font-size: 16px; color: #a155ff; font-weight: bold;">S/ ${u.saldo.toFixed(2)}</td>
                     <td data-label="Puntos VIP" style="color: #ff9800; font-weight: bold; font-size: 15px;">⭐ ${u.puntos || 0}</td>
+                    <td data-label="Revendedor">${u.rol_cliente === 'revendedor' ? `<span style="color:#2196f3; font-weight:bold;">$${Number(u.saldo_usd).toFixed(2)}</span>` : `<span style="color:#666;">—</span>`}</td>
                     <td data-label="Acciones">
                         <button class="btn-add" onclick="añadirSaldo('${u.nickname}', ${u.saldo}, ${u.puntos || 0})"><span class="material-icons">add</span></button>
                         <button class="btn-remove" onclick="quitarSaldo('${u.nickname}', ${u.saldo}, ${u.puntos || 0})"><span class="material-icons">remove</span></button>
@@ -4250,11 +4506,13 @@
                 const debito = esMovimientoDebito(h);
                 const colorMonto = debito ? '#ff4757' : '#00e676';
                 const signo = debito ? '-' : '+';
+                const esUsd = h.tipo && h.tipo.includes('(USD)');
+                const montoTexto = esUsd ? `${signo}$${h.monto.toFixed(2)}` : `${signo}S/ ${h.monto.toFixed(2)}`;
                 tbody.innerHTML += `
                     <tr style="border-bottom: 1px solid #333;">
                         <td style="color:#a8a8b3; font-size:13px; padding:10px;">${new Date(h.created_at).toLocaleDateString()}</td>
                         <td style="color:white; font-size:13px; padding:10px;">${h.tipo}</td>
-                        <td style="color:${colorMonto}; font-weight:bold; padding:10px;">${signo}S/ ${h.monto.toFixed(2)}</td>
+                        <td style="color:${colorMonto}; font-weight:bold; padding:10px;">${montoTexto}</td>
                         <td style="padding:10px;"><span class="status-badge" style="${estiloEstadoBadge(h.estado)}">${h.estado}</span></td>
                     </tr>`;
             });
@@ -4281,12 +4539,14 @@
                 const debito = esMovimientoDebito(h);
                 const colorMonto = debito ? '#ff4757' : '#00e676';
                 const signo = debito ? '-' : '+';
+                const esUsd = h.tipo && h.tipo.includes('(USD)');
+                const montoTexto = esUsd ? `${signo}$${h.monto.toFixed(2)}` : `${signo}S/ ${h.monto.toFixed(2)}`;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td data-label="Fecha" style="color: #a8a8b3; font-size: 13px;">${new Date(h.created_at).toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</td>
                     <td data-label="Usuario" style="font-weight: bold;">${h.nickname}</td>
                     <td data-label="Detalle" style="color: #e0e0e0; font-size: 13px;">${h.tipo}</td>
-                    <td data-label="Monto" style="font-weight: bold; color: ${colorMonto};">${signo}S/ ${h.monto.toFixed(2)}</td>
+                    <td data-label="Monto" style="font-weight: bold; color: ${colorMonto};">${montoTexto}</td>
                     <td data-label="Estado"><span class="status-badge" style="${estiloEstadoBadge(h.estado)}">${h.estado}</span></td>`;
                 tbody.appendChild(tr);
             });
