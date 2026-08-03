@@ -643,12 +643,18 @@
                     document.getElementById('contenedor-input-celular').style.borderColor = '#ff4757';
                     document.getElementById('contenedor-input-celular').style.boxShadow = '0 0 10px rgba(255,71,87,0.2)';
                 } else {
-                    const prefijos = ["+51", "+54", "+591", "+55", "+56", "+57", "+593", "+34", "+1", "+52", "+507", "+595", "+598", "+58"];
+                    // register.html y completar-perfil.html guardan el código de país SIN "+"
+                    // (ej. "51985661657"), pegado directo al número. Se comparan los códigos
+                    // más largos primero para no confundir, por ejemplo, "591" con "51".
+                    const prefijos = ["593", "591", "507", "595", "598", "51", "54", "55", "56", "57", "52", "58", "34", "1"];
+                    const limpio = celularOriginal.replace(/^\+/, ''); // por si alguna vez quedó guardado con "+"
                     let prefijoEncontrado = "+51";
-                    let soloNumero = celularOriginal;
-                    prefijos.forEach(pref => { if (celularOriginal.startsWith(pref)) { prefijoEncontrado = pref; soloNumero = celularOriginal.replace(pref, '').trim(); } });
+                    let soloNumero = limpio;
+                    for (const cod of prefijos) {
+                        if (limpio.startsWith(cod)) { prefijoEncontrado = '+' + cod; soloNumero = limpio.slice(cod.length); break; }
+                    }
                     document.getElementById('edit-codigo-pais').value = prefijoEncontrado;
-                    
+
                     let inputCel = document.getElementById('edit-celular');
                     inputCel.value = soloNumero;
                     formatearCelular(inputCel);
@@ -868,10 +874,11 @@
             if (!nuevoNombre) { alert("El nombre de usuario no puede estar vacío."); return; }
             if (!inputCelularLimpio || inputCelularLimpio.length < 8) { alert("Por favor, ingresa un número de WhatsApp válido."); return; }
 
-            const celularFinal = `${codigo} ${inputCelularLimpio}`;
+            // Mismo formato (código sin "+", pegado al número) que usan register.html y completar-perfil.html
+            const celularFinal = codigo.replace('+', '') + inputCelularLimpio;
             btn.disabled = true; btn.innerHTML = "Guardando...";
 
-            const { error } = await supabaseClient.from('usuarios').update({ nickname: nuevoNombre, celular: celularFinal }).eq('nickname', nombreActual);
+            const { error } = await supabaseClient.from('usuarios').update({ nickname: nuevoNombre, celular: celularFinal }).eq('nickname', usuarioActualPerfil.nickname);
 
             if (error) {
                 alert("Error al guardar: " + error.message);
