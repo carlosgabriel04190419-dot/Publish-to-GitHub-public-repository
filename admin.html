@@ -2751,6 +2751,16 @@
             }
         }
 
+        // Trunca (no redondea) a 2 decimales, igual que Binance — así 87.719 queda en
+        // 87.71, no en 87.72. Se calcula en centavos enteros para evitar errores de
+        // coma flotante en la resta de la comisión. Debe coincidir siempre con el
+        // truncamiento que hace admin_recargar_revendedor() en la base de datos.
+        function calcularConversionRevendedor(montoSoles, tipoCambio) {
+            const brutoCentavos = Math.trunc((montoSoles / tipoCambio) * 100);
+            const netoCentavos = Math.max(brutoCentavos - 7, 0);
+            return { bruto: brutoCentavos / 100, neto: netoCentavos / 100 };
+        }
+
         function previsualizarRecargaRevendedor() {
             const montoSoles = parseFloat(document.getElementById('rev-monto-soles').value);
             const tipoCambio = parseFloat(document.getElementById('rev-tipo-cambio').value);
@@ -2761,8 +2771,7 @@
                 return;
             }
 
-            const bruto = montoSoles / tipoCambio;
-            const neto = Math.max(bruto - 0.07, 0);
+            const { bruto, neto } = calcularConversionRevendedor(montoSoles, tipoCambio);
 
             document.getElementById('rev-preview-pagas').innerText = `S/ ${montoSoles.toFixed(2)}`;
             document.getElementById('rev-preview-tc').innerText = `S/ ${tipoCambio}`;
@@ -4018,8 +4027,7 @@
             const tc = parseFloat(document.getElementById(`rp-tc-${id}`).value);
             const preview = document.getElementById(`rp-preview-${id}`);
             if (isNaN(soles) || soles <= 0 || isNaN(tc) || tc <= 0) { preview.innerText = ''; return; }
-            const bruto = soles / tc;
-            const neto = Math.max(bruto - 0.07, 0);
+            const { bruto, neto } = calcularConversionRevendedor(soles, tc);
             preview.innerText = `Recibirá: $${neto.toFixed(2)} (bruto $${bruto.toFixed(2)} − $0.07 comisión)`;
         }
 
@@ -4029,8 +4037,7 @@
             if (isNaN(soles) || soles <= 0) return showToast('Ingresa un monto en soles válido.', 'warning');
             if (isNaN(tc) || tc <= 0) return showToast('Ingresa un tipo de cambio válido.', 'warning');
 
-            const bruto = soles / tc;
-            const neto = Math.max(bruto - 0.07, 0);
+            const { neto } = calcularConversionRevendedor(soles, tc);
             const conf = await openCustomModal({ title: "Aprobar Saldo (Revendedor)", desc: `<b>${nickname}</b> paga S/ ${soles.toFixed(2)} a TC ${tc} → recibirá <b>$${neto.toFixed(2)}</b> en su saldo en dólares. ¿Confirmas?`, icon: 'account_balance_wallet', color: '#00e676', type: 'confirm', confirmText: 'Aprobar en USD' });
             if (!conf) return;
 
