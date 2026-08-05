@@ -52,31 +52,31 @@
         .btn-paginar:disabled { opacity: 0.35; cursor: not-allowed; }
 
         /* --- MODAL DE COMPROBANTE (VOUCHER) --- */
-        .mv-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .mv-caja { background: #14141d; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; max-width: 480px; width: 100%; position: relative; max-height: 90vh; overflow-y: auto; }
+        .mv-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 10px; overflow-y: auto; }
+        .mv-caja { background: #14141d; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; max-width: 480px; width: 100%; position: relative; max-height: 96vh; overflow-y: auto; flex-shrink: 0; }
         .mv-cerrar { position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.5); border: none; color: white; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 2; }
         .mv-header {
-            text-align: center; padding: 46px 28px 30px;
+            text-align: center; padding: 26px 18px 18px;
             background: linear-gradient(rgba(15,15,22,0.55), rgba(13,13,20,0.97)), url('hero-bg.jpg');
             background-size: cover; background-position: center top;
         }
-        .mv-icono-wrap { width: 70px; height: 70px; border-radius: 50%; border: 3px solid #00e676; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; background: rgba(13,13,20,0.6); backdrop-filter: blur(2px); }
-        .mv-icono { font-size: 38px; }
-        .mv-titulo { color: white; font-size: 22px; margin: 0 0 16px; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
-        .mv-id-label { color: #d0d0d8; font-size: 13px; margin: 0 0 4px; }
-        .mv-id-valor { color: white; font-size: 17px; font-weight: bold; margin: 0; letter-spacing: 0.5px; }
-        .mv-cuerpo { background: #0d0d14; padding: 22px 26px; border-top: 1px solid rgba(255,255,255,0.06); }
-        .mv-fila { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e0e0e0; font-size: 14.5px; }
+        .mv-icono-wrap { width: 52px; height: 52px; border-radius: 50%; border: 3px solid #00e676; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; background: rgba(13,13,20,0.6); backdrop-filter: blur(2px); }
+        .mv-icono { font-size: 28px; }
+        .mv-titulo { color: white; font-size: 18px; margin: 0 0 10px; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+        .mv-id-label { color: #d0d0d8; font-size: 11.5px; margin: 0 0 4px; }
+        .mv-id-valor { color: white; font-size: 14.5px; font-weight: bold; margin: 0; letter-spacing: 0.5px; }
+        .mv-cuerpo { background: #0d0d14; padding: 14px 18px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .mv-fila { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e0e0e0; font-size: 13px; }
         .mv-fila:last-child { border-bottom: none; }
         .mv-fila span:first-child { color: #a8a8b3; flex-shrink: 0; }
         .mv-fila span:last-child { text-align: right; }
         .mv-fila-grande span:last-child { font-weight: bold; color: white; }
 
-        .mv-monto-total { display: flex; justify-content: space-between; align-items: center; padding: 4px 0 16px; color: #e0e0e0; font-size: 15px; }
+        .mv-monto-total { display: flex; justify-content: space-between; align-items: center; padding: 2px 0 10px; color: #e0e0e0; font-size: 13px; }
         .mv-monto-total span:first-child { color: #a8a8b3; }
-        .mv-monto-total span:last-child { font-weight: bold; color: white; font-size: 19px; display: flex; align-items: center; gap: 6px; }
-        .mv-desglose { background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 6px 16px; margin-bottom: 16px; }
-        .mv-desglose-fila { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; color: #a8a8b3; font-size: 13.5px; }
+        .mv-monto-total span:last-child { font-weight: bold; color: white; font-size: 16px; display: flex; align-items: center; gap: 6px; }
+        .mv-desglose { background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 2px 12px; margin-bottom: 10px; }
+        .mv-desglose-fila { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; color: #a8a8b3; font-size: 12px; }
         .mv-desglose-fila:not(:last-child) { border-bottom: 1px solid rgba(255,255,255,0.05); }
         .mv-desglose-fila span:last-child { color: white; font-weight: 600; display: flex; align-items: center; gap: 5px; }
 
@@ -84,8 +84,8 @@
         .btn-ocultar-precio:hover { color: white; background: rgba(255,255,255,0.08); }
         .btn-ocultar-precio .material-icons { font-size: 17px; }
 
-        .mv-acciones { display: flex; gap: 12px; max-width: 480px; width: 100%; margin-top: 16px; padding: 0 20px; box-sizing: border-box; }
-        .mv-accion-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #e0e0e0; font-weight: bold; font-size: 13.5px; padding: 13px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+        .mv-acciones { display: flex; gap: 12px; max-width: 480px; width: 100%; margin-top: 10px; padding: 0 10px; box-sizing: border-box; flex-shrink: 0; }
+        .mv-accion-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #e0e0e0; font-weight: bold; font-size: 12.5px; padding: 10px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
         .mv-accion-btn:hover { background: rgba(255,255,255,0.12); }
         .mv-accion-btn .material-icons { font-size: 18px; }
         @media (max-width: 520px) { .mv-acciones { flex-direction: column; } }
