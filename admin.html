@@ -211,6 +211,15 @@
             .card-box { background: white !important; border: 1px solid #ccc !important; color: black !important; box-shadow: none !important; }
             table, th, td { color: black !important; border-color: #ccc !important; }
         }
+
+        .rev-precios-grupo { margin-top: 22px; }
+        .rev-precios-grupo:first-of-type { margin-top: 5px; }
+        .rev-precios-grupo-titulo { display: flex; align-items: center; gap: 8px; color: #a155ff; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(161,85,255,0.25); }
+        .rev-precio-input { width: 110px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 8px 10px; color: #00e676; font-weight: bold; font-size: 14px; }
+        .rev-precio-input:focus { outline: none; border-color: #a155ff; }
+        .rev-precio-fila-accion { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .btn-guardar-precio { background: rgba(161,85,255,0.12); border: 1px solid #a155ff; color: #a155ff; border-radius: 6px; padding: 8px 12px; font-weight: bold; font-size: 12.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-guardar-precio:hover { background: #a155ff; color: white; }
     </style>
 </head>
 <body>
@@ -1348,52 +1357,37 @@
                         </button>
                     </div>
 
-                    <div class="card-box upload-container">
-                        <h3 class="card-box-title"><span class="material-icons" style="color:#ff9800;">tune</span> Ajustar Saldo Manualmente (corregir errores)</h3>
-                        <p class="view-subtitle" style="margin-top:-8px;">Suma o resta dólares directo, sin conversión ni comisión — úsalo para corregir una recarga mal hecha.</p>
-                        <div class="grid-container" style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 15px; align-items:end;">
-                            <div>
-                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Revendedor</label>
-                                <select id="rev-nickname-ajuste" class="bulk-select" style="width:100%; box-sizing:border-box;"></select>
-                            </div>
-                            <div>
-                                <label style="color: #ff9800; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Monto ($) — negativo para restar</label>
-                                <input type="number" id="rev-monto-ajuste" class="bulk-select" placeholder="-10.00" step="0.01" style="width:100%; box-sizing:border-box;">
-                            </div>
-                            <button class="btn-primary" style="padding: 12px 18px; font-weight:bold; background:#ff9800; color:black; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; gap:6px; height:44px;" onclick="ajustarSaldoRevendedor()">
-                                <span class="material-icons">save</span> Ajustar
-                            </button>
-                        </div>
-                    </div>
-
                     <div class="card-box">
                         <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">group</span> Revendedores actuales</h3>
+                        <p class="view-subtitle" style="margin-top:-8px;">Usa + / − para corregir el saldo de alguno directo, sin conversión ni comisión — igual que en Usuarios.</p>
                         <div class="table-scroll">
-                            <table><thead><tr><th>Nickname</th><th>Correo</th><th>Saldo USD</th></tr></thead><tbody id="tabla-revendedores"></tbody></table>
-                        </div>
-                    </div>
-
-                    <div class="card-box upload-container">
-                        <h3 class="card-box-title"><span class="material-icons" style="color:#00d2ff;">sell</span> Precio de Revendedor por Paquete</h3>
-                        <div class="grid-container" style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 15px; align-items:end;">
-                            <div>
-                                <label style="color: #a155ff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Paquete</label>
-                                <select id="rev-precio-paquete" class="bulk-select" style="width:100%; box-sizing:border-box;"></select>
-                            </div>
-                            <div>
-                                <label style="color: #00e676; font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">Precio en USD ($)</label>
-                                <input type="number" id="rev-precio-usd" class="bulk-select" placeholder="5.00" min="0.01" step="0.01" style="width:100%; box-sizing:border-box;">
-                            </div>
-                            <button class="btn-primary" style="padding: 12px 18px; font-weight:bold; background:#a155ff; color:white; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; gap:6px; height:44px;" onclick="guardarPrecioRevendedor()">
-                                <span class="material-icons">save</span> Guardar
-                            </button>
+                            <table><thead><tr><th>Nickname</th><th>Correo</th><th>Saldo USD</th><th>Acciones</th></tr></thead><tbody id="tabla-revendedores"></tbody></table>
                         </div>
                     </div>
 
                     <div class="card-box">
-                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">list_alt</span> Precios de revendedor configurados</h3>
-                        <div class="table-scroll">
-                            <table><thead><tr><th>Paquete</th><th>Precio USD</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="tabla-precios-revendedor"></tbody></table>
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#ffc107;">list_alt</span> Precios de Revendedor por Paquete</h3>
+                        <p class="view-subtitle" style="margin-top:-8px;">Edita el precio en dólares directo en cada fila y dale a guardar — sin tener que buscarlo arriba.</p>
+
+                        <div id="rev-precios-grupo-diamantes" class="rev-precios-grupo">
+                            <h4 class="rev-precios-grupo-titulo"><span class="material-icons" style="font-size:16px;">diamond</span> Diamantes</h4>
+                            <div class="table-scroll">
+                                <table><thead><tr><th>Paquete</th><th>Precio USD</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="tabla-precios-revendedor-diamantes"></tbody></table>
+                            </div>
+                        </div>
+
+                        <div id="rev-precios-grupo-pase" class="rev-precios-grupo">
+                            <h4 class="rev-precios-grupo-titulo"><span class="material-icons" style="font-size:16px;">confirmation_number</span> Pase Booyah</h4>
+                            <div class="table-scroll">
+                                <table><thead><tr><th>Paquete</th><th>Precio USD</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="tabla-precios-revendedor-pase"></tbody></table>
+                            </div>
+                        </div>
+
+                        <div id="rev-precios-grupo-tarjetas" class="rev-precios-grupo">
+                            <h4 class="rev-precios-grupo-titulo"><span class="material-icons" style="font-size:16px;">card_membership</span> Tarjetas / Membresías</h4>
+                            <div class="table-scroll">
+                                <table><thead><tr><th>Paquete</th><th>Precio USD</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="tabla-precios-revendedor-tarjetas"></tbody></table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1541,7 +1535,7 @@
 
             if (rol === 'full') {
                 await cargarUsuarios(); await cargarRecargas(); await cargarAdmins(); await cargarCupones(); await cargarCanjes();
-                await cargarRevendedores(); await cargarSelectPaquetesRevendedor(); await cargarPreciosRevendedor(); await cargarListaNicknamesClientes();
+                await cargarRevendedores(); await cargarPreciosRevendedor(); await cargarListaNicknamesClientes();
                 await cargarProductosCatalogoParaCuentaMadre(); await cargarCuentasMadre();
             } else {
                 cambiarVista('pedidos');
@@ -2725,29 +2719,29 @@
             const { data } = await supabaseClient.from('usuarios').select('nickname, correo, saldo_usd').eq('rol_cliente', 'revendedor').order('nickname');
             const tbody = document.getElementById('tabla-revendedores'); tbody.innerHTML = '';
             const selRecarga = document.getElementById('rev-nickname-recarga');
-            const selAjuste = document.getElementById('rev-nickname-ajuste');
 
             if (!data || data.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#a8a8b3;'>Sin revendedores todavía.</td></tr>";
+                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#a8a8b3;'>Sin revendedores todavía.</td></tr>";
                 if (selRecarga) selRecarga.innerHTML = "<option value=''>Sin revendedores todavía</option>";
-                if (selAjuste) selAjuste.innerHTML = "<option value=''>Sin revendedores todavía</option>";
                 return;
             }
             data.forEach(u => {
+                const nickEsc = escAttr(u.nickname).replace(/'/g, "\\'");
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td data-label="Nickname" style="font-weight:bold;">${escHtml(u.nickname)}</td><td data-label="Correo">${escHtml(u.correo)}</td><td data-label="Saldo USD" style="color:#00e676; font-weight:bold;">$${Number(u.saldo_usd).toFixed(2)}</td>`;
+                tr.innerHTML = `
+                    <td data-label="Nickname" style="font-weight:bold;">${escHtml(u.nickname)}</td>
+                    <td data-label="Correo">${escHtml(u.correo)}</td>
+                    <td data-label="Saldo USD" style="color:#00e676; font-weight:bold;">$${Number(u.saldo_usd).toFixed(2)}</td>
+                    <td data-label="Acciones">
+                        <button class="btn-add" onclick="añadirSaldoRevendedor('${nickEsc}', ${u.saldo_usd})"><span class="material-icons">add</span></button>
+                        <button class="btn-remove" onclick="quitarSaldoRevendedor('${nickEsc}', ${u.saldo_usd})"><span class="material-icons">remove</span></button>
+                    </td>`;
                 tbody.appendChild(tr);
             });
-            const opciones = data.map(u => `<option value="${escAttr(u.nickname)}">${escHtml(u.nickname)} ($${Number(u.saldo_usd).toFixed(2)})</option>`).join('');
             if (selRecarga) {
                 const seleccionActual = selRecarga.value;
-                selRecarga.innerHTML = opciones;
+                selRecarga.innerHTML = data.map(u => `<option value="${escAttr(u.nickname)}">${escHtml(u.nickname)} ($${Number(u.saldo_usd).toFixed(2)})</option>`).join('');
                 if (data.some(u => u.nickname === seleccionActual)) selRecarga.value = seleccionActual;
-            }
-            if (selAjuste) {
-                const seleccionActual = selAjuste.value;
-                selAjuste.innerHTML = opciones;
-                if (data.some(u => u.nickname === seleccionActual)) selAjuste.value = seleccionActual;
             }
         }
 
@@ -2780,21 +2774,29 @@
             preview.style.display = 'block';
         }
 
-        async function ajustarSaldoRevendedor() {
-            const nickname = document.getElementById('rev-nickname-ajuste').value.trim();
-            const montoUsd = parseFloat(document.getElementById('rev-monto-ajuste').value);
+        async function añadirSaldoRevendedor(nick, saldoUsd) {
+            const result = await openCustomModal({ title: "Añadir Saldo (Revendedor)", desc: `Saldo actual: <b>$${saldoUsd.toFixed(2)}</b><br>Monto en dólares a sumar a <b>${nick}</b> (sin conversión ni comisión):`, icon: 'add_circle', color: '#00e676', type: 'prompt', confirmText: 'Añadir' });
+            if (!result) return;
+            const m = parseFloat(result);
+            if (!(m > 0)) return showToast("Monto inválido.", "error");
 
-            if (!nickname) return showToast("Elige un revendedor.", "warning");
-            if (isNaN(montoUsd) || montoUsd === 0) return showToast("Ingresa un monto distinto de 0 (negativo para restar).", "warning");
-
-            const conf = await openCustomModal({ title: "Ajustar Saldo", desc: `¿Confirmas ${montoUsd > 0 ? 'sumar' : 'restar'} <b>$${Math.abs(montoUsd).toFixed(2)}</b> al saldo de <b>${nickname}</b>?`, icon: 'tune', color: '#ff9800', textColor: 'black', type: 'confirm', confirmText: 'Ajustar' });
-            if (!conf) return;
-
-            const { data, error } = await supabaseClient.rpc('admin_ajustar_saldo_revendedor', { p_nickname: nickname, p_monto_usd: montoUsd });
+            const { data, error } = await supabaseClient.rpc('admin_ajustar_saldo_revendedor', { p_nickname: nick, p_monto_usd: m });
             if (error) { showToast("Error: " + error.message, "error"); return; }
             const r = data && data[0];
-            showToast(`Saldo ajustado. Nuevo saldo: $${r.saldo_usd_nuevo.toFixed(2)}`);
-            document.getElementById('rev-monto-ajuste').value = '';
+            showToast(`Se agregaron $${m.toFixed(2)} a ${nick}. Nuevo saldo: $${r.saldo_usd_nuevo.toFixed(2)}`);
+            cargarRevendedores();
+        }
+
+        async function quitarSaldoRevendedor(nick, saldoUsd) {
+            const result = await openCustomModal({ title: "Descontar Saldo (Revendedor)", desc: `Saldo actual: <b>$${saldoUsd.toFixed(2)}</b><br>Monto en dólares a descontar a <b>${nick}</b>:`, icon: 'remove_circle', color: '#ff4757', textColor: 'white', type: 'prompt', confirmText: 'Quitar' });
+            if (!result) return;
+            const m = parseFloat(result);
+            if (!(m > 0)) return showToast("Monto inválido.", "error");
+
+            const { data, error } = await supabaseClient.rpc('admin_ajustar_saldo_revendedor', { p_nickname: nick, p_monto_usd: -m });
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            const r = data && data[0];
+            showToast(`Se quitaron $${m.toFixed(2)} a ${nick}. Nuevo saldo: $${r.saldo_usd_nuevo.toFixed(2)}`);
             cargarRevendedores();
         }
 
@@ -2805,41 +2807,74 @@
             datalist.innerHTML = data.map(u => `<option value="${escAttr(u.nickname)}"></option>`).join('');
         }
 
-        async function cargarSelectPaquetesRevendedor() {
-            const { data } = await supabaseClient.from('productos').select('paquete').eq('categoria', 'regular').eq('activo', true).order('precio');
-            const sel = document.getElementById('rev-precio-paquete');
-            if (!sel || !data) return;
-            sel.innerHTML = data.map(p => `<option value="${escAttr(p.paquete)}">${escHtml(p.paquete)}</option>`).join('');
+        // Junta el catálogo "regular" (activo) con los precios de revendedor ya
+        // configurados, y los separa en 3 grupos (igual que el catálogo de la web
+        // principal): Diamantes, Pase Booyah y Tarjetas — cada uno ordenado de
+        // menor a mayor precio.
+        async function cargarPreciosRevendedor() {
+            const [{ data: productos }, { data: precios }] = await Promise.all([
+                supabaseClient.from('productos').select('paquete, precio').eq('categoria', 'regular').eq('activo', true).order('precio'),
+                supabaseClient.from('precios_revendedor').select('*')
+            ]);
+
+            const precioPorPaquete = {};
+            (precios || []).forEach(p => { precioPorPaquete[p.paquete] = p; });
+
+            const diamantes = [], pase = [], tarjetas = [];
+            (productos || []).forEach(prod => {
+                const fila = { paquete: prod.paquete, precioExistente: precioPorPaquete[prod.paquete] || null };
+                if (prod.paquete === 'Pase Booyah') pase.push(fila);
+                else if (prod.paquete.startsWith('Tarjeta ')) tarjetas.push(fila);
+                else diamantes.push(fila);
+            });
+
+            renderTablaPreciosRevendedor('tabla-precios-revendedor-diamantes', diamantes);
+            renderTablaPreciosRevendedor('tabla-precios-revendedor-pase', pase);
+            renderTablaPreciosRevendedor('tabla-precios-revendedor-tarjetas', tarjetas);
         }
 
-        async function guardarPrecioRevendedor() {
-            const paquete = document.getElementById('rev-precio-paquete').value;
-            const precioUsd = parseFloat(document.getElementById('rev-precio-usd').value);
-            if (!paquete) return showToast("Elige un paquete.", "warning");
+        function renderTablaPreciosRevendedor(tbodyId, filas) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            if (filas.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#a8a8b3;'>Sin paquetes en esta categoría.</td></tr>";
+                return;
+            }
+            tbody.innerHTML = filas.map(f => {
+                const p = f.precioExistente;
+                const paqueteEsc = escAttr(f.paquete).replace(/'/g, "\\'");
+                const inputId = 'rev-precio-inline-' + f.paquete.replace(/[^a-zA-Z0-9]/g, '');
+                const valorInicial = p ? Number(p.precio_usd).toFixed(2) : '';
+                const estadoTexto = p ? (p.activo ? 'Activo' : 'Desactivado') : 'Sin precio';
+                const estadoColor = p ? (p.activo ? '#00e676' : '#666') : '#ffc107';
+                const botonToggle = p
+                    ? (p.activo
+                        ? `<button class="btn-remove" onclick="togglePrecioRevendedor(${p.id}, false)"><span class="material-icons">block</span> Desactivar</button>`
+                        : `<button class="btn-add" onclick="togglePrecioRevendedor(${p.id}, true)"><span class="material-icons">check</span> Activar</button>`)
+                    : '';
+                return `
+                    <tr>
+                        <td data-label="Paquete" style="font-weight:bold;">${escHtml(f.paquete)}</td>
+                        <td data-label="Precio USD"><span style="color:#a8a8b3; font-weight:bold;">$</span> <input type="number" class="rev-precio-input" id="${inputId}" value="${valorInicial}" placeholder="0.00" min="0.01" step="0.01"></td>
+                        <td data-label="Estado" style="color:${estadoColor}; font-weight:bold;">${estadoTexto}</td>
+                        <td data-label="Acción">
+                            <div class="rev-precio-fila-accion">
+                                <button class="btn-guardar-precio" onclick="guardarPrecioRevendedorInline('${paqueteEsc}', '${inputId}')"><span class="material-icons" style="font-size:15px;">save</span> Guardar</button>
+                                ${botonToggle}
+                            </div>
+                        </td>
+                    </tr>`;
+            }).join('');
+        }
+
+        async function guardarPrecioRevendedorInline(paquete, inputId) {
+            const precioUsd = parseFloat(document.getElementById(inputId).value);
             if (isNaN(precioUsd) || precioUsd <= 0) return showToast("Ingresa un precio en USD válido.", "warning");
 
             const { error } = await supabaseClient.from('precios_revendedor').upsert([{ paquete, precio_usd: precioUsd, activo: true }], { onConflict: 'paquete' });
             if (error) { showToast("Error: " + error.message, "error"); return; }
-            showToast("Precio de revendedor guardado.");
-            document.getElementById('rev-precio-usd').value = '';
+            showToast(`Precio de "${paquete}" guardado.`);
             cargarPreciosRevendedor();
-        }
-
-        async function cargarPreciosRevendedor() {
-            const { data } = await supabaseClient.from('precios_revendedor').select('*').order('paquete');
-            const tbody = document.getElementById('tabla-precios-revendedor'); tbody.innerHTML = '';
-            if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#a8a8b3;'>Sin precios configurados todavía.</td></tr>"; return; }
-            data.forEach(p => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td data-label="Paquete" style="font-weight:bold;">${escHtml(p.paquete)}</td>
-                    <td data-label="Precio USD" style="color:#00e676; font-weight:bold;">$${Number(p.precio_usd).toFixed(2)}</td>
-                    <td data-label="Estado" style="color:${p.activo ? '#00e676' : '#666'}; font-weight:bold;">${p.activo ? 'Activo' : 'Desactivado'}</td>
-                    <td data-label="Acción">${p.activo
-                        ? `<button class="btn-remove" onclick="togglePrecioRevendedor(${p.id}, false)"><span class="material-icons">block</span> Desactivar</button>`
-                        : `<button class="btn-add" onclick="togglePrecioRevendedor(${p.id}, true)"><span class="material-icons">check</span> Activar</button>`}</td>`;
-                tbody.appendChild(tr);
-            });
         }
 
         async function togglePrecioRevendedor(id, nuevoEstado) {

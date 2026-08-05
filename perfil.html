@@ -432,6 +432,10 @@
                     <p style="margin: 0 0 8px 0; color: #a8a8b3; font-size: 14px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Saldo Actual</p>
                     <h3 class="big-balance">S/ <span id="saldo-billetera">0.00</span></h3>
                     <p id="saldo-billetera-alt" style="display:none; margin-top: 4px; font-size: 13px; color: #8a8a9a; font-weight: 600;"></p>
+                    <div id="saldo-billetera-usd-wrap" style="display:none; margin-top: 18px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.08);">
+                        <p style="margin: 0 0 6px 0; color: #a8a8b3; font-size: 12px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Saldo USD (Revendedor)</p>
+                        <h3 class="big-balance" style="font-size: 32px;">$ <span id="saldo-billetera-usd">0.00</span></h3>
+                    </div>
                 </div>
 
                 <h3 style="font-size: 16px; margin: 0 0 15px 0; color: white;">Movimientos de Saldo</h3>
@@ -577,6 +581,10 @@
                 document.getElementById('saldo-nav').innerText = data.saldo.toFixed(2);
                 document.getElementById('saldo-billetera').innerText = data.saldo.toFixed(2);
                 actualizarElementoConversion('saldo-billetera-alt', data.saldo, data);
+                if (data.rol_cliente === 'revendedor') {
+                    document.getElementById('saldo-billetera-usd').innerText = Number(data.saldo_usd || 0).toFixed(2);
+                    document.getElementById('saldo-billetera-usd-wrap').style.display = 'block';
+                }
                 document.getElementById('puntos-nav').innerText = data.puntos || 0;
                 document.getElementById('edit-nickname').value = data.nickname;
                 document.getElementById('edit-correo').value = data.correo;
