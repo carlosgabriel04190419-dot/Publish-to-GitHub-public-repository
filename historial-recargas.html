@@ -90,6 +90,27 @@
         .mv-accion-btn .material-icons { font-size: 18px; }
         @media (max-width: 520px) { .mv-acciones { flex-direction: column; } }
 
+        /* En pantallas chicas se achica todo para que el voucher entre completo en una
+           sola pantalla (y en una sola captura), sin tener que arrastrar para verlo. */
+        @media (max-width: 480px) {
+            .mv-overlay { padding: 10px; }
+            .mv-caja { max-height: 96vh; }
+            .mv-header { padding: 26px 18px 18px; }
+            .mv-icono-wrap { width: 52px; height: 52px; margin-bottom: 10px; }
+            .mv-icono { font-size: 28px; }
+            .mv-titulo { font-size: 18px; margin-bottom: 10px; }
+            .mv-id-label { font-size: 11.5px; }
+            .mv-id-valor { font-size: 14.5px; }
+            .mv-cuerpo { padding: 14px 18px; }
+            .mv-fila { padding: 8px 0; font-size: 13px; gap: 8px; }
+            .mv-monto-total { padding: 2px 0 10px; font-size: 13px; }
+            .mv-monto-total span:last-child { font-size: 16px; }
+            .mv-desglose { padding: 2px 12px; margin-bottom: 10px; }
+            .mv-desglose-fila { padding: 7px 0; font-size: 12px; }
+            .mv-acciones { padding: 0 10px; margin-top: 10px; }
+            .mv-accion-btn { padding: 10px; font-size: 12.5px; }
+        }
+
         @media (max-width: 768px) {
             .panel-module { padding: 20px 15px; }
             .modern-table { min-width: 0; }
@@ -507,12 +528,31 @@
             }
 
             document.getElementById('modal-voucher').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            bloquearScrollFondo();
         }
 
         function cerrarVoucher() {
             document.getElementById('modal-voucher').style.display = 'none';
-            document.body.style.overflow = '';
+            desbloquearScrollFondo();
+        }
+
+        // En iOS/Android, "overflow:hidden" en el body NO evita que la página de atrás
+        // se mueva al arrastrar dentro del modal (bug conocido de Safari). Hay que fijar
+        // el body en su lugar con position:fixed y luego devolverlo a su scroll original.
+        let scrollYAntesDelVoucher = 0;
+        function bloquearScrollFondo() {
+            scrollYAntesDelVoucher = window.scrollY;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollYAntesDelVoucher}px`;
+            document.body.style.left = '0';
+            document.body.style.right = '0';
+        }
+        function desbloquearScrollFondo() {
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+            window.scrollTo(0, scrollYAntesDelVoucher);
         }
 
         function toggleOcultarPrecio() {
@@ -523,12 +563,23 @@
 
         // --- COPIAR / DESCARGAR EL VOUCHER COMO IMAGEN ---
         async function capturarVoucherComoCanvas() {
+            const caja = document.getElementById('voucher-caja');
             const cerrarBtn = document.getElementById('voucher-cerrar-btn');
             const ojoBtn = document.getElementById('btn-ocultar-precio');
             cerrarBtn.style.visibility = 'hidden';
             ojoBtn.style.visibility = 'hidden';
+
+            // En celular la tarjeta tiene max-height + scroll interno para caber en la
+            // pantalla — pero eso hace que html2canvas solo capture lo que se ve, no todo
+            // el contenido. Se le quita el límite un instante solo para la captura, y se
+            // regresa a la normalidad apenas termina.
+            const maxHeightOriginal = caja.style.maxHeight;
+            const overflowOriginal = caja.style.overflow;
+            caja.style.maxHeight = 'none';
+            caja.style.overflow = 'visible';
+
             try {
-                return await html2canvas(document.getElementById('voucher-caja'), {
+                return await html2canvas(caja, {
                     backgroundColor: '#14141d',
                     scale: 2,
                     useCORS: true
@@ -536,6 +587,8 @@
             } finally {
                 cerrarBtn.style.visibility = '';
                 ojoBtn.style.visibility = '';
+                caja.style.maxHeight = maxHeightOriginal;
+                caja.style.overflow = overflowOriginal;
             }
         }
 
