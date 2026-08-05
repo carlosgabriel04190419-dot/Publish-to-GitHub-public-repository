@@ -988,6 +988,10 @@
                 document.getElementById('modal-codigo-aviso-wrap').style.display = 'none';
                 modoEntregaRegular = 'admin';
             } else if (MODO_RECARGA_REGULAR === 'autoservicio') {
+                // Este modo manda el código a "Mis Códigos" (ver aviso de abajo), pero esa
+                // página ya no está en el menú de navegación (se quitó porque las recargas
+                // ahora son automáticas). Si reactivas "autoservicio", agrega de nuevo el
+                // enlace a "Mis Códigos" en el menú para que el cliente pueda volver a verlo.
                 document.getElementById('modal-modo-entrega-wrap').style.display = 'none';
                 document.getElementById('modal-codigo-aviso-wrap').style.display = 'flex';
                 modoEntregaRegular = 'auto';
