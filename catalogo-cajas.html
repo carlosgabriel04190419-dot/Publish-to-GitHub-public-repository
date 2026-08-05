@@ -228,6 +228,15 @@
         .cz-footer-bottom { max-width: 1200px; margin: 60px auto 0; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .cz-copy { color: #555566; font-size: 13px; }
         .cz-made-with { color: #777788; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+        /* --- MODAL "SEGURO QUE QUIERES SALIR DE ESTE ID" --- */
+        .msi-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .msi-caja { background: #16161f; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 28px; max-width: 380px; width: 100%; text-align: center; }
+        .msi-caja h3 { color: white; margin: 0 0 12px; font-size: 19px; }
+        .msi-caja p { color: #a8a8b3; margin: 0 0 22px; font-size: 14px; line-height: 1.5; }
+        .msi-botones { display: flex; gap: 12px; }
+        .msi-btn-cancelar, .msi-btn-salir { flex: 1; padding: 13px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; border: none; }
+        .msi-btn-cancelar { background: transparent; border: 1px solid #ff4757; color: #ff4757; }
+        .msi-btn-salir { background: #ff4757; color: white; }
     </style>
 </head>
 <body>
@@ -363,6 +372,17 @@
                         <div class="cc-linea" id="cc-nivel-wrap" style="display: none;">Nivel: <b id="cc-nivel-txt"></b></div>
                     </div>
                     <a href="javascript:void(0)" class="cc-salir" onclick="salirPaso1()"><span class="material-icons" style="font-size: 15px;">sync_alt</span> Salir</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-salir-id" class="msi-overlay" style="display:none;">
+            <div class="msi-caja">
+                <h3>¿Seguro que quieres salir de este ID?</h3>
+                <p>Vas a tener que ingresar y validar tu ID de jugador de nuevo para tu próxima compra.</p>
+                <div class="msi-botones">
+                    <button type="button" class="msi-btn-cancelar" onclick="cerrarModalSalirPaso1()">Cancelar</button>
+                    <button type="button" class="msi-btn-salir" onclick="confirmarSalirPaso1()">Salir</button>
                 </div>
             </div>
         </div>
@@ -599,6 +619,8 @@
         let paso1NicknameConfirmado = '';
 
         window.onload = async function() {
+            restaurarPaso1();
+
             const usuario = await verificarSesion(false);
 
             if (usuario) {
@@ -765,6 +787,13 @@
             paso1IdValidado = uid;
             paso1NicknameConfirmado = nickname;
 
+            // Se guarda para que el ID siga puesto aunque recarguen la página — igual que
+            // en la web oficial de Garena — hasta que el cliente le dé a "Salir" a propósito.
+            localStorage.setItem('ff_id_validado', uid);
+            localStorage.setItem('ff_nickname_validado', nickname);
+            if (nivel !== undefined && nivel !== null) { localStorage.setItem('ff_nivel_validado', nivel); }
+            else { localStorage.removeItem('ff_nivel_validado'); }
+
             document.getElementById('cc-nombre-txt').innerText = nickname;
             document.getElementById('cc-id-txt').innerText = uid;
 
@@ -789,15 +818,36 @@
         }
 
         function salirPaso1() {
+            document.getElementById('modal-salir-id').style.display = 'flex';
+        }
+
+        function cerrarModalSalirPaso1() {
+            document.getElementById('modal-salir-id').style.display = 'none';
+        }
+
+        function confirmarSalirPaso1() {
             paso1IdValidado = '';
             paso1NicknameConfirmado = '';
+            localStorage.removeItem('ff_id_validado');
+            localStorage.removeItem('ff_nickname_validado');
+            localStorage.removeItem('ff_nivel_validado');
             document.getElementById('paso1-id-input').value = '';
             document.getElementById('paso1-nickname-input').value = '';
             document.getElementById('paso1-nickname-manual-wrap').style.display = 'none';
             document.getElementById('paso1-mensaje').style.display = 'none';
             document.getElementById('paso1-confirmado').style.display = 'none';
             document.getElementById('paso1-form').style.display = 'block';
+            cerrarModalSalirPaso1();
         }
+
+        function restaurarPaso1() {
+            const idGuardado = localStorage.getItem('ff_id_validado');
+            const nickGuardado = localStorage.getItem('ff_nickname_validado');
+            if (idGuardado && nickGuardado) {
+                confirmarPaso1(idGuardado, nickGuardado, localStorage.getItem('ff_nivel_validado'));
+            }
+        }
+
 
         async function aplicarCupon() {
             const codigo = document.getElementById('modal-cupon').value.trim();
