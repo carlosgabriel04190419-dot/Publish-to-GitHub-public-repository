@@ -237,6 +237,29 @@
             
             .cz-footer-content { grid-template-columns: 1fr; gap: 40px; }
         }
+
+        /* --- BOTÓN Y MODAL DE COMPROBANTE (VOUCHER) --- */
+        .btn-ver-voucher { display: inline-flex; align-items: center; gap: 6px; background: rgba(161,85,255,0.12); border: 1px solid rgba(161,85,255,0.4); color: #a155ff; font-weight: bold; font-size: 12.5px; padding: 7px 12px; border-radius: 8px; cursor: pointer; white-space: nowrap; }
+        .btn-ver-voucher:hover { background: rgba(161,85,255,0.22); }
+        .mv-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .mv-caja { background: #14141d; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; max-width: 480px; width: 100%; position: relative; max-height: 90vh; overflow-y: auto; }
+        .mv-cerrar { position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.5); border: none; color: white; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 2; }
+        .mv-header {
+            text-align: center; padding: 46px 28px 30px;
+            background: linear-gradient(rgba(15,15,22,0.55), rgba(13,13,20,0.97)), url('hero-bg.jpg');
+            background-size: cover; background-position: center top;
+        }
+        .mv-icono-wrap { width: 70px; height: 70px; border-radius: 50%; border: 3px solid #00e676; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; background: rgba(13,13,20,0.6); backdrop-filter: blur(2px); }
+        .mv-icono { font-size: 38px; }
+        .mv-titulo { color: white; font-size: 22px; margin: 0 0 16px; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+        .mv-id-label { color: #d0d0d8; font-size: 13px; margin: 0 0 4px; }
+        .mv-id-valor { color: white; font-size: 17px; font-weight: bold; margin: 0; letter-spacing: 0.5px; }
+        .mv-cuerpo { background: #0d0d14; padding: 22px 26px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .mv-fila { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e0e0e0; font-size: 14.5px; }
+        .mv-fila:last-child { border-bottom: none; }
+        .mv-fila span:first-child { color: #a8a8b3; flex-shrink: 0; }
+        .mv-fila span:last-child { text-align: right; }
+        .mv-fila-grande span:last-child { font-weight: bold; color: white; }
     </style>
 </head>
 <body>
@@ -533,10 +556,11 @@
                             <th>Producto Adquirido</th>
                             <th class="align-right">Total</th>
                             <th class="align-center">Estado</th>
+                            <th class="align-center">Comprobante</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-compras">
-                        <tr><td colspan="5" style="text-align:center; padding: 40px; color: #a8a8b3;">Cargando compras...</td></tr>
+                        <tr><td colspan="6" style="text-align:center; padding: 40px; color: #a8a8b3;">Cargando compras...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -607,6 +631,30 @@
         </div>
     </footer>
 
+    <div id="modal-voucher" class="mv-overlay" style="display:none;" onclick="if(event.target===this) cerrarVoucher()">
+        <div class="mv-caja">
+            <button type="button" class="mv-cerrar" onclick="cerrarVoucher()"><span class="material-icons">close</span></button>
+            <div class="mv-header">
+                <div id="voucher-icono-wrap" class="mv-icono-wrap">
+                    <span id="voucher-icono" class="material-icons mv-icono" style="color:#00e676;">check_circle</span>
+                </div>
+                <h3 id="voucher-titulo" class="mv-titulo">¡Pago finalizado!</h3>
+                <p class="mv-id-label">ID del movimiento</p>
+                <p id="voucher-id-mov" class="mv-id-valor">CZD-000000</p>
+            </div>
+            <div class="mv-cuerpo">
+                <div class="mv-fila mv-fila-grande"><span>Producto</span><span id="voucher-producto">-</span></div>
+                <div class="mv-fila"><span>Precio</span><span id="voucher-precio" style="color:#00e676; font-weight:bold;">-</span></div>
+                <div class="mv-fila"><span>Juego</span><span id="voucher-juego">Free Fire</span></div>
+                <div class="mv-fila"><span>ID de jugador</span><span id="voucher-jugador-id">-</span></div>
+                <div class="mv-fila"><span>Nick de jugador</span><span id="voucher-jugador-nick">-</span></div>
+                <div class="mv-fila"><span>Método de pago</span><span id="voucher-metodo">Saldo disponible</span></div>
+                <div class="mv-fila"><span>Fecha y hora</span><span id="voucher-fecha">-</span></div>
+                <div id="voucher-detalle-wrap" class="mv-fila" style="display:none;"><span>Código de confirmación</span><span id="voucher-detalle">-</span></div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="seguridad.js"></script>
     <script>
@@ -674,7 +722,9 @@
                     const fecha = new Date(mov.created_at).toLocaleDateString('es-PE', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
                     const color = mov.estado === 'Descontado' ? '#ff4757' : '#00e676';
                     const signo = mov.estado === 'Descontado' ? '-' : '+';
-                    tbRecargas.innerHTML += `<tr><td data-label="Fecha" class="nowrap-text" style="color:#a8a8b3;">${fecha}</td><td data-label="Método / Detalle" style="width: 100%;">${mov.tipo}</td><td data-label="Monto" class="nowrap-text align-right" style="font-weight:bold; color:${color}; font-size:15px;">${signo} S/ ${mov.monto.toFixed(2)}</td></tr>`;
+                    const esUsd = mov.tipo && mov.tipo.includes('(USD)');
+                    const montoTexto = esUsd ? `$${mov.monto.toFixed(2)}` : `S/ ${mov.monto.toFixed(2)}`;
+                    tbRecargas.innerHTML += `<tr><td data-label="Fecha" class="nowrap-text" style="color:#a8a8b3;">${fecha}</td><td data-label="Método / Detalle" style="width: 100%;">${mov.tipo}</td><td data-label="Monto" class="nowrap-text align-right" style="font-weight:bold; color:${color}; font-size:15px;">${signo} ${montoTexto}</td></tr>`;
                 });
             } else {
                 tbRecargas.innerHTML = '<tr><td colspan="3" class="align-center" style="color:#a8a8b3; padding: 40px;">Aún no tienes recargas.</td></tr>';
@@ -690,7 +740,7 @@
                 aplicarFiltrosCompras(); 
                 renderResumen('todo', document.querySelector('.res-tab.active')); 
             } else {
-                document.getElementById('tabla-compras').innerHTML = '<tr><td colspan="5" class="align-center" style="color:#a8a8b3; padding: 40px;">No has realizado compras en la tienda.</td></tr>';
+                document.getElementById('tabla-compras').innerHTML = '<tr><td colspan="6" class="align-center" style="color:#a8a8b3; padding: 40px;">No has realizado compras en la tienda.</td></tr>';
                 document.getElementById('lista-resumen').innerHTML = '<div style="text-align:center; padding: 20px; color: #a8a8b3;">No hay compras completadas para resumir.</div>';
             }
         };
@@ -789,18 +839,22 @@
                 return true; 
             });
 
+            // Se agrupa por paquete + moneda (no solo por paquete) para no mezclar en un
+            // mismo total compras en soles con compras de revendedor en dólares.
             let resumenMap = {};
             comprasCompletadas.forEach(c => {
-                if(!resumenMap[c.paquete]) resumenMap[c.paquete] = { cantidad: 0, total: 0 };
-                resumenMap[c.paquete].cantidad++;
-                resumenMap[c.paquete].total += c.precio || 0;
+                const esUsd = !!c.es_revendedor;
+                const key = c.paquete + (esUsd ? '__usd' : '__pen');
+                if(!resumenMap[key]) resumenMap[key] = { nombre: c.paquete, cantidad: 0, total: 0, esUsd };
+                resumenMap[key].cantidad++;
+                resumenMap[key].total += c.precio || 0;
             });
 
             const contenedor = document.getElementById('lista-resumen');
             contenedor.innerHTML = '';
-            
-            let arrayResumen = Object.keys(resumenMap).map(k => ({ nombre: k, ...resumenMap[k] }));
-            arrayResumen.sort((a, b) => b.total - a.total); 
+
+            let arrayResumen = Object.values(resumenMap);
+            arrayResumen.sort((a, b) => b.total - a.total);
 
             if(arrayResumen.length === 0) {
                 contenedor.innerHTML = '<div style="text-align:center; padding: 20px; color: #a8a8b3;">No hay datos para este rango de fecha.</div>';
@@ -808,6 +862,7 @@
             }
 
             arrayResumen.forEach(item => {
+                const totalTexto = item.esUsd ? `$${item.total.toFixed(2)}` : `S/ ${item.total.toFixed(2)}`;
                 contenedor.innerHTML += `
                     <div class="resumen-item">
                         <div>
@@ -815,7 +870,7 @@
                             <p class="res-item-sub">${item.cantidad} orden(es) en total</p>
                         </div>
                         <div style="text-align: right;">
-                            <span style="color: #00e676; font-weight: bold; font-size: 16px;">S/ ${item.total.toFixed(2)}</span>
+                            <span style="color: #00e676; font-weight: bold; font-size: 16px;">${totalTexto}</span>
                         </div>
                     </div>
                 `;
@@ -836,7 +891,7 @@
             });
 
             if(filtrados.length === 0) {
-                tbCompras.innerHTML = '<tr><td colspan="5" class="align-center" style="color:#a8a8b3; padding: 40px;">No se encontraron resultados.</td></tr>';
+                tbCompras.innerHTML = '<tr><td colspan="6" class="align-center" style="color:#a8a8b3; padding: 40px;">No se encontraron resultados.</td></tr>';
                 return;
             }
 
@@ -844,17 +899,72 @@
                 const fecha = new Date(p.created_at).toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'2-digit', hour:'2-digit', minute:'2-digit' });
                 let claseEstado = p.estado === 'Completado' ? 'status-completed' : (p.estado === 'Rechazado' ? 'status-discount' : '');
                 let datosJuego = `<div style="font-family:monospace; line-height:1.5;">ID: <span style="color:#e0e0e0;">${escHtml(p.id_juego||'N/A')}</span><br>Nick: <span style="color:#a155ff; font-weight:bold;">${escHtml(p.nickname_juego||'N/A')}</span></div>`;
+                const totalTexto = p.es_revendedor ? `$${p.precio ? p.precio.toFixed(2) : '0.00'}` : `S/ ${p.precio ? p.precio.toFixed(2) : '0.00'}`;
 
                 tbCompras.innerHTML += `
                     <tr>
                         <td data-label="Fecha" class="nowrap-text" style="color:#a8a8b3;">${fecha}</td>
                         <td data-label="Juego (Nick / ID)" class="nowrap-text">${datosJuego}</td>
                         <td data-label="Producto" style="font-weight:bold; color:white; width: 100%;">${p.paquete}</td>
-                        <td data-label="Total" class="nowrap-text align-right" style="font-weight:bold; color:#ff4757; font-size:15px;">S/ ${p.precio ? p.precio.toFixed(2) : '0.00'}</td>
+                        <td data-label="Total" class="nowrap-text align-right" style="font-weight:bold; color:#ff4757; font-size:15px;">${totalTexto}</td>
                         <td data-label="Estado" class="align-center"><span class="status-badge ${claseEstado}">${p.estado}</span></td>
+                        <td data-label="Comprobante" class="align-center"><button type="button" class="btn-ver-voucher" onclick="mostrarVoucher(${p.id})"><span class="material-icons" style="font-size:16px;">receipt_long</span> Ver</button></td>
                     </tr>
                 `;
             });
+        }
+
+        // --- COMPROBANTE (VOUCHER) DE UNA COMPRA ---
+        // Sirve como prueba ante un cliente/revendedor que reclame que "no le llegó" —
+        // el ID del movimiento es el ID real del pedido (verificable en el sistema),
+        // no uno inventado al azar.
+        const VOUCHER_CONFIG_ESTADO = {
+            'Completado': { icono: 'check_circle', color: '#00e676', titulo: '¡Pago finalizado!' },
+            'Pendiente': { icono: 'hourglass_top', color: '#ffc107', titulo: 'Pago en proceso' },
+            'Rechazado': { icono: 'cancel', color: '#ff4757', titulo: 'Pago rechazado' }
+        };
+
+        function mostrarVoucher(pedidoId) {
+            const p = todasLasCompras.find(c => c.id === pedidoId);
+            if (!p) return;
+
+            const config = VOUCHER_CONFIG_ESTADO[p.estado] || { icono: 'help', color: '#a8a8b3', titulo: p.estado };
+            const icono = document.getElementById('voucher-icono');
+            icono.innerText = config.icono;
+            icono.style.color = config.color;
+            document.getElementById('voucher-icono-wrap').style.borderColor = config.color;
+            document.getElementById('voucher-titulo').innerText = config.titulo;
+            document.getElementById('voucher-titulo').style.color = config.color;
+
+            document.getElementById('voucher-id-mov').innerText = 'CZD-' + String(p.id).padStart(6, '0');
+            document.getElementById('voucher-producto').innerText = p.paquete;
+            document.getElementById('voucher-precio').innerText = p.es_revendedor ? `$${(p.precio || 0).toFixed(2)}` : `S/ ${(p.precio || 0).toFixed(2)}`;
+            document.getElementById('voucher-jugador-id').innerText = p.id_juego || 'N/A';
+            document.getElementById('voucher-jugador-nick').innerText = p.nickname_juego || 'N/A';
+            document.getElementById('voucher-fecha').innerText = new Date(p.created_at).toLocaleString('es-PE', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+
+            // No mostramos el código tal cual: puede traer "CodeStore: ..." (el proveedor
+            // que hace la recarga automática por detrás) o avisos internos de admin como
+            // "⚠️ Falta stock" — ninguno de los dos debe verlo el cliente.
+            const detalleWrap = document.getElementById('voucher-detalle-wrap');
+            let detalleMostrable = null;
+            if (p.codigo && !p.codigo.startsWith('⚠️')) {
+                detalleMostrable = p.codigo.startsWith('CodeStore: ') ? p.codigo.slice('CodeStore: '.length) : p.codigo;
+            }
+            if (detalleMostrable) {
+                document.getElementById('voucher-detalle').innerText = detalleMostrable;
+                detalleWrap.style.display = 'flex';
+            } else {
+                detalleWrap.style.display = 'none';
+            }
+
+            document.getElementById('modal-voucher').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarVoucher() {
+            document.getElementById('modal-voucher').style.display = 'none';
+            document.body.style.overflow = '';
         }
 
         function limpiarFiltros() {
