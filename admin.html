@@ -715,7 +715,7 @@
                     <p class="view-subtitle">Carga nuevos códigos y revisa cuánto stock disponible te queda por paquete.</p>
 
                     <div class="card-box" data-rol="diamantes">
-                        <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">tune</span> Modo de Entrega — Recarga Regular</h3>
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#a155ff;">tune</span> Modo de Entrega — Recarga Free Fire</h3>
                         <p style="color:#a8a8b3; font-size:12px; margin:-8px 0 15px 0;">Define cómo funciona la compra de diamantes en la web. Podés cambiarlo cuando quieras, sin tocar código.</p>
                         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:10px; margin-bottom:12px;">
                             <div id="modo-rr-opcion-manual" onclick="elegirModoRecargaRegularUI('manual')" style="cursor:pointer; border:2px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px; text-align:center; transition:all 0.2s;">
@@ -2925,7 +2925,7 @@
             const { error } = await supabaseClient.rpc('admin_cambiar_modo_recarga_regular', { p_modo: modo });
             if (error) { showToast('Error: ' + error.message, 'error'); return; }
             pintarModoRecargaRegularUI(modo);
-            showToast(`Recarga Regular ahora en modo "${NOMBRES_MODO_RR[modo]}".`);
+            showToast(`Recarga Free Fire ahora en modo "${NOMBRES_MODO_RR[modo]}".`);
         }
 
         async function cargarProductosDiamantesAdmin() {
@@ -4450,7 +4450,7 @@
                         ? `\n\n💰 Saldo anterior: S/ ${(saldoActual - precio).toFixed(2)}\n➕ Reembolso: S/ ${precio.toFixed(2)}\n💳 Saldo actual: S/ ${saldoActual.toFixed(2)}`
                         : '';
 
-                    msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n⚠️ Tu ID no aplica para *${paquete}*, ya que este precio especial es válido solo para la *primera recarga* y tu cuenta ya registra una recarga previa con este método.\n\nTu dinero ya fue reembolsado de manera íntegra a tu saldo web.${desgloseSaldo}\n\nTe invitamos a seguir recargando en nuestros catálogos *Directa* o *Regular*, que no tienen ningún límite. ¡Gracias por tu comprensión!`;
+                    msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n⚠️ Tu ID no aplica para *${paquete}*, ya que este precio especial es válido solo para la *primera recarga* y tu cuenta ya registra una recarga previa con este método.\n\nTu dinero ya fue reembolsado de manera íntegra a tu saldo web.${desgloseSaldo}\n\nTe invitamos a seguir recargando en nuestro catálogo *Recarga Free Fire*, que no tiene ningún límite. ¡Gracias por tu comprensión!`;
                 } else {
                     msg = `¡Hola ${nick}! 👋\n\nTe saludamos del equipo de *CarzaD'Cross* 👾.\n\n⚠️ Te informamos que tu pedido de 💎 *${paquete}* 💎 tuvo que ser rechazado.\n\nEl monto de *S/ ${precio.toFixed(2)}* ha sido devuelto de manera íntegra a tu saldo web para que puedas volver a utilizarlo.\n\nPor favor, respóndenos a este mensaje para indicarte el motivo exacto.`;
                 }
