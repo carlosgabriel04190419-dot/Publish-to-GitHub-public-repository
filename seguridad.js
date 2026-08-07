@@ -121,7 +121,13 @@ async function mostrarSaldoCodestoreSiEsAdmin() {
 // mientras se está grabando. Nunca se toca el valor real en la base de
 // datos — solo se enmascara visualmente el texto ya mostrado en el chip.
 const CLAVE_OCULTAR_SALDO = 'carza_ocultar_saldo';
-const IDS_SALDO_OCULTABLES = ['saldo-nav', 'codestore-saldo-nav'];
+const IDS_SALDO_TEXTO = ['saldo-nav', 'codestore-saldo-nav']; // se reemplazan por "****"
+const IDS_SALDO_DISPLAY = ['saldo-nav-simbolo', 'saldo-nav-alt', 'pill-saldo-codestore']; // se ocultan por completo
+// Si nunca se observó un valor "real" para alguno de estos (ej. cuenta que no
+// es admin, o cuenta de Perú sin conversión de moneda), este es el estado al
+// que se debe volver al revelar — para no mostrar de golpe algo que nunca
+// debió aparecer para esa cuenta.
+const DISPLAY_REVEAL_POR_DEFECTO = { 'saldo-nav-simbolo': '', 'saldo-nav-alt': 'none', 'pill-saldo-codestore': 'none' };
 let aplicandoMascaraSaldo = false; // evita que nuestra propia escritura dispare el observer en bucle
 
 function saldoOcultoActivo() {
@@ -143,27 +149,27 @@ function revelarElemento(el) {
     aplicandoMascaraSaldo = false;
 }
 
-function aplicarVisibilidadExtraSaldo(activo) {
-    // El símbolo de moneda, la línea de conversión y el chip completo de
-    // CodeStore (icono + la palabra "CODESTORE" incluida) se ocultan del
-    // todo — no basta con tapar el número, tampoco debe leerse el nombre.
-    const simbolo = document.getElementById('saldo-nav-simbolo');
-    const alt = document.getElementById('saldo-nav-alt');
-    const pillCodestore = document.getElementById('pill-saldo-codestore');
-    [ [simbolo, false], [alt, false] ].forEach(([el, _]) => {
-        if (!el) return;
-        if (activo) { if (el.dataset.displayReal === undefined) el.dataset.displayReal = el.style.display; el.style.display = 'none'; }
-        else if (el.dataset.displayReal !== undefined) { el.style.display = el.dataset.displayReal; delete el.dataset.displayReal; }
-    });
-    if (pillCodestore) {
-        if (activo) {
-            if (pillCodestore.dataset.displayReal === undefined) pillCodestore.dataset.displayReal = pillCodestore.style.display;
-            pillCodestore.style.display = 'none';
-        } else if (pillCodestore.dataset.displayReal !== undefined) {
-            pillCodestore.style.display = pillCodestore.dataset.displayReal;
-            delete pillCodestore.dataset.displayReal;
-        }
-    }
+// A diferencia del texto (que solo cambia por nuestra propia mano una vez
+// capturado), el "display" de estos 3 elementos también lo tocan otras
+// funciones ya existentes en este archivo de forma ASÍNCRONA y DESPUÉS de que
+// nosotros ya inicializamos el modo oculto (el RPC de mostrarSaldoCodestoreSiEsAdmin
+// y el fetch de conversión de moneda en actualizarElementoConversion). Por eso
+// SIEMPRE guardamos el último valor real visto justo antes de ocultar — así, si
+// esas funciones "revelan" el elemento más tarde, este mismo helper lo vuelve a
+// tapar sin perder el valor real para cuando el admin sí quiera mostrarlo.
+function ocultarElementoDisplay(el) {
+    if (!el || el.style.display === 'none') return;
+    el.dataset.displayReal = el.style.display;
+    aplicandoMascaraSaldo = true;
+    el.style.display = 'none';
+    aplicandoMascaraSaldo = false;
+}
+
+function revelarElementoDisplay(el, id) {
+    if (!el) return;
+    aplicandoMascaraSaldo = true;
+    el.style.display = el.dataset.displayReal !== undefined ? el.dataset.displayReal : DISPLAY_REVEAL_POR_DEFECTO[id];
+    aplicandoMascaraSaldo = false;
 }
 
 function actualizarIconoOcultarSaldo(activo) {
@@ -177,11 +183,14 @@ function actualizarIconoOcultarSaldo(activo) {
 function toggleOcultarSaldoNav() {
     const activo = !saldoOcultoActivo();
     localStorage.setItem(CLAVE_OCULTAR_SALDO, activo ? '1' : '0');
-    IDS_SALDO_OCULTABLES.forEach(id => {
+    IDS_SALDO_TEXTO.forEach(id => {
         const el = document.getElementById(id);
         if (activo) enmascararElemento(el); else revelarElemento(el);
     });
-    aplicarVisibilidadExtraSaldo(activo);
+    IDS_SALDO_DISPLAY.forEach(id => {
+        const el = document.getElementById(id);
+        if (activo) ocultarElementoDisplay(el); else revelarElementoDisplay(el, id);
+    });
     actualizarIconoOcultarSaldo(activo);
 }
 
@@ -206,7 +215,7 @@ function inicializarOcultarSaldoNav() {
         // modo oculto está activo (ej. el chip de CodeStore llega por RPC async
         // después de que ya inicializamos, o el saldo de revendedor se corrige
         // con el setTimeout(0) de mostrarSaldoRevendedorEnNav).
-        IDS_SALDO_OCULTABLES.forEach(id => {
+        IDS_SALDO_TEXTO.forEach(id => {
             const el = document.getElementById(id);
             if (!el) return;
             new MutationObserver(() => {
@@ -214,13 +223,25 @@ function inicializarOcultarSaldoNav() {
                 enmascararElemento(el);
             }).observe(el, { characterData: true, childList: true, subtree: true });
         });
+
+        // Mismo cuidado para el "display" — el RPC de CodeStore y el fetch de
+        // conversión de moneda pueden poner el chip visible (display:flex/block)
+        // en cualquier momento después de que ya lo ocultamos.
+        IDS_SALDO_DISPLAY.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            new MutationObserver(() => {
+                if (aplicandoMascaraSaldo || !saldoOcultoActivo()) return;
+                if (el.style.display !== 'none') ocultarElementoDisplay(el);
+            }).observe(el, { attributes: true, attributeFilter: ['style'] });
+        });
     }
 
     const activo = saldoOcultoActivo();
     if (activo) {
-        IDS_SALDO_OCULTABLES.forEach(id => enmascararElemento(document.getElementById(id)));
+        IDS_SALDO_TEXTO.forEach(id => enmascararElemento(document.getElementById(id)));
+        IDS_SALDO_DISPLAY.forEach(id => ocultarElementoDisplay(document.getElementById(id)));
     }
-    aplicarVisibilidadExtraSaldo(activo);
     actualizarIconoOcultarSaldo(activo);
 }
 
