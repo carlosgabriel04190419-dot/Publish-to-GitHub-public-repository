@@ -75,6 +75,7 @@ async function verificarSesion(requerido = true) {
     convertirPreciosCatalogo(usuario);
     mostrarSaldoCodestoreSiEsAdmin();
     mostrarSaldoRevendedorEnNav(usuario);
+    inicializarOcultarSaldoNav();
     return usuario;
 }
 
@@ -110,6 +111,117 @@ async function mostrarSaldoCodestoreSiEsAdmin() {
     if (error || !data || data.error) return;
     document.getElementById('codestore-saldo-nav').innerText = '$' + Number(data.saldo).toFixed(2);
     pill.style.display = 'flex';
+}
+
+// ==========================================
+// OCULTAR SALDO EN EL NAVBAR (para grabar pantalla sin mostrar montos
+// reales ni revelar que se usa CodeStore como proveedor)
+// ==========================================
+// Se guarda en localStorage para que quede oculto al navegar entre páginas
+// mientras se está grabando. Nunca se toca el valor real en la base de
+// datos — solo se enmascara visualmente el texto ya mostrado en el chip.
+const CLAVE_OCULTAR_SALDO = 'carza_ocultar_saldo';
+const IDS_SALDO_OCULTABLES = ['saldo-nav', 'codestore-saldo-nav'];
+let aplicandoMascaraSaldo = false; // evita que nuestra propia escritura dispare el observer en bucle
+
+function saldoOcultoActivo() {
+    return localStorage.getItem(CLAVE_OCULTAR_SALDO) === '1';
+}
+
+function enmascararElemento(el) {
+    if (!el || el.textContent === '****') return;
+    el.dataset.valorReal = el.textContent;
+    aplicandoMascaraSaldo = true;
+    el.textContent = '****';
+    aplicandoMascaraSaldo = false;
+}
+
+function revelarElemento(el) {
+    if (!el || el.dataset.valorReal === undefined) return;
+    aplicandoMascaraSaldo = true;
+    el.textContent = el.dataset.valorReal;
+    aplicandoMascaraSaldo = false;
+}
+
+function aplicarVisibilidadExtraSaldo(activo) {
+    // El símbolo de moneda, la línea de conversión y el chip completo de
+    // CodeStore (icono + la palabra "CODESTORE" incluida) se ocultan del
+    // todo — no basta con tapar el número, tampoco debe leerse el nombre.
+    const simbolo = document.getElementById('saldo-nav-simbolo');
+    const alt = document.getElementById('saldo-nav-alt');
+    const pillCodestore = document.getElementById('pill-saldo-codestore');
+    [ [simbolo, false], [alt, false] ].forEach(([el, _]) => {
+        if (!el) return;
+        if (activo) { if (el.dataset.displayReal === undefined) el.dataset.displayReal = el.style.display; el.style.display = 'none'; }
+        else if (el.dataset.displayReal !== undefined) { el.style.display = el.dataset.displayReal; delete el.dataset.displayReal; }
+    });
+    if (pillCodestore) {
+        if (activo) {
+            if (pillCodestore.dataset.displayReal === undefined) pillCodestore.dataset.displayReal = pillCodestore.style.display;
+            pillCodestore.style.display = 'none';
+        } else if (pillCodestore.dataset.displayReal !== undefined) {
+            pillCodestore.style.display = pillCodestore.dataset.displayReal;
+            delete pillCodestore.dataset.displayReal;
+        }
+    }
+}
+
+function actualizarIconoOcultarSaldo(activo) {
+    const btn = document.getElementById('btn-ocultar-saldo');
+    if (!btn) return;
+    const icono = btn.querySelector('.material-icons');
+    if (icono) icono.innerText = activo ? 'visibility_off' : 'visibility';
+    btn.title = activo ? 'Mostrar saldo' : 'Ocultar saldo (para grabar)';
+}
+
+function toggleOcultarSaldoNav() {
+    const activo = !saldoOcultoActivo();
+    localStorage.setItem(CLAVE_OCULTAR_SALDO, activo ? '1' : '0');
+    IDS_SALDO_OCULTABLES.forEach(id => {
+        const el = document.getElementById(id);
+        if (activo) enmascararElemento(el); else revelarElemento(el);
+    });
+    aplicarVisibilidadExtraSaldo(activo);
+    actualizarIconoOcultarSaldo(activo);
+}
+
+function inicializarOcultarSaldoNav() {
+    const contenedor = document.getElementById('nav-logged-in');
+    if (!contenedor) return;
+
+    if (!document.getElementById('btn-ocultar-saldo')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-ocultar-saldo';
+        btn.type = 'button';
+        btn.setAttribute('aria-label', 'Ocultar saldo');
+        btn.style.cssText = 'display:flex; align-items:center; justify-content:center; width:34px; height:34px; margin-left:6px; border-radius:50%; border:1px solid #41414d; background:#1e1e24; color:#a8a8b3; cursor:pointer; flex-shrink:0; padding:0;';
+        btn.innerHTML = '<span class="material-icons" style="font-size:18px;">visibility</span>';
+        btn.onclick = toggleOcultarSaldoNav;
+
+        const dropdown = contenedor.querySelector('.user-dropdown-container');
+        if (dropdown) dropdown.parentNode.insertBefore(btn, dropdown);
+        else contenedor.appendChild(btn);
+
+        // Re-aplica la máscara automáticamente si el saldo cambia mientras el
+        // modo oculto está activo (ej. el chip de CodeStore llega por RPC async
+        // después de que ya inicializamos, o el saldo de revendedor se corrige
+        // con el setTimeout(0) de mostrarSaldoRevendedorEnNav).
+        IDS_SALDO_OCULTABLES.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            new MutationObserver(() => {
+                if (aplicandoMascaraSaldo || !saldoOcultoActivo()) return;
+                enmascararElemento(el);
+            }).observe(el, { characterData: true, childList: true, subtree: true });
+        });
+    }
+
+    const activo = saldoOcultoActivo();
+    if (activo) {
+        IDS_SALDO_OCULTABLES.forEach(id => enmascararElemento(document.getElementById(id)));
+    }
+    aplicarVisibilidadExtraSaldo(activo);
+    actualizarIconoOcultarSaldo(activo);
 }
 
 // ==========================================

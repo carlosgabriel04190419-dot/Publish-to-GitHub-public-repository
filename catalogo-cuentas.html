@@ -37,6 +37,14 @@
             border-color: #a155ff;
             z-index: 2;
         }
+        .catalogo-sin-stock .card {
+            filter: grayscale(1) brightness(0.75);
+        }
+        .catalogo-sin-stock .card:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: rgba(255,255,255,0.08);
+        }
         .products-grid .card::before {
             content: '';
             position: absolute;
@@ -248,8 +256,11 @@
             });
         };
 
+        let catalogoSinStockActivo = false;
+
         function crearTarjetaCuenta(p) {
             const vendida = !p.activo;
+            const bloqueada = vendida || catalogoSinStockActivo;
             let badgeHtml = '';
             if (vendida) {
                 badgeHtml = `<div class="card-badge" style="background:#ff4757;">VENDIDA</div>`;
@@ -270,16 +281,18 @@
                 : `<span class="price-current">S/ ${Number(p.precio).toFixed(2)}</span>`;
 
             const paqueteEscapado = encodeURIComponent(p.paquete);
-            const boton = vendida
-                ? `<button class="btn-buy" disabled style="opacity:0.5; cursor:not-allowed; background:#555;">Vendida</button>`
+            const boton = bloqueada
+                ? `<button class="btn-buy" disabled style="opacity:0.5; cursor:not-allowed; background:#555;">${vendida ? 'Vendida' : 'Sin stock'}</button>`
                 : `<button class="btn-buy" onclick="window.location.href='detalle-cuenta.html?paquete=${paqueteEscapado}'">Ver detalle</button>`;
 
-            return `<div class="card"${vendida ? '' : ` onclick="window.location.href='detalle-cuenta.html?paquete=${paqueteEscapado}'" style="cursor:pointer;"`}>${badgeHtml}${iconoHtml}<h3 class="card-title">${p.paquete}</h3>${descHtml}<div class="card-prices">${preciosHtml}</div>${boton}</div>`;
+            return `<div class="card"${bloqueada ? '' : ` onclick="window.location.href='detalle-cuenta.html?paquete=${paqueteEscapado}'" style="cursor:pointer;"`}>${badgeHtml}${iconoHtml}<h3 class="card-title">${p.paquete}</h3>${descHtml}<div class="card-prices">${preciosHtml}</div>${boton}</div>`;
         }
 
         async function cargarCatalogoCuentas() {
             const grid = document.getElementById('products-grid');
-            const { data: mant } = await supabaseClient.from('categorias_mantenimiento').select('en_mantenimiento, mensaje').eq('categoria', 'cuentas').maybeSingle();
+            const { data: mant } = await supabaseClient.from('categorias_mantenimiento').select('en_mantenimiento, sin_stock, mensaje').eq('categoria', 'cuentas').maybeSingle();
+            catalogoSinStockActivo = false;
+            grid.classList.remove('catalogo-sin-stock');
             if (mant && mant.en_mantenimiento) {
                 const msgSafe = (mant.mensaje || 'Estamos actualizando este catálogo. Vuelve a intentarlo en un rato — gracias por tu paciencia.').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 grid.innerHTML = `<div style="grid-column: 1/-1; background: rgba(255,152,0,0.08); border: 1px solid #ff9800; border-radius: 12px; padding: 30px; text-align: center;">
@@ -294,7 +307,16 @@
                 grid.innerHTML = "<p style='color:#a8a8b3;'>No hay cuentas disponibles en este momento.</p>";
                 return;
             }
-            grid.innerHTML = data.map(crearTarjetaCuenta).join('');
+
+            catalogoSinStockActivo = !!(mant && mant.sin_stock);
+            const bannerSinStock = catalogoSinStockActivo ? `<div style="grid-column: 1/-1; background: rgba(255,71,87,0.08); border: 1px solid #ff4757; border-radius: 12px; padding: 18px 20px; text-align: center; margin-bottom: 4px;">
+                <span class="material-icons" style="font-size: 30px; color: #ff4757; vertical-align: middle;">remove_shopping_cart</span>
+                <p style="color: #ff4757; font-weight: bold; margin: 6px 0 0; font-size: 15px;">Sin stock disponible en este momento</p>
+                <p style="color: #a8a8b3; font-size: 13px; margin: 4px 0 0;">${(mant.mensaje || 'Vuelve a intentarlo más tarde o contáctanos.').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+            </div>` : '';
+            if (catalogoSinStockActivo) grid.classList.add('catalogo-sin-stock');
+
+            grid.innerHTML = bannerSinStock + data.map(crearTarjetaCuenta).join('');
         }
 
         function toggleMenu() {

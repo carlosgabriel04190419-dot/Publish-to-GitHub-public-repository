@@ -3238,7 +3238,7 @@
             cont.innerHTML = '';
             (data || []).forEach(p => {
                 const categoria = SLUG_A_CATEGORIA_MANTENIMIENTO[p.slug];
-                const mant = mantPorCategoria[categoria] || { en_mantenimiento: false, mensaje: null, visible: true };
+                const mant = mantPorCategoria[categoria] || { en_mantenimiento: false, sin_stock: false, mensaje: null, visible: true };
                 const div = document.createElement('div');
                 div.style.cssText = 'background:rgba(255,255,255,0.03); border-radius:10px; padding:10px; text-align:center;';
                 div.innerHTML = `
@@ -3254,6 +3254,10 @@
                         <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#ff9800; cursor:pointer; font-weight:bold; margin-top:8px;">
                             <input type="checkbox" ${mant.en_mantenimiento ? 'checked' : ''} onchange="toggleMantenimientoCategoria('${categoria}', this.checked)">
                             En mantenimiento
+                        </label>
+                        <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#ff4757; cursor:pointer; font-weight:bold; margin-top:8px;">
+                            <input type="checkbox" ${mant.sin_stock ? 'checked' : ''} onchange="toggleSinStockCategoria('${categoria}', this.checked)">
+                            Sin stock
                         </label>
                         <input type="text" class="bulk-select" value="${escAttr(mant.mensaje)}" placeholder="Mensaje para el cliente (opcional)" style="width:100%; box-sizing:border-box; margin-top:6px; font-size:11px;" onblur="guardarMensajeMantenimiento('${categoria}', this.value)">
                     </div>` : ''}
@@ -3283,6 +3287,12 @@
             const { error } = await supabaseClient.from('categorias_mantenimiento').update({ en_mantenimiento: enMantenimiento, actualizado_en: new Date().toISOString() }).eq('categoria', categoria);
             if (error) { showToast("Error: " + error.message, "error"); return; }
             showToast(enMantenimiento ? "Catálogo puesto en mantenimiento — los clientes ya no pueden comprar ahí." : "Catálogo reactivado, ya se puede comprar de nuevo.", enMantenimiento ? "warning" : "success");
+        }
+
+        async function toggleSinStockCategoria(categoria, sinStock) {
+            const { error } = await supabaseClient.from('categorias_mantenimiento').update({ sin_stock: sinStock, actualizado_en: new Date().toISOString() }).eq('categoria', categoria);
+            if (error) { showToast("Error: " + error.message, "error"); return; }
+            showToast(sinStock ? "Catálogo marcado sin stock — se ve en blanco y negro y no se puede comprar." : "Catálogo con stock de nuevo.", sinStock ? "warning" : "success");
         }
 
         async function guardarMensajeMantenimiento(categoria, mensaje) {
