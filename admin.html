@@ -2858,8 +2858,8 @@
                 const estadoColor = p ? (p.activo ? '#00e676' : '#666') : '#ffc107';
                 const botonToggle = p
                     ? (p.activo
-                        ? `<button class="btn-remove" onclick="togglePrecioRevendedor(${p.id}, false)"><span class="material-icons">block</span> Desactivar</button>`
-                        : `<button class="btn-add" onclick="togglePrecioRevendedor(${p.id}, true)"><span class="material-icons">check</span> Activar</button>`)
+                        ? `<button class="btn-remove" onclick="togglePrecioRevendedor(${p.id}, false, this)"><span class="material-icons">block</span> Desactivar</button>`
+                        : `<button class="btn-add" onclick="togglePrecioRevendedor(${p.id}, true, this)"><span class="material-icons">check</span> Activar</button>`)
                     : '';
                 return `
                     <tr>
@@ -2877,20 +2877,44 @@
         }
 
         async function guardarPrecioRevendedorInline(paquete, inputId) {
-            const precioUsd = parseFloat(document.getElementById(inputId).value);
+            const input = document.getElementById(inputId);
+            const precioUsd = parseFloat(input.value);
             if (isNaN(precioUsd) || precioUsd <= 0) return showToast("Ingresa un precio en USD válido.", "warning");
 
-            const { error } = await supabaseClient.from('precios_revendedor').upsert([{ paquete, precio_usd: precioUsd, activo: true }], { onConflict: 'paquete' });
+            const { data, error } = await supabaseClient.from('precios_revendedor')
+                .upsert([{ paquete, precio_usd: precioUsd, activo: true }], { onConflict: 'paquete' })
+                .select('id')
+                .single();
             if (error) { showToast("Error: " + error.message, "error"); return; }
             showToast(`Precio de "${paquete}" guardado.`);
-            cargarPreciosRevendedor();
+
+            // Actualizamos solo esta fila (sin recargar la tabla completa) para no
+            // perder precios que el admin ya haya escrito en otras filas sin guardar.
+            const fila = input.closest('tr');
+            const estadoTd = fila.children[2];
+            estadoTd.style.color = '#00e676';
+            estadoTd.textContent = 'Activo';
+
+            const acciones = fila.querySelector('.rev-precio-fila-accion');
+            const botonToggleHtml = `<button class="btn-remove" onclick="togglePrecioRevendedor(${data.id}, false, this)"><span class="material-icons">block</span> Desactivar</button>`;
+            const botonToggleExistente = acciones.querySelector('.btn-remove, .btn-add');
+            if (botonToggleExistente) botonToggleExistente.outerHTML = botonToggleHtml;
+            else acciones.insertAdjacentHTML('beforeend', botonToggleHtml);
         }
 
-        async function togglePrecioRevendedor(id, nuevoEstado) {
+        async function togglePrecioRevendedor(id, nuevoEstado, btnEl) {
             const { error } = await supabaseClient.from('precios_revendedor').update({ activo: nuevoEstado }).eq('id', id);
             if (error) { showToast("Error: " + error.message, "error"); return; }
             showToast(nuevoEstado ? "Precio activado." : "Precio desactivado.", nuevoEstado ? "success" : "warning");
-            cargarPreciosRevendedor();
+
+            if (!btnEl) { cargarPreciosRevendedor(); return; }
+            const fila = btnEl.closest('tr');
+            const estadoTd = fila.children[2];
+            estadoTd.style.color = nuevoEstado ? '#00e676' : '#666';
+            estadoTd.textContent = nuevoEstado ? 'Activo' : 'Desactivado';
+            btnEl.outerHTML = nuevoEstado
+                ? `<button class="btn-remove" onclick="togglePrecioRevendedor(${id}, false, this)"><span class="material-icons">block</span> Desactivar</button>`
+                : `<button class="btn-add" onclick="togglePrecioRevendedor(${id}, true, this)"><span class="material-icons">check</span> Activar</button>`;
         }
 
         // ================= CATÁLOGO: DIAMANTES =================
