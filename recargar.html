@@ -310,7 +310,7 @@
 
             <div id="aviso-minimo-yape" style="background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 15px; margin-bottom: 25px; display: flex; gap: 10px; align-items: flex-start;">
                 <span class="material-icons" style="color: #ffc107; font-size: 20px;">info</span>
-                <p style="margin: 0; color: #ffc107; font-size: 13px; line-height: 1.5;">El monto mínimo de recarga es de <strong>S/ 10.00</strong> para agilizar nuestro sistema.</p>
+                <p id="texto-aviso-minimo-yape" style="margin: 0; color: #ffc107; font-size: 13px; line-height: 1.5;">El monto mínimo de recarga es de <strong>S/ 10.00</strong> para agilizar nuestro sistema.</p>
             </div>
 
             <div id="aviso-tasa-binance" class="aviso-tasa-variable" style="display: none;">
@@ -465,8 +465,15 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="seguridad.js"></script>
     <script>
-        let correoUsuarioGlobal = ""; 
-        let celularUsuarioGlobal = null; 
+        let correoUsuarioGlobal = "";
+        let celularUsuarioGlobal = null;
+        let esRevendedorGlobal = false;
+
+        // Los revendedores recargan montos más grandes (para luego repartirlos entre
+        // sus propios clientes), así que su mínimo de recarga en soles es más alto —
+        // el de Binance/USDT no cambia, ese aplica igual para todos.
+        function montoMinimoSoles() { return esRevendedorGlobal ? 70 : 10; }
+        function montoMinimoDolares() { return esRevendedorGlobal ? 20 : 3; }
 
         window.onload = async function() {
             const usuario = await verificarSesion();
@@ -482,6 +489,8 @@
 
                 correoUsuarioGlobal = data.correo;
                 celularUsuarioGlobal = data.celular;
+                esRevendedorGlobal = data.rol_cliente === 'revendedor';
+                cambiarMetodo(metodoActual);
 
                 if (!celularUsuarioGlobal || celularUsuarioGlobal.trim() === "") {
                     document.getElementById('alerta-sin-celular').style.display = 'flex';
@@ -573,20 +582,25 @@
             document.getElementById('label-monto').innerText = esBinance ? 'Monto a recargar (USD)' : 'Monto a recargar (S/)';
             document.getElementById('simbolo-moneda').innerText = '$';
             document.getElementById('simbolo-moneda').style.color = esBinance ? '#f0b90b' : '#00e676';
-            document.getElementById('input-monto').min = esBinance ? 3 : 10;
-            document.getElementById('input-monto').placeholder = esBinance ? 'Ej: 10.00' : 'Ej: 25.00';
+            const minimoSoles = montoMinimoSoles();
+            const minimoDolares = montoMinimoDolares();
+            document.getElementById('input-monto').min = esBinance ? minimoDolares : minimoSoles;
+            document.getElementById('input-monto').placeholder = esBinance ? `Ej: ${minimoDolares}.00` : `Ej: ${minimoSoles}.00`;
 
             document.getElementById('montos-rapidos-yape').style.display = esBinance ? 'none' : 'grid';
             document.getElementById('montos-rapidos-binance').style.display = esBinance ? 'grid' : 'none';
+            actualizarQuickAmountsYape();
+            actualizarQuickAmountsBinance();
 
-            document.getElementById('monto-minimo-pantalla').innerText = esBinance ? '$ 3.00' : 'S/ 10.00';
+            document.getElementById('monto-minimo-pantalla').innerText = esBinance ? `$ ${minimoDolares.toFixed(2)}` : `S/ ${minimoSoles.toFixed(2)}`;
+            document.getElementById('texto-aviso-minimo-yape').innerHTML = `El monto mínimo de recarga es de <strong>S/ ${minimoSoles.toFixed(2)}</strong> ${esRevendedorGlobal ? 'para cuentas revendedor' : 'para agilizar nuestro sistema'}.`;
             document.getElementById('aviso-minimo-yape').style.display = esBinance ? 'none' : 'flex';
             document.getElementById('aviso-tasa-binance').style.display = esBinance ? 'flex' : 'none';
             document.getElementById('conversion-estimada').style.display = 'none';
 
             document.getElementById('texto-paso-monto').innerText = esBinance
-                ? 'Coloca el monto en dólares (USD) que deseas recargar en el formulario izquierdo (Mínimo $3.00).'
-                : 'Coloca el saldo en Soles que deseas recargar en el formulario izquierdo (Mínimo S/ 10.00).';
+                ? `Coloca el monto en dólares (USD) que deseas recargar en el formulario izquierdo (Mínimo $${minimoDolares.toFixed(2)}).`
+                : `Coloca el saldo en Soles que deseas recargar en el formulario izquierdo (Mínimo S/ ${minimoSoles.toFixed(2)}).`;
 
             document.getElementById('qr-yape-bloque').style.display = esBinance ? 'none' : 'block';
             document.getElementById('qr-binance-bloque').style.display = esBinance ? 'block' : 'none';
@@ -595,6 +609,20 @@
             if (!btn.disabled) {
                 btn.style.background = esBinance ? '#f0b90b' : '#00e676';
             }
+        }
+
+        function actualizarQuickAmountsYape() {
+            const montos = esRevendedorGlobal ? [70, 100, 150, 200] : [10, 20, 50, 100];
+            document.getElementById('montos-rapidos-yape').innerHTML = montos
+                .map(m => `<button class="amount-btn" onclick="seleccionarMonto(${m})">S/ ${m}</button>`)
+                .join('');
+        }
+
+        function actualizarQuickAmountsBinance() {
+            const montos = esRevendedorGlobal ? [20, 50, 100, 200] : [5, 10, 20, 50];
+            document.getElementById('montos-rapidos-binance').innerHTML = montos
+                .map(m => `<button class="amount-btn" onclick="seleccionarMonto(${m})">$ ${m}</button>`)
+                .join('');
         }
 
         async function actualizarConversionEstimada() {
@@ -634,12 +662,12 @@
 
             const esBinance = metodoActual === 'binance';
             const monto = parseFloat(document.getElementById('input-monto').value);
-            const minimo = esBinance ? 3 : 10;
+            const minimo = esBinance ? montoMinimoDolares() : montoMinimoSoles();
 
             if (!monto || isNaN(monto) || monto < minimo) {
                 alert(esBinance
-                    ? "⛔ El monto mínimo de recarga es de $3.00 USD. Por favor, ajusta la cantidad."
-                    : "⛔ El monto mínimo de recarga es de S/ 10.00. Por favor, ajusta la cantidad.");
+                    ? `⛔ El monto mínimo de recarga es de $${minimo.toFixed(2)} USD. Por favor, ajusta la cantidad.`
+                    : `⛔ El monto mínimo de recarga es de S/ ${minimo.toFixed(2)}. Por favor, ajusta la cantidad.`);
                 return;
             }
 
