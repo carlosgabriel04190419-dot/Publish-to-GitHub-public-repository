@@ -1389,6 +1389,13 @@
                                 <table><thead><tr><th>Paquete</th><th>Precio USD</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="tabla-precios-revendedor-tarjetas"></tbody></table>
                             </div>
                         </div>
+
+                        <div id="rev-precios-grupo-promo" class="rev-precios-grupo">
+                            <h4 class="rev-precios-grupo-titulo"><span class="material-icons" style="font-size:16px;">redeem</span> Promo 1ra Recarga</h4>
+                            <div class="table-scroll">
+                                <table><thead><tr><th>Paquete</th><th>Precio USD</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="tabla-precios-revendedor-promo"></tbody></table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -2813,17 +2820,18 @@
         // menor a mayor precio.
         async function cargarPreciosRevendedor() {
             const [{ data: productos }, { data: precios }] = await Promise.all([
-                supabaseClient.from('productos').select('paquete, precio').eq('categoria', 'regular').eq('activo', true).order('precio'),
+                supabaseClient.from('productos').select('paquete, precio, categoria').in('categoria', ['regular', 'promo']).eq('activo', true).order('precio'),
                 supabaseClient.from('precios_revendedor').select('*')
             ]);
 
             const precioPorPaquete = {};
             (precios || []).forEach(p => { precioPorPaquete[p.paquete] = p; });
 
-            const diamantes = [], pase = [], tarjetas = [];
+            const diamantes = [], pase = [], tarjetas = [], promo = [];
             (productos || []).forEach(prod => {
                 const fila = { paquete: prod.paquete, precioExistente: precioPorPaquete[prod.paquete] || null };
-                if (prod.paquete === 'Pase Booyah') pase.push(fila);
+                if (prod.categoria === 'promo') promo.push(fila);
+                else if (prod.paquete === 'Pase Booyah') pase.push(fila);
                 else if (prod.paquete.startsWith('Tarjeta ')) tarjetas.push(fila);
                 else diamantes.push(fila);
             });
@@ -2831,6 +2839,7 @@
             renderTablaPreciosRevendedor('tabla-precios-revendedor-diamantes', diamantes);
             renderTablaPreciosRevendedor('tabla-precios-revendedor-pase', pase);
             renderTablaPreciosRevendedor('tabla-precios-revendedor-tarjetas', tarjetas);
+            renderTablaPreciosRevendedor('tabla-precios-revendedor-promo', promo);
         }
 
         function renderTablaPreciosRevendedor(tbodyId, filas) {
