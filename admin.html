@@ -176,6 +176,30 @@
             td { text-align: right; padding: 8px 2px; border-bottom: 1px solid rgba(255,255,255,0.04); }
             td:last-child { border-bottom: none; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
             td::before { content: attr(data-label); float: left; font-weight: 700; color: #a155ff; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
+
+            /* Excepción: la tabla de comparación tiene 7 columnas y convertida en
+               tarjetas queda larguísima (hay que bajar muchísimo para leerla). Se
+               mantiene como tabla de verdad, compacta, y se desliza al costado
+               dentro de su .table-scroll — igual que se ve en la laptop. */
+            .tabla-comparacion { display: table; width: 100%; min-width: 620px; }
+            .tabla-comparacion thead { display: table-header-group; }
+            .tabla-comparacion tbody { display: table-row-group; }
+            .tabla-comparacion thead tr { display: table-row; }
+            .tabla-comparacion tr { display: table-row; background: none; border: none; border-radius: 0; margin: 0; padding: 0; }
+            .tabla-comparacion th { display: table-cell; width: auto; font-size: 9.5px; padding: 7px 6px; white-space: nowrap; }
+            .tabla-comparacion td { display: table-cell; width: auto; text-align: left; font-size: 11.5px; padding: 8px 6px; white-space: nowrap; border-bottom: 1px solid rgba(255,255,255,0.05); }
+            .tabla-comparacion td:last-child { display: table-cell; justify-content: flex-start; }
+            .tabla-comparacion td::before { content: none; }
+            .tabla-comparacion .comp-costo-input { width: 62px; padding: 5px 6px; font-size: 12px; }
+            .tabla-comparacion .comp-grupo-fila td { font-size: 9.5px; padding: 6px !important; }
+
+            /* Los dos campos de tipo de cambio van lado a lado, para no gastar
+               media pantalla antes de llegar a la tabla. */
+            .comp-tc-fila { gap: 10px; }
+            .comp-tc-campo { flex: 1 1 45%; min-width: 0; }
+            .comp-tc-campo input { width: 100%; }
+            .comp-tc-campo label { font-size: 11px; }
+            .comp-tc-campo label span { display: block; font-size: 9.5px; }
         }
 
         /* En celular, las tarjetas de cliente van de a 2 por fila (como en web), bien compactas */
@@ -231,6 +255,7 @@
         .comp-ganancia-buena { color: #00e676; font-weight: bold; }
         .comp-ganancia-mala { color: #ff4757; font-weight: bold; }
         .comp-sin-dato { color: #6b6b76; }
+        .comp-grupo-fila td { background: rgba(161,85,255,0.07); color: #a155ff; font-size: 11.5px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.6px; padding: 7px 12px !important; }
     </style>
 </head>
 <body>
@@ -659,6 +684,55 @@
                             <button class="btn-add" onclick="cambiarVista('canjes')"><span class="material-icons">redeem</span> Canjes</button>
                             <button class="btn-complete" onclick="cambiarVista('revendedores')"><span class="material-icons">handshake</span> Revendedores</button>
                             <button class="btn-view" onclick="cambiarVista('administradores')"><span class="material-icons">admin_panel_settings</span> Administradores</button>
+                        </div>
+                    </div>
+
+                    <!-- ============ COMPARACIÓN DE COSTOS Y GANANCIA ============ -->
+                    <div class="card-box" style="margin-top: 22px;">
+                        <h3 class="card-box-title"><span class="material-icons" style="color:#00e676;">calculate</span> Comparación de Costos y Ganancia</h3>
+                        <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 15px 0;">
+                            Pon tus dos tipos de cambio y compara, en soles, a cuánto te sale a ti contra a cuánto se lo dejas a tus revendedores.
+                            Tu costo en CodeStore se trae solo — no hace falta escribirlo.
+                        </p>
+
+                        <div class="comp-tc-fila">
+                            <div class="comp-tc-campo">
+                                <label>TC costo <span>(a cuánto compras el USDT)</span></label>
+                                <input type="number" id="comp-tc-costo" class="bulk-select" step="0.001" min="0" placeholder="3.408" oninput="recalcularComparacion()">
+                            </div>
+                            <div class="comp-tc-campo">
+                                <label>TC venta <span>(el que aplicas a revendedores)</span></label>
+                                <input type="number" id="comp-tc-venta" class="bulk-select" step="0.001" min="0" placeholder="3.405" oninput="recalcularComparacion()">
+                            </div>
+                            <button class="btn-view" style="align-self:flex-end;" onclick="cargarComparacionCostos()"><span class="material-icons">refresh</span> Actualizar precios de CodeStore</button>
+                        </div>
+
+                        <p id="comp-estado" style="color:#a8a8b3; font-size:12px; margin:0 0 14px 0;"></p>
+
+                        <div class="rev-precios-grupo">
+                            <h4 class="rev-precios-grupo-titulo"><span class="material-icons" style="font-size:16px;">bolt</span> Recarga Free Fire (lo que compras a CodeStore)</h4>
+                            <div class="table-scroll">
+                                <table class="tabla-comparacion">
+                                    <thead><tr>
+                                        <th>Paquete</th><th>Mi costo USD</th><th>Mi costo S/</th>
+                                        <th>Al revendedor USD</th><th>Al revendedor S/</th><th>Ganancia S/</th><th>Margen</th>
+                                    </tr></thead>
+                                    <tbody id="tabla-comparacion-regular"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="rev-precios-grupo">
+                            <h4 class="rev-precios-grupo-titulo"><span class="material-icons" style="font-size:16px;">redeem</span> Promo 1ra Recarga (pon tú el costo)</h4>
+                            <div class="table-scroll">
+                                <table class="tabla-comparacion">
+                                    <thead><tr>
+                                        <th>Paquete</th><th>Mi costo USD</th><th>Mi costo S/</th>
+                                        <th>Al revendedor USD</th><th>Al revendedor S/</th><th>Ganancia S/</th><th>Margen</th>
+                                    </tr></thead>
+                                    <tbody id="tabla-comparacion-promo"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1410,54 +1484,6 @@
                     </div>
                 </div>
 
-                <!-- ============ COMPARACIÓN DE COSTOS Y GANANCIA ============ -->
-                <div class="card-box">
-                    <h3 class="card-box-title"><span class="material-icons" style="color:#00e676;">calculate</span> Comparación de Costos y Ganancia</h3>
-                    <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 15px 0;">
-                        Pon tus dos tipos de cambio y compara, en soles, a cuánto te sale a ti contra a cuánto se lo dejas a tus revendedores.
-                        Tu costo en CodeStore se trae solo — no hace falta escribirlo.
-                    </p>
-
-                    <div class="comp-tc-fila">
-                        <div class="comp-tc-campo">
-                            <label>TC costo <span>(a cuánto compras el USDT)</span></label>
-                            <input type="number" id="comp-tc-costo" class="bulk-select" step="0.001" min="0" placeholder="3.408" oninput="recalcularComparacion()">
-                        </div>
-                        <div class="comp-tc-campo">
-                            <label>TC venta <span>(el que aplicas a revendedores)</span></label>
-                            <input type="number" id="comp-tc-venta" class="bulk-select" step="0.001" min="0" placeholder="3.405" oninput="recalcularComparacion()">
-                        </div>
-                        <button class="btn-view" style="align-self:flex-end;" onclick="cargarComparacionCostos()"><span class="material-icons">refresh</span> Actualizar precios de CodeStore</button>
-                    </div>
-
-                    <p id="comp-estado" style="color:#a8a8b3; font-size:12px; margin:0 0 14px 0;"></p>
-
-                    <div class="rev-precios-grupo">
-                        <h4 class="rev-precios-grupo-titulo"><span class="material-icons" style="font-size:16px;">bolt</span> Recarga Free Fire (lo que compras a CodeStore)</h4>
-                        <div class="table-scroll">
-                            <table>
-                                <thead><tr>
-                                    <th>Paquete</th><th>Mi costo USD</th><th>Mi costo S/</th>
-                                    <th>Al revendedor USD</th><th>Al revendedor S/</th><th>Ganancia S/</th><th>Margen</th>
-                                </tr></thead>
-                                <tbody id="tabla-comparacion-regular"></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="rev-precios-grupo">
-                        <h4 class="rev-precios-grupo-titulo"><span class="material-icons" style="font-size:16px;">redeem</span> Promo 1ra Recarga (pon tú el costo)</h4>
-                        <div class="table-scroll">
-                            <table>
-                                <thead><tr>
-                                    <th>Paquete</th><th>Mi costo USD</th><th>Mi costo S/</th>
-                                    <th>Al revendedor USD</th><th>Al revendedor S/</th><th>Ganancia S/</th><th>Margen</th>
-                                </tr></thead>
-                                <tbody id="tabla-comparacion-promo"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- ============ ADMINISTRADORES ============ -->
                 <div class="admin-view" id="view-administradores">
@@ -2987,6 +3013,34 @@
         const CLAVE_TC_VENTA = 'carza_tc_venta';
         let filasComparacion = { regular: [], promo: [] };
 
+        // Se agrupa igual que la tabla de precios de arriba —  Diamantes, después
+        // Pase Booyah y al final Tarjetas — y dentro de cada grupo del más chico al
+        // más grande, para que no salgan mezclados.
+        const ORDEN_GRUPOS = ['diamantes', 'pase', 'tarjetas'];
+        const TITULOS_GRUPOS = { diamantes: 'Diamantes', pase: 'Pase Booyah', tarjetas: 'Tarjetas' };
+
+        function grupoDePaquete(paquete) {
+            if (paquete === 'Pase Booyah') return 'pase';
+            if (paquete.startsWith('Tarjeta ')) return 'tarjetas';
+            return 'diamantes';
+        }
+
+        // Los diamantes se ordenan por la cantidad que trae el nombre (110, 341, 572…)
+        // porque es más fiable que el costo, que puede faltar. El resto, por costo.
+        function pesoDeFila(f) {
+            const m = f.paquete.match(/^(\d[\d.,]*)/);
+            if (m) return parseInt(m[1].replace(/[.,]/g, ''), 10);
+            const costo = f.costoAuto !== null ? f.costoAuto : f.costoManual;
+            return costo !== null ? costo : (f.ventaUsd !== null ? f.ventaUsd : 999999);
+        }
+
+        function compararFilas(a, b) {
+            const ga = ORDEN_GRUPOS.indexOf(grupoDePaquete(a.paquete));
+            const gb = ORDEN_GRUPOS.indexOf(grupoDePaquete(b.paquete));
+            if (ga !== gb) return ga - gb;
+            return pesoDeFila(a) - pesoDeFila(b);
+        }
+
         async function cargarComparacionCostos() {
             const estado = document.getElementById('comp-estado');
             if (!estado) return;
@@ -3030,10 +3084,8 @@
                 });
             });
 
-            const porCosto = (a, b) => (a.costoAuto !== null ? a.costoAuto : (a.ventaUsd !== null ? a.ventaUsd : 999999))
-                                     - (b.costoAuto !== null ? b.costoAuto : (b.ventaUsd !== null ? b.ventaUsd : 999999));
-            filasComparacion.regular.sort(porCosto);
-            filasComparacion.promo.sort(porCosto);
+            filasComparacion.regular.sort(compararFilas);
+            filasComparacion.promo.sort(compararFilas);
 
             recalcularComparacion();
         }
@@ -3058,9 +3110,21 @@
 
             const enSoles = (v) => (v === null || isNaN(v)) ? '<span class="comp-sin-dato">—</span>' : 'S/ ' + v.toFixed(2);
 
+            // Solo se ponen los subtítulos si la tabla mezcla más de un grupo (en la de
+            // Promo son todos diamantes, así que ahí sobra).
+            const mostrarSubtitulos = new Set(filas.map(f => grupoDePaquete(f.paquete))).size > 1;
+            let grupoActual = null;
+
             tbody.innerHTML = filas.map(f => {
                 const costoUsd = f.costoAuto !== null ? f.costoAuto : f.costoManual;
                 const inputId = 'comp-costo-' + f.productoId;
+
+                let subtitulo = '';
+                const grupo = grupoDePaquete(f.paquete);
+                if (mostrarSubtitulos && grupo !== grupoActual) {
+                    grupoActual = grupo;
+                    subtitulo = `<tr class="comp-grupo-fila"><td colspan="7">${TITULOS_GRUPOS[grupo]}</td></tr>`;
+                }
 
                 const celdaCostoUsd = f.costoAuto !== null
                     ? `<span class="comp-auto">$${f.costoAuto.toFixed(2)}</span>` +
@@ -3073,7 +3137,7 @@
                 const margen = (ganancia !== null && costoSoles > 0) ? (ganancia / costoSoles * 100) : null;
                 const claseGanancia = (ganancia !== null && ganancia < 0) ? 'comp-ganancia-mala' : 'comp-ganancia-buena';
 
-                return `<tr>
+                return subtitulo + `<tr>
                     <td data-label="Paquete" style="font-weight:bold;">${escHtml(f.paquete)}</td>
                     <td data-label="Mi costo USD">${celdaCostoUsd}</td>
                     <td data-label="Mi costo S/">${enSoles(costoSoles)}</td>
