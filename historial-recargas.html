@@ -352,6 +352,13 @@
 
             todasLasCompras = pedidosData || [];
             renderTablaPaginada();
+
+            // Si llegamos desde la pantalla de "¡Pago Finalizado!" con ?voucher=<id>,
+            // abrimos ese voucher de una vez, para que el cliente no tenga que
+            // buscar su compra a mano en la lista. Si el id no es suyo, mostrarVoucher
+            // no encuentra nada y simplemente no abre nada.
+            const idVoucher = parseInt(new URLSearchParams(window.location.search).get('voucher'), 10);
+            if (!isNaN(idVoucher)) mostrarVoucher(idVoucher);
         };
 
         function toggleMenu() { const menu = document.getElementById('menu-desplegable'); menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none'; }

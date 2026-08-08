@@ -589,6 +589,7 @@
                 </div>
 
                 <p style="color: #a8a8b3; font-size: 13px; line-height: 1.6; margin-bottom: 20px;">Tu pedido se procesará en nuestro sistema en un plazo máximo de 5 minutos.</p>
+                <button class="btn-primary" style="width: 100%; padding: 14px; margin-bottom: 10px; font-weight: bold;" onclick="verVoucherDeEstaCompra()"><span class="material-icons" style="font-size: 17px; vertical-align: middle; margin-right: 5px;">receipt_long</span>Ver mi voucher</button>
                 <button class="btn-outline" style="width: 100%; padding: 14px; border-color: rgba(255,255,255,0.15);" onclick="cerrarModalCompra()">Entendido</button>
             </div>
         </div>
@@ -1075,6 +1076,14 @@
 
             const modal = document.getElementById('modal-compra-container');
             modal.style.display = 'flex'; setTimeout(() => { modal.style.opacity = '1'; }, 10);
+        }
+
+        // Lleva al historial con el voucher de esta compra ya abierto, para que el
+        // cliente no tenga que buscar su pedido a mano en la lista.
+        function verVoucherDeEstaCompra() {
+            const id = document.getElementById('exito-pedido-id').innerText.replace('#', '').trim();
+            if (!id || id === '---') { cerrarModalCompra(); return; }
+            window.location.href = 'historial-recargas.html?voucher=' + encodeURIComponent(id);
         }
 
         function cerrarModalCompra() { const modal = document.getElementById('modal-compra-container'); modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; window.location.reload(); }, 300); }
