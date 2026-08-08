@@ -559,6 +559,20 @@
             actualizarTicketStreaming();
         }
 
+        // Lleva al historial con el voucher de esta compra ya abierto. Aquí, a
+        // diferencia de los catálogos de diamantes, la función de compra no devuelve
+        // el id del pedido, así que se busca el más reciente del propio cliente (RLS
+        // solo le permite ver los suyos). Si no se encuentra, se abre el historial normal.
+        async function verVoucherDeEstaCompra() {
+            const nombreGuardado = localStorage.getItem('nombreUsuario');
+            const { data } = await supabaseClient.from('pedidos')
+                .select('id').eq('nickname', nombreGuardado)
+                .order('id', { ascending: false }).limit(1).maybeSingle();
+            window.location.href = data
+                ? 'historial-recargas.html?voucher=' + data.id
+                : 'historial-recargas.html';
+        }
+
         function cerrarModalCompra() { const modal = document.getElementById('modal-compra-container'); modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; }, 300); }
 
         function copiarCredencial(texto) {
@@ -628,6 +642,7 @@
                         <div id="credencial-texto" style="font-family: monospace; color: #00e676; font-size: 14px; word-break: break-word;">${resultado.codigo}</div>
                     </div>
                     <button class="btn-outline" style="width: 100%; padding: 12px; border-color: rgba(255,255,255,0.15); margin-bottom: 10px;" onclick="copiarCredencial('${credencialEscapada}')"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">content_copy</span> Copiar datos</button>
+                    <button class="btn-outline" style="width: 100%; padding: 12px; border-color: rgba(255,255,255,0.15); margin-bottom: 10px;" onclick="verVoucherDeEstaCompra()"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">receipt_long</span> Ver mi voucher</button>
                     <button class="btn-primary" style="width: 100%; padding: 12px;" onclick="cerrarModalCompra()">Entendido</button>
                 `;
             } else {
@@ -644,6 +659,7 @@
                     ${esperandoDatosCliente
                         ? `<a href="mis-plataformas.html" class="btn-primary" style="display:block; width: 100%; padding: 14px; text-align:center; text-decoration:none; box-sizing:border-box; margin-bottom:10px;">Completar mis datos</a>`
                         : ''}
+                    <button class="btn-outline" style="width: 100%; padding: 14px; border-color: rgba(255,255,255,0.15); margin-bottom: 10px;" onclick="verVoucherDeEstaCompra()"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">receipt_long</span> Ver mi voucher</button>
                     <button class="btn-outline" style="width: 100%; padding: 14px; border-color: rgba(255,255,255,0.15);" onclick="cerrarModalCompra()">Entendido</button>
                 `;
                 if (esperandoDatosCliente) {
