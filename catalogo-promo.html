@@ -602,6 +602,7 @@
         let paqueteSeleccionado = "";
         let precioSeleccionado = 0;
         let catalogoSinStockActivo = false;
+        let motivosPromoBloqueados = {}; // paquete -> 'usado' | 'rechazado', para este ID
         let saldoActualUsuario = 0;
         let precioFinalConCupon = null;
         let codigoCuponValidado = '';
@@ -899,7 +900,14 @@
         async function marcarPaquetesPromoUsados(idJuego) {
             const { data, error } = await supabaseClient.rpc('paquetes_promo_usados_por_id', { p_id_juego: idJuego });
             if (error) { console.error(error); return; }
-            const usados = new Set((data || []).map(r => r.paquete));
+
+            // Un paquete puede quedar bloqueado por dos motivos distintos: porque el
+            // ID ya lo compró ("usado"), o porque se pidió y el admin lo rechazó por
+            // no calificar para la primera recarga ("rechazado"). Se guarda el motivo
+            // para poder decirle al cliente exactamente qué pasó.
+            motivosPromoBloqueados = {};
+            (data || []).forEach(r => { motivosPromoBloqueados[r.paquete] = r.motivo || 'usado'; });
+            const usados = new Set(Object.keys(motivosPromoBloqueados));
 
             document.querySelectorAll('#products-grid .dtile').forEach(tile => {
                 const paquete = tile.dataset.paquete;
@@ -907,9 +915,12 @@
                 tile.classList.toggle('dtile-usado', yaUsado);
                 const cta = tile.querySelector('.dtile-cta');
                 if (cta) {
-                    cta.innerHTML = yaUsado
-                        ? '<span class="material-icons" style="font-size:13px;">block</span> Ya usado con este ID'
-                        : 'Elegir <span class="material-icons" style="font-size:13px;">arrow_forward</span>';
+                    if (!yaUsado) {
+                        cta.innerHTML = 'Elegir <span class="material-icons" style="font-size:13px;">arrow_forward</span>';
+                    } else {
+                        const texto = motivosPromoBloqueados[paquete] === 'rechazado' ? 'No aplica para este ID' : 'Ya usado con este ID';
+                        cta.innerHTML = `<span class="material-icons" style="font-size:13px;">block</span> ${texto}`;
+                    }
                 }
             });
 
@@ -965,7 +976,9 @@
 
             const tileEl = document.querySelector(`#products-grid .dtile[data-paquete="${CSS.escape(nombrePaquete)}"]`);
             if (tileEl && tileEl.classList.contains('dtile-usado')) {
-                alert('Ya usaste este paquete con tu ID en la promo de primera recarga.');
+                alert(motivosPromoBloqueados[nombrePaquete] === 'rechazado'
+                    ? 'Este paquete no aplica para tu ID. Ya revisamos un pedido tuyo de este mismo paquete y tu cuenta no califica para la promo de primera recarga, porque ya tenía una recarga previa con este método. Te devolvimos el dinero a tu saldo en ese momento.\n\nPuedes recargar sin límite desde el catálogo "Recarga Free Fire".'
+                    : 'Ya usaste este paquete con tu ID en la promo de primera recarga.');
                 return;
             }
 
