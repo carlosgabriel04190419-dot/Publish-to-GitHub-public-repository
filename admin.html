@@ -220,6 +220,17 @@
         .rev-precio-fila-accion { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .btn-guardar-precio { background: rgba(161,85,255,0.12); border: 1px solid #a155ff; color: #a155ff; border-radius: 6px; padding: 8px 12px; font-weight: bold; font-size: 12.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
         .btn-guardar-precio:hover { background: #a155ff; color: white; }
+        .comp-tc-fila { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 12px; }
+        .comp-tc-campo { display: flex; flex-direction: column; gap: 5px; }
+        .comp-tc-campo label { color: #a8a8b3; font-size: 12px; font-weight: bold; }
+        .comp-tc-campo label span { color: #6b6b76; font-weight: normal; }
+        .comp-tc-campo input { width: 150px; }
+        .comp-costo-input { width: 95px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 7px 9px; color: #ffc107; font-weight: bold; font-size: 13px; }
+        .comp-costo-input:focus { outline: none; border-color: #ffc107; }
+        .comp-auto { color: #00d2ff; font-weight: bold; }
+        .comp-ganancia-buena { color: #00e676; font-weight: bold; }
+        .comp-ganancia-mala { color: #ff4757; font-weight: bold; }
+        .comp-sin-dato { color: #6b6b76; }
     </style>
 </head>
 <body>
@@ -1399,6 +1410,55 @@
                     </div>
                 </div>
 
+                <!-- ============ COMPARACIÓN DE COSTOS Y GANANCIA ============ -->
+                <div class="card-box">
+                    <h3 class="card-box-title"><span class="material-icons" style="color:#00e676;">calculate</span> Comparación de Costos y Ganancia</h3>
+                    <p style="color:#a8a8b3; font-size:13px; margin:-10px 0 15px 0;">
+                        Pon tus dos tipos de cambio y compara, en soles, a cuánto te sale a ti contra a cuánto se lo dejas a tus revendedores.
+                        Tu costo en CodeStore se trae solo — no hace falta escribirlo.
+                    </p>
+
+                    <div class="comp-tc-fila">
+                        <div class="comp-tc-campo">
+                            <label>TC costo <span>(a cuánto compras el USDT)</span></label>
+                            <input type="number" id="comp-tc-costo" class="bulk-select" step="0.001" min="0" placeholder="3.408" oninput="recalcularComparacion()">
+                        </div>
+                        <div class="comp-tc-campo">
+                            <label>TC venta <span>(el que aplicas a revendedores)</span></label>
+                            <input type="number" id="comp-tc-venta" class="bulk-select" step="0.001" min="0" placeholder="3.405" oninput="recalcularComparacion()">
+                        </div>
+                        <button class="btn-view" style="align-self:flex-end;" onclick="cargarComparacionCostos()"><span class="material-icons">refresh</span> Actualizar precios de CodeStore</button>
+                    </div>
+
+                    <p id="comp-estado" style="color:#a8a8b3; font-size:12px; margin:0 0 14px 0;"></p>
+
+                    <div class="rev-precios-grupo">
+                        <h4 class="rev-precios-grupo-titulo"><span class="material-icons" style="font-size:16px;">bolt</span> Recarga Free Fire (lo que compras a CodeStore)</h4>
+                        <div class="table-scroll">
+                            <table>
+                                <thead><tr>
+                                    <th>Paquete</th><th>Mi costo USD</th><th>Mi costo S/</th>
+                                    <th>Al revendedor USD</th><th>Al revendedor S/</th><th>Ganancia S/</th><th>Margen</th>
+                                </tr></thead>
+                                <tbody id="tabla-comparacion-regular"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="rev-precios-grupo">
+                        <h4 class="rev-precios-grupo-titulo"><span class="material-icons" style="font-size:16px;">redeem</span> Promo 1ra Recarga (pon tú el costo)</h4>
+                        <div class="table-scroll">
+                            <table>
+                                <thead><tr>
+                                    <th>Paquete</th><th>Mi costo USD</th><th>Mi costo S/</th>
+                                    <th>Al revendedor USD</th><th>Al revendedor S/</th><th>Ganancia S/</th><th>Margen</th>
+                                </tr></thead>
+                                <tbody id="tabla-comparacion-promo"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ============ ADMINISTRADORES ============ -->
                 <div class="admin-view" id="view-administradores">
                     <h1 class="view-title"><span class="material-icons" style="color:#a155ff;">admin_panel_settings</span> Administradores</h1>
@@ -1543,6 +1603,7 @@
             if (rol === 'full') {
                 await cargarUsuarios(); await cargarRecargas(); await cargarAdmins(); await cargarCupones(); await cargarCanjes();
                 await cargarRevendedores(); await cargarPreciosRevendedor(); await cargarListaNicknamesClientes();
+                cargarComparacionCostos(); // sin await: consulta a CodeStore, que no debe frenar la carga del panel
                 await cargarProductosCatalogoParaCuentaMadre(); await cargarCuentasMadre();
             } else {
                 cambiarVista('pedidos');
@@ -2915,6 +2976,138 @@
             btnEl.outerHTML = nuevoEstado
                 ? `<button class="btn-remove" onclick="togglePrecioRevendedor(${id}, false, this)"><span class="material-icons">block</span> Desactivar</button>`
                 : `<button class="btn-add" onclick="togglePrecioRevendedor(${id}, true, this)"><span class="material-icons">check</span> Activar</button>`;
+        }
+
+        // ================= COMPARACIÓN DE COSTOS Y GANANCIA =================
+        // Junta tres fuentes: lo que CodeStore nos cobra (en vivo por su API), lo que
+        // le dejamos al revendedor (precios_revendedor) y, para lo que NO se compra a
+        // CodeStore (Pase Booyah y los de Promo), el costo en dólares que el admin
+        // escribe a mano. Las dos TC se guardan en el navegador para no reescribirlas.
+        const CLAVE_TC_COSTO = 'carza_tc_costo';
+        const CLAVE_TC_VENTA = 'carza_tc_venta';
+        let filasComparacion = { regular: [], promo: [] };
+
+        async function cargarComparacionCostos() {
+            const estado = document.getElementById('comp-estado');
+            if (!estado) return;
+            estado.innerText = 'Consultando precios de CodeStore...';
+
+            document.getElementById('comp-tc-costo').value = localStorage.getItem(CLAVE_TC_COSTO) || '';
+            document.getElementById('comp-tc-venta').value = localStorage.getItem(CLAVE_TC_VENTA) || '';
+
+            const [{ data: productos }, { data: precios }, { data: costos }, { data: cs }] = await Promise.all([
+                supabaseClient.from('productos').select('id, paquete, categoria, codestore_sku, codestore_cantidad').in('categoria', ['regular', 'promo']).eq('activo', true),
+                supabaseClient.from('precios_revendedor').select('paquete, precio_usd').eq('activo', true),
+                supabaseClient.from('costos_productos').select('producto_id, costo_usd'),
+                supabaseClient.rpc('admin_ver_precios_codestore')
+            ]);
+
+            const precioRev = {};
+            (precios || []).forEach(p => { precioRev[p.paquete] = Number(p.precio_usd); });
+            const costoManual = {};
+            (costos || []).forEach(c => { if (c.costo_usd !== null && c.costo_usd !== undefined) costoManual[c.producto_id] = Number(c.costo_usd); });
+
+            const preciosCs = (cs && cs.precios) ? cs.precios : {};
+            estado.innerText = (cs && cs.error)
+                ? 'No se pudieron traer los precios de CodeStore: ' + cs.error
+                : 'Precios de CodeStore traídos el ' + new Date().toLocaleString('es-PE');
+
+            filasComparacion = { regular: [], promo: [] };
+            (productos || []).forEach(prod => {
+                const cantidad = Number(prod.codestore_cantidad || 1);
+                const precioCs = prod.codestore_sku ? preciosCs[prod.codestore_sku] : undefined;
+                // Ojo: paquetes como 4796 y 12320 se entregan como 2 unidades del SKU,
+                // así que el costo real es el precio de catálogo por la cantidad.
+                const costoAuto = (precioCs !== undefined && precioCs !== null) ? Number(precioCs) * cantidad : null;
+                const grupo = prod.categoria === 'promo' ? 'promo' : 'regular';
+                filasComparacion[grupo].push({
+                    productoId: prod.id,
+                    paquete: prod.paquete,
+                    cantidad,
+                    costoAuto,
+                    costoManual: costoManual[prod.id] !== undefined ? costoManual[prod.id] : null,
+                    ventaUsd: precioRev[prod.paquete] !== undefined ? precioRev[prod.paquete] : null
+                });
+            });
+
+            const porCosto = (a, b) => (a.costoAuto !== null ? a.costoAuto : (a.ventaUsd !== null ? a.ventaUsd : 999999))
+                                     - (b.costoAuto !== null ? b.costoAuto : (b.ventaUsd !== null ? b.ventaUsd : 999999));
+            filasComparacion.regular.sort(porCosto);
+            filasComparacion.promo.sort(porCosto);
+
+            recalcularComparacion();
+        }
+
+        function recalcularComparacion() {
+            const tcCosto = parseFloat(document.getElementById('comp-tc-costo').value);
+            const tcVenta = parseFloat(document.getElementById('comp-tc-venta').value);
+            if (!isNaN(tcCosto)) localStorage.setItem(CLAVE_TC_COSTO, tcCosto);
+            if (!isNaN(tcVenta)) localStorage.setItem(CLAVE_TC_VENTA, tcVenta);
+
+            renderComparacion('tabla-comparacion-regular', filasComparacion.regular, tcCosto, tcVenta);
+            renderComparacion('tabla-comparacion-promo', filasComparacion.promo, tcCosto, tcVenta);
+        }
+
+        function renderComparacion(tbodyId, filas, tcCosto, tcVenta) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            if (!filas.length) {
+                tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; color:#a8a8b3;'>Sin paquetes.</td></tr>";
+                return;
+            }
+
+            const enSoles = (v) => (v === null || isNaN(v)) ? '<span class="comp-sin-dato">—</span>' : 'S/ ' + v.toFixed(2);
+
+            tbody.innerHTML = filas.map(f => {
+                const costoUsd = f.costoAuto !== null ? f.costoAuto : f.costoManual;
+                const inputId = 'comp-costo-' + f.productoId;
+
+                const celdaCostoUsd = f.costoAuto !== null
+                    ? `<span class="comp-auto">$${f.costoAuto.toFixed(2)}</span>` +
+                      (f.cantidad > 1 ? `<div style="color:#6b6b76; font-size:11px;">${f.cantidad} × $${(f.costoAuto / f.cantidad).toFixed(2)}</div>` : '')
+                    : `<input type="number" class="comp-costo-input" id="${inputId}" step="0.01" min="0" value="${f.costoManual !== null ? f.costoManual : ''}" placeholder="0.00" onchange="guardarCostoUsd(${f.productoId}, '${inputId}')">`;
+
+                const costoSoles = (costoUsd !== null && !isNaN(tcCosto)) ? costoUsd * tcCosto : null;
+                const ventaSoles = (f.ventaUsd !== null && !isNaN(tcVenta)) ? f.ventaUsd * tcVenta : null;
+                const ganancia = (costoSoles !== null && ventaSoles !== null) ? ventaSoles - costoSoles : null;
+                const margen = (ganancia !== null && costoSoles > 0) ? (ganancia / costoSoles * 100) : null;
+                const claseGanancia = (ganancia !== null && ganancia < 0) ? 'comp-ganancia-mala' : 'comp-ganancia-buena';
+
+                return `<tr>
+                    <td data-label="Paquete" style="font-weight:bold;">${escHtml(f.paquete)}</td>
+                    <td data-label="Mi costo USD">${celdaCostoUsd}</td>
+                    <td data-label="Mi costo S/">${enSoles(costoSoles)}</td>
+                    <td data-label="Al revendedor USD">${f.ventaUsd !== null ? '$' + f.ventaUsd.toFixed(2) : '<span class="comp-sin-dato">sin precio</span>'}</td>
+                    <td data-label="Al revendedor S/">${enSoles(ventaSoles)}</td>
+                    <td data-label="Ganancia S/">${ganancia === null ? '<span class="comp-sin-dato">—</span>' : `<span class="${claseGanancia}">S/ ${ganancia.toFixed(2)}</span>`}</td>
+                    <td data-label="Margen">${margen === null ? '<span class="comp-sin-dato">—</span>' : `<span class="${claseGanancia}">${margen.toFixed(1)}%</span>`}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        // Guarda el costo en dólares escrito a mano. Se hace leyendo primero si la fila
+        // existe, en vez de un upsert, porque la columna "costo" (en soles, la que usa
+        // el reporte de Ganancias) no acepta nulos y un upsert la borraría.
+        async function guardarCostoUsd(productoId, inputId) {
+            const valor = parseFloat(document.getElementById(inputId).value);
+            const costoUsd = isNaN(valor) ? null : valor;
+
+            const { data: existente } = await supabaseClient.from('costos_productos')
+                .select('producto_id').eq('producto_id', productoId).maybeSingle();
+
+            const { error } = existente
+                ? await supabaseClient.from('costos_productos')
+                    .update({ costo_usd: costoUsd, actualizado_en: new Date().toISOString() })
+                    .eq('producto_id', productoId)
+                : await supabaseClient.from('costos_productos')
+                    .insert({ producto_id: productoId, costo: 0, costo_usd: costoUsd, actualizado_en: new Date().toISOString() });
+
+            if (error) { showToast("Error al guardar el costo: " + error.message, "error"); return; }
+            showToast("Costo guardado.");
+
+            const fila = [...filasComparacion.regular, ...filasComparacion.promo].find(f => f.productoId === productoId);
+            if (fila) fila.costoManual = costoUsd;
+            recalcularComparacion();
         }
 
         // ================= CATÁLOGO: DIAMANTES =================
